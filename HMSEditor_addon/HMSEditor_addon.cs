@@ -43,50 +43,53 @@ namespace HMSEditor_addon {
 		}
 
 		public IntPtr GetTitle(ref string aTitle) {
-			throw new NotImplementedException();
+			aTitle = "Это заголовок";
+			return IntPtr.Zero;
 		}
 
 		public IntPtr GetType(ref long aType) {
-			throw new NotImplementedException();
+			aType = 1;
+			return IntPtr.Zero;
 		}
 
 		public IntPtr InvalidateLine(int aLine) {
-			throw new NotImplementedException();
+			return IntPtr.Zero;
 		}
 
 		public IntPtr Repaint() {
-			throw new NotImplementedException();
+			return IntPtr.Zero;
 		}
 
 		public IntPtr SetCaretPos(int aLine, int aChar) {
-			throw new NotImplementedException();
+			return IntPtr.Zero;
 		}
 
 		public IntPtr SetFocus() {
-			throw new NotImplementedException();
+			return IntPtr.Zero;
 		}
 
 		public IntPtr SetScriptName(string aScriptName) {
-			throw new NotImplementedException();
+			return IntPtr.Zero;
 		}
 
 		public IntPtr SetScriptText(string aText) {
-			throw new NotImplementedException();
+			return IntPtr.Zero;
 		}
 
 		public IntPtr SetSelText(string aText) {
-			throw new NotImplementedException();
+			return IntPtr.Zero;
 		}
 
 		public IntPtr Setup() {
-			throw new NotImplementedException();
+			System.Windows.Forms.MessageBox.Show("Это Setup!");
+			return IntPtr.Zero;
 		}
 	}
 
 	static class Exports {
 		[DllExport]
 		public static void HmsGetClassObject([MarshalAs(UnmanagedType.Interface)]out IHmsScriptEditor instance) {
-			instance = new Sample { Name = "Test" };
+			instance = new EditorSample();
 		}
 	}
 }
