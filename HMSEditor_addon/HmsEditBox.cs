@@ -20,7 +20,7 @@ namespace HMSEditor_addon {
 			Point p = GetPositionFromCharIndex(SelectionStart);
 			aLine = p.X;
 			aChar = p.Y;
-        }
+		}
 
 		public void SetCaretPos(int aLine, int aChar) {
 			int iLen = 0;

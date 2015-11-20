@@ -213,7 +213,7 @@ namespace HMSEditor_addon {
 
 	static class Exports {
 
-        public static long HmsGetClassObject(Guid clsid, Guid iid, [MarshalAs(UnmanagedType.Interface)]out object instance) {
+		public static long HmsGetClassObject(Guid clsid, Guid iid, [MarshalAs(UnmanagedType.Interface)]out object instance) {
 			long result = HRESULT.E_NOINTERFACE;
 			instance = null;
 			if (Constatns.IsEqualGUID(iid, typeof(IHmsAddonList))) {

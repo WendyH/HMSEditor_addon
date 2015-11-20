@@ -23,7 +23,7 @@ namespace HMS.Addons {
 		public const long E_OUTOFMEMORY  = 0x8007000E; // Failed to allocate necessary memory
 		public const long E_POINTER      = 0x80004003; // Pointer that is not valid
 		public const long E_UNEXPECTED   = 0x8000FFFF; // Unexpected failure
-    }
+	}
 
 	static class Constatns {
 		// IHmsScriptEditor.GetCapabilities
