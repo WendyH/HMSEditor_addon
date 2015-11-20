@@ -74,14 +74,14 @@ namespace HMS.Addons {
 	}
 
 	// Для получения списка классов и интерфейсов
-	[ComVisible(true), Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	[Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A")]
 	public interface IHmsAddonList {
 		long GetCount(ref int aCount);
 		long GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref string aTitle, ref string aDescription, ref string aRequiredVersion, ref string aCheckedOnVersion);
 	}
 
 	// Основной интерфейс всех дополнений
-	[ComVisible(true), Guid("5C75011A-1A44-47DD-A382-5D829DC24F28"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	[Guid("5C75011A-1A44-47DD-A382-5D829DC24F28")]
 	public interface IHmsCustomAddon {
 		long GetDescription(ref string aDescription);
 		long GetTitle(ref string aTitle);
@@ -89,7 +89,7 @@ namespace HMS.Addons {
 	}
 
 	// Интерфейс редактора
-	[ComVisible(true), Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	[Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB")]
 	public interface IHmsScriptEditor: IHmsCustomAddon {
 		long AddMessage(object aMessage);
 
@@ -121,7 +121,7 @@ namespace HMS.Addons {
 	}
 
 	// Интерфейс программы, который предоставляется редактору
-	[ComVisible(true), Guid("D31B4638-9764-4A9A-9F5A-B4D0B519F402"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+	[Guid("D31B4638-9764-4A9A-9F5A-B4D0B519F402")]
 	public interface IHmsScriptFrame {
 		long AddWatch(string aExpression);
 
