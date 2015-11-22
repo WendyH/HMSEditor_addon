@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using HMS.Addons;           // Интерфейсы HMS
@@ -8,6 +9,10 @@ namespace HMSEditor_addon {
 	[Guid("9A871DC9-D8ED-4790-A5AB-E1A825639F2B")]
 	class HmsAddonList: IHmsAddonList {
 		private int AddonsCount = 1;
+		// constructor
+		public HmsAddonList() {
+		}
+
 		private HmsAddonInfo[] AddonInfoList = new HmsAddonInfo[] {
 						new HmsAddonInfo() {
 							ClassID          = Constatns.Guid(typeof(EditorSample)),
@@ -19,13 +24,13 @@ namespace HMSEditor_addon {
 						}
 					};
 
-		public long GetCount(ref int aCount) {
+		public uint GetCount(ref int aCount) {
 			aCount = AddonsCount;
 			return HRESULT.S_OK;
 		}
 
-		public long GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref string aTitle, ref string aDescription, ref string aRequiredVersion, ref string aCheckedOnVersion) {
-			long result = HRESULT.E_UNEXPECTED;
+		public uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref object aTitle, ref object aDescription, ref object aRequiredVersion, ref object aCheckedOnVersion) {
+			uint result = HRESULT.E_UNEXPECTED;
 			if ((aIndex >= 0) && (aIndex < AddonsCount)) {
 				HmsAddonInfo info = AddonInfoList[aIndex];
 				aClassID          = info.ClassID;
@@ -47,6 +52,10 @@ namespace HMSEditor_addon {
 		private string          ScriptName  = "";
 		private HmsScriptMode   ScriptMode  = HmsScriptMode.smUnknown;
 		private IHmsScriptFrame ScriptFrame = null;
+
+		// constructor
+		public EditorSample() {
+		}
 
 		#region IDisposable Support
 		private bool disposedValue = false; // Для определения избыточных вызовов
@@ -72,11 +81,11 @@ namespace HMSEditor_addon {
 		}
 		#endregion
 
-		public long AddMessage(object aMessage) {
+		public uint AddMessage(object aMessage) {
 			return HRESULT.E_NOTIMPL;
 		}
 
-		public long CreateEditor(IntPtr aParent, IHmsScriptFrame aHmsScripter, int aScriptMode, ref IntPtr aEditor) {
+		public uint CreateEditor(IntPtr aParent, IHmsScriptFrame aHmsScripter, int aScriptMode, ref IntPtr aEditor) {
 			try {
 				ScriptMode  = (HmsScriptMode)aScriptMode;
 				ScriptFrame = aHmsScripter;
@@ -89,12 +98,12 @@ namespace HMSEditor_addon {
 			return HRESULT.S_OK;
 		}
 
-		public long DestroyEditor(IntPtr aEditor) {
+		public uint DestroyEditor(IntPtr aEditor) {
 			Dispose();
 			return HRESULT.S_OK;
 		}
 
-		public long GetCapabilities(ref int aCapabilities) {
+		public uint GetCapabilities(ref int aCapabilities) {
 			try {
 				aCapabilities = Constatns.ecEditor;
 
@@ -102,7 +111,7 @@ namespace HMSEditor_addon {
 			return HRESULT.S_OK;
 		}
 
-		public long GetCaretPos(ref int aLine, ref int aChar) {
+		public uint GetCaretPos(ref int aLine, ref int aChar) {
 			if (EditBox != null) {
 				EditBox.GetCaretPos(ref aLine, ref aChar);
 				return HRESULT.S_OK;
@@ -110,7 +119,7 @@ namespace HMSEditor_addon {
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public long GetCurrentLine(ref int aLine) {
+		public uint GetCurrentLine(ref int aLine) {
 			if (EditBox != null) {
 				aLine = EditBox.GetCurrentLine();
 				return HRESULT.S_OK;
@@ -118,21 +127,21 @@ namespace HMSEditor_addon {
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public long GetDescription(ref string aDescription) {
+		public uint GetDescription(ref object aDescription) {
 			aDescription = "Hello!\r\nЭто описание на русском!";
 			return HRESULT.S_OK;
 		}
 
-		public long GetModified(ref bool aModified) {
+		public uint GetModified(ref bool aModified) {
 			return HRESULT.E_NOTIMPL;
 		}
 
-		public long GetScriptName(ref string aScriptName) {
+		public uint GetScriptName(ref object aScriptName) {
 			aScriptName = ScriptName;
 			return HRESULT.S_OK;
 		}
 
-		public long GetScriptText(ref string aText) {
+		public uint GetScriptText(ref object aText) {
 			if (EditBox != null) {
 				aText = EditBox.Text;
 				return HRESULT.S_OK;
@@ -140,15 +149,15 @@ namespace HMSEditor_addon {
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public long GetTitle(ref string aTitle) {
+		public uint GetTitle(ref object aTitle) {
 			return HRESULT.E_NOTIMPL;
 		}
 
-		public long GetType(ref long aType) {
+		public uint GetType(ref long aType) {
 			return HRESULT.E_NOTIMPL;
 		}
 
-		public long InvalidateLine(int aLine) {
+		public uint InvalidateLine(int aLine) {
 			if (EditBox != null) {
 				EditBox.Invalidate();
 				return HRESULT.S_OK;
@@ -156,7 +165,7 @@ namespace HMSEditor_addon {
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public long Repaint() {
+		public uint Repaint() {
 			if (EditBox != null) {
 				EditBox.Refresh();
 				return HRESULT.S_OK;
@@ -164,8 +173,8 @@ namespace HMSEditor_addon {
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public long SetCaretPos(int aLine, int aChar) {
-			long result = HRESULT.E_UNEXPECTED;
+		public uint SetCaretPos(int aLine, int aChar) {
+			uint result = HRESULT.E_UNEXPECTED;
 			if (EditBox != null) {
 				try {
 					EditBox.SetCaretPos(aLine, aChar);
@@ -175,7 +184,7 @@ namespace HMSEditor_addon {
 			return result;
 		}
 
-		public long SetFocus() {
+		public uint SetFocus() {
 			if (EditBox!=null) {
 				EditBox.Focus();
 				return HRESULT.S_OK;
@@ -183,38 +192,54 @@ namespace HMSEditor_addon {
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public long SetScriptName(string aScriptName) {
-			ScriptName = aScriptName;
+		public uint SetScriptName(object aScriptName) {
+			ScriptName = (string)aScriptName;
 			return HRESULT.S_OK;
 		}
 
-		public long SetScriptText(string aText) {
+		public uint SetScriptText(object aText) {
 			if (EditBox != null) {
-				EditBox.Text = aText;
+				EditBox.Text = (string)aText;
 				return HRESULT.S_OK;
 			}
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public long SetSelText(string aText) {
+		public uint SetSelText(object aText) {
 			if (EditBox != null) {
-				EditBox.SelectedText = aText;
+				EditBox.SelectedText = (string)aText;
 				return HRESULT.S_OK;
 			}
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public long Setup() {
+		public uint Setup() {
 			MessageBox.Show("Это Setup!\nFScriptName = " + ScriptName);
 			return HRESULT.S_OK;
 		}
 
 	}
 
-	static class Exports {
+	[Guid("610E222E-A1AB-4239-BB3E-AA859B5A22E2")]
+	[ComVisible(true)]
+	public class Exports {
 
-		public static long HmsGetClassObject(Guid clsid, Guid iid, [MarshalAs(UnmanagedType.Interface)]out object instance) {
-			long result = HRESULT.E_NOINTERFACE;
+		public Exports() {
+		}
+
+		[ComVisible(true)]
+		public void Hello() {
+			MessageBox.Show("Heelo, its worked!");
+		}
+
+		[ComVisible(true)]
+		public static void HelloStr(string msg) {
+			MessageBox.Show("Hello! "+msg);
+		}
+
+		[ComVisible(true)]
+		public static uint HmsGetClassObject(Guid clsid, Guid iid, [MarshalAs(UnmanagedType.Interface)]out object instance) {
+			uint result = HRESULT.E_NOINTERFACE;
 			instance = null;
 			if (Constatns.IsEqualGUID(iid, typeof(IHmsAddonList))) {
 				instance = new HmsAddonList();

@@ -12,17 +12,17 @@ namespace HMS.Addons {
 	}
 
 	static class HRESULT {
-		public const long S_OK           = 0x00000000; // Operation successful
-		public const long E_ABORT        = 0x80004004; // Operation aborted
-		public const long E_ACCESSDENIED = 0x80070005; // General access denied error
-		public const long E_FAIL         = 0x80004005; // Unspecified failure
-		public const long E_HANDLE       = 0x80070006; // Handle that is not valid
-		public const long E_INVALIDARG   = 0x80070057; // One or more arguments are not valid
-		public const long E_NOINTERFACE  = 0x80004002; // No such interface supported
-		public const long E_NOTIMPL      = 0x80004001; // Not implemented
-		public const long E_OUTOFMEMORY  = 0x8007000E; // Failed to allocate necessary memory
-		public const long E_POINTER      = 0x80004003; // Pointer that is not valid
-		public const long E_UNEXPECTED   = 0x8000FFFF; // Unexpected failure
+		public const uint S_OK           = 0x00000000; // Operation successful
+		public const uint E_ABORT        = 0x80004004; // Operation aborted
+		public const uint E_ACCESSDENIED = 0x80070005; // General access denied error
+		public const uint E_FAIL         = 0x80004005; // Unspecified failure
+		public const uint E_HANDLE       = 0x80070006; // Handle that is not valid
+		public const uint E_INVALIDARG   = 0x80070057; // One or more arguments are not valid
+		public const uint E_NOINTERFACE  = 0x80004002; // No such interface supported
+		public const uint E_NOTIMPL      = 0x80004001; // Not implemented
+		public const uint E_OUTOFMEMORY  = 0x8007000E; // Failed to allocate necessary memory
+		public const uint E_POINTER      = 0x80004003; // Pointer that is not valid
+		public const uint E_UNEXPECTED   = 0x8000FFFF; // Unexpected failure
 	}
 
 	static class Constatns {
@@ -74,72 +74,72 @@ namespace HMS.Addons {
 	}
 
 	// Для получения списка классов и интерфейсов
-	[Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A")]
+	[Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A"), ComVisible(true), InterfaceType(ComInterfaceType.InterfaceIsDual)]
 	public interface IHmsAddonList {
-		long GetCount(ref int aCount);
-		long GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref string aTitle, ref string aDescription, ref string aRequiredVersion, ref string aCheckedOnVersion);
+		uint GetCount(ref int aCount);
+		uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref object aTitle, ref object aDescription, ref object aRequiredVersion, ref object aCheckedOnVersion);
 	}
 
 	// Основной интерфейс всех дополнений
-	[Guid("5C75011A-1A44-47DD-A382-5D829DC24F28")]
+	[Guid("5C75011A-1A44-47DD-A382-5D829DC24F28"), ComVisible(true), InterfaceType(ComInterfaceType.InterfaceIsDual)]
 	public interface IHmsCustomAddon {
-		long GetDescription(ref string aDescription);
-		long GetTitle(ref string aTitle);
-		long GetType(ref Int64 aType);
+		uint GetDescription(ref object aDescription);
+		uint GetTitle(ref object aTitle);
+		uint GetType(ref Int64 aType);
 	}
 
 	// Интерфейс редактора
-	[Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB")]
+	[Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB"), ComVisible(true), InterfaceType(ComInterfaceType.InterfaceIsDual)]
 	public interface IHmsScriptEditor: IHmsCustomAddon {
-		long AddMessage(object aMessage);
+		uint AddMessage(object aMessage);
 
-		long CreateEditor(IntPtr THandle, IHmsScriptFrame aHmsScripter, int aScriptMode, ref IntPtr aEditor);
-		long DestroyEditor(IntPtr aEditor);
+		uint CreateEditor(IntPtr THandle, IHmsScriptFrame aHmsScripter, int aScriptMode, ref IntPtr aEditor);
+		uint DestroyEditor(IntPtr aEditor);
 
-		long GetCapabilities(ref int aCapabilities);
+		uint GetCapabilities(ref int aCapabilities);
 
-		long GetCurrentLine(ref int aLine);
+		uint GetCurrentLine(ref int aLine);
 
-		long GetScriptName(ref string aScriptName);
-		long GetScriptText(ref string aText);
-		long SetScriptName(string aScriptName);
-		long SetScriptText(string aText);
+		uint GetScriptName(ref object aScriptName);
+		uint GetScriptText(ref object aText);
+		uint SetScriptName(object aScriptName);
+		uint SetScriptText(object aText);
 
-		long GetModified(ref bool aModified);
+		uint GetModified(ref bool aModified);
 
-		long InvalidateLine(int aLine);
+		uint InvalidateLine(int aLine);
 
-		long Repaint();
+		uint Repaint();
 
-		long GetCaretPos(ref int aLine, ref int aChar);
-		long SetCaretPos(int aLine, int aChar);
+		uint GetCaretPos(ref int aLine, ref int aChar);
+		uint SetCaretPos(int aLine, int aChar);
 
-		long SetFocus();
-		long SetSelText(string aText);
+		uint SetFocus();
+		uint SetSelText(object aText);
 
-		long Setup();
+		uint Setup();
 	}
 
 	// Интерфейс программы, который предоставляется редактору
-	[Guid("D31B4638-9764-4A9A-9F5A-B4D0B519F402")]
+	[Guid("D31B4638-9764-4A9A-9F5A-B4D0B519F402"), ComVisible(true), InterfaceType(ComInterfaceType.InterfaceIsDual)]
 	public interface IHmsScriptFrame {
-		long AddWatch(string aExpression);
+		uint AddWatch(object aExpression);
 
-		long ChangeScriptName(string aScriptName);
+		uint ChangeScriptName(object aScriptName);
 
-		bool CompileScript(string aScriptName, string aScriptText, ref string aErrorMessage, ref int aErrorLine, ref int aErrorChar);
+		bool CompileScript(object aScriptName, object aScriptText, ref object aErrorMessage, ref int aErrorLine, ref int aErrorChar);
 
-		long GenerateScriptDescriptions(ref string aXMLDescriptions);
+		long GenerateScriptDescriptions(ref object aXMLDescriptions);
 
-		long GetCurrentState(ref bool aRunning, ref bool aStepByStep, ref bool aStopped, ref int aCurrentSourceLine, ref int aCurrentSourceChar);
+		uint GetCurrentState(ref bool aRunning, ref bool aStepByStep, ref bool aStopped, ref int aCurrentSourceLine, ref int aCurrentSourceChar);
 
-		long IsBreakpointLine(int aLine, ref bool aResult);
-		long IsExecutableLine(int aLine, ref bool aResult);
+		uint IsBreakpointLine(int aLine, ref bool aResult);
+		uint IsExecutableLine(int aLine, ref bool aResult);
 
-		long ProcessCommand(int aCommand);
-		long SolveExpression(string aExpression, ref string aResult);
+		uint ProcessCommand(int aCommand);
+		uint SolveExpression(object aExpression, ref object aResult);
 
-		long ToggleBreakpoint(int aLine);
+		uint ToggleBreakpoint(int aLine);
 	}
 
 }
