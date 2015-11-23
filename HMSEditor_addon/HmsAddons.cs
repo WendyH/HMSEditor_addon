@@ -74,22 +74,23 @@ namespace HMS.Addons {
 	}
 
 	// Для получения списка классов и интерфейсов
-	[Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A"), ComVisible(true), InterfaceType(ComInterfaceType.InterfaceIsDual)]
+	[Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A")]
 	public interface IHmsAddonList {
 		uint GetCount(ref int aCount);
-		uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref object aTitle, ref object aDescription, ref object aRequiredVersion, ref object aCheckedOnVersion);
+		uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref string aTitle, ref string aDescription, ref string aRequiredVersion, ref string aCheckedOnVersion);
+                uint GetClassObject(ref Guid clsid, ref Guid iid, out object instance);
 	}
 
 	// Основной интерфейс всех дополнений
-	[Guid("5C75011A-1A44-47DD-A382-5D829DC24F28"), ComVisible(true), InterfaceType(ComInterfaceType.InterfaceIsDual)]
+	[Guid("5C75011A-1A44-47DD-A382-5D829DC24F28")]
 	public interface IHmsCustomAddon {
-		uint GetDescription(ref object aDescription);
-		uint GetTitle(ref object aTitle);
-		uint GetType(ref Int64 aType);
+		uint GetDescription(ref string aDescription);
+		uint GetTitle(ref string aTitle);
+		uint GetType(ref int aType);
 	}
 
 	// Интерфейс редактора
-	[Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB"), ComVisible(true), InterfaceType(ComInterfaceType.InterfaceIsDual)]
+	[Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB")]
 	public interface IHmsScriptEditor: IHmsCustomAddon {
 		uint AddMessage(object aMessage);
 
@@ -100,10 +101,10 @@ namespace HMS.Addons {
 
 		uint GetCurrentLine(ref int aLine);
 
-		uint GetScriptName(ref object aScriptName);
-		uint GetScriptText(ref object aText);
-		uint SetScriptName(object aScriptName);
-		uint SetScriptText(object aText);
+		uint GetScriptName(ref string aScriptName);
+		uint GetScriptText(ref string aText);
+		uint SetScriptName(string aScriptName);
+		uint SetScriptText(string aText);
 
 		uint GetModified(ref bool aModified);
 
@@ -115,21 +116,21 @@ namespace HMS.Addons {
 		uint SetCaretPos(int aLine, int aChar);
 
 		uint SetFocus();
-		uint SetSelText(object aText);
+		uint SetSelText(string aText);
 
 		uint Setup();
 	}
 
 	// Интерфейс программы, который предоставляется редактору
-	[Guid("D31B4638-9764-4A9A-9F5A-B4D0B519F402"), ComVisible(true), InterfaceType(ComInterfaceType.InterfaceIsDual)]
+	[Guid("D31B4638-9764-4A9A-9F5A-B4D0B519F402")]
 	public interface IHmsScriptFrame {
-		uint AddWatch(object aExpression);
+		uint AddWatch(string aExpression);
 
-		uint ChangeScriptName(object aScriptName);
+		uint ChangeScriptName(string aScriptName);
 
-		bool CompileScript(object aScriptName, object aScriptText, ref object aErrorMessage, ref int aErrorLine, ref int aErrorChar);
+		uint CompileScript(string aScriptName, string aScriptText, ref string aErrorMessage, ref int aErrorLine, ref int aErrorChar, ref bool aResult);
 
-		long GenerateScriptDescriptions(ref object aXMLDescriptions);
+		uint GenerateScriptDescriptions(ref string aXMLDescriptions);
 
 		uint GetCurrentState(ref bool aRunning, ref bool aStepByStep, ref bool aStopped, ref int aCurrentSourceLine, ref int aCurrentSourceChar);
 
@@ -137,7 +138,7 @@ namespace HMS.Addons {
 		uint IsExecutableLine(int aLine, ref bool aResult);
 
 		uint ProcessCommand(int aCommand);
-		uint SolveExpression(object aExpression, ref object aResult);
+		uint SolveExpression(string aExpression, ref string aResult);
 
 		uint ToggleBreakpoint(int aLine);
 	}

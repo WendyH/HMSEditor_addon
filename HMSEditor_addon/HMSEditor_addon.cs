@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using HMS.Addons;           // Интерфейсы HMS
@@ -9,10 +8,6 @@ namespace HMSEditor_addon {
 	[Guid("9A871DC9-D8ED-4790-A5AB-E1A825639F2B")]
 	class HmsAddonList: IHmsAddonList {
 		private int AddonsCount = 1;
-		// constructor
-		public HmsAddonList() {
-		}
-
 		private HmsAddonInfo[] AddonInfoList = new HmsAddonInfo[] {
 						new HmsAddonInfo() {
 							ClassID          = Constatns.Guid(typeof(EditorSample)),
@@ -29,7 +24,7 @@ namespace HMSEditor_addon {
 			return HRESULT.S_OK;
 		}
 
-		public uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref object aTitle, ref object aDescription, ref object aRequiredVersion, ref object aCheckedOnVersion) {
+		public uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref string aTitle, ref string aDescription, ref string aRequiredVersion, ref string aCheckedOnVersion) {
 			uint result = HRESULT.E_UNEXPECTED;
 			if ((aIndex >= 0) && (aIndex < AddonsCount)) {
 				HmsAddonInfo info = AddonInfoList[aIndex];
@@ -44,6 +39,17 @@ namespace HMSEditor_addon {
 			return result;
 		}
 
+		public uint GetClassObject(ref Guid clsid, ref Guid iid, out object instance) {
+			uint result = HRESULT.E_NOINTERFACE;
+			instance = null;
+			if (Constatns.IsEqualGUID(iid, typeof(IHmsScriptEditor))) {
+				instance = new EditorSample();
+				result = HRESULT.S_OK;
+
+			}
+			return result;
+		}
+
 	}
 
 	[Guid("5384995C-F7A9-426A-9F2A-A03ADEFAD336")]
@@ -52,10 +58,6 @@ namespace HMSEditor_addon {
 		private string          ScriptName  = "";
 		private HmsScriptMode   ScriptMode  = HmsScriptMode.smUnknown;
 		private IHmsScriptFrame ScriptFrame = null;
-
-		// constructor
-		public EditorSample() {
-		}
 
 		#region IDisposable Support
 		private bool disposedValue = false; // Для определения избыточных вызовов
@@ -91,6 +93,7 @@ namespace HMSEditor_addon {
 				ScriptFrame = aHmsScripter;
 				EditBox     = new HmsEditBox(aParent);
 				aEditor     = EditBox.Handle;
+                                ScriptFrame.ChangeScriptName("Test");
 			} catch {
 				Dispose();
 				return HRESULT.E_UNEXPECTED;
@@ -127,7 +130,7 @@ namespace HMSEditor_addon {
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public uint GetDescription(ref object aDescription) {
+		public uint GetDescription(ref string aDescription) {
 			aDescription = "Hello!\r\nЭто описание на русском!";
 			return HRESULT.S_OK;
 		}
@@ -136,12 +139,12 @@ namespace HMSEditor_addon {
 			return HRESULT.E_NOTIMPL;
 		}
 
-		public uint GetScriptName(ref object aScriptName) {
+		public uint GetScriptName(ref string aScriptName) {
 			aScriptName = ScriptName;
 			return HRESULT.S_OK;
 		}
 
-		public uint GetScriptText(ref object aText) {
+		public uint GetScriptText(ref string aText) {
 			if (EditBox != null) {
 				aText = EditBox.Text;
 				return HRESULT.S_OK;
@@ -149,11 +152,11 @@ namespace HMSEditor_addon {
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public uint GetTitle(ref object aTitle) {
+		public uint GetTitle(ref string aTitle) {
 			return HRESULT.E_NOTIMPL;
 		}
 
-		public uint GetType(ref long aType) {
+		public uint GetType(ref int aType) {
 			return HRESULT.E_NOTIMPL;
 		}
 
@@ -192,22 +195,22 @@ namespace HMSEditor_addon {
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public uint SetScriptName(object aScriptName) {
-			ScriptName = (string)aScriptName;
+		public uint SetScriptName(string aScriptName) {
+			ScriptName = aScriptName;
 			return HRESULT.S_OK;
 		}
 
-		public uint SetScriptText(object aText) {
+		public uint SetScriptText(string aText) {
 			if (EditBox != null) {
-				EditBox.Text = (string)aText;
+				EditBox.Text = aText;
 				return HRESULT.S_OK;
 			}
 			return HRESULT.E_UNEXPECTED;
 		}
 
-		public uint SetSelText(object aText) {
+		public uint SetSelText(string aText) {
 			if (EditBox != null) {
-				EditBox.SelectedText = (string)aText;
+				EditBox.SelectedText = aText;
 				return HRESULT.S_OK;
 			}
 			return HRESULT.E_UNEXPECTED;
@@ -220,24 +223,8 @@ namespace HMSEditor_addon {
 
 	}
 
-	[Guid("610E222E-A1AB-4239-BB3E-AA859B5A22E2")]
-	[ComVisible(true)]
-	public class Exports {
+	static class Exports {
 
-		public Exports() {
-		}
-
-		[ComVisible(true)]
-		public void Hello() {
-			MessageBox.Show("Heelo, its worked!");
-		}
-
-		[ComVisible(true)]
-		public static void HelloStr(string msg) {
-			MessageBox.Show("Hello! "+msg);
-		}
-
-		[ComVisible(true)]
 		public static uint HmsGetClassObject(Guid clsid, Guid iid, [MarshalAs(UnmanagedType.Interface)]out object instance) {
 			uint result = HRESULT.E_NOINTERFACE;
 			instance = null;
