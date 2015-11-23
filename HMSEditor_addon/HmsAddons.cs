@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 
 namespace HMS.Addons {
+	// Структура информации о дополнении (Addon)
 	struct HmsAddonInfo {
 		public Guid   ClassID;
 		public Guid   InterfaceID;
@@ -40,13 +41,13 @@ namespace HMS.Addons {
 		public const int ecEvaluate         = ecUserFirst + 104;
 		public const int ecWatches          = ecUserFirst + 105;
 
-		public const string CLASS_HmsAddonList = "1C6BC2D4-5AF8-4203-98D3-5D4CA48E6C6F";
-
+		// Получение значение Guid из атрибута указанного типа
 		public static Guid Guid(Type t) {
 			Attribute guidAttribute = Attribute.GetCustomAttribute(t, typeof(GuidAttribute));
 			return new Guid(((GuidAttribute)guidAttribute).Value);
 		}
 
+		// Сравнение двух Guid, указанного первым параметром и Guid типа переданного вторым.
 		public static bool IsEqualGUID(Guid guid1, Type t) {
 			return (guid1.CompareTo(Guid(t)) == 0);
 		}
@@ -78,20 +79,12 @@ namespace HMS.Addons {
 	public interface IHmsAddonList {
 		uint GetCount(ref int aCount);
 		uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref string aTitle, ref string aDescription, ref string aRequiredVersion, ref string aCheckedOnVersion);
-                uint GetClassObject(ref Guid clsid, ref Guid iid, out object instance);
-	}
-
-	// Основной интерфейс всех дополнений
-	[Guid("5C75011A-1A44-47DD-A382-5D829DC24F28")]
-	public interface IHmsCustomAddon {
-		uint GetDescription(ref string aDescription);
-		uint GetTitle(ref string aTitle);
-		uint GetType(ref int aType);
+		uint GetClassObject(ref Guid clsid, ref Guid iid, out object instance);
 	}
 
 	// Интерфейс редактора
 	[Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB")]
-	public interface IHmsScriptEditor: IHmsCustomAddon {
+	public interface IHmsScriptEditor {
 		uint AddMessage(object aMessage);
 
 		uint CreateEditor(IntPtr THandle, IHmsScriptFrame aHmsScripter, int aScriptMode, ref IntPtr aEditor);

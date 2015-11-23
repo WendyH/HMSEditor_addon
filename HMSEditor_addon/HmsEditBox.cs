@@ -1,14 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Drawing;
 
 namespace HMSEditor_addon {
 	class HmsEditBox: RichTextBox {
 
+		[DllImport("User32")]
+		public static extern IntPtr SetParent(IntPtr hWndEditor, IntPtr hWndParent);
+
 		// constructor
 		public HmsEditBox(IntPtr parentHandle) {
+
+			SetParent(Handle, parentHandle);
 
 		}
 

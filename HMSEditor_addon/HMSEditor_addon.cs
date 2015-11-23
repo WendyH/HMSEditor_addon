@@ -42,7 +42,11 @@ namespace HMSEditor_addon {
 		public uint GetClassObject(ref Guid clsid, ref Guid iid, out object instance) {
 			uint result = HRESULT.E_NOINTERFACE;
 			instance = null;
-			if (Constatns.IsEqualGUID(iid, typeof(IHmsScriptEditor))) {
+			if (Constatns.IsEqualGUID(iid, typeof(IHmsAddonList))) {
+				instance = new HmsAddonList();
+				result = HRESULT.S_OK;
+
+			} else if (Constatns.IsEqualGUID(iid, typeof(IHmsScriptEditor))) {
 				instance = new EditorSample();
 				result = HRESULT.S_OK;
 
@@ -223,22 +227,4 @@ namespace HMSEditor_addon {
 
 	}
 
-	static class Exports {
-
-		public static uint HmsGetClassObject(Guid clsid, Guid iid, [MarshalAs(UnmanagedType.Interface)]out object instance) {
-			uint result = HRESULT.E_NOINTERFACE;
-			instance = null;
-			if (Constatns.IsEqualGUID(iid, typeof(IHmsAddonList))) {
-				instance = new HmsAddonList();
-				result = HRESULT.S_OK;
-
-			} else if (Constatns.IsEqualGUID(iid, typeof(IHmsScriptEditor))) {
-				instance = new EditorSample();
-				result = HRESULT.S_OK;
-
-			}
-			return result;
-		}
-
-	}
 }
