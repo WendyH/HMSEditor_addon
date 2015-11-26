@@ -13,7 +13,7 @@ namespace test {
 
 		public uint AddWatch(string aExpression) {
 			Log("AddWatch: aExpression=" + aExpression);
-            return 0;
+			return 0;
 		}
 
 		public uint ChangeScriptName(string aScriptName) {

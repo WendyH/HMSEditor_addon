@@ -25,7 +25,7 @@ namespace HMSEditorNS {
 		private static IHmsScriptFrame HmsScriptFrame = null;
 		private static HmsScriptMode   HmsScriptMode  = HmsScriptMode.smUnknown;
 
-        public static INI Settings = new INI(HMS.WorkingDir + HMS.DS + "HMSEditor.ini");
+		public static INI Settings = new INI(HMS.WorkingDir + HMS.DS + "HMSEditor.ini");
 
 		#region Regular Expressions Magnetic Field
 		private static Regex regexProceduresCPP    = new Regex(@"(?:^|[\r\n])\s*?(?<type>\w+)\s+(\w+)\s*?\("  , RegexOptions.Singleline | RegexOptions.Compiled);
@@ -100,12 +100,12 @@ namespace HMSEditorNS {
 		public HMSEditor(IntPtr hWndParent, IHmsScriptFrame hmsScripter, HmsScriptMode scriptMode) {
 			HmsScriptFrame = hmsScripter;
 			HmsScriptMode  = scriptMode;
-            NativeMethods.SetParent(Handle, hWndParent);
+			NativeMethods.SetParent(Handle, hWndParent);
 			InitializeComponent();
 			SetAutoCompleteMenu();
 			Editor.LostFocus += Editor_LostFocus;
 			LoadSettings();
-        }
+		}
 
 		// Fields
 		public  bool   Locked             = false;
@@ -204,7 +204,7 @@ namespace HMSEditorNS {
 		public void SetCaretPos(int iLine, int iChar) {
 			Editor.Selection.Start = new Place(iChar, iLine);
 			Editor.DoCaretVisible();
-        }
+		}
 
 		public int GetCurrentLine() {
 			return Editor.Selection.Start.iLine;
@@ -507,15 +507,15 @@ namespace HMSEditorNS {
 			btnThemes.DropDownItems.Clear();
 			foreach (var name in Themes.Dict.Keys) {
 				ToolStripMenuItem item = (ToolStripMenuItem)btnThemes.DropDownItems.Add(name);
-                item.Tag = name;
+				item.Tag = name;
 				item.Click += (o, a) => {
 					ThemeName = (string)item.Tag;
-                    Themes.SetTheme(this, ThemeName);
-                    foreach (ToolStripMenuItem i in btnThemes.DropDownItems) i.Checked = i.Text == ThemeName;
-                };
+					Themes.SetTheme(this, ThemeName);
+					foreach (ToolStripMenuItem i in btnThemes.DropDownItems) i.Checked = i.Text == ThemeName;
+				};
 				if (name == ThemeName) {
 					item.Checked = true;
-                    Themes.SetTheme(this, name);
+					Themes.SetTheme(this, name);
 				}
 			}
 		}
@@ -600,7 +600,7 @@ namespace HMSEditorNS {
 
 		private void EvaluateDialog() {
 			HmsScriptFrame.ProcessCommand(Constatns.ecEvaluate);
-        }
+		}
 		#endregion Function and procedures
 
 		#region Control Events
@@ -945,7 +945,7 @@ namespace HMSEditorNS {
 
 		public string EvalVariableValue(string varName) {
 			string result = "";
-            HmsScriptFrame.SolveExpression(varName, ref result);
+			HmsScriptFrame.SolveExpression(varName, ref result);
 			return result;
 		}
 
