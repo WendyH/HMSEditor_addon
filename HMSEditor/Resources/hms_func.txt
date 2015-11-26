@@ -1,0 +1,1055 @@
+* Дата/время  
+DateTimeToTimeStamp1970(aDateTime: TDateTime; aMilliSeconds: Boolean): Variant|Перевод даты в UNIX TimeStamp
+  aDateTime - дата, которая будет переведена
+  aMilliSeconds - флаг использования миллисекунд, вместо секунд в UNIX TimeStamp
+DayOfWeek(aDate: TDateTime): Integer|Номер дня недели (1...7)
+  aDate - дата, из которой будет получен номер дня недели
+DaysInMonth(nYear, nMonth: Integer): Integer|Возвращает число дней в заданном месяце
+  nYear - год
+  nMonth - месяц, в котором будет подсчитано число дней
+DaysPerMonth(nYear, nMonth: Integer): Integer|Возвращает число дней в месяце номер nMonth для года nYear
+  nYear - год
+  nMonth - месяц, в котором будет подсчитано число дней
+DecodeDate(Date: TDateTime; var Year, Month, Day: Word)|Разбивает значение TDateTime на значения Year, Month, Day
+  Date - анализируемая дата
+  Year - переменная, в которую будет занесено значение года
+  Month - переменная, в которую будет занесено значение месяца
+  Day - переменная, в которую будет занесено значение дня
+DecodeTime(Time: TDateTime; var Hour, Min, Sec, MSec: Word)|Разбивает значение TDateTime на значения Hour, Min, Sec, MSec
+  Date - анализируемая дата
+  Hour - переменная, в которую будет занесено значение часа
+  Min - переменная, в которую будет занесено значение минут
+  Sec - переменная, в которую будет занесено значение секунд
+  MSec - переменная, в которую будет занесено значение миллисекунд
+EncodeDate(Year, Month, Day: Word): TDateTime|Возвращает значение TDateTime, заданное значениями Year, Month, Day
+  Year - год
+  Month - месяц
+  Day - число
+EncodeTime(Hour, Min, Sec, MSec: Word): TDateTime|Возвращает значение TDateTime, заданное значениями Hour, Min, Sec, MSec
+  Hour - час
+  Min - минуты
+  Sec - секунды
+  MSec - миллисекунды
+FirstDayOfNextMonth(dDate:TDateTime): TDateTime|Возвращает первый день следующего месяца относительно заданной даты
+  dDate - дата, относительно которой будет возвращён первый день следующего месяца
+FirstDayOfPrevMonth(dDate:TDateTime): TDateTime|Возвращает первый день предыдущего месяца относительно заданной даты
+  dDate - дата, относительно которой будет возвращён первый день предыдущего месяца
+IncDate(dDate: TDateTime; nDays, nMonths, nYears: Integer): TDateTime|Увеличивает дату <dDate> на заданное количество дней, месяцев и лет
+  dDate - дата, которая будет увеличина на заданное количество дней
+  nDays - количество дней, на которое будет увеличина дата
+  nMonths - количество месяцев, на которое будет увеличина дата
+  nYears - количество лет, на которое будет увеличина дата
+IncDay(dDate: TDateTime; nDelta: Integer): TDateTime|Увеличивает дату <dDate> на заданное количество дней
+  dDate - дата, которая будет увеличина на заданное количество дней
+  nDelta - количество дней, на которое будет увеличина дата
+IncMonth(dDate: TDateTime; nDelta: Integer): TDateTime|Увеличивает дату <dDate> на заданное количество месяцев
+  dDate - дата, которая будет увеличина на заданное количество месяцев
+  nDelta - количество месяцев, на которое будет увеличина дата
+IncTime(dTime: TDateTime; nHours, nMinutes, nSeconds, nMSecs :Integer): TDateTime|Увеличивает дату <dTime> на заданное количество часов, минут и секунд
+  dTime - время, которое будет увеличено на заданное количество часов, минут и секунд
+  nHours - количество часов, на которое будет увеличено время
+  nMinutes - количество минут, на которое будет увеличено время
+  nSeconds - количество секунд, на которое будет увеличено время
+  nMSecs - количество миллисекунд, на которое будет увеличено время
+IncYear(dDate: TDateTime; nDelta: Integer): TDateTime|Увеличивает дату <dDate> на заданное количество лет
+  dDate - дата, которая будет увеличина на заданное количество лет
+  nDelta - количество лет, на которое будет увеличина дата
+IsLeapYear(Year: Word): Boolean|Возвращает True, если заданный год високосный
+  Year - анализируемый год
+LastDayOfPrevMonth(dDate:TDateTime): TDateTime|Возвращает последний день предыдущего месяца относительно даты dDate
+  dDate - дата, относительно которой будет возвращён результат
+Now: TDateTime|Возвращает текущую дату и время
+QuarterOf(dDate :TDateTime) :Integer|Возвращает номер квартала даты
+  dDate - дата
+Time:TDateTime|Возвращает текущее время
+TimeStamp1970ToDateTime(aTimeStamp: Variant; aMilliSeconds: Boolean): TDateTime|Конвертирует UNIX TimeStamp в дату-время типа TDateTime
+  aTimeStamp - дата и время формата UNIX TimeStamp
+  aMilliSeconds - флаг использования миллисекунд в UNIX TimeStamp
+
+* Другие  
+Color(R, G, B: Integer): TColor|Получает значение типа TColor из заданных значений цветов Красного, Зелёного, Голубого
+  R - значение красного цвета (0...255)
+  G - значение зелёного цвета (0...255)
+  B - значение голубого цвета (0...255)
+Color32(R, G, B: Byte; A: Byte = $FF): TColor32): TColor32|Получает значение типа TColor32 из заданных значений цветов Красного, Зелёного, Голубого и прозрачности  
+  R - значение красного цвета (0...255)
+  G - значение зелёного цвета (0...255)
+  B - значение голубого цвета (0...255)
+  A - значение альфа (0...255). Необязательный параметр. По-умолчанию = 255.
+CreateOleObject(ClassName: String): Variant|Создаёт OLE объект. При удачном создании тип возвращаемой переменной будет равен varDispatch.
+  ClassName - имя OLE объекта (например: "InternetExplorer.Application" или "Word.Application")
+Dec(var i: Integer; decr: Integer = 1)|Уменьшает целое число на 1 или заданное
+  i - уменьшаемое число
+  decr - величина, на которое будет уменьшено число, которое передано в первом параметре функции. Необязательный параметр. По-умолчанию = 1.
+Evaluate(const aExpression: String): Variant|Вычисляет переданное строкой выражение 
+  aExpression - выражение, которое будет вычислено
+ExecuteOpenDialog(const aTitle, aFilter, aInitialDir, aDefaultExt: String; var aFileName: String): Boolean|Показывает диалог открытия файла
+  aTitle - заголовок окна
+  aFilter - строка фильтра файлов по расширению\nНапример: "Text files (*.txt)|*.txt|Pascal files (*.pas)|*.pas"
+  aInitialDir - первоначальная директория
+  aDefaultExt - расширение файлов по-умолчанию
+  aFileName - переменная, в которую будет возвращено имя выбранного файла
+ExecuteSaveDialog(const aTitle, aFilter, aInitialDir, aDefaultExt: String; var aFileName: String): Boolean|Показывает диалог сохранения файла 
+  aTitle - заголовок окна
+  aFilter - строка фильтра файлов по расширению\nНапример: "Text files (*.txt)|*.txt|Pascal files (*.pas)|*.pas"
+  aInitialDir - первоначальная директория
+  aDefaultExt - расширение файлов по-умолчанию
+  aFileName - переменная, в которую будет возвращено имя выбранного файла
+ExtractFilePath(const FileName: String): String;|Возвращает путь файла 
+  FileName - путь и имя файла из которого будет извлечён только путь
+GlobalVarCreate(const aVariableName, aVariableType: String; const aVariableValue: Variant = Null)|Создаёт глобальную переменную (видима во всех скриптах)
+  aVariableName - имя переменной
+  aVariableType - тип переменной
+  aVariableValue - значение переменной. Необязательный параметр. По-умолчанию Null.
+GlobalVarGet(const aVariableName: String): Variant|Получение значения глобальной переменной по имени 
+  aVariableName - имя переменной
+GlobalVarSet(const aVariableName: String; const aVariableValue: Variant)|Установка значения глобальной переменной 
+  aVariableName - имя переменной
+  aVariableValue - значение переменной
+IfThen(AValue: Boolean; const ATrue: Variant; const AFalse: Variant): Variant|Возвращает значение ATrue, если AValue истинно, иначе AFalse
+  AValue - логическое выражение
+  ATrue - выражение, которое будет возвращено, если первым параметром результат будет True
+  AFalse - выражение, которое будет возвращено, если первым параметром результат будет False
+Inc(var i: Integer; incr: Integer = 1)|Увеличивает целое число на 1
+  i - увеличиваемое число
+  incr - величина, на которое будет увеличено число, которое передано в первом параметре функции. Необязательный параметр. По-умолчанию = 1.
+InputBox(ACaption, APrompt, ADefault: String): String|Показывает диалог ввода строки. Как результат возвращает введённую строку.
+  ACaption - заголовок диалога
+  APrompt - надпись перед полем ввода строки
+  ADefault - значение поля ввода строи по-умолчанию
+InputQuery(ACaption, APrompt: String; var Value: String): Boolean|Показывает диалог ввода строки, значение которого будет помещено в переданную переменную. Если в диалоге нажали "Отмена", то функция возвращает False.
+  ACaption - заголовок диалога
+  APrompt - надпись перед полем ввода строки
+  Value - переменная, которая будет содержать значение ввода при нажатии "ОК" в диалоге
+IsRangeDate(dBegDate, dEndDate, dDate: TDateTime) :Boolean|Проверяет, находится ли дата dDate между датами dBegDate и dEndDate
+  dBegDate - дата нижней границы проверки
+  dEndDate - дата верхней границы проверки
+  dDate - проверяемая дата
+IsRangeNum(nBeg, nEnd, nValue: Extended) :Boolean|Проверяет, находится ли число nValue между числами nBeg и nEnd
+  nBeg - число нижней границы проверки
+  nEnd - число верхней границы проверки
+  nValue - проверяемое число
+MessageDlg(Msg: String; DlgType: TMsgDlgType; Buttons: TMsgDlgButtons; HelpCtx: Longint): Integer|Показывает окно сообщения. Результат возвращаемый функцией будет равен одному из значений кода возврата диалога (mrAbort, mrAll, mrCancel, mrIgnore, mrNo, mrNoToAll, mrNone, mrOk, mrRetry, mrYes, mrYesToAll).
+  Msg - текст сообщения
+  DlgType - тип диалога (mtConfirmation, mtCustom, mtError, mtInformation, mtWarning)
+  Buttons - комбинация отображаемых кнопок (mbAbort, mbAll, mbCancel, mbHelp, mbIgnore, mbNo, mbNoToAll, mbOK, mbRetry, mbYes, mbYesToAll)
+  HelpCtx - числовое значение контекста файла помощи
+ProgramVersion: String|Возвращает версию программы строкой
+RaiseException(Param: String)|Вызвать исключение 
+  Param - параметры вызова исключения
+Random: Extended|Возвращает случайное число 
+Randomize|Запускает генератор случайных чисел  
+Rect(aLeft, aTop, aRight, aBottom: Integer): TRect|Возвращает объект типом TRect, с заданными значениями aLeft, aTop, aRight, aBottom  
+  aLeft - координата X левой стороны прямоугольника
+  aTop - координата Y верхней стороны прямоугольника
+  aRight - координата X правой стороны прямоугольника
+  aBottom - координата Y нижней стороны прямоугольника
+ShowMessage(Msg: Variant)|Показывает окно с сообщением 
+  Msg - текст сообщения
+Swap(var vVar1, vVar2 :Variant)|Меняет местами переменные vVar1 и vVar2. Можно использовать переменные или в их качестве свойства контролов. Переменные могут быть любого типа.  
+  vVar1 - свойство или переменная №1, значение которой будет поменяно
+  vVar2 - свойство или переменная №2, значение которой будет поменяно
+ValidDate(cDate: String): Boolean|Проверяет, может ли заданная строка быть преобразована в дату 
+  cDate - строка, содержащая дату
+ValidFloat(cFlt: String): Boolean|Проверяет, может ли заданная строка быть преобразована в число с плавающей точкой 
+  cFlt - строка, содержащая число с плавающей точкой (или без неё)
+ValidInt(cInt: String): Boolean|Проверяет, может ли заданная строка быть преобразована в целое число 
+  cInt - строка, содержащая целое число
+VarArrayCreate(Bounds: Array; Typ: Integer): Variant|Создание динамического массива
+  Bounds - массив
+  Typ - тип значений (могут использоваться константы типов: varArray, varBoolean, varInteger, varString, varVariant, ...)
+VarType(V: Variant): Integer|Возвращает тип заданной переменной 
+  V- проверяемое значение
+VariantValue(const aValue: Variant; const aIndexes: array of Integer): Variant|Непонятно что делающая функция
+  aValue - значение типа Variant
+  aIndexes - массив числовых значений
+
+* Интернет
+HmsBase64Decode(const aText: String): String|Возвращает декодированный текст из формата Base64
+  aText - текст, который будет декодирован из формата Base64
+HmsBase64Encode(const aText: String): String|Возвращает кодированный текст в формат Base64
+  aText - текст, который будет кодирован в формат Base64
+HmsCreateInternetRadioStream(const aUrl: String; var aStreamPipeName, aStreamType, aStreamHeader: String; const aHeaders: String=''): Boolean|Создание потока инетрнет-радио, направленного в существующий именованный PIPE канал
+  aUrl - URL адрес потока интернет-радио
+  aStreamPipeName - имя PIPE соединения
+  aStreamType - тип PIPE соединения
+  aStreamHeader - заголовки PIPE соединения
+  aHeaders - заголовки для HTTP запроса. Необязательный параметр.
+HmsCreateRSSItems(const aFolderItem: THmsScriptMediaItem; const aURL: String; aRetrieveProperties: Boolean = False)|Создание ссылок на медиа-ресурсы по ссылке на RSS канал
+  aFolderItem - папка базы данных программы, где будут созданы ссылки на медиа-ресурсы
+  aURL - ссылка на RSS канал
+  aRetrieveProperties - флаг, задающий автоматическое получение свойств медиа-потока при добавлении ссылки на медиа-ресурс. Необязательный параметр. По-умолчанию False.
+HmsDecompressString(const aText: String): String|Распаковка строки, сжатой с помощью библиотеки zlib
+  aText - сжатый текст, который будет распакован
+HmsDownloadThumbnail(const aURL: String): String|Загрузка эскиза ресурса и сохранение в кеше
+  aURL - URL файла изображения
+HmsDownloadURL(const aURL: String; const aHeaders: String = ''; aAcceptCompressed: Boolean = False): Variant|Загрузить интернет страницу
+  aURL - URL загружаемой страницы
+  aHeaders - Заголовки HTTP запроса. Заголовки указываются строками, разделёнными знаками перевода строк и каретки (0x0D, 0x0A). Необязательный параметр.\nНапример:\n"Referer: http://site.com"+#13#10+\n"User-Agent: Mozilla/5.0 (X11; U; Mac OSX; it; rv:1.9.0.7) Gecko/2009030422 Firefox/3.0.7"+#13#10+\n"Accept: */*"+#13#10
+  aAcceptCompressed - флаг, определяющий возможность принятия сжатых данных и автоматической их распаковки (добавляет в заголовки запроса "Accept-Encoding: gzip, deflate"). Необязательный параметр.
+HmsDownloadURLToFile(const aURL, aFileName: String; const aHeaders: String = ''; aAsync: Boolean = False): Boolean|Загрузить и сохранить интернет страницу в файл
+  aURL - URL загружаемой страницы
+  aFileName - путь и имя файла, куда будут сохранены загруженные данные
+  aHeaders - Заголовки HTTP запроса. Заголовки указываются строками, разделёнными знаками перевода строк и каретки (0x0D, 0x0A). Необязательный параметр.\nНапример:\n"Referer: http://site.com"+#13#10+\n"User-Agent: Mozilla/5.0 (X11; U; Mac OSX; it; rv:1.9.0.7) Gecko/2009030422 Firefox/3.0.7"+#13#10+\n"Accept: */*"+#13#10
+  aAsync - флаг, определяющий возможность асинхронной загрузки. При установленном значении в True, функция не ждёт полной загрузки и возвращается сразу. Необязательный параметр.
+HmsDownloadURLToPipe(const aURL: String; const aHeaders: String = ''; aAsync: Boolean = False): String|Создать pipe-канал для загрузки интернет страницы. Возвращает имя созданного pipe-канала.
+  aURL - URL загружаемой страницы
+  aHeaders - Заголовки HTTP запроса. Заголовки указываются строками, разделёнными знаками перевода строк и каретки (0x0D, 0x0A). Необязательный параметр.\nНапример:\n"Referer: http://site.com"+#13#10+\n"User-Agent: Mozilla/5.0 (X11; U; Mac OSX; it; rv:1.9.0.7) Gecko/2009030422 Firefox/3.0.7"+#13#10+\n"Accept: */*"+#13#10
+  aAsync - флаг, определяющий возможность асинхронной загрузки. При установленном значении в True, функция не ждёт полной загрузки и возвращается сразу. Необязательный параметр.
+HmsExpandLink(const aLink, aBaseLink: String): String|Возвращает полную ссылку, если она была относительной. В параметрах передаются сама ссылка и база, которая будет добавлена в началу переданной ссылки, если она не начинается на эту базу.
+  aLink - ссылка, которая может быть как полной, так и относительной (начинаться на /)
+  aBaseLink - база URL. Обычно это указание протокола, доменного имени и, если нужно, порта. Например: http://site.com
+HmsHtmlDecode(const aText: String): String|Преобразовывает строку с HTML сущностями в обычный текст. Например: "&lt;&nbsp;&gt;" будет преобразована в "< >".
+  aText - преобразуемый текст
+HmsHtmlEncode(const aText: String): String|Преобразует строку, где символы будут заменены на соответствующие HTML сущности. Например: "<Пример>" будет преобразована в "&lt;Пример&gt;".
+  aText - преобразуемый текст
+HmsHtmlToText(const aHtmlText: String; aCodePage: Integer = 0): String|Преобразовать html-текст в обыкновенный. Избавляется от всех тегов HTML тегов, а также заменяет HTML сущности, типа "&nbsp;" на соответствующие символы.
+  aHtmlText - преобразуемый текст
+  aCodePage - кодовая страница. Необязательный параметр.\nНапример:\n866 - DOS\n1251 - Windows Cyrilic\n65001 - UTF8
+HmsHttpDecode(const aText: String): String|Возвращает строку, в которой все символы процента и следующие за ней коды символа заменяются на сами символы. Декодирует строку, которая может быть закодирована функцией HmsHttpEncode.
+  aText - преобразуемый текст
+HmsHttpEncode(const aText: String; aAnsi: Boolean = False): String|Возвращает строку, в которой все не цифробуквенные символы, кроме -_. должны быть заменены знаком процента (%), за которым следует два шестнадцатеричных числа, а пробелы кодируются как знак сложения (+).
+  aText - преобразуемый текст
+  aAnsi - флаг, определяющий преобразование в кодировку ANSI. Необязательный параметр.
+HmsJsonDecode(const aText: String): String|Декодирует JSON строку. Преобразует закодированные символы UTF8 с помощью слеша и кодов символа в сами символы.
+  aText - преобразуемый текст в формате представления JSON
+HmsMediaFormatPriority(aHeight: Integer; const aFormats: String): Integer|Возвращает индекс высоты кадра, переданной в первом параметре по приоритету формата переданного во втором параметре. Приоритеты форматов медиа настраиваются в настройках папки медиа-ресурсов, а также в скриптах их содержит встроенная переменная mpPodcastMediaFormats.
+  aHeight - проверяемая высота кадра
+  aFormats - строка приоритета форматов медиа. Обычно переменная mpPodcastMediaFormats.
+HmsOAuth2GetAccessToken(const aTokenUrl, aReferer, aAuthorizationCode, aClientID, aClientSecret, aRedirectUri, aRefreshToken: String; var aTokenInfo: String): Boolean|Запрос токена доступа (Access Token), секретного ключа и любой другой дополнительной информации, которую предоставляет сервис OAuth2. В случае успеха возвращает True, а информация будет содержаться в переменной, указанной в последнем параметре.
+  aTokenUrl - URL страницы сервиса OAuth2 для получения токена
+  aReferer - адрес отправителя или заданный Referer
+  aAuthorizationCode - код авторизации
+  aClientID - клиентский код (ClientID)
+  aClientSecret - секретный код (ClientSecret)
+  aRedirectUri - обратный адрес, на который будет перенаправлен запрос с результатом (если этого требует сервис)
+  aRefreshToken - токен запроса обновления информации
+  aTokenInfo - переменная, которая будет содержать результат получения токена и другую информацию в формате JSON.
+HmsOAuth2Login(const aAuthorizeUrl, aTokenUrl, aReferer, aClientID, aClientSecret, aScope, aRedirectUri, aRefreshToken, aAuthorizationCodeTitle, aAuthorizationCodePrompt: String; var aTokenInfo: String): Boolean|Авторизация через сервис OAuth2 с открытием окна подтверждения.
+  aAuthorizeUrl - URL страницы авторизации сервиса OAuth2
+  aTokenUrl - URL страницы сервиса OAuth2 для получения токена
+  aReferer - адрес отправителя или заданный Referer
+  aClientID - клиентский код (ClientID)
+  aClientSecret - секретный код (ClientSecret)
+  aScope - строка перечня прав доступа через запятую (предоставляется в зависимости от сервиса OAuth2)
+  aRedirectUri - обратный адрес, на который будет перенаправлен запрос с результатом (если этого требует сервис)
+  aRefreshToken - токен запроса обновления информации
+  aAuthorizationCodeTitle - заголовок на странице авторизации
+  aAuthorizationCodePrompt - текст запроса на странице авторизации
+  aTokenInfo - переменная, которая будет содержать результат получения токена и другую информацию в формате JSON.
+HmsOAuthAuthorizeUrl(const aAuthorizeUrl, aOAuthToken: String): String|Авторизация на сервисе OAuth с помощью токена
+  aAuthorizeUrl - URL страницы авторизации сервиса OAuth
+  aOAuthToken - токен для авторизации через сервис OAuth
+HmsOAuthEncodeParameters(const aParameters: array of String): String|Преобразование OAuth параметров в безопасную строку для передачи в ссылке через HTTP
+  aParameters - массив строк параметров
+HmsOAuthGetAccessToken(const aAccessTokenUrl, aReferer, aConsumerKey, aConsumerSecret, aTempOAuthToken, aTempOAuthTokenSecret, aOAuthVerifier: String; var aOAuthToken, aOAuthTokenSecret: String; aSignExcludeDuplicates: Boolean = False): Boolean|Запрос токена доступа (Access Token), секретного ключа и любой другой дополнительной информации, которую предоставляет сервис OAuth. В случае успеха возвращает True, а информация будет содержаться в переменной, указанной в последнем параметре.
+  aAccessTokenUrl - URL страницы сервиса OAuth2 для получения токена
+  aReferer - адрес отправителя или заданный Referer
+  aConsumerKey - ключ для получения доступа
+  aConsumerSecret - секретный код для получения доступа
+  aTempOAuthToken - временный токен авторизации
+  aTempOAuthTokenSecret - временный секретный код для получения доступа
+  aOAuthVerifier - (?)
+  aOAuthToken - переменная, которая будет содержать токен доступа как результат
+  aOAuthTokenSecret - переменная, которая будет содержать секретный код для получения доступа как результат
+  aSignExcludeDuplicates - Флаг исключения дубликатов. Необязательный параметр.
+HmsOAuthLogin(const aRequestTokenUrl, aAuthorizeUrl, aAccessTokenUrl, aReferer, aConsumerKey, aConsumerSecret, aAuthorizationCodeTitle, aAuthorizationCodePrompt: String; const aOAuthExtParameters: array of String; var aOAuthToken, aOAuthTokenSecret: String): Boolean|Авторизация через сервис OAuth с открытием окна подтверждения.
+  aRequestTokenUrl - URL страницы сервиса OAuth для получения токена
+  aAuthorizeUrl - URL страницы авторизации сервиса OAuth
+  aAccessTokenUrl - URL страницы авторизации по токену через сервис OAuth
+  aReferer - адрес отправителя или заданный Referer
+  aConsumerKey - ключ пользователя
+  aConsumerSecret - секретный код пользователя
+  aAuthorizationCodeTitle - заголовок на странице авторизации
+  aAuthorizationCodePrompt - текст запроса на странице авторизации
+  aOAuthExtParameters - дополнительные параметры авторизации сервиса OAuth
+  aOAuthToken - переменная, которая будет содержать результат получения токена
+  aOAuthTokenSecret - переменная, которая будет содержать результат получения секретного кода токена
+HmsOAuthRequest(const aUrl, aReferer, aConsumerKey, aConsumerSecret, aOAuthToken, aOAuthTokenSecret: String; const aOAuthExtParameters: array of String; const aRequestMethod: String; aSignExcludeDuplicates: Boolean): String|Запрос на сервис OAuth
+  aUrl - URL страницы сервиса OAuth
+  aReferer - адрес отправителя или заданный Referer
+  aConsumerKey - ключ пользователя
+  aConsumerSecret - секретный код пользователя
+  aOAuthToken - токен доступа
+  aOAuthTokenSecret - секретный код токена
+  aOAuthExtParameters - массив строк дополнительных параметров авторизации сервиса OAuth
+  aRequestMethod - метод HTTP запроса ("GET", "POST" или "PUT")
+  aSignExcludeDuplicates - Флаг исключения дубликатов. Необязательный параметр.
+HmsOAuthRequestToken(const aRequestTokenUrl, aReferer, aConsumerKey, aConsumerSecret: String; const aOAuthExtParameters: array of String; var aOAuthToken, aOAuthTokenSecret: String): Boolean|Запрос на сервис OAuth для получения токена
+  aRequestTokenUrl - URL страницы сервиса OAuth для получения токена
+  aReferer - адрес отправителя или заданный Referer
+  aConsumerKey - ключ пользователя
+  aConsumerSecret - секретный код пользователя
+  aOAuthExtParameters - массив строк дополнительных параметров авторизации сервиса OAuth
+  aOAuthToken - переменная, которая будет содержать результат получения токена
+  aOAuthTokenSecret - переменная, которая будет содержать результат получения секретного кода токена
+HmsOAuthSign(const aMethod, aUrl, aParameters, aConsumerSecret, aTokenSecret: String; aExcludeDuplicates: Boolean): String|Запрос на вход через сервис OAuth
+  aMethod - метод HTTP запроса ("GET", "POST" или "PUT")
+  aUrl - URL страницы сервиса OAuth
+  aParameters - параметры авторизации сервиса OAuth
+  aConsumerSecret - секретный код доступа пользователя
+  aTokenSecret - секретный код токена
+  aSignExcludeDuplicates - Флаг исключения дубликатов
+HmsPercentDecode(const aText: String): String|Возвращает строку, в которой все символы со знаком процента (%) за которым следует шестнадцатеричное число будут заменены на соответствующие символы. Может быть использована для обратной раскодировки строки, закодированной функцией HmsPercentEncode.
+  aText - преобразуемый текст
+HmsPercentEncode(const aText: String; const aAllowedChars: String = '"A-Z", "a-z", "0-9", "-", ".", "_", "~"'): String|Возвращает строку, в которой все символы, кроме указанных вторым параметром, должны быть заменены знаком процента (%), за которым следует шестнадцатеричное число.
+  aText - преобразуемый текст
+  aAllowedChars - строка со списком исключаемых символов. Необязательный параметр. По-умолчанию '"A-Z", "a-z", "0-9", "-", ".", "_", "~"'.
+HmsRemoveLineBreaks(const aText: String): String|Удалить из текста символы перевода строки
+  aText - обрабатываемый текст, из которого будут удалены все символы перевода строки
+HmsSendRequest(const aServerAddress, aObjectName, aVerb, aContentType, aReferer, aOptionalData: String; aServerPort: Integer; aDecoding: Boolean = False): String|HTTP запрос с заданным методом (GET, POST, HEAD...) и параметрами. Возвращает текст полученного ответа.
+  aServerAddress - адрес сервера (IP адрес или доменное имя)
+  aObjectName - запрашиваемая страница
+  aVerb - метод HTTP запроса ("GET", "POST", "HEAD", "PUT", "DELETE")
+  aContentType - тип запрашиваемого содержимого (например: "text/html" или "application/x-www-form-urlencoded; Charset=UTF-8")
+  aReferer - адрес, откуда идёт запрос. Также можно добавлять другие HTTP заголовки, разделённые символами перевода строки и каретки (0x0D, 0x0A), но первая часть строки должна начинаться без ключевого слова "Referer: ".
+  aOptionalData - данные при передаче запросов методом "POST", "PUT" или "DELETE".
+  aServerPort - порт. Обычно, стандартный порт для http - 80, для https - 443.
+  aDecoding - флаг автоматической декомпрессии сжатых данных, если ответ был сжат методом gzip. Необязательный параметр.
+HmsSendRequestEx(const aServerAddress, aObjectName, aVerb, aContentType, aReferer, aOptionalData: String; aServerPort: Integer; aFlagsEx: Integer; var aHeader: String; aDecoding: Boolean = False): String|Расширенный HTTP запрос с заданным методом (GET, POST, HEAD...) и параметрами. Возвращает текст полученного ответа, а также в переданную переменную содержимое HTTP заголовков ответа от сервера.
+  aServerAddress - адрес сервера (IP адрес или доменное имя)
+  aObjectName - запрашиваемая страница
+  aVerb - метод HTTP запроса ("GET", "POST", "HEAD", "PUT", "DELETE")
+  aContentType - тип запрашиваемого содержимого (например: "text/html" или "application/x-www-form-urlencoded; Charset=UTF-8")
+  aReferer - адрес, откуда идёт запрос. Также можно добавлять другие HTTP заголовки, разделённые символами перевода строки и каретки (0x0D, 0x0A), но первая часть строки должна начинаться без ключевого слова "Referer: ".
+  aOptionalData - данные при передаче запросов методом "POST", "PUT" или "DELETE".
+  aServerPort - порт. Обычно, стандартный порт для http - 80, для https - 443.
+  aFlagsEx - флаги WinINet функций. Например, значение флага INTERNET_FLAG_DONT_CACHE = 0x04000000 - определяет запрет использования установки Cookies ответом от сервера. Информацию о возможных флагах можно найти на сайте msdn.microsoft.com по запросу "API Flags (Windows)".
+  aHeader - переменная, которая будет содержать HTTP заголовки ответа от сервера
+  aDecoding - флаг автоматической декомпрессии сжатых данных, если ответ был сжат методом gzip. Необязательный параметр.
+HmsSetHttpConnectionParams(const aAuthenticationUserName: String = ''; const aAuthenticationPassword: String = ''; const aProxyServerAddress: String = ''; const aProxyServerPort: String = ''; const aProxyServerUserName: String = ''; const aProxyServerPass: String=''): String|Установка параметров HTTP соединения - имя и пароля для HTTP авторизации и прокси сервера.
+  aAuthenticationUserName - имя пользователя для HTTP авторизации
+  aAuthenticationPassword - пароль для HTTP авторизации
+  aProxyServerAddress - адрес прокси-сервера
+  aProxyServerPort - порт прокси-сервера
+  aProxyServerUserName - имя пользователя для прокси-сервера
+  aProxyServerPass - пароль для прокси-сервера
+HmsStringFromFile(const aFileName: String): String|Загрузка содержимого файла в строку
+  aFileName - имя загружаемого файла
+HmsStringFromStream(const aStream: Variant): String|Загрузка из потока Stream в строку
+  aStream - объект потока Stream, из которого будут загружены данные
+HmsStringToFile(const aText, aFileName: String)|Сохранение строки в файл
+  aText - сохраняемая строка (текст)
+  aFileName - путь и имя файла, в который будет сохранена строка
+
+* Математические
+Abs(e: Extended): Extended|Возвращает модуль числа
+  e - число с плавающей точкой, модуль которого будет возвращён
+ArcTan(X: Extended): Extended|Возвращает арктангенс
+  X - число с плавающей точкой, значение арктангенса которого будет возвращено
+Cos(e: Extended): Extended|Возвращает косинус угла (в радианах)
+  e - число с плавающей точкой
+Exp(X: Extended): Extended|Возвращает экспоненту
+  X - число с плавающей точкой
+Frac(X: Extended): Extended|Возвращает дробную часть вещественного значения
+  X - число с плавающей точкой
+Int(e: Extended): Integer|Возвращает целую часть вещественного значения
+  e - число с плавающей точкой
+Ln(X: Extended): Extended|Возвращает натуральный логарифм заданного числа
+  X - число с плавающей точкой
+Max(const A, B: Variant): Variant|Возвращает максимальное значение из A и B
+  A - сравниваемое число 
+  B - сравниваемое число 
+Min(const A, B: Variant): Variant|Возвращает минимальное значение из A и B
+  A - сравниваемое число 
+  B - сравниваемое число 
+Pi: Extended|Возвращает число "пи"
+Round(e: Extended): Integer|Округляет число до ближайшего целого значения
+  e - число с плавающей точкой
+Sin(e: Extended): Extended|Возвращает синус угла (в радианах)
+  e - число с плавающей точкой
+Sqrt(e: Extended): Extended|Возвращает корень квадратный из числа
+  e - число с плавающей точкой
+Tan(X: Extended): Extended|Возвращает тангенс
+  e - число с плавающей точкой
+Trunc(e: Extended): Integer|Отбрасывает дробную часть числа
+  e - число с плавающей точкой
+
+* Обработка медиа-ресурсов
+HmsAddThumbnail(const aThumbnailKey, aThumbnailFormat, aThumbnailData: String; aThumbnailWidth: Integer = 0; aThumbnailHeight: Integer = 0): String|Добавление эскиза в кеш базы медиа-ресурсов. Получение эскиза из кеша выполняется функцией HmsGetThumbnail.
+  aThumbnailKey - ключ эскиза. По этому ключу можно будет получить данные эскиза функцией HmsGetThumbnail.
+  aThumbnailFormat - формат изображения (?)
+  aThumbnailData - данные изображения, хранящиеся в строке
+  aThumbnailWidth - ширина изображения. Если 0 - то берётся ширина оригинального изображения. Необязательный параметр. По-умолчанию 0. (?)
+  aThumbnailHeight - высота изображения. Если 0 - то берётся высота оригинального изображения. Необязательный параметр. По-умолчанию 0. (?)
+HmsAnsiToByteArray(const aText: String): Variant|Преобразует ANSI строку в массив байтов
+  aText - ANSI строка
+HmsAnsiToWideString(const aText: String; aCodePage: Integer): String|Преобразование ANSI строки в другую кодовую страницу
+  aText - преобразуемый текст
+  aCodePage - кодовая страница. Например: 866 - DOS, 1251 - Windows Cyrilic, 65001 - UTF8.
+HmsAudioVisualization(const aAudioFileName, aCopyAudioFileName: String; const aVisualizationModule, aVisualizationPreset, aVideoFileName: String; aVideoWidth, aVideoHeight: Integer; aVideoFrameRate: Extended): Boolean|
+HmsCancelPressed: Boolean|Возвращает True, если в форме прогресса выполнения нажата кнопка отмены
+HmsCreateFileTags(const aProviderName, aFileName: String): THmsScriptFileTags|Получение информации о медиа-файле в объект хранения тегов с типом THmsScriptFileTags по указанному провайдеру тегов (tpExif, tpFFmpeg, tpMediaInfo, tpShell, tpWms, tpXmp).
+  aProviderName - имя провайдера тегов (константы: tpExif, tpFFmpeg, tpMediaInfo, tpShell, tpWms, tpXmp)
+  aFileName - медиа-файл, по которому будет получена информация
+HmsCreateMediaItem(const aItemPath: String; const aFolderID: String = ''; const aFolderPath: String = ''): THmsScriptMediaItem|Добавление файла в базу медиа-ресурсов
+  aItemPath - путь до медиа-файла. Если в папке базы данных, куда добавляется файл уже есть элемент с указанным путём, то вместо создания нового будет возвращён уже созданный с таким путём элемент базы данных.
+  aFolderID - свойство ItemID папки, в которой будет добавлен новый элемент. Необязательный параметр.
+  aFolderPath - подпапка или путь состоящий из подпапок, в котором будет создан новый элемент. Необязательный параметр. Но может принимать значение "Подпапка1\Подпапка2".
+HmsCreateMediaItemTags(const aProviderName: String; const aMedaiItem: THmsScriptMediaItem): THmsScriptFileTags|Получение информации о медиа-файле указанного элемента базы данных программы по конкретному провайдеру тегов (tpExif, tpFFmpeg, tpMediaInfo, tpShell, tpWms, tpXmp)
+  aProviderName - имя провайдера тегов (константы: tpExif, tpFFmpeg, tpMediaInfo, tpShell, tpWms, tpXmp)
+  aMedaiItem - элемент базы данных программы, по медиа-файлу которого будет получена информация
+HmsCryptCipherDecode(const aCipherName, aData, aKey, aIVector: String; aMode: TCipherMode; const aFormatName: String = ''): String|Расшифровка данных с помощью указанного алгоритма и заданных параметров
+  aCipherName - алгоритм шифрования ("2DES", "Blowfish", "Gost", "IDEA", "RC4", "Rijndael", ...). Полный список поддерживаемых алгоритмов шифрования можно получить с помощью функции HmsCryptCipherList.
+  aData - входные зашифрованные данные
+  aKey - ключ шифрования
+  aIVector - вектор инициализации (IV) для симметричного алгоритма
+  aMode - режим функционирования симметричного алгоритма (cmCBCx, cmCFB8, cmCFBx, cmCFS8, cmCFSx, cmCTSx, cmECBx, cmOFB8, cmOFBx)
+  aFormatName - формат представления шифрованных данных ("ESCAPE", "HEX", "MIME32", "MIME64", "PGP", ...). Полный список поддерживаемых форматов можно получить функцией HmsCryptFormatList. Необязательный параметр.
+HmsCryptCipherEncode(const aCipherName, aData, aKey, aIVector: String; aMode: TCipherMode; const aFormatName: String = ''): String|Шифрование данных с помощью указанного алгоритма и заданных параметров
+  aCipherName - имя алгоритма шифрования ("2DES", "Blowfish", "Gost", "IDEA", "RC4", "Rijndael", ...). Полный список поддерживаемых алгоритмов шифрования можно получить с помощью функции HmsCryptCipherList.
+  aData - входные данные, которые будут зашифрованы
+  aKey - ключ шифрования
+  aIVector - вектор инициализации (IV) для симметричного алгоритма
+  aMode - режим функционирования симметричного алгоритма (cmCBCx, cmCFB8, cmCFBx, cmCFS8, cmCFSx, cmCTSx, cmECBx, cmOFB8, cmOFBx)
+  aFormatName - формат представления шифрованных данных ("ESCAPE", "HEX", "MIME32", "MIME64", "PGP", ...). Полный список поддерживаемых форматов можно получить функцией HmsCryptFormatList. Необязательный параметр.
+HmsCryptCipherList: String|Список поддерживаемых симметричных алгоритмов шифрования, разделённых переводом строк (2DES,Blowfish,Gost,IDEA,RC4,RC5,RC6,Rijndael,Twofish...)
+HmsCryptFormatDecode(const aFormatName, aData: String): String|Преобразование данных из указанного формата шифра ("PGP", "HEX", "MIME64", ...). Полный список поддерживаемых форматов можно получить функцией HmsCryptFormatList.
+  aFormatName - формат представления шифрованных данных ("ESCAPE", "HEX", "MIME32", "MIME64", "PGP", ...). Полный список поддерживаемых форматов можно получить функцией HmsCryptFormatList. Необязательный параметр.
+  aData - входные данные
+HmsCryptFormatEncode(const aFormatName, aData: String): String|Преобразование данных в указанный формат шифра ("PGP", "HEX", "MIME64", ...). Полный список поддерживаемых форматов можно получить функцией HmsCryptFormatList.
+  aFormatName - формат представления шифрованных данных ("ESCAPE", "HEX", "MIME32", "MIME64", "PGP", ...). Полный список поддерживаемых форматов можно получить функцией HmsCryptFormatList. Необязательный параметр.
+  aData - входные данные
+HmsCryptFormatList: String|Список форматов представления шифра, разделённых переводом строк (ESCAPE,HEX,HEXL,MIME32,MIME64,PGP,UU,XX...)
+HmsCryptHash(const aHashName, aData: String; const aFormatName: String = 'HEX'): String|Вычисление хеша строки по указанному алгоритму ("MD5", "SHA256", "Whirlpool", ...). Полный список поддерживаемых алгоритмов получения хеша можно получить с помощью функции HmsCryptHashList.
+  aHashName - алгоритм получения хеша ("MD5", "SHA256", "Whirlpool", ...). Список поддерживаемых алгоритмов получения хеша возвращает функция HmsCryptHashList.
+  aData - входная строка, хеш которой будет вычислен
+  aFormatName - формат представления выходных данных ("ESCAPE", "HEX", "MIME32", "MIME64", "PGP", ...). Полный список поддерживаемых форматов можно получить функцией HmsCryptFormatList. Необязательный параметр. По-умолчанию "HEX".
+HmsCryptHashList: String|Список поддерживаемых алгоритмов получения хеша (MD2, MD4, MD5, Sapphire, SHA, SHA1, SHA256, Square, Tiger, Whirlpool, ...)
+HmsCurrentMediaListItem: THmsScriptMediaItem|Возвращает текущий медиа-ресурс в списке медиа-ресурсов главной формы программы. Имеет смысл использовать только в интерактивном режиме (т.е. при запуске скрипта из самой программы, а не выполнении его при навигации на устройстве).
+HmsCurrentMediaListItems(aFromCurrent: Boolean = False): THmsScriptMediaItemList|Возвращает текущий список медиа-ресурсов в текущей папке базы данных главной формы программы
+  aFromCurrent - флаг, указывающий возвращать список только начиная с текущей позиции и до конца. Необязательный параметр.
+HmsCurrentMediaListSelection: THmsScriptMediaItemList|Возвращает список выделенных медиа-ресурсов в главной форме программы
+HmsCurrentMediaTreeItem: THmsScriptMediaItem|Возвращает текущий медиа-ресурс в структуре базы данных главной формы программы
+HmsDataDirectory: String|Возвращает директорию базы данных программы
+HmsDatabaseAddLink(const aFolderID, aFolderPath: String; aItem: THmsScriptMediaItem): THmsScriptMediaItem|Добавление ссылки на медиа-ресурс в указанный каталог
+  aFolderID - идентификатор папки базы данных (свойство ItemID), в которую будет добавлена ссылка
+  aFolderPath - подпапка или путь с указанием подпапок, где будет создана ссылка. Может принимать вид "Подпапка1\Подпапка2".
+  aItem - добавляемый элемент базы данных
+HmsDatabaseAutoSave(const aReloadAfterSave: Boolean = True)|Сохранение базы данных с проверкой наличия изменений
+  aReloadAfterSave - флаг, указывающий перечитать заново базу данных после сохранения. Необязательный параметр.
+HmsDatabaseGroupItems(const aSourceFolderID, aDestFolderID, aFolderPathExpression, aSortOrder: String)|Группирование медиа-ресурсов из указанной папки
+  aSourceFolderID - идентификатор папки (свойство ItemID), откуда будут браться элементы базы данных
+  aDestFolderID - идентификатор папки (свойство ItemID), куда будут сгруппированы элементы
+  aFolderPathExpression - выражения для выборки элементов из папки
+  aSortOrder - режим сортировки. Можно указывать имена идентификаторов свойств с добавлением в начале знаков "+" - по возрастанию или "-" - по-убыванию. Например: "-mpiYear" - сортировка по годам, по-убыванию.
+HmsDatabaseLinkFolder(const aSourceFolderID, aDestFolderID: String; aTranscoding: Boolean = False)|Создание каталога ссылок на медиа-ресурсы указанной папки базы медиа-ресурсов
+  aSourceFolderID - идентификатор папки (свойство ItemID), откуда будут браться элементы базы данных
+  aDestFolderID - идентификатор папки (свойство ItemID), куда будут сгруппированы элементы
+  aTranscoding - флаг использования режима транскодирования. Необязательный параметр.
+HmsDatabaseRootItem: THmsScriptMediaItem|Возвращает указатель на корневой элемент базы медиа-ресурсов программы
+HmsDatabaseScanFolders|Запускает сканирование каталогов медиа-ресурсов
+HmsDecryptRDL(const aText, aKey, aIV: String; aMode: Integer; aHex: Boolean = True): String|Расшифровка RDL (?)
+  aText - зашифрованный текст
+  aKey - ключ шифра
+  aIV - вектор инициализации (IV)
+  aMode - режим (?)
+  aHex - флаг, указывающий использование HEX представление зашифрованных данных. Необязательный параметр. По-умолчанию True.
+HmsExecuteByTimer(const aTimerID, aStatement: String; aSecondsInterval: Integer)|Выполнение скрипта по таймеру (может быть вызовом процедуры с параметрами, декларация которой находится в скрипте, вызвавшем HmsExecuteByTimer). Используйте HmsExecuteByTimer(TimerID, "", 0) для останова выполнения таймера с заданным TimerID.
+  aTimerID - идентификатор создаваемого таймера
+  aStatement - выражение, которое будет выполнятся таймером. Может быть вызвана процедура с параметрами, декларация которой находится в скрипте, вызвавшем этот HmsExecuteByTimer.
+  aSecondsInterval - интервал в секундах, с периодичностью которого будет происходить выполнение выражения, указанного вторым параметром.
+HmsExecuteScriptDialog(var sScript, aSyntaxType: String; aScriptMode: THmsScriptMode; const aResultName: String = ''; const aMediaItem: THmsScriptMediaItem = nil; const aCaption: String = ''): Boolean|Открывает окно для редактирования указанного скрипта
+  sScript - переменная, содержащая скрипт, который будет отредактирован. В ней же и будет сохранён результат, если была нажата кнопка OK в диалоге редактирования.
+  aSyntaxType - переменная, содержащая тип используемого синтаксиса. В ней же и будет сохранён выбранный тип синтаксиса, если была нажата кнопка OK в диалоге редактирования.
+  aScriptMode - режим редактора скриптов (smCreatePodcastFeeds,smDIDLLiteDescription,mMediaResourceLink,smProcessMedia,smWebNavigation,...). От этого режима зависит доступность некоторых переменных и функций во время редактирования. 
+  aResultName - (?) Необязательный параметр.
+  aMediaItem - элемент базы данных программы, для которого может быть открыто окно редактирования скрипта. Необязательный параметр. По-умолчанию Nil - т.е. ни для какого.
+  aCaption - заголовок окна. Необязательный параметр.
+HmsExtractFiles(const aArchiveName, aDestDirectory: String; aClearDirectory: Boolean = False): Boolean|Извлечение файлов из zip-архива в указанный каталог
+  aArchiveName - путь и имя файла архива
+  aDestDirectory - директория, куда будет происходить распаковка файлов
+  aClearDirectory - флаг, который если будет установлен в True, то директория, куда будет идти распаковка, будет очищена перед распаковкой. Необязательный параметр.
+HmsFileLocked(const aFileName: String): Boolean|Возвращает True, если файл открыт для записи
+  aFileName - путь и имя файла
+HmsFileMediaType(const aFileName: String): TMediaType|Возвращает тип медиа-ресурса для указанного файла (mtAudio,mtImage,mtIsoDisk,mtText,mtUnknown,mtVideo) 
+  aFileName - путь и имя файла
+HmsFileTranscoding(const aFileName: String; var aTranscodingFileName: String; const aProfileName: String): Boolean|Выполнение транскодирования файла
+  aFileName - путь и имя файла, который будет транскодироваться
+  aTranscodingFileName - путь и имя файла или pipe-канал, куда будет передаваться результат транскодирования
+  aProfileName - профиль транскодирования (например: "Фильмы (основной)" или "Фильмы (Оптимальный)"). Список профилей транскодирования в программе: Настройки -> Транскодер -> Профили.
+HmsFindMediaFolder(const aFolderID: String; const aFolderPath: String = ''): THmsScriptMediaItem|Поиск папки медиа-ресурсов с указанным идентификатором начальной папки поиска и имени подкаталога
+  aFolderID - идентификатор папки базы медиа-ресурсов (свойство ItemID), откуда будет производиться поиск
+  aFolderPath - путь подпапки, которой будет производиться поиск
+HmsFindMediaItemByFileName(const aFileName: String): THmsScriptMediaItem|Поиск медиа-ресурса в базе медиа-ресурсов по имени файла
+  aFileName - имя файла, поиск которого будет происходить
+HmsGetDirectoryList(const aDirectory: String; aDirectoryList: TStrings)|Возвращает список подкаталогов в указанном каталоге
+  aDirectory - директория, где будет происходить поиск подкатологов
+  aDirectoryList - переменная типа TStrings, которая будет в результате содержать список подкатологов
+HmsGetFileList(const aDirectory: String; aFileList: TStrings; const aFileMask: String = '*.*')|Возвращает список файлов в указанном каталоге
+  aDirectory - директория, где будет происходить поиск файлов
+  aFileList - переменная типа TStrings, которая будет в результате содержать список файлов в указанном каталоге
+  aFileMask - маска для поиска файлов по наименованию. Необязательный параметр. По-умолчанию "*.*" - все файлы.
+HmsGetMimeType(const aFileExt: String): String|Получение MIME-типа (например: "video/x-matroska", "image/jpeg") указанного расширения файла (например: ".mkv" или ".jpg"). Получить расширение файла можно функцией ExtractFileExt.
+  aFileExt - расширение файла (например: ".mkv" или ".jpg"). Получить расширение из имени файла можно функцией ExtractFileExt.
+HmsGetSingleTrackItem(const aFolderItemID: String): THmsScriptMediaItem|
+HmsGetThumbnail(const aThumbnailKey: String; var aThumbnailData: String): Boolean|Получение данных изображения из кеша картинок по ключу
+  aThumbnailKey - ключ изображения в кеше
+  aThumbnailData - переменная типа String, которая в результате будет содержать данные изображения
+HmsGetTranscodingFileExt(const aProfileName: String): String|Возвращает расширение транскодированного файла для указанного профиля транскодирования
+  aProfileName - профиль транскодирования (например: "Фильмы (основной)" или "Фильмы (Оптимальный)"). Список профилей транскодирования в программе: Настройки -> Транскодер -> Профили.
+HmsGetUserSearchText: String|Получение текста пользовательского поиска
+HmsHexToString(const aText: String): String|Преобразует текст в формате HEX в обычную строку (например: "cff0e8e2e5f221" будет преобразована в "Привет!"). Обратная процедура преобразования - HmsStringToHex.
+  aText - входная строка, записаная HEX полсдедовательностью (например "48454C4C4F")
+HmsHideInformation|Скрытие формы информационного сообщения
+HmsHideProgress|Скрытие формы прогресса выполнения
+HmsHmacMD5(const aText, aKey: String): String|Вычисляет хэш-код аутентификации сообщения (HMAC) с помощью хэш-функции MD5
+HmsHmacSha1(const aText, aKey: String): String|Вычисляет хэш-код аутентификации сообщения (HMAC) с помощью хэш-функции SHA1
+HmsHmacSha256(const aText, aKey: String): String|Вычисляет хэш-код аутентификации сообщения (HMAC) с помощью хэш-функции SHA256
+HmsIncSystemUpdateID(const aContainerIDs: String = '')|Увеличение ID сообщения об обновлении содержания текущей папки медиа-ресурсов для устройств. Может выполняться для сообщения устройствам о том, что им нужно перечитать содержимое текущего каталога. Не все устройства поддерживают данные сообщения.
+  aContainerIDs - идентификатор контейнера (?). Необязательный параметр.
+HmsInputDialog(const aCaption, aPrompt: String; var aValue: String; aMultiLine: Boolean = False): Boolean|Показывает диалог ввода значения
+  aCaption - заголовок диалогового окна
+  aPrompt - текст перед полем ввода значения
+  aValue - переменная, которая будет содержать значение ввода
+  aMultiLine - флаг, определяющий возможность использования многострочного ввода значения. Необязательный параметр. По-умолчанию False.
+HmsIsUnicodePath(const aPath: String): Boolean|Определяет, содержит ли путь Unicode символы
+  aPath - строка, которая будет проверена на содержание Unicode символов
+HmsLanguageCode2(const aLanguageCode: String): String|Получение двубуквенного обозначения языка (ru, en, de, ...) по коду языка типа "rus", "eng" и т.п.
+  aLanguageCode - код языка ("rus", "eng", ...)
+HmsLanguageCode3(const aLanguageCode: String): String|Получение трёх-буквенного обозначения языка (Rus, Eng, ...) по коду языка типа "rus", "eng" и т.п. (?)
+  aLanguageCode - код языка ("rus", "eng", ...)
+HmsLanguageName(const aLanguageCode: String; aLCType: Integer = $00001001): String|Получение наименование языка ("Russian", "English", ...) по коду языка типа "rus", "eng" и т.п.
+  aLanguageCode - код языка ("rus", "eng", ...)
+  aLCType - код флага типа возвращаемого наименования. По сути - это константа определяющая часть информации о локали. типа LOCALE_ILANGUAGE, LOCALE_SLANGUAGE...\nНеобязательный параметр. По-умолчанию LOCALE_SENGLANGUAGE.\nНекоторые возможные константы:\nLOCALE_ILANGUAGE = 1 - вернёт цифровой идентификатор языка;\nLOCALE_SLANGUAGE = 2 - вернёт полное наименование в текущей локали (например: "Русский (Россия)");\nLOCALE_SCOUNTRY = 6 - вернёт название страны;\nLOCALE_SENGLANGUAGE = 0x00001001 - вернёт наименование языка на английском
+HmsLogMessage(aMessageType: Integer; const aMessageText: String; aMessageBallon: Boolean = False)|Добавление сообщения в журнал сообщений главной формы программы
+  aMessageType - тип сообщения (иконка).\n0 - не выводит сообщения;\n1 - информационное сообщение;\n2 - предупреждение;\n3 - отладочное сообщение.
+  aMessageText - текст сообщения
+  aMessageBallon - флаг, определяющий, показывать ли всплывающее сообщение, если весь текст сообщения не входит по ширине окна программы. Необязательный параметр. (?)
+HmsMD5SumOfString(const aText: String): String|Вычисление значение MD5 суммы строки
+  aText - строка, значение MD5 которой нужно вычислить
+HmsPlayToDevice(aMediaItem: THmsScriptMediaItem; const aUPnPDevice: String; aSaveToPlaylist: Boolean = True)|Запуск воспроизведения файла элемента базы данных медиа-ресурсов на определённом устройстве воспроизведения
+  aMediaItem - элемент базы данных, который содержит ссылку на медиа-ресурс
+  aUPnPDevice - адрес устройства воспроизведения (?)
+  aSaveToPlaylist - флаг, указывающий сохранить ссылку на медиа-ресурс в плейлист для этого устройства. Необязательный параметр.
+HmsPlayToGroup(aMediaItem: THmsScriptMediaItem; const aUPnPDevice: String; aSaveToPlaylist: Boolean = True)|Запуск воспроизведения элемента базы данных медиа-ресурсов на группе устройств воспроизведения
+  aMediaItem - элемент базы данных, который содержит ссылку на медиа-ресурс
+  aUPnPDevice - адреса устройств воспроизведения (?)
+  aSaveToPlaylist - флаг, указывающий сохранить ссылку на медиа-ресурс в плейлист для этого устройства. Необязательный параметр.
+HmsPreTranscoding(aMediaItem: THmsScriptMediaItem; var aTranscodingFileName: String; const aProfileName: String; const aDestMimeType: String = ''; aWait: Boolean = True; aStandAlone: Boolean = False): Boolean|Запуск предварительного транскодирования
+  aMediaItem - элемент базы данных, который содержит ссылку на медиа-ресурс
+  aTranscodingFileName - путь и имя файла или pipe-канал, куда будет передаваться результат транскодирования
+  aProfileName - профиль транскодирования (например: "Фильмы (основной)" или "Фильмы (Оптимальный)"). Список профилей транскодирования в программе: Настройки -> Транскодер -> Профили или в окне справочника 
+  aDestMimeType - MIME-тип транскодированного файла. Необязательный параметр.
+  aWait - флаг, определяющий что функция должна вернуть значение только после завершения транскодирования. Необязательный параметр. По-умолчанию True.
+  aStandAlone - флаг, определяющий автономный режим работы. Необязательный параметр. По-умолчанию False.
+HmsPreTranscodingEx(const aMediaItemIDs: array of String; var aTranscodingFileName: String; const aProfileName: String; const aDestMimeType: String = ''; aWait: Boolean = True; aRepeat: Boolean = False; aPipeBufferSize: Integer = 0; aStandAlone: Boolean =false): Boolean|Запуск предварительного транскодирования (расширенная функция)
+  aMediaItemIDs - массив идентификаторов (свойство ItemID) элементов базы данных, которые содержат ссылку на медиа-ресурс
+  aTranscodingFileName - путь и имя файла или pipe-канал, куда будет передаваться результат транскодирования
+  aProfileName - профиль транскодирования (например: "Фильмы (основной)" или "Фильмы (Оптимальный)"). Список профилей транскодирования в программе: Настройки -> Транскодер -> Профили.
+  aDestMimeType - MIME-тип транскодированного файла. Необязательный параметр.
+  aWait - флаг, определяющий что функция должна вернуть значение только после завершения транскодирования. Необязательный параметр. По-умолчанию True.
+  aRepeat - флаг, определяющий включение циклического повторения в списке воспроизведения. Необязательный параметр.
+  aPipeBufferSize - размер буфера для pipe-каналов. Необязательный параметр.
+  aStandAlone - флаг, определяющий автономный режим работы. Необязательный параметр. По-умолчанию  False.
+HmsRegExMatch(const aRegEx, aSubject: String; var aMatch: String; aIndex: Integer = 1; aOptions: Integer = 0): Boolean|Получение значения группировки по регулярному выражению и присвоение его указанной переменной.\nВозвращает True, если соответствие регулярному выражению найдено.
+  aRegEx - регулярное выражение\n\nПримеры регулярных выражений:\n'(<h1.*?</h1>)' - поиск заголовка, заключенного в HTML тег h1;\n'<a[^>]+href="(.*?)"' - поиск значения ссылки;\n'<img[^>]+src="(.*?)"' - поиск значения ссылки изображения.
+  aSubject - строка, в которой будет происходить поиск соответствию регулярному выражению
+  aMatch - переменная, в которую будет занесена значение группировки найденного соответствия
+  aIndex - номер группировки (то, что в регулярном выражении заключается в круглые скобки). Если 0 - то в переменную, переданную в третьем параметре, будет занесено всё соответствие. Необязательный параметр. По-умолчанию = 1.
+  aOptions - опции работы с регулярными выражениями. Необязательный параметр. Могут использоваться константы, начинающиеся на PCRE_, например: PCRE_SINGLELINE, PCRE_CASELESS и т.п.
+HmsRegExMatch2(const aRegEx, aSubject: String; var aMatch1, aMatch2: String; aOptions: Integer = 0): Boolean|Получение значения первой и второй группировки по регулярному выражению в соответствующие переменные.\nВозвращает True, если соответствие регулярному выражению найдено.
+  aRegEx - регулярное выражение\nПримеры регулярных выражений:\n'(<h1.*?</h1>)' - поиск заголовка, заключенного в HTML тег h1;\n'<a[^>]+href="(.*?)"' - поиск значения ссылки;\n'<img[^>]+src="(.*?)"' - поиск значения ссылки изображения.
+  aSubject - строка, в которой будет происходить поиск соответствию регулярному выражению
+  aMatch1 - переменная, в которую будет занесена значение первой группировки найденного соответствия
+  aMatch2 - переменная, в которую будет занесена значение второй группировки найденного соответствия
+  aOptions - опции работы с регулярными выражениями. Необязательный параметр. Могут использоваться константы, начинающиеся на PCRE_, например: PCRE_SINGLELINE, PCRE_CASELESS и другие.
+HmsRegExMatch3(const aRegEx, aSubject: String; var aMatch1, aMatch2, aMatch3: String; aOptions: Integer = 0): Boolean|Получение значения первой, второй и третьей группировки по регулярному выражению в соответствующие переменные.\nВозвращает True, если соответствие регулярному выражению найдено.
+  aRegEx - регулярное выражение\nПримеры регулярных выражений:\n'(<h1.*?</h1>)' - поиск заголовка, заключенного в HTML тег h1;\n'<a[^>]+href="(.*?)"' - поиск значения ссылки;\n'<img[^>]+src="(.*?)"' - поиск значения ссылки изображения.
+  aSubject - строка, в которой будет происходить поиск соответствию регулярному выражению
+  aMatch1 - переменная, в которую будет занесена значение первой группировки найденного соответствия
+  aMatch2 - переменная, в которую будет занесена значение второй группировки найденного соответствия
+  aMatch3 - переменная, в которую будет занесена значение третьей группировки найденного соответствия
+  aOptions - опции работы с регулярными выражениями. Необязательный параметр. Могут использоваться константы, начинающиеся на PCRE_, например: PCRE_SINGLELINE, PCRE_CASELESS и т.п.
+HmsRegExReplace(const aRegEx, aSubject, aReplacement: String; var aResult: String; aIndex: Integer = 1; aOptions: Integer = 0): Boolean|Замена всех совпадений по регулярному выражению на указанную строку. Возвращает True, если соответствие регулярному выражению найдено.
+  aRegEx - регулярное выражение
+  aSubject - строка, в которой будет происходить поиск соответствию регулярному выражению
+  aReplacement - строка, на которую будет произведена замена найденных совпадений. Можно указывать шаблоны значений группировок как $1, $2, ...
+  aResult - переменная, в которую будет занесен результат замены при найденном соответствии. Почему-то, возвращается только сам указанный шаблон замены.
+  aIndex - номер группировки (то, что в регулярном выражении заключается в круглые скобки). Если 0 - будет заменено всё соответствие. Необязательный параметр. По-умолчанию = 1.
+  aOptions - опции работы с регулярными выражениями. Необязательный параметр. Могут использоваться константы, начинающиеся на PCRE_, например: PCRE_SINGLELINE, PCRE_CASELESS и т.п.
+HmsSelectStreamByLanguage(aMediaItem: THmsScriptMediaItem; aStreamType: Char; const aLanguage: String)|Выбор дорожки медиа-ресурса по указанному языку
+  aMediaItem - элемент базы данных , который содержит ссылку на медиа-ресурс
+  aStreamType - тип дорожки: A - аудио, V - видео, S - субтитры.
+  aLanguage - язык, указанный в виде "rus", "eng" и т.п.
+HmsSetCurrentMediaItem(aMediaItem: THmsScriptMediaItem)|Установка текущего элемента базы данных
+  aMediaItem - элемент базы данных медиа-ресурсов
+HmsSetProgress(aPercent: Integer)|Установка текущего позиции прогресса выполнения
+  aPercent - процент позиции (0...100)
+HmsSetUserSearchText(const aValue: String)|Установка пользовательского текста поиска
+  aValue - значение текста поиска
+HmsSha1(const aText: String; aHex: Boolean = True): String|Вычисляет хэш строки с помощью хэш-функции SHA1
+  aText - строка, хэш которой необходимо вычислить
+  aHex - флаг использования HEX представления результата. Необязательный параметр. По-умолчанию True.
+HmsSha256(const aText: String; aHex: Boolean = True): String|Вычисляет хэш строки с помощью хэш-функции SHA256
+  aText - строка, хэш которой необходимо вычислить
+  aHex - флаг использования HEX представления результата. Необязательный параметр. По-умолчанию True.
+HmsSha384(const aText: String; aHex: Boolean = True): String|Вычисляет хэш строки с помощью хэш-функции SHA384
+  aText - строка, хэш которой необходимо вычислить
+  aHex - флаг использования HEX представления результата. Необязательный параметр. По-умолчанию True.
+HmsSha512(const aText: String; aHex: Boolean = True): String|Вычисляет хэш строки с помощью хэш-функции SHA512
+  aText - строка, хэш которой необходимо вычислить
+  aHex - флаг использования HEX представления результата. Необязательный параметр. По-умолчанию True.
+HmsShowInformation(const aTitle: String)|Показ формы информационного сообщения
+  aTitle - текст сообщения
+HmsShowProgress(const aTitle: String)|Показ формы прогресса выполнения
+  aTitle - заголовок формы
+HmsStringToHex(const aText: String): String|Преобразует обычную строку в текст в формате HEX представления (например: "Привет!" будет преобразована в "cff0e8e2e5f221" ). Обратная процедура преобразования - HmsHexToString.
+HmsSubtitlesDirectory: String|Возвращает директорию файлов субтитров
+HmsTempDirectory: String|Возвращает каталог временных файлов программы
+HmsThumbnailsSupported(aMediaType: TMediaType): Boolean|Проверка поддержки типом медиа показа эскизов (уменьшенных изображений)
+  aMediaType - тип медиа (mtAudio, mtImage, mtIsoDisk, mtText, mtUnknown, mtVideo)
+HmsTimeConvert(const aTimeStr: String): Integer|Преобразует строку времени (HH:MM:SS) в количество секунд
+  aTimeStr - строка, содержащая время в формате HH:MM:SS
+HmsTimeConvertEx(const aTimeStr: String): Extended|Преобразует строку времени (HH:MM:SS.mmm) в количество секунд и возвращает число с плавающей точкой, значение после запятой которого содержит количество миллисекунд
+  aTimeStr - строка, содержащая время в формате HH:MM:SS.mmm, где mmm - количество миллисекунд
+HmsTimeFormat(aSeconds: Integer): String|Преобразует количество секунд в строку времени (HH:MM:SS)
+  aSeconds - число секунд
+HmsUtf8Decode(const aText: Variant): Variant|Преобразование строки из UTF8 кодировки
+  aText - преобразуемый текст
+HmsUtf8Encode(const aText: Variant): Variant|Преобразование строки в кодировку UTF8 
+  aText - преобразуемый текст
+ 
+* Преобразование
+BoolToStr(B: Boolean): String|Возвращает "-1", если true и "0", если false
+  B - логическое значение типа Boolean, которое будет преобразовано в строку
+DateTimeToStr(e: Extended): String|Перевод даты и времени в строку "ДД.ММ.ГГГГ ЧЧ:мм"
+  e - дата и время, которая будет преобразована в строку типа "ДД.ММ.ГГГГ ЧЧ:мм"
+DateToStr(e: Extended): String|Перевод даты в строку "ДД.ММ.ГГГГ"
+  e - дата, которая будет преобразована в строку типа "ДД.ММ.ГГГГ"
+FloatToStr(e: Extended): String|Перевод числа с плавающей запятой в строку
+  e - число с плавающей запятой, которое будет преобразовано в строку
+IntToStr(i: Integer): String|Перевод целого в строку
+  e - целое число, которое будет преобразовано в строку
+Str(v: Variant): String|Конвертирует заданное значение в строку 
+  v - значение любого типа, которое будет преобразовано в строку
+StrToBool(const S: String): Boolean|Конвертирует строку в Boolean
+  S - строка, которая будет преобразована в значение с типом Boolean
+StrToDate(s: String): Extended|Перевод строки в дату
+  s - строка, которая будет преобразована в дату
+StrToDateDef(cDate: String; dDefault: TDateTime): TDateTime|Перевод строки в дату, если не сможет, то будет заданное по-умолчанию dDefault 
+  cDate - строка, которая будет преобразована в дату
+  dDefault - значение даты по-умолчанию, если преобразование будет невозможно
+StrToDateTime(s: String): Extended|Перевод строки в дату и время
+  s - строка, которая будет преобразована в дату и время
+StrToFloat(s: String): Extended|Перевод строки в число с плавающей запятой
+  s - строка, которая будет преобразована в число с плавающей запятой
+StrToFloatDef(cFlt:String; nFltDef :Extended): Extended|Перевод строки в число с плавающей запятой, если не сможет, то будет заданное по-умолчанию nFltDef  
+  cFlt - строка, которая будет преобразована в число с плавающей запятой
+  nFltDef - значение по-умолчанию, если преобразование будет невозможно
+StrToInt(s: String): Integer|Перевод строки в целое число
+  s - строка, которая будет преобразована в целое число
+StrToInt64(s: String): Integer|Перевод строки в целое число
+  s - строка, которая будет преобразована в целое число
+StrToIntDef(const cStr: String; const nDefault: Integer): Integer|Перевод строки в целое, если не сможет, то будет заданное по-умолчанию nDefault 
+  cStr - строка, которая будет преобразована в целое число
+  nDefault - значение по-умолчанию, если преобразование будет невозможно
+StrToTime(s: String): Extended|Перевод строки во время
+  s - строка, которая будет преобразована во время
+TimeToStr(e: Extended): String|Перевод времени в строку
+  e - время, которое будет преобразовано в строку
+TryStrToInt(const cStr: String; var aValue: Integer): Boolean|Пытается перевести строку в число 
+  cStr - время, которое будет преобразовано в строку
+  aValue - переменная, в которую будет занесено преобразованное значение
+VarToStr(v: Variant): String|Перевод Variant в строку
+  v - значение с типом Variant, которое будет преобразовано в строку
+
+* Системные
+ChangeFileExt(const FileName, FileExt: String): String|Возвращает имя файла с указанным расширением
+  FileName - имя файла
+  FileExt - расширение файла
+CopyFile(const aSourceFileName, aDestFileName: String; aFailIfExists: Boolean): Boolean|Копирование файла. Возвращает True, если копирование успешно прошло.
+  aSourceFileName - путь и имя файла, который будет скопирован
+  aDestFileName - путь и имя файла, в который будет скопирован файл, указанный в первом параметре
+  aFailIfExists - флаг, определяющий не копировать, если файл уже существует
+ExcludeTrailingBackslash(const FileName: String): String|Возвращает имя файла с удаленным конечным \
+  FileName - имя файла
+ExtractFileDir(const FileName: String): String|Возвращает путь файла без конечного \
+  FileName - имя файла
+ExtractFileExt(const FileName: String): String|Возвращает расширение файла
+  FileName - имя файла
+ExtractFileName(const FileName: String): String|Возвращает имя файла
+  FileName - путь и имя файла
+ExtractFilePath(const FileName: String): String|Возвращает путь файла
+  FileName - путь и имя файла
+ExtractShortPathName(const FileName: String): String|Возвращает короткий путь файла
+  FileName - путь и имя файла
+FileExists(const FileName: String): Boolean|Возвращает True, если файл существует
+  FileName - путь и имя файла
+ForceDirectories(const Dir: String): Boolean|Создание каталога
+  Dir - путь и имя каталога
+GetFileDate(const FileName: String): TDateTime|Возвращает дату модификации файла
+  FileName - путь и имя файла
+GetLocaleByInfo(aType: Integer; const aInfo: String): Integer|Получение идентификатора локали по информации (обратная функция GetLocaleInfo). (Не работает?) 
+  aType - тип информации (?)
+  aInfo - информация (?)
+GetLocaleInfo(aLocale, aType: Integer): String|Получает информацию локали, заданной идентификатором.
+  aLocale - идентификатор системы. Можно получить функцией GetUserDefaultLCID.
+  aType - тип информации. По сути - это константа определяющая часть информации о локали, типа LOCALE_ILANGUAGE или LOCALE_SLANGUAGE.\nНекоторые возможные константы:\nLOCALE_ILANGUAGE = 1 - вернёт цифровой идентификатор языка;\nLOCALE_SLANGUAGE = 2 - вернёт полное наименование в текущей локали (например: "Русский (Россия)");\nLOCALE_SCOUNTRY = 6 - вернёт название страны;\nLOCALE_SENGLANGUAGE = 0x00001001 - вернёт наименование языка на английском
+GetUserDefaultLCID: Integer|Получение идентификатора локали системы
+IncludeTrailingBackslash(const FileName: String): String|Возвращает имя файла, дополненное \
+ProgramPath: String|Возвращает каталог установки программы Домашний медиа-сервер
+RegistryRead(const aKey: String): String|Чтение ключа реестра Windows. Если прав на чтение ключа нет, возвращает пустое значение. Если программа не работает в режиме сервиса Windows, то доступ может ограничиваться практически только веткой HKEY_CURRENT_USER и HKEY_CURRENT_CONFIG.
+  aKey - путь и ключ реестра. Например: "HKEY_CURRENT_USER\Software\Microsoft\Internet Explorer\Download\CheckExeSignatures".
+SpecialFolderPath(aCSIDL: Integer): String|Получение пути до специальной папки (рабочего стола, документов пользователя и проч.)
+  aCSIDL - идентификатор специальной папки. Некоторые из значений:\n0 (CSIDL_DESKTOP) - папка "Рабочий стол";\n5 (CSIDL_MY_DOCUMENTS) - папка "Документы";\n6 (CSIDL_FAVORITES) - папка "Избранное";\n7 (CSIDL_STARTUP) - папка "Автозагрузка";\n8 (CSIDL_RECENT) - папка "Недавние места";\n0xD (CSIDL_MYMUSIC) - папка "Музыка";\n0xE (CSIDL_MYVIDEO) - папка "Видео";\n0x1A (CSIDL_APPDATA) - папка данных программ;\n0x1C (CSIDL_LOCAL_APPDATA) - локальная папка данных программ;\n0x23 (CSIDL_COMMON_APPDATA) - общая папка данных программ;\n0x35 (CSIDL_COMMON_MUSIC) - общая папка "Музыка";\n0x36 (CSIDL_COMMON_PICTURES) - общая папка "Изображения";\n0x37 (CSIDL_COMMON_VIDEO) - общая папка "Видео".
+SysErrorMessage(aErrorCode: Integer): String|Возвращает сообщение, соответствующее коду ошибки
+  aErrorCode - код ошибки
+
+* Строковые
+Chr(i: Integer): Char|Конвертирует целое число в символ
+  i - код символа (0...255)
+CompareStr(cStr1, cStr2: String) :Integer|Сравнивает строку <cStr1> и строку <cStr2>, и возвращает номер позиции начиная с которого строка <cStr1> отличается от строки <cStr2> или 0 если они равны
+  cStr1 - первая строка для сравнения
+  cStr2 - вторая строка для сравнения
+CompareText(s, s1: String): Integer|Сравнивает две строки без учета регистра
+  s - вторая строка для сравнения
+  s1 - вторая строка для сравнения
+Copy(s: String; from, count: Integer): String|Возвращает подстроку, начиная с указанной позиции указанной длины
+  s - строка, из которой будет выделена подстрока
+  from - позиция, с которой будет выделена подстрока (начиная с 1)
+  count - длина подстроки
+Delete(var s: String; from, count: Integer)|Удаляет часть символов строки
+  s - строка, из которой будут удалены символы
+  from - позиция, с которой будут удалены символы (начиная с 1)
+  count - количество удаляемых символов
+DeleteStr(var s: String; from, count: Integer)|Удаляет часть символов строки
+  s - строка, из которой будут удалены символы
+  from - позиция, с которой будут удалены символы (начиная с 1)
+  count - количество удаляемых символов
+EndPos(cStr, cSubStr: String): Integer|Ищет в строке <cStr> подстроку <cSubStr> начиная с конца и возвращает позицию с которой он ее нашел
+  cStr - строка, в которой будет происходить поиск подстроки
+  cSubStr - искомая подстрока
+ExtractParam(const aParameters, aParamName: String; const aDefaultValue: String = ''; aSeparator: Char = ' '): String|Извлечение значения параметра из строки, где перечислены параметры с их значениями. Например: ExtractParam("?a=1&b=2&c=hi", "b", "", "&") вернёт "2".
+  aParameters - строка с параметрами и значениями
+  aParamName - имя извлекаемого параметра
+  aDefaultValue - значение по-умолчанию, если извлечь указанный параметр невозможно. Необязательный. По-умолчанию пустая строка.
+  aSeparator - разделитель параметров. Необязательный. По-умолчанию пробел.
+ExtractStr(const aValue, aSep: String; var aStart: Integer): String|Извлечение подстроки по номеру позиции символа из строки, разделённой указанным символом-разделителем. Например: ExtractStr("red|blue|white", "|", 5) вернёт "blue".
+  aValue - строка, в которой будут искаться подстроки
+  aSep - разделитель подстрок
+  aStart - позиция символа указанной строки, начиная с которой будет возвращена подстрока до первого разделителя
+ExtractWord(nNum: Integer; const cStr: String; const cWordDelims: String): String|Выделяет N-ое <nNum> слово из строки <cStr> используя символы в <cWordDelims> как разделители между словами и возвращает результат.\nНапример: ExtractWord(3, "red|blue|white", "|") вернёт "white".
+  nNum - номер слова, возвращаемого из строки (начиная с 1)
+  cStr - строка, из которой будет извлечено слово
+  cWordDelims - разделитель слов
+Insert(s: String; var s2: String; pos: Integer)|Вставляет подстроку в строку по указанной позиции
+  s - вставляемая подстрока
+  s2 - переменная, содержащая строку, в которую будет вставлена подстрока
+  pos - позиция, в которую будет вставлена подстрока (начиная с 1)
+IsWordPresent(const cWord,  cStr: String; const cWordDelims: String): Boolean|Определяет, присутствует ли слово <cWord> в строке <cStr> используя символы в <cWordDelims> как разделители между словами и возвращает результат
+  cWord - проверяемое слово
+  cStr - строка, в которой будет идти проверка на присутствие слова
+  cWordDelims - разделитель слов в строке
+LeftCopy(cStr: String; nCount: Integer): String|Копирует из строки <cStr> начиная сначала <nCount> символов и возвращает результат
+  cStr - строка, из которой будут копироваться символы
+  nCount - количество символов, которые будут копироваться
+Length(s: Variant): Integer|Возвращает длину строки или массива
+  s - строка или массив, длина которого будет возвращена
+Lowercase(s: String): String|Конвертирует все символы строки в нижний регистр
+  s - строка, символы которой будут приведены в нижний регистр
+MatchText(const AText: String; const AValues: array of String; aContains: Boolean = False; aIgnoreCase: Boolean = True): Boolean|Возвращает True, если AText равно одному из значений массива AValues без учета регистра
+  AText - строка, поиск которой будет происходить в массиве
+  AValues - массив строк, в котором будет происходить поиск
+  aContains - флаг, указывающий искать не полное соответствие, а вхождение искомой строки в значение массива. Необязательный параметр. По-умолчанию False.
+  aIgnoreCase - флаг, указывающий искать без учёта регистра. Необязательный параметр. По-умолчанию True.
+NPos(const cSubStr: String; cStr: String; nNum: Integer): Integer|Ищет позицию N-го <nNum> вхождения подстроки <cSubStr> в строке <cStr> и возвращает результат
+  cSubStr - искомая подстрока
+  cStr - строка, в которой будет происходить поиск
+  nNum - номер вхождения подстроки
+NameCase(s: String): String|Конвертирует первый символ каждого слова в верхний регистр
+  s - строка, где будет конвертирован первый символ каждого слова в верхний регистр
+Ord(ch: Char): Integer|Конвертирует символ в целое число
+  ch - символ, код которого будет возвращён
+PadCenter(cStr: String; nWidth: Integer; cChar: String): String|Дополняет слева и справа строку <cStr> до длинны <nLen> символами из строки <cChar>, центрируя ее и возвращает результат
+  cStr - изначальная строка, которая будет дополнена
+  nWidth - ширина окончательной строки, которая будет в результате дополнения
+  cChar - символ дополнения
+PadLeft(cStr: String; nLen: Integer; cChar: String): String|Дополняет слева строку <cStr> до длины <nLen> символами из строки <cChar> и возвращает результат
+  cStr - изначальная строка, которая будет дополнена
+  nLen - длина окончательной строки, которая будет в результате дополнения
+  cChar - символ дополнения
+PadRight(cStr: String; nLen: Integer; cChar: String): String|Дополняет справа строку <cStr> до длины <nLen> символами из строки <cChar> и возвращает результат
+  cStr - изначальная строка, которая будет дополнена
+  nLen - длина окончательной строки, которая будет в результате дополнения
+  cChar - символ дополнения
+Pos(substr, s: String): Integer|Возвращает позицию подстроки в строке
+  substr - подстрока, поиск которой будет производиться
+  s - строка, в которой будет произведён поиск
+ReplaceStr(const cStr1, cSrch, cReplace: String): String|Заменяет в строке <cStr1> все вхождения подстроки <cSrch> на подстроку <cReplace> и возвращает результат
+  cStr1 - строка, в которой будет происходить поиск и замена
+  cSrch - искомая подстрока
+  cReplace - подстрока замены
+Replicate(cStr: String; nLen: Integer): String|Возвращает строку длиной <nLen> состоящую из символов <cStr>
+  cStr - символы, из которой будет состоять результирующая строка
+  nLen - длина результирующей строки
+RightCopy(cStr: String; nCount: Integer): String|Копирует из строки <Строка> начиная с конца <nCount> символов и возвращает результат
+  cStr - строка, из которой будут копироваться символы
+  nCount - количество символов, которые будут копироваться
+SameFloat(const F1, F2: String): Boolean|Возвращает True, если F1 равно F2 без учета типа десятичного разделителя (без различия символа "." или "," как символа разделителя)
+  F1 - строка, содержащая первое число
+  F2 - строка, содержащая второе число
+SameText(const S1, S2: String): Boolean|Возвращает True, если S1 равно S2 без учета регистра
+  S1 - первая сравниваемая строка
+  S2 - вторая сравниваемая строка
+SetLength(var S: Variant; L: Integer)|Устанавливает длину строки или массива
+  S - строка или массив, длинна которого будет установлена
+  L - устанавливаемая длинна указанной строки или массива
+StrInternetToDateTime(const aValue: String; var aDateTime: TDateTime): Boolean|Преобразует строку даты и времени в интернет-формате RFC822 ("Mon, 10 Oct 2016 22:00:00") в "родной" тип TDateTime. В случае успеха возвращает True и результат присваивает указанной переменной.
+  aValue - строка, содержащая дату и время в интернет-формате RFC822 ("Mon, 10 Oct 2016 22:00:00")
+  aDateTime - переменная с типом TDateTime, которая в случае успешного преобразования будет содержать указанную дату и время
+Trim(s: String): String|Удаляет пробелы в начале и конце строки
+  s - строка, у которой будут в начале и конце удалены знаки пробелов и табуляции
+TrimLeft(const cStr: String): String|Удаляет слева пробелы из строки <cStr> и возвращает результат
+  s - строка, у которой будут слева удалены знаки пробелов и табуляции
+TrimRight(const cStr: String): String|Удаляет справа пробелы из строки <cStr> и возвращает результат
+  s - строка, у которой будут справа удалены знаки пробелов и табуляции
+Uppercase(s: String): String|Конвертирует все символы строки в верхний регистр
+  s - строка, у которой будут конвертированы все символы строки в верхний регистр
+WordCount(const cStr: String; const cWordDelims: String): Integer|Считает число слов в строке <cStr> используя символы в <cWordDelims> как разделители между словами и возвращает результат
+  cStr - строка, в которой будут подсчитаны слова
+  cWordDelims - разделитель слов в строке
+WordPosition(const nNum: Integer; const cStr: String; const cWordDelims: String): Integer|Возвращает позицию первого символа N-го <nNum> слова в строке <cStr> используя символы в <cWordDelims> как разделители между словами и возвращает результат
+  nNum - номер слова, позиция которого будет возвращена (начиная с 1)
+  cStr - строка, которая будет разделена на слова
+  cWordDelims - разделитель слов в строке
+
+* Транскодирование
+HmsCalculateThumbnailDimension(aImageWidth, aImageHeight, aDestWidth, aDestHeight: Integer; var aThumbnailWidth, aThumbnailHeight: Integer; aAlign: Integer = 2): Boolean|Вычисление новой ширины и высоты изображения, пропорционально вмещённую в указанную ширину и высоту
+  aImageWidth - оригинальная ширина изображения
+  aImageHeight - оригинальная высота изображения
+  aDestWidth - ширина, в которую будет вписано изображение
+  aDestHeight - высота, в которую будет вписано изображение
+  aThumbnailWidth - переменная, в которую будет помещена новая вычисленная ширина изображения
+  aThumbnailHeight - переменная, в которую будет помещена новая вычисленная высота изображения
+  aAlign - тип выравнивания изображения. Необязательный параметр. По-умолчанию 2 - центровать. Возможно использовать константы (aCenter,alBottom,alLeft,alNone,alRight,alTop)
+HmsClientID: String| (?)
+HmsConvertColor(aColor: Integer): String|Возвращает строковое представление цвета дополнения
+  aColor - значение цвета
+HmsCreateDualPipe(var aReadPipeName, aWritePipeName: String; aBufferSize: Integer = 0; aCloseOnExit: Boolean = True): Boolean|Создание pipe-каналов для записи, чтение транскодированных данных
+  aReadPipeName - pipe-канал для чтения данных
+  aWritePipeName - pipe-канал для записи данных
+  aBufferSize - размер буфера. Необязательный параметр.
+  aCloseOnExit - флаг, указывающий закрывать каналы по завершению исполнения скрипта. Необязательный параметр. По-умолчанию True.
+HmsCreateLpcmFile(const aSourceFileName, aDestFileName: String; aChannels, aSampleRate, aBitsPerSample: Integer; aWait: Boolean; aDtsConvert: Boolean = False)|Запись указанного файла в формате lpcm-файла с информацией о параметрах звука
+  aSourceFileName - исходный LPCM файл
+  aDestFileName - LPCM файл назначения, в который будет записаны данные
+  aChannels - количество каналов
+  aSampleRate - частота дискретизации
+  aBitsPerSample - количество бит на сэмпл
+  aWait - флаг, указывающий ждать завершения записи файла
+  aDtsConvert - флаг, указывающий конвертировать DTS. Необязательный параметр. По-умолчанию False.
+HmsCreateResourcePipe(var aReadPipeName: String): Boolean|Создание pipe-канала для чтения данных медиа-ресурса
+  aReadPipeName - имя pipe-канала
+HmsCreateWaveFile(const aSourceFileName, aDestFileName: String; aChannels, aSamplesRate, aBitsPerSample, aChannelMask, aDuration: Integer; aWait: Boolean)|Запись указанного файла в формате wav-файла
+  aSourceFileName - исходный WAV файл
+  aDestFileName - WAV файл назначения, в который будет записаны данные
+  aChannels - количество каналов
+  aSamplesRate - частота дискретизации
+  aBitsPerSample - количество бит на сэмпл
+  aChannelMask - маска для каналов
+  aDuration - длительность
+  aWait - флаг, указывающий ждать завершения записи файла
+HmsCreateWebShot(const aSourceUrl, aDestFileName: String; const aWebShotParams: String = ''): Boolean|Создание снимка Web-страницы, формат параметров SourceX:SourceY:SourceWidth:SourceHeight:DestWidth:DestHeight
+  aSourceUrl - URL адрес web-страницы
+  aDestFileName - файл изображения, в который будет сохранён снимок страницы
+  aWebShotParams - дополнительные параметры, указывающие координаты и размеры снимка. Необязательный параметр.\nФормат параметров - SourceX:SourceY:SourceWidth:SourceHeight:DestWidth:DestHeight
+HmsCueTime(aSeconds: Integer): String|Преобразует количество секунд в строку времени (MM:SS:ZZ)
+  aSeconds - количество секунд
+HmsDumpPipe(const aPipeName, aFileName: String; aAsync: Boolean = False): Boolean|Сохранение данных pipe-канала в файле
+  aPipeName - pipe-канал для чтения данных
+  aFileName - путь и имя файла для записи данных
+  aAsync - флаг, указывающий не ждать завершения выполнения функции. Необязательный параметр. По-умолчанию False.
+HmsDumpPipes(const aPipeNames: array of String; const aFileName: String; aAsync: Boolean = True): Boolean|Сохранение данных нескольких pipe-каналов в файле
+  aPipeNames - массив имён pipe-каналов для чтения данных
+  aFileName - путь и имя файла для записи данных
+  aAsync - флаг, указывающий не ждать завершения выполнения функции. Необязательный параметр. По-умолчанию False.
+HmsForceClosePipe(const aPipeName: String): Boolean|Принудительное закрытие pipe-канала
+  aPipeName - закрываемый pipe-канал
+HmsGenerateUUID: String|Создание уникального идентификатора
+HmsGetAudioStreamID(aAudioStreamNo: Integer): String|Возвращает идентификатор звуковой дорожки
+  aAudioStreamNo - номер звуковой дорожки
+HmsGetItemProperty(aPropertyID: Integer): String|Получает значение параметра текущего элемента базы данных по идентификатору
+  aPropertyID - идентификатор параметра (константы, начинающиеся на mpi)
+HmsGetStreamBitrate(aStreamType: Char; aStreamNo: Integer): Integer|Получение битрейта указанной дорожки
+  aStreamType - тип дорожки ('A'-звуковая, 'V'-видео, 'S'-субтитры, 'U'-неизвестно). Можно использовать соответствующие константы stAudio, stVideo, stSubtitle, stUnknown.
+  aStreamNo - номер дорожки
+HmsGetStreamChannels(aAudioStreamNo: Integer): Integer|Возвращает количество каналов звуковой дорожки
+  aAudioStreamNo - номер звуковой дорожки
+HmsGetStreamCodecID(aStreamType: Char; aStreamNo: Integer): Integer|Возвращает идентификатор кодека дорожки фильма
+  aStreamType - тип дорожки ('A'-звуковая, 'V'-видео, 'S'-субтитры, 'U'-неизвестно). Можно использовать соответствующие константы stAudio, stVideo, stSubtitle, stUnknown.
+  aStreamNo - номер дорожки
+HmsGetStreamCount: Integer|Возвращает количество дорожек фильма
+HmsGetStreamDelay(aStreamType: Char; aStreamNo: Integer; aFromStreamType: Char = 'V'; aFromStreamNo: Integer = 0): Integer|Возвращает величину задержки указанной дорожки относительно видео-дорожки или другой
+  aStreamType - тип дорожки ('A'-звуковая, 'V'-видео, 'S'-субтитры, 'U'-неизвестно). Можно использовать соответствующие константы stAudio, stVideo, stSubtitle, stUnknown.
+  aStreamNo - номер дорожки
+  aFromStreamType - тип дорожки, по отношению к которой будет браться задержка (A - звуковая, V - видео). Необязательный параметр. По-умолчанию 'V'.
+  aFromStreamNo - номер дорожки, по отношению к которой будет браться задержка . Необязательный параметр. 
+HmsGetStreamID(aStreamType: Char; aStreamNo: Integer): Integer|Возвращает идентификатор дорожки фильма
+  aStreamType - тип дорожки ('A'-звуковая, 'V'-видео, 'S'-субтитры, 'U'-неизвестно). Можно использовать соответствующие константы stAudio, stVideo, stSubtitle, stUnknown.
+  aStreamNo - номер дорожки
+HmsGetStreamIndex(aStreamType: Char; aStreamNo: Integer): Integer|Возвращает номер по-порядку дорожки фильма (начиная с 0)
+  aStreamType - тип дорожки ('A'-звуковая, 'V'-видео, 'S'-субтитры, 'U'-неизвестно). Можно использовать соответствующие константы stAudio, stVideo, stSubtitle, stUnknown.
+  aStreamNo - номер дорожки
+HmsGetStreamInfo(aStreamNo: Integer): String|Возвращает информацию о дорожке фильма (Тип|Идентификатор_дорожки|Язык|Идентификатор_кодека)
+  aStreamNo - номер дорожки
+HmsGetStreamLanguage(aStreamType: Char; aStreamNo: Integer; const aStreamExtInfo: String = ''): String|Возвращает язык дорожки фильма
+  aStreamType - тип дорожки ('A'-звуковая, 'V'-видео, 'S'-субтитры, 'U'-неизвестно). Можно использовать соответствующие константы stAudio, stVideo, stSubtitle, stUnknown.
+  aStreamNo - номер дорожки
+  aStreamExtInfo - дополнительная информация дорожки. Необязательный параметр. (?)
+HmsGetStreamParam(aStreamType: Char; aStreamNo: Integer; aStreamParamType: TStreamParamType; const aStreamExtInfo: String = ''): String|Получение значение параметра информации выбранной дорожки
+  aStreamType - тип дорожки ('A'-звуковая, 'V'-видео, 'S'-субтитры, 'U'-неизвестно). Можно использовать соответствующие константы stAudio, stVideo, stSubtitle, stUnknown.
+  aStreamNo - номер дорожки
+  aStreamParamType - тип параметра (siStreamAspectRatio,siStreamChannels,siStreamCodec,...)
+  aStreamExtInfo - дополнительная информация дорожки. Необязательный параметр. (?)
+HmsGetTickCount: Variant|Получает количество миллисекунд, прошедших с момента старта системы
+HmsGetVideoSettings(aType: Integer): String|Возвращает выбранное значение настройки показа фильма
+  aType - тип значения (?)
+HmsIsFormatSupported(const aFormatType: String; const aVideoCodec: String = 'copy'; const aAudioCodec: String = 'copy'): Boolean|Проверка поддержки формата
+  aFormatType - проверяемый тип формата
+  aVideoCodec - видео-кодек. Необязательный параметр.
+  aAudioCodec - аудио-кодек. Необязательный параметр.
+HmsRetrieveProperties|Загрузка свойств файла
+HmsShuffleList(aList: TList)|Перемешать список в случайном порядке
+  aList - список, который будет перемешан
+HmsSleep(aMilliseconds: Integer)|Задержка выполнения на указанное количество миллисекунд
+  aMilliseconds - количество миллисекунд, на которое будет вызвана задержка
+HmsSubTitlesFileName(const aFileName: String): String|Возвращает имя файла субтитров для указанного файла фильма
+  aFileName - имя файла, для которого будет возвращен файл субтитров
+HmsTranscoderPath(const aTranscoderName: String): String|Возвращает путь транскодера
+  aTranscoderName - имя транскодера. Список транскодеров в программе: Настройки -> Транскодер -> Профили (верхняя таблица).
+HmsTranscodingActivateSubItem(aSubItemNo: Integer): Boolean|Активизирует свойства указанной части фильма на DVD-диске (каталоге)
+  aSubItemNo - номер части фильма на DVD-диске (каталоге)
+HmsTranscodingAudioCodecParams(aAudioBitrate: Integer = 0; aCanCopyAudio: Boolean = True): String|Возвращает параметры транскодирования аудио-дорожки фильма, согласно настройкам программы
+  aAudioBitrate - битрейт звуковой дорожки. Необязательный параметр.
+  aCanCopyAudio - флаг, указывающий возможность использования изначального формата аудио. Необязательный параметр. По-умолчанию True.
+HmsTranscodingBufferSize(aBitrate: Integer): Integer|Возвращает значение параметра транскодера "Размер буфера", соответствующее указанному битрейту
+  aBitrate - битрейт
+HmsTranscodingDvdParams(aScreenWidth: Integer = 0; aScreenHeight: Integer = 0; aVideoBitrate: Integer = 0; aAudioBitrate: Integer = 0): String|Возвращает параметры транскодирования DVD-диска(каталога), согласно настройкам программы
+  aScreenWidth - ширина кадра. Необязательный параметр.
+  aScreenHeight - высота кадра. Необязательный параметр.
+  aVideoBitrate - битрейт видео-дорожки. Необязательный параметр.
+  aAudioBitrate - битрейт звуковой дорожки. Необязательный параметр.
+HmsTranscodingExecute(const aTranscoderName, aTranscoderParams: String; aWait: Boolean = True; const aInputFileName: String = ''; const aOutputFileName: String = ''): Boolean|Выполнение транскодирования с указанными параметрами
+  aTranscoderName - имя транскодера. Список транскодеров в программе: Настройки -> Транскодер -> Профили (верхняя таблица).
+  aTranscoderParams - параметры транскодирования
+  aWait - флаг, указывающий ждать завершения выполнения операции. Необязательный параметр. По-умолчанию True.
+  aInputFileName - имя входного файла для транскодирования. Необязательный параметр.
+  aOutputFileName - имя выходного файла для транскодирования. Необязательный параметр.
+HmsTranscodingFrameParams(var aWidth, aHeight: Integer; const aScreenFormat: String; var aPadLeft, aPadTop, aPadRight, aPadBottom: Integer): Boolean|Расчет размера кадра, параметров дополнения цветом, согласно настройкам программы
+  aWidth - переменная со значением изначальной ширины кадра и в которую будет помещён результат расчитанной ширины кадра
+  aHeight - переменная со значением изначальной высоты кадра и в которую будет помещён результат расчитанной высоты кадра
+  aScreenFormat - формат кадра
+  aPadLeft - переменная, куда будет помещён результат расчета дополнения слева
+  aPadTop - переменная, куда будет помещён результат расчета дополнения сверху
+  aPadRight - переменная, куда будет помещён результат расчета дополнения справа
+  aPadBottom - переменная, куда будет помещён результат расчета дополнения снизу
+HmsTranscodingIndicatorParams(aFrameWidth, aFrameHeight: Integer; a3DVideoType: Integer = 0): String|Возвращает параметры индикатора скорости транскодирования
+  aFrameWidth - ширина области индикатора
+  aFrameHeight - высота области индикатора
+  a3DVideoType - флаг, определяющий 3D отображение индикатора. Необязательный параметр. По-умолчанию 0.
+HmsTranscodingInputParams: String|Возвращает параметры для входного файла с учетом времени начала просмотра
+HmsTranscodingMapParams(aAudioStreamNo: Integer; const aAudioStreamID: String = ''): String|Возвращает параметры отображения потоков для указанной звуковой дорожки
+  aAudioStreamNo - номер звуковой дорожки
+  aAudioStreamID - идентификатор звуковой дорожки. Необязательный параметр. Если указан, но номер звуковой дорожки игнорируется.
+HmsTranscodingProbeParams: String|Возвращает параметры пробы файла, для получения информации о свойствах файла
+HmsTranscodingProfileExecute(const aProfileName: String): Boolean|Выполнение указанного профиля транскодирования
+  aProfileName - профиль транскодирования (например: "Фильмы (основной)" или "Фильмы (Оптимальный)"). Список профилей транскодирования в программе: Настройки -> Транскодер -> Профили.
+HmsTranscodingProfileParams(const aProfileName: String): String|Возвращает параметры транскодирования для указанного профиля
+  aProfileName - профиль транскодирования (например: "Фильмы (основной)" или "Фильмы (Оптимальный)"). Список профилей транскодирования в программе: Настройки -> Транскодер -> Профили.
+HmsTranscodingSacdTrack(const aPcmFileName: String; aSampleRate: Integer; aStartSeconds: Extended; aVolume: Integer = 5; aConvType: Integer = 1): Boolean| (?)
+  aPcmFileName - PCM файл
+  aSampleRate - частота дискретизации
+  aStartSeconds - секуна, с которой будет идти транскодирование
+  aVolume - значение громкости. Необязательный параметр. По-умолчанию 5.
+  aConvType - тип конвертации (?). Необязательный параметр. По-умолчанию 1.
+HmsTranscodingSubTitleParams(aFrameWidth, aFrameHeight, aWidth, aHeight, aPadLeft, aPadTop: Integer): String|Возвращает параметры субтитров
+  aFrameWidth - ширина области субтитров
+  aFrameHeight - высота области субтитров
+  aWidth - ширина субтитров
+  aHeight - высота субтитров
+  aPadLeft - отступ слева
+  aPadTop - отступ сверху
+HmsTranscodingTempDirectory: String|Возвращает каталог временных файлов транскодирования
+HmsTranscodingVideoCodecParams(aScreenWidth: Integer = 0; aScreenHeight: Integer = 0; aVideoBitrate: Integer = 0; aCanCopyVideo: Boolean = True): String|Возвращает параметры транскодирования видео-дорожки фильма, согласно настройкам программы
+  aScreenWidth - ширина кадра. Необязательный параметр.
+  aScreenHeight - высота кадра. Необязательный параметр.
+  aVideoBitrate - битрейт видео-дорожки. Необязательный параметр.
+  aCanCopyVideo - флаг, указывающий возможность использования изначального формата видео. Необязательный параметр. По-умолчанию True.
+HmsTranscodingVideoParams(aScreenWidth: Integer = 0; aScreenHeight: Integer = 0; aVideoBitrate: Integer = 0; aAudioBitrate: Integer = 0; aCanCopyVideo: Boolean = True; aCanCopyAudio: Boolean = True): String|Возвращает параметры транскодирования фильма, согласно настройкам программы
+  aScreenWidth - ширина кадра. Необязательный параметр.
+  aScreenHeight - высота кадра. Необязательный параметр.
+  aVideoBitrate - битрейт видео-дорожки. Необязательный параметр.
+  aAudioBitrate - битрейт аудио-дорожки. Необязательный параметр.
+  aCanCopyVideo - флаг, указывающий возможность использования изначального формата видео. Необязательный параметр. По-умолчанию True.
+  aCanCopyAudio - флаг, указывающий возможность использования изначального формата аудио. Необязательный параметр. По-умолчанию True.
+HmsVlcVersion: String|Возвращает версию программы VLC media player
+
+* Форматирование
+Format(Fmt: String; Args: array): String|Возвращает форматированную строку.\nНапример: Format("%.2d серия - %s", [1, "приветдруг.mov"]) вернёт "01 серия - приветдруг.mov".
+  Fmt - строка шаблона формата.\nМогут использоваться следующие символы форматирования, определяющие тип (в скобках указано форматированное представление числа 123.456 у числовых):\n%d - Decimal ("-123");\n%e - Exponent ("1,23456780000000E+004");\n%f - Fixed ("123,45");\n%g - General ("123,456");\n%n - Number ("1 234,56");\n%m - Money ("1 234,56");\n%s - String ("Hello");\n%u - Unsigned decimal ("123");\n%x - Hexadecimal ("7B").\nТакже можно задавать ширину выводимого параметра, добавив число после знака "%" и до символа типа, которая дополнит значение пробелами до нужной длины:\nFormat('Length = %8d px', [123]) выведет "Length =      123 px"\nFormat('Length = %-8d px', [123]) выведет "Length = 123      px"\nТакже можно числовое значение дополнить лидирующими нулями, добавив после знака "%" точку со значением длины:\nFormat('Length = %.8d px', [123]) выведет "Length = 00000123 px".
+  Args - массив аргументов для подстановки их значений в форматную строку
+FormatDateTime(Fmt: String; DateTime: Variant): String|Форматирует дату и время\nНапример: FormatDateTime("yyyy.mm.dd hh:nn:ss - dddd", Now) вернёт что-то типа "2015.10.21 13:33:43 - Среда".
+  Fmt - строка шаблона формата. Например:\nFormatDateTime("ddd d mmm yyyy Время: hh:mm:ss.zzz", Now) вернёт наподобии:\n"Срд 21 Окт 2015 Время: 13:37:47.333"\n\nСимволы форматирования:\ny = Год из 2-х последних цифр\nyy = Год из 2-х последних цифр\nyyyy = Год из 4-х цифр\nm = Номер месяца без 0\nmm = Номер месяца как 2 цифры\nmmm = Месяц используя ShortDayNames (Янв)\nmmmm = Месяц используя LongDayNames (Январь)\nd = Число без 0\ndd = Число как 2 цифры\nddd = Число используя ShortDayNames (Воск)\ndddd = Число используя LongDayNames (Воскресенье)\nddddd = Число в ShortDateFormat\ndddddd = Число в LongDateFormat\n\nh = Час без 0\nhh = Час как 2 цифры\nn	= Минуты без 0\nnn = Минуты как 2 цифры\ns = Секунды без 0\nss = Секунды как 2 цифры\nz	= Миллисекунды без 0\nzzz = Миллисекунды как 2 цифры.
+  DateTime - значение даты и времени, которое будет форматироваться
+FormatFloat(Fmt: String; Value: Extended): String|Форматирует вещественное число.\nНапример: FormatFloat("0.0000", 12.34) вернёт "12,3400".
+  Fmt - строка шаблона формата. Например: FormatFloat("0000.0000", 12.34) вернёт "0012,3400"\n\nСимволы форматирования:\n0: Вызывает отображение цифр или 0\n#: Дополнительное цифровое отображение\n, : Вызывает отображение тысяч\n. : Вызывает отображение десятичных чисел\nE+: Вызывает отображение знаковой экспоненты\nE-: Дополнительное отображение знака экспоненты\n; : Разделитель положительных, отрицательных и нулевых значений.
+  Value - вещественное число, которое будет форматироваться
+FormatMaskText(EditMask: String; Value: String): String|Форматирует текст, используя заданную маску
+  EditMask - маска форматирования
+  Value - строка, которая будет форматироваться
+
+* Информация MediaInfo.dll
+HmsMediaInfoCreate(const aFilePath: String; const aMediaItemID: String): Boolean|Считывание MediaInfo файла, ссылка на который указана в элементе базы данных. После данной функции можно использовать HmsMediaInfoGetCount и HmsMediaInfoGetI.
+  aFilePath - путь и имя файла (?). Можно оставить пустым.
+  aMediaItemID - идентификатор элемента базы данных (свойство ItemID), через ссылку на файл которого будет получена информация. Например: HmsCurrentMediaListItem.ItemID
+HmsMediaInfoGet(aStreamKind: TMIStreamKind; aStreamNumber: Integer; const aParameter: String; aKindOfInfo: TMIInfo = Info_Text; aKindOfSearch: TMIInfo = Info_Name): String|Получение считанной информации через функцию HmsMediaInfoCreate
+  aStreamKind - тип анализируемой дорожки (Stream_Audio,Stream_Chapters,Stream_General,Stream_Image,Stream_Max,Stream_Menu,Stream_Text,Stream_Video)
+  aStreamNumber - номер дорожки
+  aParameter - имя или значение искомого параметра
+  aKindOfInfo - тип получаемой информации (Info_HowTo,Info_Info,Info_Max,Info_Measure,Info_Measure_Text,Info_Name,Info_Name_Text,Info_Options,Info_Text). Необязательный параметр. По-умолчанию Info_Text.
+  aKindOfSearch - тип поля, по которому будет происходить поиск значения параметра (Info_HowTo,Info_Info,Info_Max,Info_Measure,Info_Measure_Text,Info_Name,Info_Name_Text,Info_Options,Info_Text). Необязательный параметр. По-умолчанию Info_Name.
+HmsMediaInfoGetCount(aStreamKind: TMIStreamKind = Stream_General; aStreamNumber: Integer = 0): Integer|Получение количества параметров указанного типа и номера дорожки
+  aStreamKind - тип анализируемой дорожки (Stream_Audio,Stream_Chapters,Stream_General,Stream_Image,Stream_Max,Stream_Menu,Stream_Text,Stream_Video). Необязательный параметр. По-умолчанию Stream_General.
+  aStreamNumber - номер дорожки. Необязательный параметр. По-умолчанию 0.
+HmsMediaInfoGetI(aStreamKind: TMIStreamKind; aStreamNumber: Integer; aParameter: Integer; aKindOfInfo: TMIInfo = Info_Text): String|Получение считанной информации через функцию HmsMediaInfoCreate по номеру параметра. Количество параметров можно узнать функцией HmsMediaInfoGetCount.
+  aStreamKind - тип анализируемой дорожки (Stream_Audio,Stream_Chapters,Stream_General,Stream_Image,Stream_Max,Stream_Menu,Stream_Text,Stream_Video). Необязательный параметр. По-умолчанию Stream_General.
+  aStreamNumber - номер дорожки. Необязательный параметр. По-умолчанию 0.
+  aParameter - номер параметра (начиная с 0)
+  aKindOfInfo - вид получаемой информации (Info_HowTo,Info_Info,Info_Max,Info_Measure,Info_Measure_Text,Info_Name,Info_Name_Text,Info_Options,Info_Text). Необязательный параметр. По-умолчанию Info_Text.
+
+* DirectShow
+HmsDirectShowAddDump(const aFileName: String; const aFilterName: String = ''; const aFilterName: String = ''; const aMediaMajorType: String = ''; const aMediaSubType: String = ''): Integer|Добавление в граф фильтра-дампера
+  aFileName - путь и имя файла
+  aFilterName - наименование фильтра. Необязательный параметр.
+  aFilterName - наименование фильтра. Необязательный параметр.
+  aMediaMajorType - (?)
+  aMediaSubType - (?)
+HmsDirectShowAddFilter(const aFriendlyName: String; const aFilterName: String = ''; const aCategory: String = ''): Integer|Добавление в граф фильтра с указанным названием
+  aFilterName - наименование фильтра 
+  aFilterName - наименование фильтра. Необязательный параметр.
+  aCategory - название категории. Необязательный параметр.
+HmsDirectShowAddResourceSource(const aFilterName: String): Integer|Добавление в граф фильтра-источника медиа-ресурса
+HmsDirectShowAddSource(const aFileName: String; const aFilterName: String = ''): Integer|Добавление в граф фильтра-источника файла
+HmsDirectShowAddWMWriter(const aFileName: String; aVideoBitrate, aAudioBitrate: Integer; const aFilterName: String = ''; aDuration: Integer = -1): Integer|Добавление в граф фильтра-муксера файлов в формате Windows Media (ASF)
+HmsDirectShowConnectPin(const aSourceFilter, aDestFilter: String; const aSourcePinName: String = ''; const aDestPinName: String = ''; const aMediaMajorType: String = ''; const aMediaSubType: String = ''; const aMediaFormatType: String = ''; aWidth: Integer)|Соединение фильтров
+HmsDirectShowGetFrameRate(const aFilterName: String; aPinDirection: Integer; const aPinName: String; var aFrameRate: Extended): Integer|Получение частоты кадров указанного фильтра
+HmsDirectShowGetMediaType(const aFilterName: String; aPinDirection: Integer; const aPinName: String; var aMediaMajorType, aMediaSubType: String; var aWidthOrChannels, aHeightOrRate, aCompressionOrFormatTag: Integer): Integer|Получить информацию о типе данных в указанном контакте
+HmsDirectShowGetPinName(const aFilterName: String; aPinDirection: Integer;var aPinName: String; const aStreamType: String; const aStreamNo: Integer = 0): Integer|Возвращает имя контакта фильтра
+HmsDirectShowGetPosition(const aFilterName: String; var aTimeFormat: String; var aPosition: Variant): Integer|Получить текущую позицию фильтра
+HmsDirectShowGetProperty(const aFilterName, aPropertyInterface: String; const aPropertyID: Variant; var aPropertyValue: Variant): Integer|Получение значения свойства фильтра
+HmsDirectShowInitWMEncoder(const aFilterName: String; aBitrate: Integer = 0; aCompression: Integer = $33564D57): Integer|Инициализация кодека Windows Media Video
+HmsDirectShowLoadFilter(const aModuleName, aClassID, aFilterName: String; aFreeOnExit: Boolean = False): Integer|Добавление в граф фильтра из указанного модуля
+HmsDirectShowPause: Integer|Поставить на паузу выполнение графа
+HmsDirectShowPlay: Integer|Выполнить граф
+HmsDirectShowProperties(const aFilterName: String): Integer|Показ свойств фильтра
+HmsDirectShowRemoveFilter(const aFilterName: String): Integer|Удаление фильтра из графа
+HmsDirectShowRenderPin(const aFilterName, aPinName: String): Integer|
+HmsDirectShowSaveGraph(const aFileName: String): Integer|Сохранить граф в файле (фильтр-дампер не сохраняется)
+HmsDirectShowSelectAudioFormat(const aFilterName: String; aChannels, aSampleRate: Integer): Integer|Выбор текущей дорожки
+HmsDirectShowSetFileName(const aFilterName, aFileName: String): Integer|Установить имя файла для указанного фильтра
+HmsDirectShowSetPosition(const aFilterName: String; const aTimeFormat: String; var aPosition: Variant): Integer|Установить текущую позицию фильтра
+HmsDirectShowSetProperty(const aFilterName, aPropertyInterface: String; const aPropertyID: Variant; const aPropertyValue: Variant): Integer|
+HmsDirectShowSetResizerProperties(const aFilterName: String; aFrameWidth, aFrameHeight: Integer; aQuality: Boolean = True; aDestX: Integer = -1; aDestY: Integer = -1; aDestWidth: Integer = -1; aDestHeight: Integer = -1; aSourceX: Integer = -1; aSourceY: Integer): Integer|Установка параметров изменения размера кадра
+HmsDirectShowStop: Integer|Остановить выполнение графа
+HmsDirectShowWaitComplete(var aEventCode: Integer): Integer|Ожидание окончания выполнения графа

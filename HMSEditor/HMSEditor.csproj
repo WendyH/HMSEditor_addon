@@ -1,0 +1,305 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BAD3EC9D-FC26-4E64-B7C3-D5A2639D479A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HMSEditorNS</RootNamespace>
+    <AssemblyName>HMSEditor</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Prefer32Bit>false</Prefer32Bit>
+    <DebugSymbols>true</DebugSymbols>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>HMSEditor_icons.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup>
+    <TargetZone>LocalIntranet</TargetZone>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>false</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup />
+  <PropertyGroup />
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>83B9D2DBC90CFC6BED827492F6CAB53A56C1B85E</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestTimestampUrl>http://timestamp.verisign.com/scripts/timestamp.dll</ManifestTimestampUrl>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Ionic.Zip.Reduced">
+      <HintPath>Resources\Ionic.Zip.Reduced.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutDialog.Designer.cs">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="AuthenticodeTools.cs" />
+    <Compile Include="Autocomplete.cs" />
+    <Compile Include="FCTB\AutocompleteItem.cs" />
+    <Compile Include="FCTB\AutocompleteMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FCTB\Bookmarks.cs" />
+    <Compile Include="FCTB\Char.cs" />
+    <Compile Include="FCTB\CommandManager.cs" />
+    <Compile Include="FCTB\Commands.cs" />
+    <Compile Include="FormUpdateInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormUpdateInfo.Designer.cs">
+      <DependentUpon>FormUpdateInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GitHub.cs" />
+    <Compile Include="HMSEditor_addon.cs" />
+    <Compile Include="HmsToolTip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FCTB\DocumentMap.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FCTB\EncodingDetector.cs" />
+    <Compile Include="FCTB\ExportToHTML.cs" />
+    <Compile Include="FCTB\ExportToRTF.cs" />
+    <Compile Include="FCTB\FastColoredTextBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FCTB\FileTextSource.cs" />
+    <Compile Include="FCTB\FindForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FCTB\FindForm.Designer.cs" />
+    <Compile Include="FCTB\GoToForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FCTB\GoToForm.Designer.cs" />
+    <Compile Include="FCTB\Hints.cs" />
+    <Compile Include="FCTB\Hotkeys.cs" />
+    <Compile Include="FCTB\HotkeysEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FCTB\HotkeysEditorForm.Designer.cs" />
+    <Compile Include="FCTB\LimitedStack.cs" />
+    <Compile Include="FCTB\Line.cs" />
+    <Compile Include="FCTB\LinesAccessor.cs" />
+    <Compile Include="FCTB\MacrosManager.cs" />
+    <Compile Include="FCTB\Place.cs" />
+    <Compile Include="FCTB\Range.cs" />
+    <Compile Include="FCTB\ReplaceForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FCTB\ReplaceForm.Designer.cs" />
+    <Compile Include="FCTB\Ruler.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FCTB\Ruler.Designer.cs" />
+    <Compile Include="FCTB\Style.cs" />
+    <Compile Include="FCTB\SyntaxDescriptor.cs" />
+    <Compile Include="FCTB\SyntaxHighlighter.cs" />
+    <Compile Include="FCTB\TextSource.cs" />
+    <Compile Include="FCTB\TypeDescriptor.cs" />
+    <Compile Include="FCTB\UnfocusablePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FCTB\VisualMarker.cs" />
+    <Compile Include="HMS.cs" />
+    <Compile Include="HMSEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="HMSEditor.Designer.cs">
+      <DependentUpon>HMSEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="INI.cs" />
+    <Compile Include="MouseHelpTimer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Templates.cs" />
+    <Compile Include="Themes.cs" />
+    <Compile Include="Utils\Plist.cs" />
+    <Compile Include="Utils\YamlParser.cs" />
+    <Compile Include="ValueToolTip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Logo.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <EmbeddedResource Include="AboutDialog.resx">
+      <DependentUpon>AboutDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FCTB\AutocompleteMenu.resx">
+      <DependentUpon>AutocompleteMenu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FCTB\FastColoredTextBox.resx" />
+    <EmbeddedResource Include="FCTB\FindForm.resx" />
+    <EmbeddedResource Include="FCTB\GoToForm.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FCTB\HotkeysEditorForm.resx" />
+    <EmbeddedResource Include="FCTB\ReplaceForm.resx" />
+    <EmbeddedResource Include="FormUpdateInfo.resx">
+      <DependentUpon>FormUpdateInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HMSEditor.resx">
+      <DependentUpon>HMSEditor.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="Properties\app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="HMSEditor_icons.ico" />
+    <EmbeddedResource Include="Resources\ColorThemes.txt" />
+    <EmbeddedResource Include="Resources\Markdown.html" />
+    <None Include="icons\logo.png" />
+    <None Include="Resources\Output_16xLG.png" />
+    <EmbeddedResource Include="Resources\Ionic.Zip.Reduced.dll" />
+    <None Include="Resources\Template_Application_16xLG.png" />
+    <None Include="Resources\Find_5650.png" />
+    <None Include="Resources\arrow_run_16xMD.png" />
+    <EmbeddedResource Include="Resources\hms_templates.txt" />
+    <None Include="Resources\Arrow_RedoRetry_16xLG_color.png" />
+    <None Include="Resources\Arrow_UndoRevertRestore_16xLG_color.png" />
+    <EmbeddedResource Include="Resources\Roboto-Regular.ttf" />
+    <EmbeddedResource Include="Resources\RobotoMono-Regular.ttf" />
+    <None Include="Resources\Zoom_5442.png" />
+    <None Include="Resources\BookmarkClear_2381.png" />
+    <None Include="Resources\clearallbreakpoints_6551.png" />
+    <None Include="Resources\Clearallrequests_8816.png" />
+    <None Include="Resources\Paste_6520.png" />
+    <None Include="Resources\Copy_6524.png" />
+    <None Include="Resources\Cut_6523.png" />
+    <None Include="Resources\breakpoint_x16.png" />
+    <EmbeddedResource Include="Resources\hms_constants.txt" />
+    <EmbeddedResource Include="Resources\hms_types.txt" />
+    <EmbeddedResource Include="Resources\hms_classes.txt" />
+    <EmbeddedResource Include="Resources\hms_func.txt" />
+    <EmbeddedResource Include="Resources\hms_vars.txt" />
+    <None Include="Resources\togglebookmark.png" />
+    <None Include="Resources\symbolshapes.brace-pair.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\hmsInterfaces\hmsInterfaces.csproj">
+      <Project>{b4b3af4e-1ed9-48b8-a050-d78b48c2d66e}</Project>
+      <Name>hmsInterfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if "$(ConfigurationName)"=="Release" sign.bat</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

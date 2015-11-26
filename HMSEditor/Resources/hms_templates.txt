@@ -1,0 +1,371 @@
+// В секции сначала указывается язык, потом через двоеточие - название шаблона.
+// Возможные значения языка: CPPScript, PascalScript, BasicScript, JScript, YAML.
+//[CPPScript: Шаблон главной процедуры]
+String gsUrlBase = "";
+
+///////////////////////////////////////////////////////////////////////////////
+//                     Г Л А В Н А Я   П Р О Ц Е Д У Р А                     //
+{
+
+}
+[PascalScript: Шаблон главной процедуры]
+Var
+  gsUrlBase: String = "";
+
+///////////////////////////////////////////////////////////////////////////////
+//                     Г Л А В Н А Я   П Р О Ц Е Д У Р А                     //
+Begin
+
+End.
+[BasicScript: Шаблон главной процедуры]
+Dim gsUrlBase = ""
+
+'//////////////////////////////////////////////////////////////////////////////
+'//                    Г Л А В Н А Я   П Р О Ц Е Д У Р А                     //
+
+[JScript: Шаблон главной процедуры]
+gsUrlBase = "";
+
+///////////////////////////////////////////////////////////////////////////////
+//                     Г Л А В Н А Я   П Р О Ц Е Д У Р А                     //
+{
+
+}
+[CPPScript: Шаблон скрипта чтения списка ресурсов (создание папок видео)]
+string gsUrlBase = 'http://site.com'; int gnTotalItems = 0;
+
+// Создание папки -------------------------------------------------------------
+THmsScriptMediaItem CreateFolder(string sName, string sLink, string sImg='') {
+  THmsScriptMediaItem Item = FolderItem.AddFolder(sLink); // Создаём папку с указанной ссылкой
+  Item[mpiTitle    ] = sName; // Присваиваем наименование
+  Item[mpiThumbnail] = sImg;  // Картинка
+  gnTotalItems++;             // Увеличиваем счетчик созданных элементов
+  return Item;                // Возвращаем созданный объект
+}
+
+// Загрузка страниц и парсинг -------------------------------------------------
+void LoadAndParse() {
+  string sHtml, sData, sName, sLink, sImg, sYear; 
+  int i, nPages; TRegExpr RegEx;                  // Объявляем переменные
+
+  sHtml  = ''; // Текст загруженных страниц сайта
+  nPages = 2;  // Количество загружаемых страниц
+
+  // Загружаем первые сколько-то страниц
+  for (i=1; i<nPages; i++) {
+    HmsSetProgress(Trunc(i*100/nPages));          // Устанавливаем позицию прогресса загрузки 
+    sName = Format('%s: Страница %d из %d', [mpTitle, i, nPages]); // Формируем заголовок прогресса
+    HmsShowProgress(sName);                       // Показываем окно прогресса выполнения
+    sLink = mpFilePath+'/page/'+IntToStr(i)+'/';  // Формируем ссылку для загрузки, включающую номер страницы
+    sHtml+= HmsUtf8Decode(HmsDownloadUrl(sLink)); // Загружаем страницу
+    if (HmsCancelPressed()) break;                // Если в окне прогресса нажали "Отмена" - прерываем цикл
+  }
+  HmsHideProgress();                    // Убираем окно прогресса с экрана
+  sHtml = HmsRemoveLineBreaks(sHtml);   // Удаляем переносы строк, для облегчения работы с регулярными выражениями
+
+  // Создаём объект RegEx для поиска по регулярному выражению
+  RegEx = TRegExpr.Create('class="zagolovok"(.*?)class="added"'); 
+  try {
+    if (RegEx.Search(sHtml)) do {            // Если нашли совпадение, запускаем цикл
+      sLink=''; sName=''; sImg=''; sYear=''; // Очищаем переменные от предыдущих значений
+
+      // Получаем значения в переменные по регулярным выражениям
+      HmsRegExMatch('<a[^>]+href="(.*?)"'  , RegEx.Match, sLink); // Ссылка
+      HmsRegExMatch('(<a[^>]+href=.*?</a>)', RegEx.Match, sName); // Наименование
+      HmsRegExMatch('<img[^>]+src="(.*?)"' , RegEx.Match, sImg ); // Картинка
+      HmsRegExMatch('(\\d{4})\\)'          , sName      , sYear); // Год
+
+      if (sLink=='') continue;          // Если нет ссылки, значит что-то не так
+       
+      sLink = HmsExpandLink(sLink, gsUrlBase);             // Делаем ссылку полной, если она таковой не является
+      if (sImg!='') sImg = HmsExpandLink(sImg, gsUrlBase); // Если есть ссылка на картинку, делаем ссылку полной        
+      sName = HmsHtmlToText(sName);                        // Преобразуем html в простой текст
+      HmsRegExMatch('(.*?)/' , sName, sName);              // Обрезаем слишком длинные названия (на англ. языке)
+
+      // Если в названии нет года, добавляем год выхода 
+      if ((sYear!='') && (Pos(sYear, sName)<1)) sName += ' ('+sYear+')';
+
+      CreateFolder(sName, sLink, sImg); // Вызываем функцию создания папки видео
+                                      
+    } while (RegEx.SearchAgain);        // Повторяем цикл, если найдено следующее совпадение
+  
+  } finally { RegEx.Free; }             // Что бы ни случилось, освобождаем объект из памяти
+
+  HmsLogMessage(1, mpTitle+': создано элементов - '+IntToStr(gnTotalItems)); 
+} 
+
+///////////////////////////////////////////////////////////////////////////////
+//                     Г Л А В Н А Я    П Р О Ц Е Д У Р А                    //
+{
+  FolderItem.DeleteChildItems(); // Удаляем созданные ранее элементы в текущей папке
+  LoadAndParse();                // Запускаем загрузку страниц и создание папок видео
+}
+[CPPScript: Шаблон скрипта чтения списка ресурсов (создание ссылок на видео)]
+// Глобальные переменные
+  string gsUrlBase = 'http://site.com'; // База ссылки, для создания полных ссылок из относительных
+
+  string gsHtml; // Содержимое страницы сайта
+  string gsLink; // Ссылка на видео
+  string gsName; // Наименование видео
+  string gsImg ; // Картинка превью (эскиз)
+  string gsTime; // Длительность видео
+
+  string gsVal ; // Переменная для хранения временного значения строки
+  int    gnSec ; // Число секунд длительности видео 
+
+  TRegExpr RegExp;          // Объект для поиска по регулярному выражению
+  THmsScriptMediaItem Item; // Объект элемента базы данных программы 
+  
+// ГЛАВНАЯ ПРОЦЕДУРА
+{
+  FolderItem.DeleteChildItems();        // Очищаем существующие ссылки
+
+  gsHtml = HmsDownloadUrl(mpFilePath);  // Загрузка страницы по ссылке
+  gsHtml = HmsUtf8Decode(gsHtml);       // Перекодируем текст из UTF-8
+  gsHtml = HmsRemoveLinebreaks(gsHtml); // Удаляем переносы строк
+
+  // Создаём объект для поиска по регулярному выражению
+  RegExp = TRegExpr.Create('media--sm-v(.*?)meta__item', PCRE_SINGLELINE);
+  
+  // Организовываем цикл
+  if (RegExp.Search(gsHtml)) do {
+
+    // Получаем данные о видео
+    HmsRegExMatch('<a[^>]+href=[\'"](.*?)[\'"]' , RegExp.Match, gsLink); // Ссылка
+    HmsRegExMatch('(<h4.*</h4>)'                , RegExp.Match, gsName); // Наименование
+    HmsRegExMatch('<img[^>]+src=[\'"](.*?)[\'"]', RegExp.Match, gsImg ); // Картинка
+    HmsRegExMatch('duration.*?>(.*?)<'          , RegExp.Match, gsTime); // Длительность
+    
+    gsName = HmsHtmlToText(gsName);            // Избавляемся от html тегов в названии 
+    gsLink = HmsExpandLink(gsLink, gsUrlBase); // Делаем из относительных ссылок абсолютные
+    gsImg  = HmsExpandLink(gsImg , gsUrlBase);
+
+    // Вычисляем длительность в секундах из того формата, который на сайте (m:ss)
+    gnSec = 0;
+    if (HmsRegExMatch('(\\d+):', gsTime, gsVal)) gnSec += StrToInt(gsVal) * 60; // Минуты 
+    if (HmsRegExMatch(':(\\d+)', gsTime, gsVal)) gnSec += StrToInt(gsVal);      // Секунды 
+
+    // Создаём элемент медиа-ссылки
+    Item = HmsCreateMediaItem(gsLink, FolderItem.ItemID); // Создаём элемент подкаста
+    Item.Properties[mpiTitle     ] = gsName; // Наименование 
+    Item.Properties[mpiThumbnail ] = gsImg;  // Картинка 
+    Item.Properties[mpiTimeLength] = gnSec;  // Длительность 
+
+  } while (RegExp.SearchAgain); // Повторять цикл пока SearchAgain возвращает True 
+
+  RegExp.Free(); // Освобождаем созданный объект из памяти
+}
+[PascalScript: Шаблон скрипта чтения списка ресурсов (создание ссылок на видео)]
+// Глобальные переменные
+var
+  gsUrlBase: String = 'http://site.com'; // База ссылки, для создания полных ссылок из относительных
+
+  gsHtml: String;   // Содержимое страницы сайта
+  gsLink: String;   // Ссылка на видео
+  gsName: String;   // Наименование видео
+  gsImg : String;   // Картинка превью (эскиз)
+  gsTime: String;   // Длительность видео
+
+  gsVal : String;   // Переменная для хранения временного значения строки
+  gnSec : Integer;  // Число секунд длительности видео 
+
+  RegExp: TRegExpr; // Объект для поиска по регулярному выражению
+  Item  : THmsScriptMediaItem; // Объект элемента базы данных программы 
+  
+// ГЛАВНАЯ ПРОЦЕДУРА
+begin
+  FolderItem.DeleteChildItems;           // Очищаем существующие ссылки
+
+  gsHtml := HmsDownloadUrl(mpFilePath);  // Загрузка страницы по ссылке
+  gsHtml := HmsUtf8Decode(gsHtml);       // Перекодируем текст из UTF-8
+  gsHtml := HmsRemoveLinebreaks(gsHtml); // Удаляем переносы строк
+
+  // Создаём объект для поиска по регулярному выражению
+  RegExp := TRegExpr.Create('media--sm-v(.*?)meta__item', PCRE_SINGLELINE);
+  
+  // Организовываем цикл
+  If RegExp.Search(gsHtml) Then Repeat
+
+    // Получаем данные о видео
+    HmsRegExMatch('<a[^>]+href=[''"](.*?)[''"]' , RegExp.Match, gsLink); // Ссылка
+    HmsRegExMatch('(<h4.*</h4>)'                , RegExp.Match, gsName); // Наименование
+    HmsRegExMatch('<img[^>]+src=[''"](.*?)[''"]', RegExp.Match, gsImg ); // Картинка
+    HmsRegExMatch('duration.*?>(.*?)<'          , RegExp.Match, gsTime); // Длительность
+    
+    gsName := HmsHtmlToText(gsName);            // Избавляемся от html тегов в названии 
+    gsLink := HmsExpandLink(gsLink, gsUrlBase); // Делаем из относительных ссылок абсолютные
+    gsImg  := HmsExpandLink(gsImg , gsUrlBase);
+
+    // Вычисляем длительность в секундах из того формата, который на сайте (m:ss)
+    gnSec := 0;
+    if HmsRegExMatch('(\d+):', gsTime, gsVal) then gnSec := gnSec + StrToInt(gsVal) * 60; // Минуты 
+    if HmsRegExMatch(':(\d+)', gsTime, gsVal) then gnSec := gnSec + StrToInt(gsVal);      // Секунды 
+
+    // Создаём элемент медиа-ссылки
+    Item := HmsCreateMediaItem(gsLink, FolderItem.ItemID); // Создаём элемент подкаста
+    Item.Properties[mpiTitle     ] := gsName; // Наименование 
+    Item.Properties[mpiThumbnail ] := gsImg;  // Картинка 
+    Item.Properties[mpiTimeLength] := gnSec;  // Длительность 
+
+  Until Not RegExp.SearchAgain; // Повторять цикл пока SearchAgain возвращает True 
+
+  RegExp.Free; // Освобождаем созданный объект из памяти
+
+end.
+[PascalScript: Шаблон скрипта чтения списка ресурсов c циклом загрузки страниц (создание ссылок на видео)]
+// Глобальные переменные
+var
+  gsUrlBase: String = 'http://site.com'; // База ссылки, для создания полных ссылок из относительных
+  gnTotalItems: Integer = 0;             // Количество созданных элементов
+  
+///////////////////////////////////////////////////////////////////////////////
+
+// ---- Загрузка страниц и создание ссылок ------------------------------------
+Procedure LoadPagesAndCreateLinks();
+Var
+  sHtml, sData, sName, sLink, sImg, sYear, sTime, sVal: String; 
+  i, nPages, nSec: Integer; RegEx: TRegExpr;
+  Item: THmsScriptMediaItem;  // Объект элемента базы данных программы 
+Begin
+  
+  sHtml  := "";
+  nPages := 2;  // Количество загружаемых страниц
+
+  // Загружаем первые сколько-то страниц
+  For i := 1 To nPages Do Begin
+    HmsSetProgress(Trunc(i*100/nPages));                   // Устанавливаем позицию прогресса загрузки 
+    sName := Format('%s: Страница %d из %d', [mpTitle, i, nPages]); // Формируем заголовок прогресса
+    HmsShowProgress(sName);                                // Показываем окно прогресса выполнения
+    sLink := mpFilePath+'/page/'+IntToStr(i)+'/';          // Формируем ссылку для загрузки, включающую номер страницы
+    sHtml := sHtml + HmsUtf8Decode(HmsDownloadUrl(sLink)); // Загружаем страницу
+    If HmsCancelPressed Then Break;                        // Если в окне прогресса нажали "Отмена" - прерываем цикл
+  End;
+  HmsHideProgress;                       // Убираем окно прогресса с экрана
+
+  sHtml := HmsUtf8Decode(sHtml);         // Перекодируем текст из UTF-8
+  sHtml := HmsRemoveLinebreaks(sHtml);   // Удаляем переносы строк
+
+  // Создаём объект для поиска по регулярному выражению
+  RegEx := TRegExpr.Create('<section>(.*?)</section>', PCRE_SINGLELINE);
+  
+  // Организовываем цикл
+  If RegEx.Search(sHtml) Then Repeat
+    sLink:=""; sName:=""; sImg:=""; sYear:=""; sTime:=""; // Очищаем значения после последнего цикла
+  
+    // Получаем данные о видео
+    HmsRegExMatch('<a[^>]+href=[''"](.*?)[''"]' , RegEx.Match, sLink); // Ссылка
+    HmsRegExMatch('(<h4.*</h4>)'                , RegEx.Match, sName); // Наименование
+    HmsRegExMatch('<img[^>]+src=[''"](.*?)[''"]', RegEx.Match, sImg ); // Картинка
+    HmsRegExMatch('year.*?(\d{4})'              , RegEx.Match, sYear); // Год
+    HmsRegExMatch('duration.*?>(.*?)<'          , RegEx.Match, sTime); // Длительность
+    
+    sName := HmsHtmlToText(sName);            // Избавляемся от html тегов в названии 
+    sLink := HmsExpandLink(sLink, gsUrlBase); // Делаем из относительных ссылок абсолютные
+    sImg  := HmsExpandLink(sImg , gsUrlBase);
+
+    // Если в названии нет года, добавляем год выхода 
+    If (sYear<>'') AND (Pos(sYear, sName) < 1) Then sName := sName + ' ('+sYear+')';
+    
+    // Вычисляем длительность в секундах из того формата, который на сайте (m:ss)
+    nSec := 0;
+    If HmsRegExMatch('(\d+):', sTime, sVal) Then nSec := nSec + StrToInt(sVal) * 60; // Минуты 
+    If HmsRegExMatch(':(\d+)', sTime, sVal) Then nSec := nSec + StrToInt(sVal);      // Секунды 
+    If nSec = 0 Then nSec := 6000; // Если длительность нет - ставим по-умолчанию 01:40:00 (100 мин)
+    
+    // Создаём элемент медиа-ссылки
+    Item := HmsCreateMediaItem(sLink, FolderItem.ItemID); // Создаём элемент подкаста
+    Item.Properties[mpiTitle     ] := sName; // Наименование 
+    Item.Properties[mpiThumbnail ] := sImg;  // Картинка 
+    Item.Properties[mpiYear      ] := sYear; // Год 
+    Item.Properties[mpiTimeLength] := nSec;  // Длительность 
+
+    Inc(gnTotalItems);         // Увеличиваем счетчик созданных элементов
+    
+  Until Not RegEx.SearchAgain; // Повторять цикл пока SearchAgain возвращает True 
+
+  RegEx.Free; // Освобождаем созданный объект из памяти
+
+  HmsLogMessage(1, mpTitle+': создано элементов - '+Str(gnTotalItems)); 
+End;
+  
+///////////////////////////////////////////////////////////////////////////////
+//                     Г Л А В Н А Я    П Р О Ц Е Д У Р А                    //
+begin
+  FolderItem.DeleteChildItems;           // Очищаем существующие ссылки
+  LoadPagesAndCreateLinks();             // Вызов процедуры загрузки страниц и создания ссылок
+end.
+[CPPScript: Шаблон скрипта чтения списка ресурсов c циклом загрузки страниц (создание ссылок на видео)]
+string gsUrlBase = 'http://site.com'; int gnTotalItems = 0;
+
+///////////////////////////////////////////////////////////////////////////////
+
+// Загрузка страниц и парсинг -------------------------------------------------
+void LoadAndParse() {
+  string sHtml, sData, sName, sLink, sImg, sYear, sTime, sVal; 
+  int i, nPages, nSec; TRegExpr RegEx;
+  THmsScriptMediaItem Item; // Объект элемента базы данных программы 
+
+  sHtml  = ''; // Текст загруженных страниц сайта
+  nPages = 2;  // Количество загружаемых страниц
+
+  // Загружаем первые сколько-то страниц
+  for (i=1; i<nPages; i++) {
+    HmsSetProgress(Trunc(i*100/nPages));          // Устанавливаем позицию прогресса загрузки 
+    sName = Format('%s: Страница %d из %d', [mpTitle, i, nPages]); // Формируем заголовок прогресса
+    HmsShowProgress(sName);                       // Показываем окно прогресса выполнения
+    sLink = mpFilePath+'/page/'+IntToStr(i)+'/';  // Формируем ссылку для загрузки, включающую номер страницы
+    sHtml+= HmsUtf8Decode(HmsDownloadUrl(sLink)); // Загружаем страницу
+    if (HmsCancelPressed()) break;                // Если в окне прогресса нажали "Отмена" - прерываем цикл
+  }
+  HmsHideProgress();                    // Убираем окно прогресса с экрана
+  sHtml = HmsRemoveLineBreaks(sHtml);   // Удаляем переносы строк, для облегчения работы с регулярными выражениями
+
+  // Создаём объект RegEx для поиска по регулярному выражению
+  RegEx = TRegExpr.Create('class="zagolovok"(.*?)class="added"'); 
+  try {
+    if (RegEx.Search(sHtml)) do {       // Если нашли совпадение, запускаем цикл
+      sLink=""; sName=""; sImg=""; sYear=""; sTime="";     // Очищаем значения после последнего цикла
+
+      // Получаем значения в переменные по регулярным выражениям
+      HmsRegExMatch('<a[^>]+href="(.*?)"'  , RegEx.Match, sLink); // Ссылка
+      HmsRegExMatch('(<a[^>]+href=.*?</a>)', RegEx.Match, sName); // Наименование
+      HmsRegExMatch('<img[^>]+src="(.*?)"' , RegEx.Match, sImg ); // Картинка
+      HmsRegExMatch('year.*?(\\d{4})'      , RegEx.Match, sYear); // Год
+      HmsRegExMatch('duration.*?>(.*?)<'   , RegEx.Match, sTime); // Длительность
+
+      if (sLink=='') continue;          // Если нет ссылки, значит что-то не так
+       
+      sLink = HmsExpandLink(sLink, gsUrlBase);             // Делаем ссылку полной, если она таковой не является
+      if (sImg!='') sImg = HmsExpandLink(sImg, gsUrlBase); // Если есть ссылка на картинку, делаем ссылку полной        
+      sName = HmsHtmlToText(sName);                        // Преобразуем html в простой текст
+      HmsRegExMatch('(.*?)/' , sName, sName);              // Обрезаем слишком длинные названия (на англ. языке)
+
+      // Если в названии нет года, добавляем год выхода 
+      if ((sYear!='') && (Pos(sYear, sName)<1)) sName += ' ('+sYear+')';
+
+      // Вычисляем длительность в секундах из того формата, который на сайте (m:ss)
+      nSec = 0;
+      if (HmsRegExMatch('(\\d+):', sTime, sVal)) nSec += StrToInt(sVal) * 60; // Минуты 
+      if (HmsRegExMatch(':(\\d+)', sTime, sVal)) nSec += StrToInt(sVal);      // Секунды 
+      if (nSec == 0) nSec = 6000; // Если длительность нет - ставим по-умолчанию 01:40:00 (100 мин)
+
+      // Создаём элемент медиа-ссылки
+      Item = HmsCreateMediaItem(sLink, FolderItem.ItemID); // Создаём элемент подкаста
+      Item.Properties[mpiTitle     ] = sName; // Наименование 
+      Item.Properties[mpiThumbnail ] = sImg;  // Картинка 
+      Item.Properties[mpiYear      ] = sYear; // Год 
+      Item.Properties[mpiTimeLength] = nSec;  // Длительность 
+                                      
+    } while (RegEx.SearchAgain);        // Повторяем цикл, если найдено следующее совпадение
+  
+  } finally { RegEx.Free; }             // Что бы ни случилось, освобождаем объект из памяти
+
+  HmsLogMessage(1, mpTitle+': создано элементов - '+IntToStr(gnTotalItems)); 
+} 
+
+///////////////////////////////////////////////////////////////////////////////
+//                     Г Л А В Н А Я    П Р О Ц Е Д У Р А                    //
+{
+  FolderItem.DeleteChildItems(); // Удаляем созданные ранее элементы в текущей папке
+  LoadAndParse();                // Запускаем загрузку страниц и создание папок видео
+}

@@ -1,0 +1,301 @@
+***sm... <Часть текста заголовка окна> - как фильтр видимости. <> - видимость для всех, <-> - невидима для всех (потому как не нашёл где этот скрипт или заголовка нет)
+
+*smAutoDetectDeviceType <Автоопределение типа устройства>
+DeviceTypeScore: Integer|
+RequestClientName: String|Название клиентского приложения при запросах
+RequestHeader: String|Заголовки при запросах
+RequestUserAgent: String|User-Agent при запросах
+ResponseBody: String|Тело ответа 
+ResponseHeader: String|Заголовки ответа
+
+*smCreateFolderItems <Скрипт создания подкаст-лент>
+FolderItem: THmsScriptMediaItem|Текущая папка медиа-ресурсов
+FolderPath: Variant|Путь (ссылка) текущей папки медиа-ресурсов
+
+*smCreatePodcastFeeds <Скрипт чтения списка ресурсов>
+FolderItem: THmsScriptMediaItem|Текущая папка медиа-ресурсов
+
+*smDIDLLiteDescription <Формирование DIDL-Lite описания медиа-ресурсов>
+DIDL_XmlItem: TXMLItem|
+DIDL_XmlParentItem: TXMLItem|
+ProcessEventResult: Variant|Результат обработки события
+
+*smHandleHTTPRequest <Обработка HTTP-запросов>
+HttpRequest: THmsHTTPMessage|Запрос
+HttpResponse: THmsHTTPMessage|Ответ
+ProcessEventResult: Variant|Результат обработки события
+
+*smMediaInfo <->
+AutoLoading: Integer|
+HtmlBody: String|
+HtmlText: String|
+Keywords: String|
+Language: String|
+MediaInfo: String|
+ResultsViewMode: Integer|
+
+*smMediaResourceLink <Скрипт получения ссылки на ресурс>
+MediaResourceLink: String|Результат получения ссылки на медиа-ресурс
+PodcastItem: THmsScriptMediaItem|Текущий элемент подкаста
+
+*smMimeType <->
+FileExt: String|Текущее расширение медиа-файла (".mov", ".jpg", ".mp3", ...)
+MimeType: String|Текущий MIME-тип медиа-файла
+
+*smParsePlaylistFile <->
+PlaylistItem: THmsScriptMediaItem|Текущий элемент плейлиста
+
+*smPodcastItemProperties <Скрипт чтения доролнительных свойств RSS>
+PodcastItem: THmsScriptMediaItem|Текущий элемент подкаста
+PodcastXmlItem: TXMLItem|
+
+*smProcessMedia <Скрипт обработки медиа-ресурсов>
+ProcessMediaResult: Variant|Результат обработки медиа-ресурсов
+
+*smProcessMediaEvent <->
+ProcessMediaResult: Variant|Результат обработки медиа-ресурсов
+
+*smProcessMetadata <Скрипт загрузки файла метаданных>
+ProcessMediaResult: Variant|Результат обработки медиа-ресурсов
+
+*smTranscoding <Профиль транскодирования>
+InputFileName: String|Входной файл медиа-ресурса, который поступает для транскодирования. <b>Переменная доступна только в скрипте профиля транскодирования.
+OutputFileName: String|Выходной файл, который является результатом транскодирования. <b>Переменная доступна только в скрипте профиля транскодирования.
+TranscodingCondition: Variant|Условия транскодирования
+TranscodingParams: Variant|Параметры транскодирования
+TranscodingProfileName: String|Имя профиля транскодирования
+TranscodingResult: Variant|Результат транскодирования. Если выставляется в True, то считается, что транскодирование прошло или запустилось успешно. <b>Переменная доступна только в скрипте профиля транскодирования.
+
+*smWatchFoldersGroupName <->
+GroupName|Имя группы
+
+*smWebMediaItems <->
+FolderItem: THmsScriptMediaItem|Текущая папка медиа-ресурсов
+
+*smWebNavigation <Создание страниц Web-навигации>
+CurrentMediaItemList: THmsScriptMediaItemList|Текущий список медиа-ресурсов
+RequestItemCount: Integer|Количество элементов при запросе
+RequestItemStart: Integer|Номер начального элемента при запросе
+RequestParams: String|Параметры запроса
+ServerAddress: String|Адрес сервера
+ServerName: String|Имя сервера
+ServerRootFolder: String|Корневая папка сервера
+WebPageText: String|Текст Web-страницы
+
+*smAll <>
+Application: TApplication|Объект приложения, в контексте которого выполняется скрипт
+CurrentMediaItem: THmsScriptMediaItem|Текущий медиа-ресурс
+DebugMode: Boolean|Флаг, определяющий режим отладки
+InteractiveMode: Boolean|Флаг, определяющий использование интерактивного режима (запуска скрипта из самой программы, а не с помощью устройства)
+IsWine: Boolean|Флаг, определяющий работу программы из-под WINE в операционной системе Linux
+ServiceMode: Boolean|Флаг, определяющий режим работы сервера в режиме сервиса Windows
+gsUserVariable1: String|Глобальная переменная, сохраняющая своё значение после исполнение скрипта. Может использоваться для передачи значений между разными скриптами.
+gsUserVariable2: String|Глобальная переменная, сохраняющая своё значение после исполнение скрипта. Может использоваться для передачи значений между разными скриптами.
+gsUserVariable3: String|Глобальная переменная, сохраняющая своё значение после исполнение скрипта. Может использоваться для передачи значений между разными скриптами.
+gsUserVariable4: String|Глобальная переменная, сохраняющая своё значение после исполнение скрипта. Может использоваться для передачи значений между разными скриптами.
+gsUserVariable5: String|Глобальная переменная, сохраняющая своё значение после исполнение скрипта. Может использоваться для передачи значений между разными скриптами.
+* gsPodcastUpdateProgress|
+
+* [Параметры медиа-ресурса]
+mp3DVideoType: Integer|Тип 3D ("Нет", "Горизонтальная пара", "Вертикальная пара", "Две видео-дорожки")
+mpActor: String|Актёры
+mpAddDate: Variant|Дата добавления
+mpAlbum: String|Название альбома
+mpAlbumArtist: Variant|Исполнитель
+mpArtistEra: Variant|Эпоха исполнителя
+mpAspectRatio: String|Соотношение сторон кадра
+mpAudioBitRate: Integer|Аудио битрейт
+mpAudioCodec: String|Аудио кодек
+mpAudioSampleRate: Integer|Частота дискретизации аудио
+mpAudioSelected: String|Выбранная дорожка аудио
+mpAudioStreamList: String|Список аудио-дорожек
+mpAudioStreamNo: Integer|Номер аудио-дорожки
+mpAudioStreams: Integer|Количество аудио-дорожек
+mpAuthor: String|Автор
+mpBdItem: Boolean
+mpBitsPerSample: Integer|Количество бит на семпл (8, 16, 24, 32)
+mpChannels: Integer|Количество каналов
+mpCodecLevel: Variant|Уровень для кодека
+mpCodecNalLengthSize: Variant
+mpCodecProfile: Variant|Профиль кодека
+mpCodecRefFrames: Variant
+mpCodecWarpPoints: Variant
+mpComment: String|Комментарий
+mpComposer: String|Композитор
+mpConductor: String|Дирижёр
+mpCopyright: String|Копирайт
+mpCreateDate: String|Дата создания
+mpCuesheet: String|Файл разметки .cue
+mpDVDAspectRatio: String|Кадр DVD ("16:9", "4:3")
+mpDataBitRate: Integer|Битрейт данных
+mpDataRate: Integer
+mpDimension: String|Измерение ("2D", "3D")
+mpDirectLink: Boolean|Флаг, определяющий, что это прямая ссылка на файл
+mpDirector: String|Режиссёр
+mpDvbItem: Boolean|Флаг, определяющий, что это элемент DVB
+mpDvdItem: Boolean|Флаг, определяющий, что это элемент DVD
+mpFileDate: String|Дата файла
+mpFileName: String|Имя файла
+mpFilePath: String|Путь (ссылка) до файла
+mpFileSize: Variant|Размер файла
+mpFileType: String|Тип файла
+mpFrameRate: Extended
+mpGenre: String|Жанр
+mpHeight: Integer|Высота
+mpInternetItem: Boolean|Флаг, определяющий, что это интернет-элемент (интернет-телевидение или интернет-радио)
+mpIsoItem: Boolean|Флаг, определяющий, что это элемент ISO
+mpItemID: String|Уникальный идентификатор элемента
+mpKeywords: Variant|Ключевые слова
+mpLastPlaybackTime: Variant|Последнее время воспроизведения
+mpLocaleTitle: String|Переведённое название
+mpMimeType: String|MIME-тип
+mpMood: Variant|Настроение
+mpOriginalHeight: Integer|Оригинальная высота
+mpOriginalWidth: Integer|Оригинальная ширина
+mpParentId: String|Идентификатор родителя (папки, содержащей этот элемент)
+mpParentPath: String|Путь (ссылка) родителя (папки, содержащей этот элемент)
+mpParentalRating: Variant|Возрастной рейтинг
+mpPartNo: Variant|Номер части
+mpPartTotal: Variant|Всего частей
+mpPodcastAuthorizationPages: Boolean|Флаг, определяющий использование авторизации для загрузки страниц
+mpPodcastAuthorizationPassword: String|Пароль для авторизации
+mpPodcastAuthorizationStream: Boolean|Флаг, определяющий использование авторизации для загрузки потока
+mpPodcastAuthorizationUserName: String|Имя пользователя для авторизации
+mpPodcastItem: Boolean|Флаг, определяющий, что элемент является элементом подкаста
+mpPodcastMediaFormats: String
+mpPodcastMediaResourceLinkFolderMode: Boolean|Флаг, определяющий использование срабатывание скрипта получения ссылки на медиа-ресурс при заходе в папку подкаста
+mpPodcastParameters: String|Дополнительные параметры подкаста
+mpPodcastProxyPages: Boolean|Флаг, определяющий использование прокси для загрузки страниц
+mpPodcastProxyPassword: String|Пароль для прокси
+mpPodcastProxyServerAddress: String|Адрес сервера прокси
+mpPodcastProxyServerPort: String|Порт сервера прокси
+mpPodcastProxyStream: Boolean|Флаг, определяющий использование прокси для загрузки потока
+mpPodcastProxyUserName: String|Имя пользователя для прокси
+mpProducer: String|Продюсер
+mpProgramID: String|ID программы
+mpRating: String|Рейтинг
+mpRatingInStars: Variant|Рейтинг в звёздах
+mpRefID: String
+mpRotate: Integer|Поворот
+mpSampleAspectRatio: String
+mpSeriesEpisodeNo: Variant|Номер эпизода сериала
+mpSeriesEpisodeTitle: Variant|Название эпизода сериала
+mpSeriesSeasonNo: Variant|Номер сезона сериала
+mpSeriesTitle: Variant|Название сериала
+mpShuffle: Boolean|Флаг, определяющий воспроизведение в случайном порядке
+mpStreamExtInfo: String|Дополнительная информация потока
+mpSubItemsCount: Integer|Количество подчинённых элементов
+mpSubtitleLanguage: String|Язык субтитров
+mpSubtitleList: String|Список файлов субтитров, разделённых знаком "|"
+mpTempo: Variant|Музыкальный темп
+mpThumbnail: String|Ссылка на изображение
+mpThumbnailDimension: Variant|Разрешение изображения
+mpThumbnailHeight: Variant|Высота изображения
+mpThumbnailWidth: Variant|Ширина изображения
+mpTimeLength: String|Длительность
+mpTimeStart: String|Время, с которого будет воспроизводиться файл
+mpTitle: String|Название
+mpTrack: Integer|Номер трека
+mpTrackTotal: Variant|Всего треков
+mpTranscodingActive: Boolean|Флаг, определяющий активность транскодирования
+mpTranscodingParams: String|Параметры транскодирования
+mpTranscodingProfile: String|Профиль транскодирования
+mpVideoBitRate: Integer|Видео битрейт
+mpVideoCodec: String|Видео кодек
+mpVideoSelected: String|Выбранная видео-дорожка
+mpWidth: Integer|Ширина
+mpYear: Integer|Год
+
+* [Параметры настройки]
+cfgAudioPlaylistMimeType: Variant
+cfgAudioPlaylistType: Variant
+cfgDeviceType: Variant
+cfgInternetRadioDefaultDuration: Variant
+cfgInternetTelevisionDefaultDuration: Variant
+cfgInternetTelevisionSplash: Variant
+cfgMaximumVideoResolutionHeight: Integer
+cfgMaximumVideoResolutionWidth: Integer
+cfgMusicVisualizationFileName: String
+cfgMusicVisualizationFrameRate: String
+cfgMusicVisualizationHeight: Integer
+cfgMusicVisualizationPreset: String
+cfgMusicVisualizationWidth: Integer
+cfgPhotoAutoRotate: Variant
+cfgPhotoSlideShowFrameRate: String
+cfgPhotoSlideShowHeight: Integer
+cfgPhotoSlideShowInterval: Integer
+cfgPhotoSlideShowMusicFolderID: String
+cfgPhotoSlideShowStyles: Variant
+cfgPhotoSlideShowWidth: Integer
+cfgPodcastsDownloadThumbnail: Boolean
+cfgPreTranscodingDestDirectory: String
+cfgPreTranscodingProfile: String
+cfgPreTranscodingSourceDirectory: String
+cfgTranscodingAspectRatio: Variant
+cfgTranscodingAudioBitrate: Integer
+cfgTranscodingAudioChannels: Integer
+cfgTranscodingAudioCodec: String
+cfgTranscodingAudioCopyAC3: Boolean
+cfgTranscodingAudioMimeType: String
+cfgTranscodingAudioSupportFileTypes: String
+cfgTranscodingAudioTagsSize: Integer
+cfgTranscodingFileFormat: String
+cfgTranscodingFrameAltColor: Integer
+cfgTranscodingFrameAltInterval: Integer
+cfgTranscodingFrameBottom: Integer
+cfgTranscodingFrameColor: Integer
+cfgTranscodingFrameEdges: Integer
+cfgTranscodingFrameExists: Boolean
+cfgTranscodingFrameLeft: Integer
+cfgTranscodingFrameParams: String
+cfgTranscodingFrameRate: String
+cfgTranscodingFrameRight: Integer
+cfgTranscodingFrameTop: Integer
+cfgTranscodingHideDTSInLPCM: Boolean
+cfgTranscodingLeadTime: Integer
+cfgTranscodingLpcmMaxBitsPerSample: Integer
+cfgTranscodingLpcmMaxChannels: Integer
+cfgTranscodingLpcmMaxSampleRate: Integer
+cfgTranscodingPadColor: Integer
+cfgTranscodingPadColorActive: Boolean
+cfgTranscodingPhotoMaxPixelsCount: Variant
+cfgTranscodingPhotoSupportFileTypes: String
+cfgTranscodingRadioMimeType: String
+cfgTranscodingResizeMode: Integer
+cfgTranscodingScreenFormat: String
+cfgTranscodingScreenHeight: Integer
+cfgTranscodingScreenWidth: Integer
+cfgTranscodingSubTitlesActive: Boolean
+cfgTranscodingSubTitlesBackground: Integer
+cfgTranscodingSubTitlesBackgroundBlend: Integer
+cfgTranscodingSubTitlesBackgroundColor: Integer
+cfgTranscodingSubTitlesBorderColor: Integer
+cfgTranscodingSubTitlesBorderWidth: Integer
+cfgTranscodingSubTitlesBottomMargin: Integer
+cfgTranscodingSubTitlesCharSpacing: Integer
+cfgTranscodingSubTitlesFontCharset: Integer
+cfgTranscodingSubTitlesFontColor: Integer
+cfgTranscodingSubTitlesFontName: String
+cfgTranscodingSubTitlesFontSize: Integer
+cfgTranscodingSubTitlesFontStyle: Integer
+cfgTranscodingSubTitlesFontUnit: Integer
+cfgTranscodingSubTitlesLibAss: Boolean
+cfgTranscodingSubtitles3DOffsetX: Integer
+cfgTranscodingThreadCount: Integer
+cfgTranscodingTvsetMimeType: String
+cfgTranscodingVideoBitrate: Integer
+cfgTranscodingVideoCodec: String
+cfgTranscodingVideoMimeType: String
+cfgTranscodingVideoMinMaxRate: Boolean
+cfgTranscodingVideoSupportFileTypes: String
+cfgUpnpIconHeight: Integer
+cfgUpnpIconWidth: Integer
+cfgVideoPlaylistMimeType: Variant
+cfgVideoPlaylistType: Variant
+cfgWebThumbnailHeight: Integer
+cfgWebThumbnailWidth: Integer\s
+cfgWebThumbnails: Boolean
+
+* [Системные]
+ExceptionClassName: String
+ExceptionMessage: String
