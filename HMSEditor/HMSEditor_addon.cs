@@ -67,7 +67,7 @@ namespace HmsAddons {
 		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
 				if (EditBox != null && !EditBox.IsDisposed) EditBox.Dispose();
-            }
+			}
 			EditBox = null;
 		}
 
@@ -217,8 +217,9 @@ namespace HmsAddons {
 		}
 
 		public uint Setup() {
-			if (EditBox != null)
+			if (EditBox != null) {
 				EditBox.HotKeysDialog();
+			}
 			return HRESULT.S_OK;
 		}
 
