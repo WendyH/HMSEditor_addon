@@ -27,10 +27,10 @@ namespace FastColoredTextBoxNS
         public  ToolStripControlHost host;
         public  Range Fragment { get; internal set; }
 
-        /// <summary>
-        /// Regex pattern for serach fragment around caret
-        /// </summary>
-        public string SearchPattern { get; set; }
+		/// <summary>
+		/// Regex pattern for serach fragment around caret
+		/// </summary>
+		public string SearchPattern { get; set; }
         /// <summary>
         /// Minimum fragment length for popup
         /// </summary>
@@ -202,7 +202,22 @@ namespace FastColoredTextBoxNS
 			this.ResumeLayout(false);
 
 		}
-    }
+		// < By WendyH -----------------------------------
+		protected override void Dispose(bool disposing) {
+			if (disposing) {
+				if (listView != null && !listView.IsDisposed)
+					listView.Dispose();
+				if (host != null && !host.IsDisposed)
+					host.Dispose();
+			}
+			listView = null;
+			host = null;
+			Fragment = null;
+			base.Dispose(disposing);
+		}
+		// > By WendyH -----------------------------------
+
+	}
 
 	[System.ComponentModel.ToolboxItem(false)]
 	public class AutocompleteListView: UserControl {
@@ -227,7 +242,28 @@ namespace FastColoredTextBoxNS
 		FastColoredTextBox tb;
 		internal HmsToolTip toolTip = new HmsToolTip();
 
-		System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+		Timer timer = new System.Windows.Forms.Timer();
+
+		// < By WendyH -----------------------------------
+		protected override void Dispose(bool disposing) {
+			if (disposing) {
+				if (toolTip != null)
+					toolTip.Dispose();
+				if (timer != null)
+					timer.Dispose();
+			}
+			FocussedItemIndexChanged = null;
+			visibleItems = null;
+			sourceItems  = null;
+			VisibleVariables = null;
+			VisibleLocalVars = null;
+			VisibleFunctions = null;
+			tb      = null;
+			toolTip = null;
+			timer   = null;
+            base.Dispose(disposing);
+		}
+		// > By WendyH -----------------------------------
 
 		internal bool AllowTabKey { get; set; }
 		public ImageList ImageList { get; set; }
@@ -263,7 +299,7 @@ namespace FastColoredTextBoxNS
 			if (HMS.PFC.Families.Length > 0) { // By WendyH
 				base.Font = new Font(HMS.PFC.Families[0], 10f, FontStyle.Regular, GraphicsUnit.Point);
 			} else {
-				base.Font = new Font("Segoe UI", 9, FontStyle.Regular, GraphicsUnit.Point);
+				base.Font = new Font("Segoe UI", 9.25f, FontStyle.Regular, GraphicsUnit.Point);
 			}
 			visibleItems    = new AutocompleteItems();
 			VerticalScroll.SmallChange = ItemHeight;

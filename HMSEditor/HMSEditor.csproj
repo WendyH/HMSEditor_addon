@@ -114,7 +114,6 @@
     </Compile>
     <Compile Include="AuthenticodeTools.cs" />
     <Compile Include="Autocomplete.cs" />
-    <Compile Include="AutocompleteItems.cs" />
     <Compile Include="FCTB\AutocompleteItem.cs" />
     <Compile Include="FCTB\AutocompleteMenu.cs">
       <SubType>Component</SubType>
@@ -218,9 +217,6 @@
     <Compile Include="Templates.cs" />
     <Compile Include="testpanel.cs" />
     <Compile Include="Themes.cs" />
-    <Compile Include="ToolStripEx.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Utils\Plist.cs" />
     <Compile Include="Utils\YamlParser.cs" />
     <Compile Include="ValueToolTip.cs">
@@ -283,6 +279,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <None Include="Resources\WorkItem_16xLG.png" />
+    <None Include="Resources\BookmarkPrevious_2391.png" />
+    <None Include="Resources\BookmarkNext_2389.png" />
+    <None Include="Resources\FindNext_13243.png" />
+    <None Include="Resources\FindPrevious_13244.png" />
+    <None Include="Resources\Print_11009.png" />
+    <None Include="Resources\Save_6530.png" />
+    <None Include="Resources\Open_6529.png" />
+    <None Include="Resources\NavigateBackwards_62701.png" />
     <None Include="Resources\toggle_16xLG.png" />
     <None Include="Resources\Comment_11698.png" />
     <None Include="Resources\Bookmark_5776.png" />

@@ -6,7 +6,7 @@ namespace HMSEditorNS {
 			var HmsScriptFrame = HMSEditor.ActiveEditor.HmsScriptFrame;
 			object ob1 = "mpFilePath";
 
-			HmsScriptFrame.AddWatch(ob1);
+			HmsScriptFrame.AddWatch(ref ob1);
 
 			MessageBox.Show("Test ok - " + ob1.ToString());
 		}
@@ -16,7 +16,7 @@ namespace HMSEditorNS {
 			object ob1;
 			ob1 = (object)"Нет скрипта";
 
-			HmsScriptFrame.ChangeScriptName(ob1);
+			HmsScriptFrame.ChangeScriptName(ref ob1);
 
 			MessageBox.Show("Test ok - " + ob1.ToString());
 		}
@@ -29,7 +29,7 @@ namespace HMSEditorNS {
 			object obErrorMessage = "";
 			int errorLine = 0, errorChar = 0, result = 0;
 
-			HmsScriptFrame.CompileScript(obScriptName, obScriptText, ref obErrorMessage, ref errorLine, ref errorChar, ref result);
+			HmsScriptFrame.CompileScript(ref obScriptName, ref obScriptText, ref obErrorMessage, ref errorLine, ref errorChar, ref result);
 
 			MessageBox.Show("Test ok.\nobScriptName=" + obScriptName.ToString() + "\nobErrorMessage=" + obErrorMessage.ToString() + "\nerrorLine=" + errorLine.ToString() + "\nerrorChar=" + errorChar.ToString() + "\nresult=" + result.ToString());
 		}
@@ -79,7 +79,7 @@ namespace HMSEditorNS {
 			var HmsScriptFrame = HMSEditor.ActiveEditor.HmsScriptFrame;
 			object expression = "mpFilePath";
 			object result = "";
-			HmsScriptFrame.SolveExpression(expression, ref result);
+			HmsScriptFrame.SolveExpression(ref expression, ref result);
 			MessageBox.Show("Test ok - expression=" + expression + " result=" + result);
 		}
 

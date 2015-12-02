@@ -9,13 +9,11 @@ namespace test {
 
 	public partial class Form1: Form {
 		[DllImport("User32")]
-		public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
+		private static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
 
 		Guid clsid = new Guid();
 		Guid iidAddonList    = new Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A"); // guid by IHmsAddonList
 		Guid iidScriptEditor = new Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB"); // guid by IHmsScriptEditor
-		IHmsAddonList    AddonList;
-		IHmsScriptEditor ScriptEditor;
 		IHmsScriptFrame  ScriptFrame  = new HmsScriptFrame();
 		IntPtr           EditorHandle = IntPtr.Zero;
 
@@ -106,10 +104,6 @@ namespace test {
 		}
 
 		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) {
-			if (ScriptEditor!=null) {
-				object scriptName = (object)comboBox1.Text;
-                ScriptEditor.SetScriptName(ref scriptName);
-			}
 		}
 
 		private void Form1_Resize(object sender, EventArgs e) {
@@ -123,9 +117,6 @@ namespace test {
 		}
 
 		private void btnSetup_Click(object sender, EventArgs e) {
-
-			if (ScriptEditor!=null)
-				ScriptEditor.Setup();
 		}
 	}
 }

@@ -79,6 +79,7 @@ namespace HMSEditorNS {
 		#endregion Static
 
 		// Constructor
+		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
 		public HMSEditor(IHmsScriptFrame aScriptFrame, int aScriptMode) {
 			HmsScriptFrame = aScriptFrame;
             HmsScriptMode  = (HmsScriptMode)aScriptMode;
@@ -1129,11 +1130,9 @@ namespace HMSEditorNS {
 		public string EvalVariableValue(string varName) {
 			object varname = varName;
 			object result  = "";
-			MessageBox.Show("varname=" + varname);
 			if (HmsScriptFrame != null)
-				HmsScriptFrame.SolveExpression(varname, ref result);
-			MessageBox.Show("SolveExpression past");
-			return (string)result;
+				HmsScriptFrame.SolveExpression(ref varname, ref result);
+			return result.ToString();
 		}
 
 		public bool CheckDebugState() {

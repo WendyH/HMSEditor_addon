@@ -7,6 +7,7 @@ namespace HmsAddons {
 
 	[Guid("9A871DC9-D8ED-4790-A5AB-E1A825639F2B")]
 	[ClassInterface(ClassInterfaceType.None)]
+	[ComVisible(true)]
 	public class HmsAddonList: IHmsAddonList {
 		private int AddonsCount = 1;
 		private HmsAddonInfo[] AddonInfoList = new HmsAddonInfo[] {
@@ -61,9 +62,10 @@ namespace HmsAddons {
 
 	[Guid("5384995C-F7A9-426A-9F2A-A03ADEFAD336")]
 	[ClassInterface(ClassInterfaceType.None)]
+	[ComVisible(true)]
 	public class HmsScriptEditor: IHmsScriptEditor, IDisposable {
 		private HMSEditor EditBox  = null;
-        protected void Dispose(bool disposing) {
+        protected virtual void Dispose(bool disposing) {
 			if (disposing) {
 				if (EditBox != null && !EditBox.IsDisposed) EditBox.Dispose();
             }

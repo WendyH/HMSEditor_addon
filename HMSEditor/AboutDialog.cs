@@ -26,7 +26,7 @@ namespace HMSEditorNS {
 			ThisDialog = this;
 			InitializeComponent();
 			
-			tmpFileRelease  = HMS.DownloadDir + "HMSEditor.dll";
+			tmpFileRelease  = HMS.DownloadDir + "HMSEditor.zip";
 			tmpFileTemplate = HMS.DownloadDir + "HMSEditorTemplates.zip";
 			
 			this.Text = string.Format("О программе {0}", AssemblyTitle);
@@ -235,8 +235,7 @@ namespace HMSEditorNS {
 			try {
 				rules = dirInfo.GetAccessControl().GetAccessRules(true, true, typeof(SecurityIdentifier));
 				identity = WindowsIdentity.GetCurrent();
-			} catch (UnauthorizedAccessException uae) {
-				//Debug.WriteLine(uae.ToString());
+			} catch (UnauthorizedAccessException) {
 				return false;
 			}
 

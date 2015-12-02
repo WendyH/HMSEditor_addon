@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Drawing;
 using FastColoredTextBoxNS;
 
@@ -27,7 +25,7 @@ namespace HMSEditorNS {
 			if (info.MemberItems.ContainsName("SaveToString") && type.ToLower()!="tbitmap32") return text + ".SaveToString";
 			if (info.MemberItems.ContainsName("Text")) return text + ".Text";
 			if (type == "THmsScriptMediaItem")
-				return "Str("+text+ ")+\" (THmsScriptMediaItem)\"#13+\"mpiTitle=\"+" + text + "[mpiTitle]+#13+\"mpiFilePath=\"+" + text + "[mpiFilePath]+#13+\"mpiThumbnail=\"+" + text + "[mpiThumbnail]+#13+\"mpiTimeLength=\"+" + text + "[mpiTimeLength]+#13+\"mpiCreateDate=\"+" + text + "[mpiCreateDate]";
+				return "Str("+text+ ")+\" (THmsScriptMediaItem)\"#13#10+\"mpiTitle=\"+" + text + "[mpiTitle]+#13#10+\"mpiFilePath=\"+" + text + "[mpiFilePath]+#13#10+\"mpiThumbnail=\"+Str(" + text + "[mpiThumbnail])+#13#10+\"mpiTimeLength=\"+Str(" + text + "[mpiTimeLength])+#13#10+\"mpiCreateDate=\"+Str(" + text + "[mpiCreateDate])";
 			return text;
 		}
 
@@ -51,7 +49,6 @@ namespace HMSEditorNS {
 				Point  point  = ActiveHMSEditor.MouseLocation;
 				int iStartLine = ActiveHMSEditor.Editor.YtoLineIndex(0);
 				int CharHeight = ActiveHMSEditor.Editor.CharHeight;
-				//int i = point.Y - (ActiveHMSEditor.ToolStripVisible ? ActiveHMSEditor.tsHeight : 0) / CharHeight;
 				int i = point.Y / CharHeight;
 				int iLine = iStartLine + i;
 				if ((iLine + 1) > ActiveHMSEditor.Editor.LinesCount) return;
@@ -90,10 +87,9 @@ namespace HMSEditorNS {
 							// Проверяем тип объекта класса, может быть удобней представить в виде текста? (TStrings или TJsonObject)
 							text = CheckTypeForToStringRules(item.Type, text);
 						}
-						// Вычсиление выражения
-						value = ActiveHMSEditor.EvalVariableValue(text);
 						// Внедряемся в поток - показываем вплывающее окно со значением
 						Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
+							value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
 							ActiveHMSEditor.ValueHint.ShowValue(Editor, value, point);
 						});
 						return;

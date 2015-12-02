@@ -30,12 +30,14 @@ namespace HMSEditorNS {
 		private static string _workingdir = "";
 		internal static string WorkingDir {
 			get {
-				if (_workingdir.Length == 0)
+				if (_workingdir.Length == 0) {
+					Application.SetCompatibleTextRenderingDefault(false); // firstest code in static class
 #if DEBUG
 					_workingdir = @"D:\Projects\HMSEditor_addon\HMSEditor\bin\Debug\";
 #else
 					_workingdir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\HMSEditor\";
 #endif
+				}
 				return _workingdir;
 			}
 		}
@@ -79,7 +81,6 @@ namespace HMSEditorNS {
 			if (initialized) return;
 			initialized = true;
 
-			// Заголовок для всех MessageBox
 			// Всё норм, запускаемся. Для начала вставляем обработку события при неудачных зависимостях, а там загрузим внедрённые dll
 			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 

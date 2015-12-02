@@ -74,7 +74,7 @@ namespace HmsAddons {
 	}
 
 	// Для получения списка классов и интерфейсов
-	[Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A")]
+	[ComVisible(true), Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A")]
 	public interface IHmsAddonList {
 		uint GetCount(ref int aCount);
 		uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref object aTitle, ref object aDescription, ref object aRequiredVersion, ref object aCheckedOnVersion);
@@ -83,7 +83,7 @@ namespace HmsAddons {
 	}
 
 	// Интерфейс редактора
-	[Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB")]
+	[ComVisible(true), Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB")]
 	public interface IHmsScriptEditor {
 		uint AddMessage(ref object aMessage);
 
@@ -118,13 +118,13 @@ namespace HmsAddons {
 	}
 
 	// Интерфейс программы, который предоставляется редактору
-	[Guid("D31B4638-9764-4A9A-9F5A-B4D0B519F402")]
+	[ComVisible(true), Guid("D31B4638-9764-4A9A-9F5A-B4D0B519F402")]
 	public interface IHmsScriptFrame {
-		uint AddWatch(object aExpression);
+		uint AddWatch(ref object aExpression);
 
-		uint ChangeScriptName(object aScriptName);
+		uint ChangeScriptName(ref object aScriptName);
 
-		uint CompileScript(object aScriptName, object aScriptText, ref object aErrorMessage, ref int aErrorLine, ref int aErrorChar, ref int aResult);
+		uint CompileScript(ref object aScriptName, ref object aScriptText, ref object aErrorMessage, ref int aErrorLine, ref int aErrorChar, ref int aResult);
 
 		uint GenerateScriptDescriptions(ref object aXMLDescriptions);
 
@@ -134,7 +134,7 @@ namespace HmsAddons {
 		uint IsExecutableLine(int aLine, ref int aResult);
 
 		uint ProcessCommand(int aCommand);
-		uint SolveExpression(object aExpression, ref object aResult);
+		uint SolveExpression(ref object aExpression, ref object aResult);
 
 		uint ToggleBreakpoint(int aLine);
 	}
