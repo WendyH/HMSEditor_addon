@@ -53,8 +53,6 @@ namespace HmsAddons {
 		}
 
 		public uint CanUnloadNow() {
-
-			//File.Copy(@"D:\Projects\HMSEditor_addon\HMSEditor\bin\Debug\HMSEditor.dll", @"C:\Program Files (x86)\Home Media Server\Addons\HMSEditor.dll", true);
 			return HRESULT.S_OK;
 		}
 
@@ -65,7 +63,8 @@ namespace HmsAddons {
 	[ComVisible(true)]
 	public class HmsScriptEditor: IHmsScriptEditor, IDisposable {
 		private HMSEditor EditBox  = null;
-        protected virtual void Dispose(bool disposing) {
+
+		protected virtual void Dispose(bool disposing) {
 			if (disposing) {
 				if (EditBox != null && !EditBox.IsDisposed) EditBox.Dispose();
             }
@@ -94,7 +93,7 @@ namespace HmsAddons {
 			} catch {
 				MessageBox.Show("Ошибка создания окна редактора " + HMSEditor.Title);
 				Dispose();
-                return HRESULT.E_UNEXPECTED;
+				return HRESULT.E_UNEXPECTED;
 			}
 			return HRESULT.S_OK;
 		}
@@ -116,7 +115,7 @@ namespace HmsAddons {
 		public uint GetCaretPos(ref int aLine, ref int aChar) {
 			if (EditBox !=null) {
 				EditBox.GetCaretPos(ref aLine, ref aChar);
-                return HRESULT.S_OK;
+				return HRESULT.S_OK;
 			}
 			return HRESULT.E_UNEXPECTED;
 		}
@@ -130,14 +129,16 @@ namespace HmsAddons {
 		}
 
 		public uint GetModified(ref int aModified) {
-			if (EditBox != null)
+			if (EditBox != null) {
 				aModified = EditBox.Modified ? -1 : 0;
+			}
 			return HRESULT.E_NOTIMPL;
 		}
 
 		public uint GetScriptName(ref object aScriptName) {
-			if (EditBox != null)
+			if (EditBox != null) {
 				aScriptName = EditBox.ScriptLanguage;
+			}
 			return HRESULT.S_OK;
 		}
 
@@ -186,9 +187,10 @@ namespace HmsAddons {
 		}
 
 		public uint SetRunning(int aValue) {
-			if (EditBox != null)
+			if (EditBox != null) {
 				EditBox.OnRunningStateChange(aValue < 0);
-            return HRESULT.S_OK;
+			}
+			return HRESULT.S_OK;
 		}
 
 		public uint SetScriptName(ref object aScriptName) {
@@ -201,7 +203,7 @@ namespace HmsAddons {
 			if (EditBox != null) {
 				EditBox.Text     = (string)aText;
 				EditBox.Modified = false;
-                return HRESULT.S_OK;
+				return HRESULT.S_OK;
 			}
 			return HRESULT.E_UNEXPECTED;
 		}
