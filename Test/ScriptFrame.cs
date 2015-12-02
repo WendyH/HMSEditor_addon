@@ -1,4 +1,4 @@
-﻿using HmsInterfaces; // Интерфейсы HMS (hmsInterfaces.dll)
+﻿using HmsAddons;
 
 namespace test {
 	class HmsScriptFrame: IHmsScriptFrame {
@@ -11,27 +11,27 @@ namespace test {
 			}
 		}
 
-		public uint AddWatch(string aExpression) {
+		public uint AddWatch(ref object aExpression) {
 			Log("AddWatch: aExpression=" + aExpression);
 			return 0;
 		}
 
-		public uint ChangeScriptName(string aScriptName) {
+		public uint ChangeScriptName(ref object aScriptName) {
 			Log("ChangeScriptName: aScriptName=" + aScriptName);
 			return 0;
 		}
 
-		public uint CompileScript(string aScriptName, string aScriptText, ref string aErrorMessage, ref int aErrorLine, ref int aErrorChar, ref bool aResult) {
+		public uint CompileScript(ref object aScriptName, ref object aScriptText, ref object aErrorMessage, ref int aErrorLine, ref int aErrorChar, ref bool aResult) {
 			Log("CompileScript:");
 			return 0;
 		}
 
-		public uint GenerateScriptDescriptions(ref string aXMLDescriptions) {
+		public uint GenerateScriptDescriptions(ref object aXMLDescriptions) {
 			Log("GenerateScriptDescriptions:");
 			return 0;
 		}
 
-		public uint GetCurrentState(ref bool aRunning, ref bool aStepByStep, ref bool aStopped, ref int aCurrentSourceLine, ref int aCurrentSourceChar) {
+		public uint GetCurrentState(ref bool aRunning, ref int aCurrentSourceLine, ref int aCurrentSourceChar) {
 			Log("GetCurrentState:");
 			return 0;
 		}
@@ -51,7 +51,7 @@ namespace test {
 			return 0;
 		}
 
-		public uint SolveExpression(string aExpression, ref string aResult) {
+		public uint SolveExpression(ref object aExpression, ref object aResult) {
 			Log("SolveExpression: aExpression=" + aExpression);
 			return 0;
 		}

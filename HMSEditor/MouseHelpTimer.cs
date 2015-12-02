@@ -51,6 +51,7 @@ namespace HMSEditorNS {
 				Point  point  = ActiveHMSEditor.MouseLocation;
 				int iStartLine = ActiveHMSEditor.Editor.YtoLineIndex(0);
 				int CharHeight = ActiveHMSEditor.Editor.CharHeight;
+				//int i = point.Y - (ActiveHMSEditor.ToolStripVisible ? ActiveHMSEditor.tsHeight : 0) / CharHeight;
 				int i = point.Y / CharHeight;
 				int iLine = iStartLine + i;
 				if ((iLine + 1) > ActiveHMSEditor.Editor.LinesCount) return;
@@ -69,7 +70,7 @@ namespace HMSEditorNS {
 				Range fragment = r.GetFragmentLookedLeft();
 				string text = fragment.Text.Replace("#", "");
 				if (text.Length == 0) return;
-				
+
 				HMSItem item = ActiveHMSEditor.GetHMSItemByText(text); // Поиск известного элемента HMSItem по части текста
 				if (item != null && !string.IsNullOrEmpty(item.Text)) {
 					point.Offset(0, Editor.CharHeight-4);
@@ -79,10 +80,10 @@ namespace HMSEditorNS {
 							text = Editor.SelectedText;
 						} else {
 							// проверяем, если это index свойство - то нудно вычислять значение с переданным индексом, поэтому дополняем значением [...]
-							if (item.ImageIndex == Images.Enum) {
+							if (item.ImageIndex == ImagesIndex.Enum) {
 								Match m = Regex.Match(line, text + @"\[.*?\]");
 								if (m.Success) text = m.Value;
-							} else if (item.ImageIndex == Images.Function) {
+							} else if (item.ImageIndex == ImagesIndex.Function) {
 								Match m = Regex.Match(line, text + @"\(.*?\)");
 								if (m.Success) text = m.Value;
 							}
@@ -96,7 +97,7 @@ namespace HMSEditorNS {
 							ActiveHMSEditor.ValueHint.ShowValue(Editor, value, point);
 						});
 						return;
-					} 
+					}
 					// Показываем инофрмацию о функции или переменной через ToolTip
 					Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
 						var tip = Editor.ToolTip;

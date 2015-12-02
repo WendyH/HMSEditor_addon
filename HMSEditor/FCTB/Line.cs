@@ -14,6 +14,7 @@ namespace FastColoredTextBoxNS {
 		public int LineIndent      { get; set; }
 		public int NextLineIndent  { get; set; }
 		public int LastVisitChar   { get; set; }
+		public int LineNo = 0;
 		// By WendyH > -------------------------------
 		public string FoldingStartMarker { get; set; }
 		public string FoldingEndMarker { get; set; }
@@ -189,7 +190,7 @@ namespace FastColoredTextBoxNS {
 			this.startY     = startY;
 			bottomPadding   = 0;
 			wordWrapIndent  = 0;
-		}
+        }
 		/// <summary>
 		/// Positions for wordwrap cutoffs
 		/// </summary>

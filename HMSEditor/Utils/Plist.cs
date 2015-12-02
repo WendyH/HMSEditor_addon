@@ -6,7 +6,7 @@ using whYamlParser;
 namespace HMSEditorNS {
 	public static class PlistParser {
 
-		internal static YamlObject LoadFromFile(string file) {
+		public static YamlObject LoadFromFile(string file) {
 			YamlObject result = new YamlObject();
 
 			if (!File.Exists(file))

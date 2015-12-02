@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -114,6 +114,7 @@
     </Compile>
     <Compile Include="AuthenticodeTools.cs" />
     <Compile Include="Autocomplete.cs" />
+    <Compile Include="AutocompleteItems.cs" />
     <Compile Include="FCTB\AutocompleteItem.cs" />
     <Compile Include="FCTB\AutocompleteMenu.cs">
       <SubType>Component</SubType>
@@ -122,6 +123,12 @@
     <Compile Include="FCTB\Char.cs" />
     <Compile Include="FCTB\CommandManager.cs" />
     <Compile Include="FCTB\Commands.cs" />
+    <Compile Include="FormRename.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormRename.Designer.cs">
+      <DependentUpon>FormRename.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormUpdateInfo.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -129,7 +136,13 @@
       <DependentUpon>FormUpdateInfo.cs</DependentUpon>
     </Compile>
     <Compile Include="GitHub.cs" />
+    <Compile Include="HmsAddons.cs" />
+    <Compile Include="HMSClassInfo.cs" />
+    <Compile Include="HmsEditBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="HMSEditor_addon.cs" />
+    <Compile Include="HMSItem.cs" />
     <Compile Include="HmsToolTip.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -146,17 +159,23 @@
     <Compile Include="FCTB\FindForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FCTB\FindForm.Designer.cs" />
+    <Compile Include="FCTB\FindForm.Designer.cs">
+      <DependentUpon>FindForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FCTB\GoToForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FCTB\GoToForm.Designer.cs" />
+    <Compile Include="FCTB\GoToForm.Designer.cs">
+      <DependentUpon>GoToForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FCTB\Hints.cs" />
     <Compile Include="FCTB\Hotkeys.cs" />
     <Compile Include="FCTB\HotkeysEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FCTB\HotkeysEditorForm.Designer.cs" />
+    <Compile Include="FCTB\HotkeysEditorForm.Designer.cs">
+      <DependentUpon>HotkeysEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FCTB\LimitedStack.cs" />
     <Compile Include="FCTB\Line.cs" />
     <Compile Include="FCTB\LinesAccessor.cs" />
@@ -166,7 +185,9 @@
     <Compile Include="FCTB\ReplaceForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FCTB\ReplaceForm.Designer.cs" />
+    <Compile Include="FCTB\ReplaceForm.Designer.cs">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FCTB\Ruler.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -187,12 +208,19 @@
     <Compile Include="HMSEditor.Designer.cs">
       <DependentUpon>HMSEditor.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImagesIndex.cs" />
     <Compile Include="INI.cs" />
+    <Compile Include="InvisibleCharsRenderer.cs" />
     <Compile Include="MouseHelpTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NativeMethods.cs" />
+    <Compile Include="SnippetHMSItem.cs" />
     <Compile Include="Templates.cs" />
+    <Compile Include="testpanel.cs" />
     <Compile Include="Themes.cs" />
+    <Compile Include="ToolStripEx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Utils\Plist.cs" />
     <Compile Include="Utils\YamlParser.cs" />
     <Compile Include="ValueToolTip.cs">
@@ -208,12 +236,22 @@
       <DependentUpon>AutocompleteMenu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FCTB\FastColoredTextBox.resx" />
-    <EmbeddedResource Include="FCTB\FindForm.resx" />
+    <EmbeddedResource Include="FCTB\FindForm.resx">
+      <DependentUpon>FindForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FCTB\GoToForm.resx">
       <SubType>Designer</SubType>
+      <DependentUpon>GoToForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FCTB\HotkeysEditorForm.resx" />
-    <EmbeddedResource Include="FCTB\ReplaceForm.resx" />
+    <EmbeddedResource Include="FCTB\HotkeysEditorForm.resx">
+      <DependentUpon>HotkeysEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FCTB\ReplaceForm.resx">
+      <DependentUpon>ReplaceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormRename.resx">
+      <DependentUpon>FormRename.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormUpdateInfo.resx">
       <DependentUpon>FormUpdateInfo.cs</DependentUpon>
     </EmbeddedResource>
@@ -245,6 +283,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <None Include="Resources\toggle_16xLG.png" />
+    <None Include="Resources\Comment_11698.png" />
+    <None Include="Resources\Bookmark_5776.png" />
+    <None Include="Resources\NavigateForward_6271.png" />
+    <None Include="Resources\NavigateBackwards_6270.png" />
     <EmbeddedResource Include="Resources\ColorThemes.txt" />
     <EmbeddedResource Include="Resources\Markdown.html" />
     <None Include="icons\logo.png" />
@@ -274,12 +317,7 @@
     <None Include="Resources\togglebookmark.png" />
     <None Include="Resources\symbolshapes.brace-pair.png" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\hmsInterfaces\hmsInterfaces.csproj">
-      <Project>{b4b3af4e-1ed9-48b8-a050-d78b48c2d66e}</Project>
-      <Name>hmsInterfaces</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
       <Visible>False</Visible>

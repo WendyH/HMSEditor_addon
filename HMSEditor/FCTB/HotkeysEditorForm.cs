@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using HMSEditorNS;
 
 namespace FastColoredTextBoxNS
 {
@@ -17,9 +18,10 @@ namespace FastColoredTextBoxNS
             InitializeComponent();
             BuildWrappers(hotkeys);
             dgv.DataSource = wrappers;
-        }
+			StartPosition = FormStartPosition.CenterParent;
+		}
 
-        int CompereKeys(Keys key1, Keys key2)
+		int CompereKeys(Keys key1, Keys key2)
         {
             var res = ((int)key1 & 0xff).CompareTo((int)key2 & 0xff);
             if (res == 0)
@@ -123,6 +125,50 @@ namespace FastColoredTextBoxNS
 			// TO DO
 			// Save bindings to file in users home directory
         }
+
+		private void button1_Click(object sender, EventArgs e) {
+			testpanel.AddWatch();
+		}
+
+		private void button2_Click(object sender, EventArgs e) {
+			testpanel.ChangeScriptName();
+		}
+
+		private void button3_Click(object sender, EventArgs e) {
+			testpanel.CompileScript();
+		}
+
+		private void button4_Click(object sender, EventArgs e) {
+			testpanel.GenerateScriptDescriptions();
+		}
+
+		private void button7_Click(object sender, EventArgs e) {
+			testpanel.GetCurrentState();
+		}
+
+		private void button6_Click(object sender, EventArgs e) {
+			testpanel.IsBreakpointLine();
+		}
+
+		private void button5_Click(object sender, EventArgs e) {
+			testpanel.IsExecutableLine();
+		}
+
+		private void button8_Click(object sender, EventArgs e) {
+			testpanel.ProcessCommand();
+		}
+
+		private void button9_Click(object sender, EventArgs e) {
+			testpanel.SolveExpression();
+		}
+
+		private void button10_Click(object sender, EventArgs e) {
+			testpanel.ToggleBreakpoint();
+        }
+
+		private void panel1_Paint(object sender, PaintEventArgs e) {
+
+		}
 	}
 
 	internal class HotkeyWrapper

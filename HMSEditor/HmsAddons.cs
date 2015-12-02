@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace HmsInterfaces
-{
-	// Структура информации о дополнении (Addon)
+namespace HmsAddons {
 	public struct HmsAddonInfo {
-		public Guid ClassID;
-		public Guid InterfaceID;
+		public Guid   ClassID;
+		public Guid   InterfaceID;
 		public string Title;
 		public string Description;
 		public string RequiredVersion;
@@ -34,7 +32,7 @@ namespace HmsInterfaces
 		public const int ecMessages  = 4;
 
 		// IHmsScriptFrame.ProcessCommand
-		public const int ecUserFirst = 1001;
+		public const int ecUserFirst        = 1001;
 		public const int ecCompileScript    = ecUserFirst + 103;
 		public const int ecRunLine          = ecUserFirst + 100;
 		public const int ecRunScript        = ecUserFirst + 102;
@@ -42,13 +40,13 @@ namespace HmsInterfaces
 		public const int ecEvaluate         = ecUserFirst + 104;
 		public const int ecWatches          = ecUserFirst + 105;
 
-		// Получение значение Guid из атрибута указанного типа
+		public const string CLASS_HmsAddonList = "1C6BC2D4-5AF8-4203-98D3-5D4CA48E6C6F";
+
 		public static Guid Guid(Type t) {
 			Attribute guidAttribute = Attribute.GetCustomAttribute(t, typeof(GuidAttribute));
 			return new Guid(((GuidAttribute)guidAttribute).Value);
 		}
 
-		// Сравнение двух Guid, указанного первым параметром и Guid типа переданного вторым.
 		public static bool IsEqualGUID(Guid guid1, Type t) {
 			return (guid1.CompareTo(Guid(t)) == 0);
 		}
@@ -79,28 +77,29 @@ namespace HmsInterfaces
 	[Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A")]
 	public interface IHmsAddonList {
 		uint GetCount(ref int aCount);
-		uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref string aTitle, ref string aDescription, ref string aRequiredVersion, ref string aCheckedOnVersion);
+		uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref object aTitle, ref object aDescription, ref object aRequiredVersion, ref object aCheckedOnVersion);
 		uint GetClassObject(ref Guid clsid, ref Guid iid, out object instance);
+		uint CanUnloadNow ();
 	}
 
 	// Интерфейс редактора
 	[Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB")]
 	public interface IHmsScriptEditor {
-		uint AddMessage(object aMessage);
+		uint AddMessage(ref object aMessage);
 
-		uint CreateEditor(IntPtr THandle, IHmsScriptFrame aHmsScripter, int aScriptMode, ref IntPtr aEditor);
+		uint CreateEditor(IntPtr THandle, IHmsScriptFrame aScriptFrame, int aScriptMode, ref IntPtr aEditor);
 		uint DestroyEditor(IntPtr aEditor);
 
 		uint GetCapabilities(ref int aCapabilities);
 
 		uint GetCurrentLine(ref int aLine);
 
-		uint GetScriptName(ref string aScriptName);
-		uint GetScriptText(ref string aText);
-		uint SetScriptName(string aScriptName);
-		uint SetScriptText(string aText);
+		uint GetScriptName(ref object aScriptName);
+		uint GetScriptText(ref object aText);
+		uint SetScriptName(ref object aScriptName);
+		uint SetScriptText(ref object aText);
 
-		uint GetModified(ref bool aModified);
+		uint GetModified(ref int aModified);
 
 		uint InvalidateLine(int aLine);
 
@@ -110,7 +109,10 @@ namespace HmsInterfaces
 		uint SetCaretPos(int aLine, int aChar);
 
 		uint SetFocus();
-		uint SetSelText(string aText);
+
+		uint SetRunning(int aValue); 
+
+		uint SetSelText(ref object aText);
 
 		uint Setup();
 	}
@@ -118,22 +120,23 @@ namespace HmsInterfaces
 	// Интерфейс программы, который предоставляется редактору
 	[Guid("D31B4638-9764-4A9A-9F5A-B4D0B519F402")]
 	public interface IHmsScriptFrame {
-		uint AddWatch(string aExpression);
+		uint AddWatch(object aExpression);
 
-		uint ChangeScriptName(string aScriptName);
+		uint ChangeScriptName(object aScriptName);
 
-		uint CompileScript(string aScriptName, string aScriptText, ref string aErrorMessage, ref int aErrorLine, ref int aErrorChar, ref bool aResult);
+		uint CompileScript(object aScriptName, object aScriptText, ref object aErrorMessage, ref int aErrorLine, ref int aErrorChar, ref int aResult);
 
-		uint GenerateScriptDescriptions(ref string aXMLDescriptions);
+		uint GenerateScriptDescriptions(ref object aXMLDescriptions);
 
-		uint GetCurrentState(ref bool aRunning, ref bool aStepByStep, ref bool aStopped, ref int aCurrentSourceLine, ref int aCurrentSourceChar);
+		uint GetCurrentState(ref int aRunning, ref int aCurrentSourceLine, ref int aCurrentSourceChar);
 
-		uint IsBreakpointLine(int aLine, ref bool aResult);
-		uint IsExecutableLine(int aLine, ref bool aResult);
+		uint IsBreakpointLine(int aLine, ref int aResult);
+		uint IsExecutableLine(int aLine, ref int aResult);
 
 		uint ProcessCommand(int aCommand);
-		uint SolveExpression(string aExpression, ref string aResult);
+		uint SolveExpression(object aExpression, ref object aResult);
 
 		uint ToggleBreakpoint(int aLine);
 	}
+
 }

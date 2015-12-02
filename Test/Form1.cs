@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using HmsInterfaces; // Интерфейсы HMS (hmsInterfaces.dll)
+using HmsAddons;
 
 namespace test {
 
@@ -12,10 +12,11 @@ namespace test {
 		public static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
 
 		Guid clsid = new Guid();
-		Guid iid   = new Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB"); // guid by IHmsScriptEditor
+		Guid iidAddonList    = new Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A"); // guid by IHmsAddonList
+		Guid iidScriptEditor = new Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB"); // guid by IHmsScriptEditor
 		IHmsAddonList    AddonList;
 		IHmsScriptEditor ScriptEditor;
-	        HmsScriptFrame   ScriptFrame  = new HmsScriptFrame();
+		IHmsScriptFrame  ScriptFrame  = new HmsScriptFrame();
 		IntPtr           EditorHandle = IntPtr.Zero;
 
 		public Form1() {
@@ -26,7 +27,7 @@ namespace test {
 			comboBox1.Items.Add("JScript"     );
 			comboBox1.Items.Add("Нет скрипта" );
 			comboBox1.Text = "C++Script";
-			ScriptFrame.LogTextBox = LogTextBox;
+			//ScriptFrame.LogTextBox = LogTextBox;
 		}
 
 		private void Form1_Load(object sender, EventArgs e) {
@@ -35,6 +36,7 @@ namespace test {
 			try {
 #if (DEBUG)
 				assembly = Assembly.LoadFrom(@"D:\Projects\HMSEditor_addon\HMSEditor\bin\Debug\HMSEditor.dll");
+				//assembly = Assembly.LoadFrom(@"D:\Projects\Test\HmsAddons.dll");
 #else
 				assembly = Assembly.LoadFrom("HMSEditor.dll");
 #endif
@@ -43,51 +45,56 @@ namespace test {
 
 			}
 			if (assembly != null) {
-				/*
+				
 				// Цикл сбора информации о существующих классах и методах
 				Type[] types = assembly.GetTypes();
 				foreach (Type t in types) {
+					if (t.Namespace != "HmsAddons") continue;
 					sb.AppendLine(t.ToString());
 					MethodInfo[] methods = t.GetMethods(BindingFlags.Public);
 					foreach (MethodInfo info in methods) {
 						sb.AppendLine("   " + info.ToString());
 					}
 				}
-				*/
+				
 				try {
-					/*
+					
+
 					// Рефлексия
 					object objAddonList;
 					object objScriptEditor;
-					Type type = assembly.GetType("HMSEditorNS.HmsAddonList");
+					Type type = assembly.GetType("HmsAddons.HmsAddonList");
 					objAddonList = Activator.CreateInstance(type);
 					if (objAddonList != null) {
+
+						// Return a pointer to the objects IUnknown interface.
+						IntPtr pIUnk = Marshal.GetIUnknownForObject(objAddonList);
+						IntPtr pInterface;
+						Int32 result = Marshal.QueryInterface(pIUnk, ref iidAddonList, out pInterface);
+
+						//IHmsAddonList itf = (IHmsAddonList)pInterface;
+
+
 						MethodInfo method = type.GetMethod("GetClassObject");
-						object[] parameters = new object[] { clsid, iid, null };
+						object[] parameters = new object[] { clsid, iidScriptEditor, null };
 						method.Invoke(objAddonList, parameters);
 						objScriptEditor = parameters[2];
 						if (objScriptEditor != null) {
-							Type type2 = assembly.GetType("HMSEditorNS.HmsScriptEditor");
+							Type type2 = assembly.GetType("HmsAddons.HmsScriptEditor");
 							MethodInfo method2 = type2.GetMethod("CreateEditor");
-							object[] parameters2 = new object[] { panel1.Handle, ScriptFrame, (int)HmsScriptMode.smTranscoding, null };
-							method.Invoke(objScriptEditor, parameters2);  // Вызывает Exception "Объект не соответствует конечному типу."
+							object[] parameters2 = new object[] { Handle, null, 0, IntPtr.Zero };
+							method2.Invoke(objScriptEditor, parameters2);
 							EditorHandle = (IntPtr)parameters2[3];
+
+							//MethodInfo method3 = type2.GetMethod("DestroyEditor");
+							//object[] parameters3 = new object[] { EditorHandle };
+							//method3.Invoke(objScriptEditor, parameters3);
+
+
 						}
 
 					}
-					*/
-					
-					object obj;
-					AddonList = (IHmsAddonList)Activator.CreateInstance(assembly.GetType("HMSEditorNS.HmsAddonList"));
-					AddonList.GetClassObject(ref clsid, ref iid, out obj);
-					ScriptEditor = (IHmsScriptEditor)obj;
-					if (ScriptEditor!=null) {
-						ScriptEditor.CreateEditor(panel1.Handle, ScriptFrame, (int)HmsScriptMode.smTranscoding, ref EditorHandle);
-						ScriptEditor.SetScriptText("{\r\n\r\n  HmsLogMessage(1, '');\r\n\r\n}");
-						ScriptEditor.SetScriptName("C++Script");
-						Form1_Resize(null, EventArgs.Empty);
-					}
-					
+
 				} catch (Exception ex) {
 					sb.AppendLine(ex.ToString());
 
@@ -100,7 +107,8 @@ namespace test {
 
 		private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) {
 			if (ScriptEditor!=null) {
-				ScriptEditor.SetScriptName(comboBox1.Text);
+				object scriptName = (object)comboBox1.Text;
+                ScriptEditor.SetScriptName(ref scriptName);
 			}
 		}
 
@@ -115,6 +123,7 @@ namespace test {
 		}
 
 		private void btnSetup_Click(object sender, EventArgs e) {
+
 			if (ScriptEditor!=null)
 				ScriptEditor.Setup();
 		}

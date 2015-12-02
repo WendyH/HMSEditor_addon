@@ -6,12 +6,12 @@ using System.Text.RegularExpressions;
 /// By WendyH. Worked with broken format without exceptions. Sorry 4 code. Magic code.
 /// </summary>
 namespace whYamlParser {
-	enum YamlObjectType { Scalar, Mapping, Sequence }
+	public enum YamlObjectType { Scalar, Mapping, Sequence }
 
 	/// <summary>
 	/// YamlObjects collection
 	/// </summary>
-	internal class YamlObjects: List<YamlObject> {
+	public class YamlObjects: List<YamlObject> {
 		public bool ContainsName(string name) {
 			foreach (YamlObject o in this) if (o.Name == name) return true;
 			return false;
@@ -28,7 +28,7 @@ namespace whYamlParser {
 	/// <summary>
 	/// The item of yaml (json) colletion
 	/// </summary>
-	internal class YamlObject : IEnumerable {
+	public class YamlObject : IEnumerable {
 		public string         Name   = "";
 		public string         Value  = "";
 		public int            Indent = 0;
@@ -113,7 +113,7 @@ namespace whYamlParser {
 		private static Regex reBeginInlineObj = new Regex(@"^\s*(\{|\[)(.*)");
 		private static Regex reInlinePart     = new Regex(@"""(\\[\s\S]|[^""]*)""|'(\\[\s\S]|[^']*)'|([,\]\}])");
 
-		internal static void SetTypeYamlObject(YamlObject curObject, YamlObjectType type, string errKey) {
+		public static void SetTypeYamlObject(YamlObject curObject, YamlObjectType type, string errKey) {
 			if (curObject.Type == YamlObjectType.Scalar) curObject.Type = type;
 			else if (curObject.Type != type) Errors.Add(YamlErrors.Msg(errKey, curObject.Line, curObject.Char));
 		}
@@ -215,13 +215,13 @@ namespace whYamlParser {
 			}
 		}
 
-		internal static YamlObject Parse(string yamlText) {
+		public static YamlObject Parse(string yamlText) {
 			YamlObject resultObject = new YamlObject();
 			LoadFromString(yamlText, resultObject);
 			return resultObject;
 		}
 
-		internal static bool LoadFromString(string yamlText, YamlObject yoResult) {
+		public static bool LoadFromString(string yamlText, YamlObject yoResult) {
 			bool bSuccess = true; string line = string.Empty, lastchar, mchar = string.Empty;
 			int mulindent = int.MaxValue, mulindent1 = -1, iChar, indent;
 			YamlObject curObject = yoResult; aliases.Clear(); Errors.Clear();

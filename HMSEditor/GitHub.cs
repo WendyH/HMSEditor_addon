@@ -7,7 +7,7 @@ using System.Text;
 using whYamlParser;
 
 namespace HMSEditorNS {
-	internal static class GitHub {
+	public static class GitHub {
 		private static string      giturl = "https://api.github.com/repos/";
 		private static Regex regexUpdDate = new Regex(@"""pushed_at""\s*?:\s*?""(.*?)""" , RegexOptions.Compiled);
 		private static Regex regexVersion = new Regex(@"""tag_name""\s*?:\s*?""(.*?)"""  , RegexOptions.Compiled);
@@ -160,7 +160,7 @@ namespace HMSEditorNS {
 			return body;
 		}
 
-		public static string GetLatestReleaseVersion(string userRepo, string fileName, out string updateInfo) {
+		public static string GetLatestReleaseVersion(string userRepo, out string updateInfo) {
 			string urlInfo = giturl + userRepo + "/releases";
 			string version = "";
 			updateInfo = "";
@@ -172,7 +172,7 @@ namespace HMSEditorNS {
 				var assets = releaseInfo.GetObject("assets");
 				foreach (var assetInfo in assets.ChildItems) {
 					string url = assetInfo["browser_download_url"];
-					if ((ReleaseUrl.Length == 0) && url.EndsWith(fileName)) {
+					if ((ReleaseUrl.Length == 0) && url.EndsWith("HMSEditor.exe")) {
 						version    = releaseInfo["tag_name"];
 						ReleaseUrl = url;
 					}

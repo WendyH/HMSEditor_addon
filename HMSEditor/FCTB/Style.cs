@@ -121,7 +121,17 @@ namespace FastColoredTextBoxNS
 			ForeBrush = new SolidBrush(tb.ForeColor);
 		}
 
-        public override void Draw(Graphics gr, Point position, Range range)
+		public TextStyle Clone(int val=0) {
+			if (ForeBrush == null) return null;
+			Color c = ((SolidBrush)ForeBrush).Color;
+			int r = Math.Max(0, c.R - val);
+			int g = Math.Max(0, c.G - val);
+			int b = Math.Max(0, c.B - val);
+			Brush newForeBrush = new SolidBrush(Color.FromArgb(r, g, b));
+			return new TextStyle(newForeBrush, BackgroundBrush, FontStyle);
+		}
+
+		public override void Draw(Graphics gr, Point position, Range range)
         {
             //draw background
             if (BackgroundBrush != null)

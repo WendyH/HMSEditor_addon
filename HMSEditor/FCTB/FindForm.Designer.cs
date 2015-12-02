@@ -41,7 +41,7 @@
 			// 
 			this.btClose.Location = new System.Drawing.Point(309, 64);
 			this.btClose.Name = "btClose";
-			this.btClose.Size = new System.Drawing.Size(75, 26);
+			this.btClose.Size = new System.Drawing.Size(75, 25);
 			this.btClose.TabIndex = 5;
 			this.btClose.Text = "Закрыть";
 			this.btClose.UseVisualStyleBackColor = true;
@@ -51,7 +51,7 @@
 			// 
 			this.btFindNext.Location = new System.Drawing.Point(228, 64);
 			this.btFindNext.Name = "btFindNext";
-			this.btFindNext.Size = new System.Drawing.Size(75, 26);
+			this.btFindNext.Size = new System.Drawing.Size(75, 25);
 			this.btFindNext.TabIndex = 4;
 			this.btFindNext.Text = "Найти";
 			this.btFindNext.UseVisualStyleBackColor = true;
@@ -69,7 +69,7 @@
 			// cbRegex
 			// 
 			this.cbRegex.AutoSize = true;
-			this.cbRegex.Location = new System.Drawing.Point(316, 38);
+			this.cbRegex.Location = new System.Drawing.Point(334, 38);
 			this.cbRegex.Name = "cbRegex";
 			this.cbRegex.Size = new System.Drawing.Size(57, 17);
 			this.cbRegex.TabIndex = 3;
@@ -102,9 +102,9 @@
 			this.cbWholeWord.AutoSize = true;
 			this.cbWholeWord.Location = new System.Drawing.Point(194, 38);
 			this.cbWholeWord.Name = "cbWholeWord";
-			this.cbWholeWord.Size = new System.Drawing.Size(116, 17);
+			this.cbWholeWord.Size = new System.Drawing.Size(134, 17);
 			this.cbWholeWord.TabIndex = 2;
-			this.cbWholeWord.Text = "Отдельные слова";
+			this.cbWholeWord.Text = "Как отдельное слово";
 			this.cbWholeWord.UseVisualStyleBackColor = true;
 			this.cbWholeWord.CheckedChanged += new System.EventHandler(this.cbMatchCase_CheckedChanged);
 			// 
@@ -112,7 +112,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(391, 99);
+			this.ClientSize = new System.Drawing.Size(394, 95);
 			this.Controls.Add(this.cbWholeWord);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.cbMatchCase);
@@ -124,7 +124,6 @@
 			this.Name = "FindForm";
 			this.ShowIcon = false;
 			this.ShowInTaskbar = false;
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Поиск";
 			this.TopMost = true;
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FindForm_FormClosing);

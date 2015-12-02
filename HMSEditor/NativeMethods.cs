@@ -4,7 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace HMSEditorNS {
 	internal static class NativeMethods {
-
 		[DllImport("User32")]
 		public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndParent);
 
@@ -89,9 +88,9 @@ namespace HMSEditorNS {
 			}
 		}
 
-		const ushort PROCESSOR_ARCHITECTURE_INTEL   = 0;
-		const ushort PROCESSOR_ARCHITECTURE_IA64    = 6;
-		const ushort PROCESSOR_ARCHITECTURE_AMD64   = 9;
+		const ushort PROCESSOR_ARCHITECTURE_INTEL = 0;
+		const ushort PROCESSOR_ARCHITECTURE_IA64 = 6;
+		const ushort PROCESSOR_ARCHITECTURE_AMD64 = 9;
 		const ushort PROCESSOR_ARCHITECTURE_UNKNOWN = 0xFFFF;
 
 		public const uint WM_SETREDRAW = 0x0B;

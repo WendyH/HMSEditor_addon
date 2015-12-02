@@ -199,14 +199,15 @@ namespace FastColoredTextBoxNS
     {
         public string InsertedText;
 
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="ts">Underlaying textbox</param>
-        /// <param name="insertedText">Text for inserting</param>
-        public InsertTextCommand(TextSource ts, string insertedText): base(ts)
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="ts">Underlaying textbox</param>
+		/// <param name="insertedText">Text for inserting</param>
+		public InsertTextCommand(TextSource ts, string insertedText, bool fastUndo=false): base(ts)
         {
             this.InsertedText = insertedText;
+			FastUndo = fastUndo;
         }
 
         /// <summary>
@@ -215,10 +216,10 @@ namespace FastColoredTextBoxNS
         public override void Undo()
         {
             ts.CurrentTB.Selection.Start = sel.Start;
-            ts.CurrentTB.Selection.End = lastSel.Start;
-            ts.OnTextChanging();
+            ts.CurrentTB.Selection.End   = lastSel.Start;
+			if (!FastUndo) ts.OnTextChanging();
             ClearSelectedCommand.ClearSelected(ts);
-            base.Undo();
+			if (!FastUndo) base.Undo();
         }
 
         /// <summary>
@@ -282,11 +283,12 @@ namespace FastColoredTextBoxNS
         /// <param name="ts">Underlaying textbox</param>
         /// <param name="ranges">List of ranges for replace</param>
         /// <param name="insertedText">Text for inserting</param>
-        public ReplaceTextCommand(TextSource ts, List<Range> ranges, string insertedText)
+        public ReplaceTextCommand(TextSource ts, List<Range> ranges, string insertedText, bool fastUndo=false)
             : base(ts)
         {
-            //sort ranges by place
-            ranges.Sort((r1, r2)=>
+			FastUndo = fastUndo;
+			//sort ranges by place
+			ranges.Sort((r1, r2)=>
                 {
                     if (r1.Start.iLine == r2.Start.iLine)
                         return r1.Start.iChar.CompareTo(r2.Start.iChar);
@@ -305,7 +307,7 @@ namespace FastColoredTextBoxNS
         {
             var tb = ts.CurrentTB;
 
-            ts.OnTextChanging();
+            if (!FastUndo) ts.OnTextChanging();
             tb.BeginUpdate();
 
             tb.Selection.BeginUpdate();
@@ -394,12 +396,13 @@ namespace FastColoredTextBoxNS
     {
         string deletedText;
 
-        /// <summary>
-        /// Construstor
-        /// </summary>
-        /// <param name="ts">Underlaying textbox</param>
-        public ClearSelectedCommand(TextSource ts): base(ts)
+		/// <summary>
+		/// Construstor
+		/// </summary>
+		/// <param name="ts">Underlaying textbox</param>
+		public ClearSelectedCommand(TextSource ts, bool fastUndo=false): base(ts)
         {
+			FastUndo = fastUndo;
         }
 
         /// <summary>
@@ -408,11 +411,11 @@ namespace FastColoredTextBoxNS
         public override void Undo()
         {
             ts.CurrentTB.Selection.Start = new Place(sel.FromX, Math.Min(sel.Start.iLine, sel.End.iLine));
-            ts.OnTextChanging();
+            if (!FastUndo) ts.OnTextChanging();
             InsertTextCommand.InsertText(deletedText, ts);
-            ts.OnTextChanged(sel.Start.iLine, sel.End.iLine);
+			if (!FastUndo) ts.OnTextChanged(sel.Start.iLine, sel.End.iLine);
             ts.CurrentTB.Selection.Start = sel.Start;
-            ts.CurrentTB.Selection.End = sel.End;
+            ts.CurrentTB.Selection.End   = sel.End;
         }
 
         /// <summary>

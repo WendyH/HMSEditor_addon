@@ -43,12 +43,14 @@ namespace FastColoredTextBoxNS {
 	/// <summary>
 	/// Fast colored textbox
 	/// </summary>
-	public sealed partial class FastColoredTextBox: UserControl, ISupportInitialize {
+	public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
 		public Regex       RegexStringAndComments = null;
 		public HmsToolTip  ToolTip4Function = new HmsToolTip(); // By WendyH
 		public bool        DebugMode       = false;
 		public int         HmsDebugLine     = -1;
+		public int         HmsDebugChar     = -1;
 		private  Brush     debugColor       = new SolidBrush(Color.FromArgb(100, 250, 11, 11));
+
 		internal const int minLeftIndent              = 8;
 		private  const int maxBracketSearchIterations = 1000;
 		private  const int maxLinesForFolding         = 3000;
@@ -337,6 +339,13 @@ namespace FastColoredTextBoxNS {
 		/// Image of bookmarks. If not set - used BookmarkColor.
 		/// </summary>
 		[Browsable(true)]
+		[Description("Show folding markers.")]
+		public bool ShowFoldingMarkers = true;
+
+		/// <summary>
+		/// Image of bookmarks. If not set - used BookmarkColor.
+		/// </summary>
+		[Browsable(true)]
 		[Description("Icon of bookmarks.")]
 		public Image BookmarkIcon { get; set; }
 
@@ -379,6 +388,7 @@ namespace FastColoredTextBoxNS {
 			}
 		}
 		private Color breakpointLineColor;
+		public bool DrawLineNumberFromInfo = false;
 		// By WendyH > ---------------------------------------
 
 		/// <summary>
@@ -2047,7 +2057,7 @@ namespace FastColoredTextBoxNS {
 		/// <summary>
 		/// Navigates forward (by Line.LastVisit property)
 		/// </summary>
-		public bool NavigateForward() {
+		public bool NavigateForward(bool dontNavigate=false) {
 			DateTime min = DateTime.Now;
 			int iLine = -1;
 			for (int i = 0; i < LinesCount; i++)
@@ -2057,7 +2067,7 @@ namespace FastColoredTextBoxNS {
 						iLine = i;
 					}
 			if (iLine >= 0) {
-				Navigate(iLine);
+				if (!dontNavigate) Navigate(iLine);
 				return true;
 			} else
 				return false;
@@ -2066,7 +2076,7 @@ namespace FastColoredTextBoxNS {
 		/// <summary>
 		/// Navigates backward (by Line.LastVisit property)
 		/// </summary>
-		public bool NavigateBackward() {
+		public bool NavigateBackward(bool dontNavigate = false) {
 			var max = new DateTime();
 			int iLine = -1;
 			for (int i = 0; i < LinesCount; i++)
@@ -2076,7 +2086,7 @@ namespace FastColoredTextBoxNS {
 						iLine = i;
 					}
 			if (iLine >= 0) {
-				Navigate(iLine);
+				if (!dontNavigate) Navigate(iLine);
 				return true;
 			} else
 				return false;
@@ -2222,8 +2232,11 @@ namespace FastColoredTextBoxNS {
 		/// Shows find dialog
 		/// </summary>
 		public void ShowFindDialog(string findText) {
-			if (findForm == null)
+			if (findForm == null) {
 				findForm = new FindForm(this);
+				findForm.StartPosition = FormStartPosition.Manual; // By WendyH
+				findForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - findForm.Width) / 2, Parent.PointToScreen(Location).Y + (Parent.Height - findForm.Height) / 2);
+			}
 
 			if (findText != null)
 				findForm.tbFind.Text = findText;
@@ -2231,7 +2244,7 @@ namespace FastColoredTextBoxNS {
 				findForm.tbFind.Text = Selection.Text;
 
 			findForm.tbFind.SelectAll();
-			findForm.Show();
+			findForm.Show(this);
 			findForm.Focus();
 		}
 
@@ -2246,19 +2259,25 @@ namespace FastColoredTextBoxNS {
 		/// Shows replace dialog
 		/// </summary>
 		public void ShowReplaceDialog(string findText) {
-			if (ReadOnly)
-				return;
-			if (replaceForm == null)
-				replaceForm = new ReplaceForm(this);
+			if (ReadOnly) return;
 
-			if (findText != null)
+			if (replaceForm == null) {
+				replaceForm = new ReplaceForm(this);
+				replaceForm.StartPosition = FormStartPosition.Manual; // By WendyH
+				replaceForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - replaceForm.Width) / 2, Parent.PointToScreen(Location).Y + (Parent.Height - replaceForm.Height) / 2);
+			}
+
+			if (findText != null) {
 				replaceForm.tbFind.Text = findText;
-			else if (!Selection.IsEmpty && Selection.Start.iLine == Selection.End.iLine)
+
+			} else if (!Selection.IsEmpty && Selection.Start.iLine == Selection.End.iLine) {
 				replaceForm.tbFind.Text = Selection.Text;
 
+			}
+
 			replaceForm.tbFind.SelectAll();
-			replaceForm.Show();
-			replaceForm.Focus();
+			replaceForm.Show(this);
+            replaceForm.Focus();
 		}
 
 		/// <summary>
@@ -2526,6 +2545,27 @@ namespace FastColoredTextBoxNS {
 			IsChanged = false;
 			Invalidate();
 		}
+
+		public Line GetRealLine(int iLine) {
+			iLine = Math.Min(LinesCount - 1, iLine);
+			if (iLine < 0) return null;
+			return lines[iLine];
+		}
+
+		public void AddLine(Line line) {
+			lines.Add(line);
+		}
+
+		internal void RealClearLines() {
+			lines.Clear();
+		}
+
+		public void SetLines(List<Line> linesIn) {
+			lines.Clear();
+			foreach (Line line in linesIn) {
+				lines.Add(line);
+            }
+		}
 		// > By WendyH -------------------------
 
 		/// <summary>
@@ -2680,11 +2720,10 @@ namespace FastColoredTextBoxNS {
 
 		protected override void WndProc(ref Message m) {
 			if (m.Msg == WM_HSCROLL || m.Msg == WM_VSCROLL)
-				if (m.WParam.ToInt32() != SB_ENDSCROLL)
-					Invalidate();
+			if (m.WParam.ToInt32() != SB_ENDSCROLL)
+				Invalidate();
 
-			if (m.WParam.ToInt32() != 18) // By WendyH: why the alone alt key freeze the editor in the attached mode???
-				base.WndProc(ref m);
+			base.WndProc(ref m);
 
 			if (ImeAllowed)
 				if (m.Msg == WM_IME_SETCONTEXT && m.WParam.ToInt32() == 1) {
@@ -2783,6 +2822,8 @@ namespace FastColoredTextBoxNS {
 			//calc min left indent
 			LeftIndent = LeftPadding;
 			long maxLineNumber = LinesCount + lineNumberStartValue - 1;
+			if (DrawLineNumberFromInfo)
+				maxLineNumber = lines[LinesCount-1].LineNo; // By WendyH
 			int charsForLineNumber = 2 + (maxLineNumber > 0 ? (int)Math.Log10(maxLineNumber) : 0);
 
 			// If there are reserved character for line numbers: correct this
@@ -3155,7 +3196,6 @@ namespace FastColoredTextBoxNS {
 			Invalidate();
 		}
 
-
 		protected override void OnKeyUp(KeyEventArgs e) {
 			base.OnKeyUp(e);
 
@@ -3196,7 +3236,7 @@ namespace FastColoredTextBoxNS {
 		}
 
 		protected override bool ProcessDialogKey(Keys keyData) {
-			if ((keyData & Keys.Alt) > 0) {
+            if ((keyData & Keys.Alt) > 0) {
 				if (HotkeysMapping.ContainsKey(keyData)) {
 					ProcessKey(keyData);
 					return true;
@@ -3798,7 +3838,32 @@ namespace FastColoredTextBoxNS {
 
 		public string GetCurrentWord() {
 			Range fragment = Selection.GetFragmentLookedLeft();
+			if (SyntaxHighlighter.IsCommentOrString(fragment)) return ""; // if in comment or string - return nothing
 			return fragment.Text;
+		}
+
+		public void FastReplaceRanges(string insertedText, List<Range> ranges) {
+			Range oldSelection = Selection.Clone();
+			Selection.BeginUpdate();
+			BeginUpdate();
+			lines.Manager.BeginAutoUndoCommands();
+			try {
+				for (int i = ranges.Count - 1; i >= 0; i--) {
+					selection.Start = ranges[i].Start;
+					selection.End   = ranges[i].End;
+					if (!selection.IsEmpty)
+						lines.Manager.ExecuteCommand(new ClearSelectedCommand(TextSource, true));
+					
+					if (insertedText != "")
+						lines.Manager.ExecuteCommand(new InsertTextCommand(TextSource, insertedText, true));
+				}
+			} finally {
+				lines.Manager.EndAutoUndoCommands();
+				Selection = oldSelection;
+				EndUpdate();
+				Selection.EndUpdate();
+			}
+			Invalidate();
 		}
 		// > By WendyH -----------------------------------
 
@@ -3956,9 +4021,9 @@ namespace FastColoredTextBoxNS {
 		const int WM_CHAR = 0x102;
 
 		protected override bool ProcessKeyMessage(ref Message m) {
-			if (m.Msg == WM_CHAR)
+			if (m.Msg == WM_CHAR) {
 				ProcessMnemonic(Convert.ToChar(m.WParam.ToInt32()));
-
+			}
 			return base.ProcessKeyMessage(ref m);
 		}
 
@@ -4428,7 +4493,12 @@ namespace FastColoredTextBoxNS {
 		/// </summary>
 		public void Undo() {
 			lines.Manager.Undo();
-            DoCaretVisible();
+			lines.Manager.OldPosition.Clear();
+			if (lines.Manager.WasFastUndo) { // By WendyH
+				OnTextChanged();
+            } else {
+				DoCaretVisible();
+			}
 			Invalidate();
 		}
 
@@ -4441,8 +4511,8 @@ namespace FastColoredTextBoxNS {
 			Invalidate();
 		}
 
-		protected override bool IsInputKey(Keys keyData) {
-			if (keyData == Keys.Tab && !AcceptsTab)
+        protected override bool IsInputKey(Keys keyData) {
+            if (keyData == Keys.Tab && !AcceptsTab)
 				return false;
 			if (keyData == Keys.Enter && !AcceptsReturn)
 				return false;
@@ -4613,6 +4683,7 @@ namespace FastColoredTextBoxNS {
 			int iLine;
 
 			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+			e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit; // By WendyH
 
 			//draw text
 			for (iLine = startLine; iLine < lines.Count; iLine++) {
@@ -4670,23 +4741,28 @@ namespace FastColoredTextBoxNS {
 																	 CharHeight * lineInfo.WordWrapStringsCount),
 													   e.Graphics, e.ClipRectangle));
 				//draw line number
-				if (ShowLineNumbers)
-					using (var lineNumberBrush = new SolidBrush(LineNumberColor))
-						e.Graphics.DrawString((iLine + lineNumberStartValue).ToString(), Font, lineNumberBrush,
+				if (ShowLineNumbers) {
+					string lineNumText = (iLine + lineNumberStartValue).ToString();
+					if (DrawLineNumberFromInfo) lineNumText = line.LineNo.ToString(); // By WendyH
+                    using (var lineNumberBrush = new SolidBrush(LineNumberColor))
+						e.Graphics.DrawString(lineNumText, Font, lineNumberBrush,
 											  new RectangleF(-10, y, LeftIndent - minLeftIndent - 2 + 10, CharHeight),
 											  new StringFormat(StringFormatFlags.DirectionRightToLeft));
+                }
 				//create markers
-				if (lineInfo.VisibleState == VisibleState.StartOfHiddenBlock)
-					visibleMarkers.Add(new ExpandFoldingMarker(iLine, new Rectangle(LeftIndentLine - 4, y + CharHeight / 2 - 3, 8, 8)));
+				if (ShowFoldingMarkers) {
+					if (lineInfo.VisibleState == VisibleState.StartOfHiddenBlock)
+						visibleMarkers.Add(new ExpandFoldingMarker(iLine, new Rectangle(LeftIndentLine - 4, y + CharHeight / 2 - 3, 8, 8)));
 
-				if (!string.IsNullOrEmpty(line.FoldingStartMarker) && lineInfo.VisibleState == VisibleState.Visible &&
-					string.IsNullOrEmpty(line.FoldingEndMarker))
-					visibleMarkers.Add(new CollapseFoldingMarker(iLine, new Rectangle(LeftIndentLine - 4, y + CharHeight / 2 - 3, 8, 8)));
+					if (!string.IsNullOrEmpty(line.FoldingStartMarker) && lineInfo.VisibleState == VisibleState.Visible &&
+						string.IsNullOrEmpty(line.FoldingEndMarker))
+						visibleMarkers.Add(new CollapseFoldingMarker(iLine, new Rectangle(LeftIndentLine - 4, y + CharHeight / 2 - 3, 8, 8)));
 
-				if (lineInfo.VisibleState == VisibleState.Visible && !string.IsNullOrEmpty(line.FoldingEndMarker) &&
-					string.IsNullOrEmpty(line.FoldingStartMarker))
-					e.Graphics.DrawLine(servicePen, LeftIndentLine, y + CharHeight * lineInfo.WordWrapStringsCount - 1,
-										LeftIndentLine + 4, y + CharHeight * lineInfo.WordWrapStringsCount - 1);
+					if (lineInfo.VisibleState == VisibleState.Visible && !string.IsNullOrEmpty(line.FoldingEndMarker) &&
+						string.IsNullOrEmpty(line.FoldingStartMarker))
+						e.Graphics.DrawLine(servicePen, LeftIndentLine, y + CharHeight * lineInfo.WordWrapStringsCount - 1,
+											LeftIndentLine + 4, y + CharHeight * lineInfo.WordWrapStringsCount - 1);
+				}
 				//draw wordwrap strings of line
 				for (int iWordWrapLine = 0; iWordWrapLine < lineInfo.WordWrapStringsCount; iWordWrapLine++) {
 					y = lineInfo.startY + iWordWrapLine * CharHeight - VerticalScroll.Value;
@@ -4938,7 +5014,6 @@ namespace FastColoredTextBoxNS {
 												y2 < ClientSize.Height ? y2 : ClientSize.Height);
 					}
 		}
-
 		private void DrawLineChars(Graphics gr, int firstChar, int lastChar, int iLine, int iWordWrapLine, int startX,
 								   int y) {
 			Line     line     = lines[iLine];
@@ -7034,20 +7109,41 @@ window.status = ""#print"";
 			return LineInfos[iLine].VisibleState;
 		}
 
+		private void FillGoToItems(ToolStripItemCollection items, HMSEditor ed) {
+			items.Clear();
+			if (ed == null) return;
+			foreach (var bookmark in Bookmarks) {
+				ToolStripItem item = items.Add(bookmark.Name, ed.IconList.Images[9]);
+				item.Tag = PlaceToPosition(new Place(bookmark.CharIndex, bookmark.LineIndex));
+			}
+			// --------------------------------------------------------
+			foreach (HMSItem item in ed.Functions) {
+				ToolStripItem tipItem = items.Add(item.MenuText, ed.IconList.Images[item.ImageIndex]);
+				tipItem.Tag = item.PositionStart;
+			}
+		}
+
 		/// <summary>
 		/// Shows Goto dialog form
 		/// </summary>
 		public void ShowGoToDialog() {
-			var form = new GoToForm();
+			HMSEditor ed = HMSEditor.ActiveEditor;
+            var form = new GoToForm();
 			form.TotalLineCount = LinesCount;
 			form.SelectedLineNumber = Selection.Start.iLine + 1;
-
-			if (form.ShowDialog() == DialogResult.OK) {
+			FillGoToItems(form.Items, ed);
+			DialogResult result = form.ShowDialog(this);
+            if (result == DialogResult.OK) {
 				int line = Math.Min(LinesCount - 1, Math.Max(0, form.SelectedLineNumber - 1));
 				Selection = new Range(this, 0, line, 0, line);
 				DoSelectionVisible();
+
+			} else if (result == DialogResult.Retry) {
+				Place p = PositionToPlace(form.GotoPosition);
+				Navigate(p.iLine, p.iChar);
 			}
 		}
+
 
 		/// <summary>
 		/// Occurs when undo/redo stack is changed

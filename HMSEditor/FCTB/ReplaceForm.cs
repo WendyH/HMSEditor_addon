@@ -18,8 +18,8 @@ namespace FastColoredTextBoxNS
 
 		public ReplaceForm(FastColoredTextBox tb)
         {
-            InitializeComponent();
-            this.tb = tb;
+			InitializeComponent();
+			this.tb = tb;
 			tooltip1.ToolTipIcon = ToolTipIcon.Info;
 			tooltip1.ToolTipTitle = "Регистрозависимый поиск";
             tooltip1.SetToolTip(cbMatchCase, "Поиск будет осуществляться согласно указанному регистру символов");
@@ -221,5 +221,6 @@ namespace FastColoredTextBoxNS
 					default: return words[1];
 				}
 		}
+
 	}
 }

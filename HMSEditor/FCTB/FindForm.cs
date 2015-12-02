@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Security.Permissions;
+using System.Drawing;
 
 namespace FastColoredTextBoxNS
 {
@@ -140,5 +141,6 @@ namespace FastColoredTextBoxNS
         {
             ResetSerach();
         }
-    }
+
+	}
 }

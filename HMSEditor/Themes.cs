@@ -31,7 +31,8 @@ namespace HMSEditorNS {
 		public Style AttributeStyle;
 		public Style ClassNameStyle;
 		public Style KeywordStyle;
-		public Style CommentTagStyle; // only csharp
+		public Style ConstantsStyle;
+        public Style CommentTagStyle; // only csharp
 		public Style DeclFunctionStyle;
 		
 		public Style TagBracketStyle; // only YAML HTML
@@ -65,7 +66,6 @@ namespace HMSEditorNS {
 			YamlObject plist = PlistParser.LoadFromFile(file);
 			string themeName = plist["name"];
 			if (themeName == "") return;
-
 			YamlObject list = plist.GetObject("settings");
 			foreach (YamlObject item in list) {
 				string     name     = item["name" ];
@@ -83,23 +83,23 @@ namespace HMSEditorNS {
 					continue;
 				}
 
-				if      (InScope(scope, "comment"          )) t.CommentStyle    = ToStyleFromSettings(settings);
-				else if (InScope(scope, "string"           )) t.StringStyle     = ToStyleFromSettings(settings);
-				else if (InScope(scope, "constant.numeric" )) t.NumberStyle     = ToStyleFromSettings(settings);
-				else if (InScope(scope, "keyword"          )) t.KeywordStyle    = ToStyleFromSettings(settings);
-				else if (InScope(scope, "entity.name.class")) t.ClassNameStyle  = ToStyleFromSettings(settings);
-				else if (InScope(scope, "declaration.class")) t.ClassNameStyle  = ToStyleFromSettings(settings);
-				else if (InScope(scope, "support.class"    )) t.ClassNameStyle  = ToStyleFromSettings(settings);
-				else if (InScope(scope, "meta.tag"         )) t.TagBracketStyle = ToStyleFromSettings(settings);
-				else if (InScope(scope, "entity.name.tag"  )) t.TagNameStyle    = ToStyleFromSettings(settings);
-				else if (InScope(scope, "variable"         )) t.VariableStyle   = ToStyleFromSettings(settings);
-				else if (InScope(scope, "attribute-name"   )) t.AttributeStyle  = ToStyleFromSettings(settings);
-				else if (InScope(scope, "support"          )) t.FunctionsStyle  = ToStyleFromSettings(settings);
-				else if (InScope(scope, "support.function" )) t.FunctionsStyle  = ToStyleFromSettings(settings);
-				else if (InScope(scope, "entity.name.function")) t.DeclFunctionStyle = ToStyleFromSettings(settings);
+				if (InScope(scope, "comment"          )) t.CommentStyle    = ToStyleFromSettings(settings);
+				if (InScope(scope, "string"           )) t.StringStyle     = ToStyleFromSettings(settings);
+				if (InScope(scope, "constant.numeric" )) t.NumberStyle     = ToStyleFromSettings(settings);
+				if (InScope(scope, "keyword"          )) t.KeywordStyle    = ToStyleFromSettings(settings);
+				if (InScope(scope, "entity.name.class")) t.ClassNameStyle  = ToStyleFromSettings(settings);
+				if (InScope(scope, "declaration.class")) t.ClassNameStyle  = ToStyleFromSettings(settings);
+				if (InScope(scope, "support.class"    )) t.ClassNameStyle  = ToStyleFromSettings(settings);
+				if (InScope(scope, "meta.tag"         )) t.TagBracketStyle = ToStyleFromSettings(settings);
+				if (InScope(scope, "entity.name.tag"  )) t.TagNameStyle    = ToStyleFromSettings(settings);
+				if (InScope(scope, "variable"         )) t.VariableStyle   = ToStyleFromSettings(settings);
+				if (InScope(scope, "attribute-name"   )) t.AttributeStyle  = ToStyleFromSettings(settings);
+				if (InScope(scope, "support.function" )) t.FunctionsStyle  = ToStyleFromSettings(settings);
+				if (InScope(scope, "support.constant" )) t.ConstantsStyle  = ToStyleFromSettings(settings);
+				if (InScope(scope, "entity.name.function")) t.DeclFunctionStyle = ToStyleFromSettings(settings);
 
 			}
-			Dict[themeName] = t;
+            Dict[themeName] = t;
 		}
 
 		private static bool InScope(string[] arr, string key) { return Array.IndexOf(arr, key) >= 0; }
@@ -112,34 +112,43 @@ namespace HMSEditorNS {
 			bool   ital = (font.IndexOf("italic"   ) >= 0);
 			bool   undl = (font.IndexOf("underline") >= 0);
 			return ToStyle(fore, back, bold, ital, undl);
-        }
+		}
+
+		public static void SetTheme(FastColoredTextBox editor, string name) {
+			if (Dict.ContainsKey(name)) {
+				Theme t = Dict[name];
+				if ((t.ConstantsStyle == null) && (t.NumberStyle != null) && (name!="Стандартная"))
+					t.ConstantsStyle = ((TextStyle)t.NumberStyle).Clone(30);
+
+				editor.BackColor  = t.Background;
+				editor.CaretColor = t.Caret;
+				editor.ForeColor  = t.Foreground;
+
+				editor.SelectionColor  = t.Selection;
+				editor.PaddingBackColor= t.Background;
+				//editor.BreakpointLineColor = 
+
+				editor.IndentBackColor  = (t.IndentBackColor .Name != "0") ? t.IndentBackColor  : editor.BackColor;
+				editor.LineNumberColor  = (t.LineNumberColor .Name != "0") ? t.LineNumberColor  : Color.FromArgb(150, editor.ForeColor);
+				editor.PaddingBackColor = (t.PaddingBackColor.Name != "0") ? t.PaddingBackColor : Color.FromArgb(150, editor.BackColor);
+
+				editor.SyntaxHighlighter.StyleTheme = t;
+				editor.RefreshTheme();
+			}
+		}
 
 		public static void SetTheme(HMSEditor editor, string name) {
 			if (Dict.ContainsKey(name)) {
+				SetTheme(editor.Editor, name);
 				Theme t = Dict[name];
-				editor.Editor.BackColor  = t.Background;
-				editor.Editor.CaretColor = t.Caret;
-				editor.Editor.ForeColor  = t.Foreground;
+				editor.ColorCurrentLine = t.LineHighlight;
+				editor.ColorChangedLine = t.ChangedLines;
 
-				editor.ColorCurrentLine       = t.LineHighlight;
-				editor.ColorChangedLine       = t.ChangedLines;
-				editor.Editor.SelectionColor  = t.Selection;
-				editor.Editor.PaddingBackColor= t.Background;
-				//editor.Editor.BreakpointLineColor = 
+				// Для тёмных тем цвет изменённых строк меняем тоже на более тёмный
+				uint icol = (uint)editor.Editor.IndentBackColor.ToArgb() & 0xFFFFFF;
+				if (icol < 0x808080) editor.ColorChangedLine = ToColor("#024A02");
 
-				editor.Editor.IndentBackColor  = (t.IndentBackColor .Name != "0") ? t.IndentBackColor  : editor.Editor.BackColor;
-				editor.Editor.LineNumberColor  = (t.LineNumberColor .Name != "0") ? t.LineNumberColor  : Color.FromArgb(150, editor.Editor.ForeColor);
-				editor.Editor.PaddingBackColor = (t.PaddingBackColor.Name != "0") ? t.PaddingBackColor : Color.FromArgb(150, editor.Editor.BackColor);
-
-				uint icol = (uint)editor.Editor.IndentBackColor.ToArgb();
-				if (icol < 0xFF808080) {
-					editor.ColorChangedLine = ToColor("#024A02");
-				}
 				editor.btnMarkChangedLines_Click(null, EventArgs.Empty);
-
-				editor.Editor.SyntaxHighlighter.StyleTheme = t;
-				editor.Editor.RefreshTheme();
-
 			}
 		}
 
@@ -154,8 +163,8 @@ namespace HMSEditorNS {
 					LoadFromXml(file);
 				}
 			}
-
-		}
+			//SaveThemesToFile(@"D:\ColorThemes.txt");
+        }
 
 		public static void LoadThemesFromFile(string file) {
 			if (!File.Exists(file))

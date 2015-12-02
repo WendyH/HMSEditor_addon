@@ -18,6 +18,7 @@ namespace FastColoredTextBoxNS {
 		string cachedText;
 		// < By WendyH ---------------------------------
 		string cachedTextWithoutStringsAndComments = "";
+		public int StoredLineNo = 0;
 		// > By WendyH ---------------------------------
 		List<Place> cachedCharIndexToPlace;
 		int cachedTextVersion = -1;

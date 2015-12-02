@@ -51,17 +51,17 @@ namespace HMSEditorNS {
 						return titleAttribute.Title;
 					}
 				}
-				return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+				return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
 			}
 		}
 
-		public string AssemblyVersion {
+		public static string AssemblyVersion {
 			get {
 				return Assembly.GetExecutingAssembly().GetName().Version.ToString();
 			}
 		}
 
-		public string AssemblyDescription {
+		public static string AssemblyDescription {
 			get {
 				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false);
 				if (attributes.Length == 0) {
@@ -71,7 +71,7 @@ namespace HMSEditorNS {
 			}
 		}
 
-		public string AssemblyProduct {
+		public static string AssemblyProduct {
 			get {
 				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyProductAttribute), false);
 				if (attributes.Length == 0) {
@@ -81,7 +81,7 @@ namespace HMSEditorNS {
 			}
 		}
 
-		public string AssemblyCopyright {
+		public static string AssemblyCopyright {
 			get {
 				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false);
 				if (attributes.Length == 0) {
@@ -91,7 +91,7 @@ namespace HMSEditorNS {
 			}
 		}
 
-		public string AssemblyCompany {
+		public static string AssemblyCompany {
 			get {
 				object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyCompanyAttribute), false);
 				if (attributes.Length == 0) {
@@ -129,7 +129,7 @@ namespace HMSEditorNS {
 		// Проверка новой версии в фоновом режиме
 		private static void UpdateTimer_Task(object state) {
 			string updatesInfo, templatesInfo;
-			string lastVersion     = GitHub.GetLatestReleaseVersion(HMS.GitHubHMSEditor, "HMSEditor.dll", out updatesInfo);
+			string lastVersion     = GitHub.GetLatestReleaseVersion(HMS.GitHubHMSEditor, out updatesInfo);
 			string templateVersion = GitHub.GetRepoUpdatedDate(HMS.GitHubTemplates, out templatesInfo);
 			if (ThisDialog.Visible) {
 				DeniedClose = true;
@@ -196,7 +196,7 @@ namespace HMSEditorNS {
 				Info.CreateNoWindow = true;
 				Info.FileName       = "cmd.exe";
 				if (!DirIsWriteable(ExecutableDir)) {
-					msg = "Текущая программа находится в каталоге, где нужны привилегии для записи файлов.\n" +
+					msg = "HMSEditor находится в каталоге, где нужны привилегии для записи файлов.\n" +
 					      "Будет сделан запрос на ввод имени и пароля пользователя,\n" +
 					      "который данными привилегиями обладает.";
 					MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -235,7 +235,8 @@ namespace HMSEditorNS {
 			try {
 				rules = dirInfo.GetAccessControl().GetAccessRules(true, true, typeof(SecurityIdentifier));
 				identity = WindowsIdentity.GetCurrent();
-			} catch {
+			} catch (UnauthorizedAccessException uae) {
+				//Debug.WriteLine(uae.ToString());
 				return false;
 			}
 
@@ -402,13 +403,42 @@ namespace HMSEditorNS {
 		private void btnDelete_Click(object sender, EventArgs e) {
 			string msg;
             msg = "ВНИМАНИЕ!\n" +
-			      "Загруженные шаблоны, настройки и установленные темы будут УДАЛЕНЫ!\n" +
-			      "Вы уверены, что хотите удалить папку и всё её содержимое: "+HMS.WorkingDir+"?";
+			      "Программа, загруженные шаблоны, настройки и установленные темы будут УДАЛЕНЫ!\n" +
+			      "Вы уверены, что хотите удалить HMSEditor, а также папку и всё её содержимое: "+HMS.WorkingDir+"?";
 			DialogResult answ = MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 			if (answ == DialogResult.Yes) {
 				try {
 					Directory.Delete(HMS.WorkingDir, true);
 				} catch { }
+				// waiting 3 sek, copy new file to our path and start our executable
+				string rargs = "/C ping 127.0.0.1 -n 3 && Del /F \"" + Application.ExecutablePath + "\"";
+				ProcessStartInfo Info = new ProcessStartInfo();
+				Info.Arguments = rargs;
+				Info.WindowStyle = ProcessWindowStyle.Hidden;
+				Info.CreateNoWindow = true;
+				Info.FileName = "cmd.exe";
+				if (!DirIsWriteable(ExecutableDir)) {
+					msg = "Текущая программа находится в каталоге, где нужны привилегии для удаления файлов.\n" +
+						  "Будет сделан запрос на ввод имени и пароля пользователя,\n" +
+						  "который данными привилегиями обладает.";
+					MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+					Info.Verb = "runas";
+				}
+				try {
+					Process.Start(Info);
+				} catch (Exception ex) {
+					msg = "Ошибка удаления программы.\n" +
+						  "Возможно, из-за нарушения прав доступа или по какой-то другой причине.\n" +
+						  "Автоматическое удаление исполняемого файла не произошло.";
+					MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+					HMS.LogError(ex.ToString());
+					return;
+				}
+				TryDeleteFile(HMS.ErrorLogFile);
+				DeleteGarbage();
+				Application.Exit();
+				Close();
+				return;
 			}
 		}
 	}

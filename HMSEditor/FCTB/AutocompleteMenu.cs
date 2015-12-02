@@ -644,8 +644,8 @@ namespace FastColoredTextBoxNS
                 y = i * itemHeight - VerticalScroll.Value;
 
                 var item = visibleItems[i];
-
-                if(item.BackColor != Color.Transparent)
+				e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                if (item.BackColor != Color.Transparent)
                 using (var brush = new SolidBrush(item.BackColor))
                     e.Graphics.FillRectangle(brush, 1, y, ClientSize.Width - 1 - 1, itemHeight - 1);
 

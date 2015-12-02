@@ -112,10 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Arrow_UndoRevertRestore_16xLG_color" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -123,6 +123,9 @@
   </data>
   <data name="Output_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Output_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NavigateForward_6271" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NavigateForward_6271.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="clearallbreakpoints_6551" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\clearallbreakpoints_6551.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -136,20 +139,32 @@
   <data name="Template_Application_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Template_Application_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Find_5650" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Find_5650.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Cut_6523" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Cut_6523.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="togglebookmark" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\togglebookmark.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\icons\logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Comment_11698" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Comment_11698.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Zoom_5442" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Zoom_5442.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Bookmark_5776" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Bookmark_5776.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="breakpoint_x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\breakpoint_x16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Find_5650" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Find_5650.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="arrow_run_16xMD" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_run_16xMD.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="NavigateBackwards_6270" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NavigateBackwards_6270.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Copy_6524" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Copy_6524.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -157,13 +172,14 @@
   <data name="Arrow_RedoRetry_16xLG_color" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Arrow_RedoRetry_16xLG_color.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="arrow_run_16xMD" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\arrow_run_16xMD.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="togglebookmark" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\togglebookmark.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Paste_6520" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Paste_6520.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="logo" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\icons\logo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="toggle_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\toggle_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

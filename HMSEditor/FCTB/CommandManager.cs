@@ -56,11 +56,16 @@ namespace FastColoredTextBoxNS
             TextSource.CurrentTB.OnUndoRedoStateChanged();
         }
 
-        public void Undo()
+		internal Stack<Range> OldPosition = new Stack<Range>(); // By WendyH
+		internal bool WasFastUndo = false;
+
+		public void Undo()
         {
             if (history.Count > 0)
             {
                 var cmd = history.Pop();
+				WasFastUndo = cmd.FastUndo;
+                if (cmd.FastUndo) OldPosition.Push(cmd.ts.CurrentTB.Selection.Clone()); // By WendyH
                 //
                 BeginDisableCommands();//prevent text changing into handlers
                 try
@@ -70,9 +75,10 @@ namespace FastColoredTextBoxNS
                 finally
                 {
                     EndDisableCommands();
-                }
-                //
-                redoStack.Push(cmd);
+					if (cmd.FastUndo) cmd.ts.CurrentTB.Selection = OldPosition.Pop(); // By WendyH
+				}
+				//
+				redoStack.Push(cmd);
             }
 
             //undo next autoUndo command
@@ -81,7 +87,6 @@ namespace FastColoredTextBoxNS
                 if (history.Peek().autoUndo)
                     Undo();
             }
-
             TextSource.CurrentTB.OnUndoRedoStateChanged();
         }
 
@@ -197,8 +202,15 @@ namespace FastColoredTextBoxNS
         internal RangeInfo sel;
         internal RangeInfo lastSel;
         internal bool autoUndo;
+		internal bool FastUndo = false; // By WendyH
 
-        public UndoableCommand(TextSource ts)
+		public UndoableCommand(TextSource ts, bool fastUndo) {
+			FastUndo = fastUndo;
+			this.ts = ts;
+			sel = new RangeInfo(ts.CurrentTB.Selection);
+		}
+
+		public UndoableCommand(TextSource ts)
         {
             this.ts = ts;
             sel = new RangeInfo(ts.CurrentTB.Selection);

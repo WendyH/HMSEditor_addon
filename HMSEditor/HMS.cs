@@ -14,240 +14,7 @@ using Ionic.Zip;
 using System.Security.Permissions;
 
 namespace HMSEditorNS {
-	public static class Images {
-		public const int Class     = 0;
-		public const int Snippet   = 1;
-		public const int Enum      = 2;
-		public const int Field     = 3;
-		public const int Function  = 5;
-		public const int Keyword   = 6;
-		public const int Method    = 7;
-		public const int Procedure = 8;
-		public const int Bookmark  = 9;
-		public const int Constant  = 10;
-		public const int Event     = 11;
-	}
-
-	public class HMSItem: AutocompleteItem {
-		public string  Help      = "";
-		public string  Type      = "";
-		public bool    Global    = false;
-		public DefKind Kind      = DefKind.NotDef;
-		public string  Value     = "";
-		public bool    IsClass   = false;
-		public List<string> Params = new List<string>();
-		public int PositionReal  = 0;
-		public int PositionStart = 0;
-		public int PositionEnd   = 0;
-		public string  Filter    = "";
-
-		// constructors
-		public HMSItem() {
-		}
-
-		public HMSItem(string text) {
-			Text = text;
-		}
-
-		public HMSItem(string text, int imageIndex)
-			: this(text) {
-			base.ImageIndex = imageIndex;
-		}
-
-		public HMSItem(string text, int imageIndex, string menuText)
-			: this(text, imageIndex) {
-			base.MenuText = menuText;
-		}
-
-		public HMSItem(string text, int imageIndex, string menuText, string toolTipTitle, string toolTipText)
-			: this(text, imageIndex, menuText) {
-			base.ToolTipTitle = toolTipTitle;
-			base.ToolTipText  = toolTipText;
-		}
-
-		/// <summary>
-		/// This method is called after item inserted into text
-		/// </summary>
-		public override void OnSelected(AutocompleteMenu popupMenu, SelectedEventArgs e) {
-			if (e.Item.Text.IndexOf('^') < 0) return;
-			e.Tb.BeginUpdate();
-			e.Tb.Selection.BeginUpdate();
-			//remember places
-			var p1 = popupMenu.Fragment.Start;
-			var p2 = e.Tb.Selection.Start;
-			e.Tb.Selection.Start = p1;
-			//move caret position right and find char ^
-			while (e.Tb.Selection.CharBeforeStart != '^')
-				if (!e.Tb.Selection.GoRightThroughFolded())
-					break;
-			//remove char ^
-			e.Tb.Selection.GoLeft(true);
-			e.Tb.InsertText("");
-			//
-			e.Tb.Selection.EndUpdate();
-			e.Tb.EndUpdate();
-		}
-
-		public bool IsFuncOrProcedure { get { return ((Kind == DefKind.Function) || (Kind == DefKind.Procedure)); } }
-
-	}
-
-	public class SnippetHMSItem: HMSItem {
-		public SnippetHMSItem(string snippet) {
-			Text = snippet.Replace("\r", "");
-			base.ToolTipTitle = "Шаблон:";
-			base.ToolTipText  = Text;
-		}
-
-		public override string ToString() {
-			return MenuText ?? Text.Replace("\n", " ").Replace("^", "");
-		}
-
-		public override string GetTextForReplace() {
-			return Text;
-		}
-
-		public override void OnSelected(AutocompleteMenu popupMenu, SelectedEventArgs e) {
-			e.Tb.BeginUpdate();
-			e.Tb.Selection.BeginUpdate();
-			//remember places
-			var p1 = popupMenu.Fragment.Start;
-			var p2 = e.Tb.Selection.Start;
-			//do auto indent
-			if (e.Tb.AutoIndent) {
-				for (int iLine = p1.iLine + 1; iLine <= p2.iLine; iLine++) {
-					e.Tb.Selection.Start = new Place(0, iLine);
-					e.Tb.DoAutoIndent(iLine);
-				}
-			}
-			e.Tb.Selection.Start = p1;
-			//move caret position right and find char ^
-			while (e.Tb.Selection.CharBeforeStart != '^')
-				if (!e.Tb.Selection.GoRightThroughFolded())
-					break;
-			//remove char ^
-			e.Tb.Selection.GoLeft(true);
-			e.Tb.InsertText("");
-			//
-			e.Tb.Selection.EndUpdate();
-			e.Tb.EndUpdate();
-		}
-
-		/// <summary>
-		/// Compares fragment text with this item
-		/// </summary>
-		public override CompareResult Compare(string fragmentText) {
-			if (Text.StartsWith(fragmentText, StringComparison.InvariantCultureIgnoreCase) &&
-				   Text != fragmentText)
-				return CompareResult.Visible;
-
-			return CompareResult.Hidden;
-		}
-	}
-
-	public class HMSClassInfo {
-		public string Name = "";
-		public string Type = "";
-		public string Help = "";
-		public AutocompleteItems MemberItems = new AutocompleteItems();
-		public AutocompleteItems StaticItems = new AutocompleteItems();
-	}
-
-	public class HMSClasses: List<HMSClassInfo> {
-		public bool ContainsName(string name) {
-			name = name.Trim().ToLower();
-			foreach (HMSClassInfo o in this) if (o.Name.ToLower() == name) return true;
-			return false;
-		}
-
-		public HMSClassInfo this[string name] {
-			get {
-				name = name.Trim().ToLower();
-				foreach (HMSClassInfo o in this) if (o.Name.ToLower() == name) return o;
-				return new HMSClassInfo();
-			}
-		}
-
-	}
-
-	public class HMSItemComparer: IComparer<HMSItem> {
-		private readonly string name;
-
-		public HMSItemComparer(string name) {
-			this.name = name.ToLower();
-		}
-
-		public int Compare(HMSItem item1, HMSItem item2) {
-			return item1.MenuText.ToLower().CompareTo(name);
-		}
-	}
-
-	public class AutocompleteItems: List<HMSItem> {
-		public int LastEndPosition { get { if (Count > 0) return this[Count - 1].PositionEnd; return 0; } }
-
-		public void SortByMenuText() {
-			this.Sort( delegate (HMSItem a, HMSItem b) { return a.MenuText.CompareTo(b.MenuText); });
-		}
-
-		public HMSItem GetItemOrNull(string name) {
-			name = name.Trim().ToLower();
-			foreach (HMSItem o in this) if (o.MenuText.ToLower() == name) return o;
-			return null;
-		}
-
-		public bool ContainsName(string name) {
-			name = name.ToLower();
-			foreach (var o in this) if (o.MenuText.ToLower() == name) return true;
-			return false;
-		}
-
-		public HMSItem this[string name] {
-			get {
-				name = name.Trim().ToLower();
-				foreach (HMSItem o in this) if (o.MenuText.ToLower() == name) return o;
-				return new HMSItem();
-			}
-		}
-
-		public AutocompleteItems GetFilteredList(string type) {
-			AutocompleteItems list = new AutocompleteItems();
-			type = type.ToLower();
-			foreach (var item in this) if (item.Type.ToLower()==type) list.Add(item);
-			return list;
-		}
-
-	}
 	
-	public enum DefKind { NotDef, Variable, Function, Procedure, Class, Method, Property, Constant, Event, Other }
-
-	public class InvisibleCharsRenderer: Style {
-		Pen pen;
-
-		public InvisibleCharsRenderer(Pen pen) {
-			this.pen = pen;
-		}
-
-		public override void Draw(Graphics gr, Point position, Range range) {
-			var tb = range.tb;
-			using (Brush brush = new SolidBrush(pen.Color))
-				foreach (var place in range) {
-					switch (tb[place].c) {
-						case ' ':
-							var point = tb.PlaceToPoint(place);
-							point.Offset(tb.CharWidth / 2, tb.CharHeight / 2);
-							gr.DrawLine(pen, point.X, point.Y, point.X + 1, point.Y);
-							break;
-					}
-
-					if (tb[place.iLine].Count - 1 == place.iChar) {
-						var point = tb.PlaceToPoint(place);
-						point.Offset(tb.CharWidth, 0);
-						gr.DrawString("¶", tb.Font, brush, point);
-					}
-				}
-		}
-	}
-
 	public static class HMS {
 		public static string GitHubHMSEditor  = "WendyH/HMSEditor_addon";
 		public static string GitHubTemplates  = "WendyH/HMSEditor-Templates";
@@ -260,25 +27,28 @@ namespace HMSEditorNS {
 		public static string CurrentParamType = "";
 
 		private static string ResourcePath = "HMSEditorNS.Resources.";
-		private static string workingdir = "";
+		private static string _workingdir = "";
 		internal static string WorkingDir {
 			get {
-				if (workingdir.Length == 0)
-					workingdir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + DS + "HMSEditor";
-				return workingdir;
+				if (_workingdir.Length == 0)
+#if DEBUG
+					_workingdir = @"D:\Projects\HMSEditor_addon\HMSEditor\bin\Debug\";
+#else
+					_workingdir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\HMSEditor\";
+#endif
+				return _workingdir;
 			}
 		}
 
-		private static string downloaddir = "";
+		private static string _downloaddir = "";
 		internal static string DownloadDir {
-			get { if (downloaddir.Length == 0) downloaddir = Path.GetTempPath(); return downloaddir; }
+			get { if (_downloaddir.Length == 0) _downloaddir = Path.GetTempPath(); return _downloaddir; }
 		}
 
-		internal static char DS { get { return Path.DirectorySeparatorChar; } }
-
-		public static string TemplatesDir { get { return WorkingDir + DS + "Templates" ; } }
-		public static string ThemesDir    { get { return WorkingDir + DS + "Themes"    ; } }
-		public static string ErrorLogFile { get { return WorkingDir + DS + "errors.log"; } }
+		public static string TemplatesDir { get { return WorkingDir + "Templates"    ; } }
+		public static string ThemesDir    { get { return WorkingDir + "Themes"       ; } }
+		public static string SettingsFile { get { return WorkingDir + "HMSEditor.ini"; } }
+		public static string ErrorLogFile { get { return WorkingDir + "errors.log"   ; } }
 
 		public static HMSClasses HmsClasses = new HMSClasses();
 		public static HMSClasses HmsTypes   = new HMSClasses();
@@ -304,13 +74,12 @@ namespace HMSEditorNS {
 		private static bool initialized = false;
 
 		[EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+		[STAThread]
 		public static void Init() {
 			if (initialized) return;
 			initialized = true;
 
 			// Заголовок для всех MessageBox
-			HMSEditor.Title += " v" + Application.ProductVersion;
-
 			// Всё норм, запускаемся. Для начала вставляем обработку события при неудачных зависимостях, а там загрузим внедрённые dll
 			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
 
@@ -323,7 +92,7 @@ namespace HMSEditorNS {
 
 				// Заполняем базу знаний функций, классов, встроенных констант и переменных...
 				InitAndLoadHMSKnowledgeDatabase();
-            } catch (Exception e) {
+			} catch (Exception e) {
 				LogError(e.ToString());
 
 			}
@@ -433,13 +202,12 @@ namespace HMSEditorNS {
 				if (!Directory.Exists(dir))
 					Directory.CreateDirectory(dir);
 			} catch (Exception e) {
-				if (resetWorkingDirIfError) workingdir = "";
+				if (resetWorkingDirIfError) _workingdir = "";
 				LogError(e.ToString());
 			}
 		}
 
 		public static void InitAndLoadHMSKnowledgeDatabase() {
-			Themes.Init();
 
 			CreateIfNotExistDirectory(WorkingDir, true);
 			CreateIfNotExistDirectory(TemplatesDir);
@@ -451,8 +219,8 @@ namespace HMSEditorNS {
 			HMSItem  item     = null;
 			bool     isStatic = false;
 
-			ItemsBoolean.Add(new HMSItem() { Text = "True" , ImageIndex = Images.Constant, MenuText = "True" , Type = "Boolean" });
-			ItemsBoolean.Add(new HMSItem() { Text = "False", ImageIndex = Images.Constant, MenuText = "False", Type = "Boolean" });
+			ItemsBoolean.Add(new HMSItem() { Text = "True" , ImageIndex = ImagesIndex.Constant, MenuText = "True" , Type = "Boolean" });
+			ItemsBoolean.Add(new HMSItem() { Text = "False", ImageIndex = ImagesIndex.Constant, MenuText = "False", Type = "Boolean" });
 			
 			Stream stream = null;
 			try {
@@ -477,7 +245,7 @@ namespace HMSEditorNS {
 								hmsclass.Help = item.Help;
 								HmsClasses.Add(hmsclass);
 								item.Kind         = DefKind.Class;
-								item.ImageIndex   = Images.Class;
+								item.ImageIndex   = ImagesIndex.Class;
 								item.ToolTipTitle = "Класс " + item.Text;
 								item.IsClass      = true;
 								ItemsClass.Add(item);
@@ -487,18 +255,18 @@ namespace HMSEditorNS {
 						} else if (indent == 2) {
 							// it's method or property of the class
 							cmd = item.ToolTipTitle;
-							if      (cmd.StartsWith("function" )) { item.ImageIndex = Images.Method; item.Kind = DefKind.Method   ; }
-							else if (cmd.StartsWith("procedure")) { item.ImageIndex = Images.Method; item.Kind = DefKind.Procedure; }
-							else if (cmd.StartsWith("property" )) { item.ImageIndex = Images.Field ; item.Kind = DefKind.Property ; }
-							else if (cmd.StartsWith("index"    )) { item.ImageIndex = Images.Enum  ; item.Kind = DefKind.Property ; }
-							else if (cmd.StartsWith("event"    )) { item.ImageIndex = Images.Event ; item.Kind = DefKind.Event    ; }
+							if      (cmd.StartsWith("function" )) { item.ImageIndex = ImagesIndex.Method; item.Kind = DefKind.Method   ; }
+							else if (cmd.StartsWith("procedure")) { item.ImageIndex = ImagesIndex.Method; item.Kind = DefKind.Procedure; }
+							else if (cmd.StartsWith("property" )) { item.ImageIndex = ImagesIndex.Field ; item.Kind = DefKind.Property ; }
+							else if (cmd.StartsWith("index"    )) { item.ImageIndex = ImagesIndex.Enum  ; item.Kind = DefKind.Property ; }
+							else if (cmd.StartsWith("event"    )) { item.ImageIndex = ImagesIndex.Event ; item.Kind = DefKind.Event    ; }
 							name = Regex.Replace(cmd, @"^(function|procedure|property|index property|event)\s+", "");
 							name = Regex.Match(name, @"\w+").Value.Trim();
 							if (name.Length < 1) name += " ";
 							item.Text         = name;
 							item.MenuText     = name;
-							if (item.ImageIndex == Images.Enum) item.Text = name + "[^]";
-							else if (item.ImageIndex == Images.Method) {
+							if (item.ImageIndex == ImagesIndex.Enum) item.Text = name + "[^]";
+							else if (item.ImageIndex == ImagesIndex.Method) {
 								if (cmd.IndexOf('(')>0) item.Text = name + "(^)";
 								//else                    item.Text = name + "()";
 							}
@@ -558,7 +326,7 @@ namespace HMSEditorNS {
 							string names = Regex.Match(line, @"\((.*?)\)").Groups[1].Value;
 							foreach(string name in names.Split(',')) {
 								item = new HMSItem();
-								item.ImageIndex   = Images.Enum;
+								item.ImageIndex   = ImagesIndex.Enum;
 								item.Text         = name;
 								item.MenuText     = name;
 								item.ToolTipTitle = name;
@@ -580,14 +348,14 @@ namespace HMSEditorNS {
 			}
 
 			// Load a built-in Functions and Procedures items
-			BuildAutocompleteItemsFromResourse(ResourcePath + "hms_func.txt", Images.Procedure, "", ItemsFunction, DefKind.Function);
-			foreach(var itemFunc in ItemsFunction) { if (itemFunc.Type.Length > 0) itemFunc.ImageIndex = Images.Function; }
+			BuildAutocompleteItemsFromResourse(ResourcePath + "hms_func.txt", ImagesIndex.Procedure, "", ItemsFunction, DefKind.Function);
+			foreach(var itemFunc in ItemsFunction) { if (itemFunc.Type.Length > 0) itemFunc.ImageIndex = ImagesIndex.Function; }
 
 			// Load a built-in Variables
-			BuildAutocompleteItemsFromResourse(ResourcePath + "hms_vars.txt"     , Images.Field, "Встроенная переменная", ItemsVariable, DefKind.Variable);
+			BuildAutocompleteItemsFromResourse(ResourcePath + "hms_vars.txt"     , ImagesIndex.Field, "Встроенная переменная", ItemsVariable, DefKind.Variable);
 				
 			// Load a built-in Constants
-			BuildAutocompleteItemsFromResourse(ResourcePath + "hms_constants.txt", Images.Enum , "Встроенная константа" , ItemsConstant, DefKind.Constant);
+			BuildAutocompleteItemsFromResourse(ResourcePath + "hms_constants.txt", ImagesIndex.Enum , "Встроенная константа" , ItemsConstant, DefKind.Constant);
 
 			foreach(var info in HmsTypes) {
 				foreach(var typeitem in info.MemberItems) {
@@ -608,11 +376,23 @@ namespace HMSEditorNS {
 			funcList = funcList.Substring(1).Replace("|Int|", "|Int\\(|");
             RegexHmsFunctions = new Regex(@"\b(" + funcList + @")\b", RegexOptions.IgnoreCase);
 
+			string varsList = "";
+			foreach (var q in ItemsVariable) varsList += "|" + q.MenuText;
+			varsList = varsList.Substring(1);
+			RegexHmsVariables = new Regex(@"\b(" + varsList + @")\b", RegexOptions.IgnoreCase);
+
+			varsList = "";
+			foreach (var q in ItemsConstant) varsList += "|" + q.MenuText;
+			varsList = varsList.Substring(1);
+			RegexHmsConstants = new Regex(@"\b(" + varsList + @")\b", RegexOptions.IgnoreCase);
+
 			ClassesString += NotFoundedType.ToLower();
 			HmsTypesString += "";
 		}
 		public static Regex RegexHmsFunctions = null;
-
+		public static Regex RegexHmsVariables = null;
+		public static Regex RegexHmsConstants = null;
+		
 
 		private static bool KnownType(string type) {
 			if (type.Length < 1) return true;
@@ -623,7 +403,7 @@ namespace HMSEditorNS {
 		}
 
 		private static void BuildAutocompleteItemsFromResourse(string file, int imageIndex, string toolTipText, AutocompleteItems itemsList, DefKind kind) {
-			string   section  = "";
+            string   section  = "";
 			string   filter   = "";
 			Assembly assembly = Assembly.GetExecutingAssembly();
 			Stream   stream   = assembly.GetManifestResourceStream(file);
@@ -631,9 +411,9 @@ namespace HMSEditorNS {
 				using (StreamReader reader = new StreamReader(stream)) {
 					stream = null; string line; HMSItem item = null; Match m;
 					while ((line = reader.ReadLine()) != null) {
-						m = Regex.Match(line, @"^\*\s*?\[(.*)\]"    ); if (m.Success) { section = m.Groups[1].Value.Trim(); continue; }
-						m = Regex.Match(line, @"^\*sm\w+\s*?<(.*?)>"); if (m.Success) { filter  = m.Groups[1].Value.Trim(); continue; }
-						if (filter == "-") continue;
+						m = Regex.Match(line, @"^\*\s*?\[(.*)\]"); if (m.Success) { section = m.Groups[1].Value.Trim(); continue; }
+						m = Regex.Match(line, @"^\*(sm\w+)"     ); if (m.Success) { filter  = m.Groups[1].Value.Trim(); continue; }
+						if (filter == "smAll") filter = "";
                         if (line.StartsWith("*") || (line.Trim().Length == 0)) continue; // Skip comments and blank lines
 						int indent = line.Length - line.TrimStart().Length;
 						if (indent == 0) {
@@ -735,7 +515,7 @@ namespace HMSEditorNS {
 
 		public static bool TypeIsClass(string type) { return (ClassesString.IndexOf("|" + type.Trim().ToLower() + "|") >= 0); }
 
-		#region Работа с шаблонами
+#region Работа с шаблонами
 		public static bool TemplatesIsLoading = false;
 		public static void LoadTemplates() {
 			// Если уже кто-то загружает шаблоны (другой поток) - ждём максимум 4 секунды
@@ -811,7 +591,7 @@ namespace HMSEditorNS {
 				parentItem.Set(lang, name, text);
 			}
 		}
-		#endregion Работа с шаблонами
+#endregion Работа с шаблонами
 
 		public static string getHomePath() {
 			// Not in .NET 2.0 System.Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
@@ -852,6 +632,7 @@ namespace HMSEditorNS {
 				return Assembly.Load(buffer);
 			}
 		}
+
 
 	}
 }
