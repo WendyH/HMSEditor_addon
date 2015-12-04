@@ -63,13 +63,13 @@ namespace FastColoredTextBoxNS
             }
         }
 
-		public void Dispose() {
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected virtual void Dispose(Boolean disposing) { }
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected virtual void Dispose(Boolean disposing) { }
 
-		public virtual void ClearIsChanged()
+        public virtual void ClearIsChanged()
         {
             foreach(var line in lines)
                 line.IsChanged = false;
@@ -103,7 +103,7 @@ namespace FastColoredTextBoxNS
             else
                 Styles = new Style[16];
 
-			DefaultStyle = new TextStyle(null, null, FontStyle.Regular);
+            DefaultStyle = new TextStyle(null, null, FontStyle.Regular);
         }
 
         public virtual void InitDefaultStyle() { }
@@ -322,7 +322,7 @@ namespace FastColoredTextBoxNS
             return !string.IsNullOrEmpty(lines[iLine].FoldingEndMarker);
         }
 
-		public virtual void SaveToFile(string fileName, Encoding enc)
+        public virtual void SaveToFile(string fileName, Encoding enc)
         {
             using (StreamWriter sw = new StreamWriter(fileName, false, enc))
             {

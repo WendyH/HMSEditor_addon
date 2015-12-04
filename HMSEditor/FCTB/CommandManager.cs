@@ -56,15 +56,15 @@ namespace FastColoredTextBoxNS
             TextSource.CurrentTB.OnUndoRedoStateChanged();
         }
 
-		internal Stack<Range> OldPosition = new Stack<Range>(); // By WendyH
-		internal bool WasFastUndo = false;
+        internal Stack<Range> OldPosition = new Stack<Range>(); // By WendyH
+        internal bool WasFastUndo = false;
 
-		public void Undo()
+        public void Undo()
         {
             if (history.Count > 0)
             {
                 var cmd = history.Pop();
-				WasFastUndo = cmd.FastUndo;
+                WasFastUndo = cmd.FastUndo;
                 if (cmd.FastUndo) OldPosition.Push(cmd.ts.CurrentTB.Selection.Clone()); // By WendyH
                 //
                 BeginDisableCommands();//prevent text changing into handlers
@@ -75,10 +75,10 @@ namespace FastColoredTextBoxNS
                 finally
                 {
                     EndDisableCommands();
-					if (cmd.FastUndo) cmd.ts.CurrentTB.Selection = OldPosition.Pop(); // By WendyH
-				}
-				//
-				redoStack.Push(cmd);
+                    if (cmd.FastUndo) cmd.ts.CurrentTB.Selection = OldPosition.Pop(); // By WendyH
+                }
+                //
+                redoStack.Push(cmd);
             }
 
             //undo next autoUndo command
@@ -202,15 +202,15 @@ namespace FastColoredTextBoxNS
         internal RangeInfo sel;
         internal RangeInfo lastSel;
         internal bool autoUndo;
-		internal bool FastUndo = false; // By WendyH
+        internal bool FastUndo = false; // By WendyH
 
-		public UndoableCommand(TextSource ts, bool fastUndo) {
-			FastUndo = fastUndo;
-			this.ts = ts;
-			sel = new RangeInfo(ts.CurrentTB.Selection);
-		}
+        public UndoableCommand(TextSource ts, bool fastUndo) {
+            FastUndo = fastUndo;
+            this.ts = ts;
+            sel = new RangeInfo(ts.CurrentTB.Selection);
+        }
 
-		public UndoableCommand(TextSource ts)
+        public UndoableCommand(TextSource ts)
         {
             this.ts = ts;
             sel = new RangeInfo(ts.CurrentTB.Selection);

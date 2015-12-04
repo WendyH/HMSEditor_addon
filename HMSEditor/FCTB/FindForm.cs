@@ -11,29 +11,29 @@ namespace FastColoredTextBoxNS
         bool firstSearch = true;
         Place startPlace;
         FastColoredTextBox tb;
-		ToolTip tooltip1 = new ToolTip();
-		ToolTip tooltip2 = new ToolTip();
-		ToolTip tooltip3 = new ToolTip();
-		string MBCaption = "HMS Editor - Поиск";
+        ToolTip tooltip1 = new ToolTip();
+        ToolTip tooltip2 = new ToolTip();
+        ToolTip tooltip3 = new ToolTip();
+        string MBCaption = "HMS Editor - Поиск";
 
-		public FindForm(FastColoredTextBox tb)
+        public FindForm(FastColoredTextBox tb)
         {
             InitializeComponent();
             this.tb = tb;
-			tooltip1.ToolTipIcon = ToolTipIcon.Info;
-			tooltip1.ToolTipTitle = "Регистрозависимый поиск";
-			tooltip1.SetToolTip(cbMatchCase, "Поиск будет осуществляться согласно указанному регистру символов");
+            tooltip1.ToolTipIcon = ToolTipIcon.Info;
+            tooltip1.ToolTipTitle = "Регистрозависимый поиск";
+            tooltip1.SetToolTip(cbMatchCase, "Поиск будет осуществляться согласно указанному регистру символов");
 
-			tooltip2.ToolTipIcon = ToolTipIcon.Info;
-			tooltip2.ToolTipTitle = "Поиск отдельных слов";
-			tooltip2.SetToolTip(cbWholeWord, "Поиск указанного цельного отдельного слова.\nБудут найдены только слова, стоящие отдельно, не входящие в состав другого.");
+            tooltip2.ToolTipIcon = ToolTipIcon.Info;
+            tooltip2.ToolTipTitle = "Поиск отдельных слов";
+            tooltip2.SetToolTip(cbWholeWord, "Поиск указанного цельного отдельного слова.\nБудут найдены только слова, стоящие отдельно, не входящие в состав другого.");
 
-			tooltip3.ToolTipIcon = ToolTipIcon.Info;
-			tooltip3.ToolTipTitle = "Regex - регулярные выражения";
-			tooltip3.SetToolTip(cbRegex, "Поиск по указанному регулярному вырежению.\nНапример: MyVar\\s*?=");
-		}
+            tooltip3.ToolTipIcon = ToolTipIcon.Info;
+            tooltip3.ToolTipTitle = "Regex - регулярные выражения";
+            tooltip3.SetToolTip(cbRegex, "Поиск по указанному регулярному вырежению.\nНапример: MyVar\\s*?=");
+        }
 
-		private void btClose_Click(object sender, EventArgs e)
+        private void btClose_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -115,8 +115,8 @@ namespace FastColoredTextBoxNS
             }
             this.tb.Focus();
         }
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
-		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Escape)
             {
@@ -142,5 +142,5 @@ namespace FastColoredTextBoxNS
             ResetSerach();
         }
 
-	}
+    }
 }

@@ -22,13 +22,13 @@ namespace FastColoredTextBoxNS
     {
         public virtual void InitDefault()
         {
-			this[KEYS.Alt     | KEYS.Left    ] = FCTBAction.NavigateBackward;
-			this[KEYS.Alt     | KEYS.Right   ] = FCTBAction.NavigateForward;
-			this[KEYS.Alt     | KEYS.Back    ] = FCTBAction.Undo;
-			this[KEYS.Alt     | KEYS.Up      ] = FCTBAction.MoveSelectedLinesUp;
-			this[KEYS.Alt     | KEYS.Down    ] = FCTBAction.MoveSelectedLinesDown;
-			this[KEYS.Alt     | KEYS.F       ] = FCTBAction.FindChar;
-			this[KEYS.Control | KEYS.G       ] = FCTBAction.GoToDialog;
+            this[KEYS.Alt     | KEYS.Left    ] = FCTBAction.NavigateBackward;
+            this[KEYS.Alt     | KEYS.Right   ] = FCTBAction.NavigateForward;
+            this[KEYS.Alt     | KEYS.Back    ] = FCTBAction.Undo;
+            this[KEYS.Alt     | KEYS.Up      ] = FCTBAction.MoveSelectedLinesUp;
+            this[KEYS.Alt     | KEYS.Down    ] = FCTBAction.MoveSelectedLinesDown;
+            this[KEYS.Alt     | KEYS.F       ] = FCTBAction.FindChar;
+            this[KEYS.Control | KEYS.G       ] = FCTBAction.GoToDialog;
             this[KEYS.Control | KEYS.F       ] = FCTBAction.FindDialog;
             this[KEYS.F3                     ] = FCTBAction.FindNext;
             this[KEYS.Control | KEYS.H       ] = FCTBAction.ReplaceDialog;
@@ -96,7 +96,7 @@ namespace FastColoredTextBoxNS
             this[KEYS.Control | KEYS.I       ] = FCTBAction.AutoIndentChars;   
         }
 
-		public override string ToString()
+        public override string ToString()
         {
             var cult = Thread.CurrentThread.CurrentUICulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;

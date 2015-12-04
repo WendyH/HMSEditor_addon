@@ -15,11 +15,11 @@ namespace FastColoredTextBoxNS
         public readonly List<RuleDesc>    rules    = new List<RuleDesc>();
         public readonly List<FoldingDesc> foldings = new List<FoldingDesc>();
 
-		public void Dispose() {
-			foreach (var style in styles)
-				style.Dispose();
-			GC.SuppressFinalize(this);
-		}
+        public void Dispose() {
+            foreach (var style in styles)
+                style.Dispose();
+            GC.SuppressFinalize(this);
+        }
     }
 
     public class RuleDesc

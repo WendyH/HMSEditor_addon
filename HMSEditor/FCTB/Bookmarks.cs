@@ -20,26 +20,26 @@ namespace FastColoredTextBoxNS
         public abstract bool IsReadOnly { get; }
         public abstract bool Remove(Bookmark item);
         public abstract IEnumerator<Bookmark> GetEnumerator();
-		public int counter;
+        public int counter;
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-		#endregion
+        #endregion
 
-		#region IDisposable
-		public void Dispose() {
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-		protected abstract void Dispose(Boolean disposing);
-		#endregion
+        #region IDisposable
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        protected abstract void Dispose(Boolean disposing);
+        #endregion
 
-		#region Additional properties
+        #region Additional properties
 
-		public abstract void Add(int lineIndex, string bookmarkName);
+        public abstract void Add(int lineIndex, string bookmarkName);
         public abstract void Add(int lineIndex);
         public abstract bool Contains(int lineIndex);
         public abstract bool Remove(int lineIndex);
@@ -111,16 +111,16 @@ namespace FastColoredTextBoxNS
                 }
         }
 
-		protected override void Dispose(bool disposible)
+        protected override void Dispose(bool disposible)
         {
-			if (!tb.IsDisposed) {
-				tb.LineInserted -= tb_LineInserted;
-				tb.LineRemoved  -= tb_LineRemoved;
-			}
-			GC.SuppressFinalize(this);
-		}
+            if (!tb.IsDisposed) {
+                tb.LineInserted -= tb_LineInserted;
+                tb.LineRemoved  -= tb_LineRemoved;
+            }
+            GC.SuppressFinalize(this);
+        }
 
-		public override IEnumerator<Bookmark> GetEnumerator()
+        public override IEnumerator<Bookmark> GetEnumerator()
         {
             foreach (var item in items)
                 yield return item;
@@ -136,26 +136,26 @@ namespace FastColoredTextBoxNS
             Add(new Bookmark(tb, "Bookmark " + counter, lineIndex));
         }
 
-		public void Set(int lineIndex, string name) {
-			bool exist = false; string namel = name.ToLower();
-			foreach (var b in this) if (b.Name.ToLower() == namel) { b.LineIndex = lineIndex; exist = true; break; }
-			if (!exist)
-				Add(new Bookmark(tb, name, lineIndex));
-			tb.NeedRecalc(true); // By WendyH
-			tb.Invalidate();
-		}
-
-		public Bookmark GetByName(string name) {
-			Bookmark bookmark = null; string namel = name.ToLower();
-			foreach (var b in this) if (b.Name.ToLower() == namel) { bookmark = b; break; }
-			return bookmark;
+        public void Set(int lineIndex, string name) {
+            bool exist = false; string namel = name.ToLower();
+            foreach (var b in this) if (b.Name.ToLower() == namel) { b.LineIndex = lineIndex; exist = true; break; }
+            if (!exist)
+                Add(new Bookmark(tb, name, lineIndex));
+            tb.NeedRecalc(true); // By WendyH
+            tb.Invalidate();
         }
 
-		public override void Clear()
+        public Bookmark GetByName(string name) {
+            Bookmark bookmark = null; string namel = name.ToLower();
+            foreach (var b in this) if (b.Name.ToLower() == namel) { bookmark = b; break; }
+            return bookmark;
+        }
+
+        public override void Clear()
         {
             items.Clear();
-			tb.NeedRecalc(true); // By WendyH
-			counter = 0;
+            tb.NeedRecalc(true); // By WendyH
+            counter = 0;
         }
 
         public override void Add(Bookmark bookmark)
@@ -166,8 +166,8 @@ namespace FastColoredTextBoxNS
 
             items.Add(bookmark);
             counter++;
-			tb.NeedRecalc(true); // By WendyH
-			tb.Invalidate();
+            tb.NeedRecalc(true); // By WendyH
+            tb.Invalidate();
         }
 
         public override bool Contains(Bookmark item)
@@ -200,12 +200,12 @@ namespace FastColoredTextBoxNS
 
         public override bool Remove(Bookmark item)
         {
-			// By WendyH < -----
-			bool removed = items.Remove(item);
-			tb.NeedRecalc(true);
-			tb.Invalidate();
-			return removed;
-			// By WendyH > -----
+            // By WendyH < -----
+            bool removed = items.Remove(item);
+            tb.NeedRecalc(true);
+            tb.Invalidate();
+            return removed;
+            // By WendyH > -----
         }
 
         /// <summary>
@@ -221,8 +221,8 @@ namespace FastColoredTextBoxNS
                 i--;
                 was = true;
             }
-			tb.NeedRecalc(true); // By WendyH
-			tb.Invalidate();
+            tb.NeedRecalc(true); // By WendyH
+            tb.Invalidate();
 
             return was;
         }
@@ -235,12 +235,12 @@ namespace FastColoredTextBoxNS
             return items[i];
         }
 
-	}
+    }
 
-	/// <summary>
-	/// Bookmark of FastColoredTextbox
-	/// </summary>
-	public class Bookmark
+    /// <summary>
+    /// Bookmark of FastColoredTextbox
+    /// </summary>
+    public class Bookmark
     {
         public FastColoredTextBox TB { get; private set; }
         /// <summary>
@@ -256,22 +256,22 @@ namespace FastColoredTextBoxNS
         /// </summary>
         public Color Color { get; set; }
 
-		/// <summary>
-		/// Index of char
-		/// </summary>
-		public int CharIndex { get; set; } // By WendyH
+        /// <summary>
+        /// Index of char
+        /// </summary>
+        public int CharIndex { get; set; } // By WendyH
 
         /// <summary>
         /// Scroll textbox to the bookmark
         /// </summary>
         public virtual void DoVisible()
         {
-			// By WendyH < -----------------
-			if (CharIndex >= TB.Lines[0].Length) CharIndex = 0;
-			// By WendyH > -----------------
-			TB.Selection.Start = new Place(0, LineIndex);
+            // By WendyH < -----------------
+            if (CharIndex >= TB.Lines[0].Length) CharIndex = 0;
+            // By WendyH > -----------------
+            TB.Selection.Start = new Place(0, LineIndex);
             TB.DoRangeVisible(TB.Selection, true);
-			TB.Invalidate();
+            TB.Invalidate();
         }
 
         public Bookmark(FastColoredTextBox tb, string name, int lineIndex)
@@ -279,26 +279,26 @@ namespace FastColoredTextBoxNS
             this.TB = tb;
             this.Name = name;
             this.LineIndex = lineIndex;
-			this.CharIndex = tb.Selection.Start.iChar; // By WendyH
-			Color = tb.BookmarkColor;
-		}
+            this.CharIndex = tb.Selection.Start.iChar; // By WendyH
+            Color = tb.BookmarkColor;
+        }
 
-		private static Font TextFont  = new Font("Arial", 6);
-		public virtual void Paint(Graphics gr, Rectangle lineRect, bool itsreakpoint = false) {
-			var size = TB.CharHeight - 1;
-			// By WendyH < ---------------------------------------
-			if (itsreakpoint && (TB.BreakpointIcon != null)) {
-				gr.DrawImage(TB.BreakpointIcon, 0, lineRect.Top, TB.BreakpointIcon.Width, TB.BreakpointIcon.Height);
-			} else if (TB.BookmarkIcon != null) {
-				gr.DrawImage(TB.BookmarkIcon, 0, lineRect.Top, TB.BookmarkIcon.Width, TB.BookmarkIcon.Height);
-			} else {
-			// By WendyH > ---------------------------------------
-				using (var brush = new LinearGradientBrush(new Rectangle(0, lineRect.Top, size, size), Color.White, Color, 45))
-					gr.FillEllipse(brush, 0, lineRect.Top, size, size);
-				using (var pen = new Pen(Color))
-					gr.DrawEllipse(pen, 0, lineRect.Top, size, size);
-			}
-			if (Name.Length == 1) gr.DrawString(Name, TextFont, Brushes.DarkSlateGray, new Point(4, lineRect.Top+3));
-		}
-	}
+        private static Font TextFont  = new Font("Arial", 6);
+        public virtual void Paint(Graphics gr, Rectangle lineRect, bool itsreakpoint = false) {
+            var size = TB.CharHeight - 1;
+            // By WendyH < ---------------------------------------
+            if (itsreakpoint && (TB.BreakpointIcon != null)) {
+                gr.DrawImage(TB.BreakpointIcon, 0, lineRect.Top, TB.BreakpointIcon.Width, TB.BreakpointIcon.Height);
+            } else if (TB.BookmarkIcon != null) {
+                gr.DrawImage(TB.BookmarkIcon, 0, lineRect.Top, TB.BookmarkIcon.Width, TB.BookmarkIcon.Height);
+            } else {
+            // By WendyH > ---------------------------------------
+                using (var brush = new LinearGradientBrush(new Rectangle(0, lineRect.Top, size, size), Color.White, Color, 45))
+                    gr.FillEllipse(brush, 0, lineRect.Top, size, size);
+                using (var pen = new Pen(Color))
+                    gr.DrawEllipse(pen, 0, lineRect.Top, size, size);
+            }
+            if (Name.Length == 1) gr.DrawString(Name, TextFont, Brushes.DarkSlateGray, new Point(4, lineRect.Top+3));
+        }
+    }
 }

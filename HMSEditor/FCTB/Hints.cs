@@ -35,21 +35,21 @@ namespace FastColoredTextBoxNS
             Clear();
         }
 
-		private void Dispose(bool disposeble) {
-			;
+        private void Dispose(bool disposeble) {
+            ;
         }
 
-		public void Dispose() {
-			if (!tb.IsDisposed) {
-				tb.TextChanged -= OnTextBoxTextChanged;
-				tb.KeyDown     -= OnTextBoxKeyDown;
-				tb.VisibleRangeChanged -= OnTextBoxVisibleRangeChanged;
-			}
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
+        public void Dispose() {
+            if (!tb.IsDisposed) {
+                tb.TextChanged -= OnTextBoxTextChanged;
+                tb.KeyDown     -= OnTextBoxKeyDown;
+                tb.VisibleRangeChanged -= OnTextBoxVisibleRangeChanged;
+            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-		void OnTextBoxVisibleRangeChanged(object sender, EventArgs e)
+        void OnTextBoxVisibleRangeChanged(object sender, EventArgs e)
         {
             if (items.Count == 0)
                 return;

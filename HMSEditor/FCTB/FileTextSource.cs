@@ -232,49 +232,49 @@ namespace FastColoredTextBoxNS
             //create temp file
             var dir = Path.GetDirectoryName(fileName);
             var tempFileName = Path.Combine(dir, Path.GetFileNameWithoutExtension(fileName) + ".tmp");
-			FileStream tempFs = null;
+            FileStream tempFs = null;
             StreamReader sr = new StreamReader(fs, fileEncoding);
-			try {
-				tempFs = new FileStream(tempFileName, FileMode.Create);
-				using (StreamWriter sw = new StreamWriter(tempFs, enc)) {
-					tempFs = null;
-					sw.Flush();
+            try {
+                tempFs = new FileStream(tempFileName, FileMode.Create);
+                using (StreamWriter sw = new StreamWriter(tempFs, enc)) {
+                    tempFs = null;
+                    sw.Flush();
 
-					for (int i = 0; i < Count; i++) {
-						newLinePos.Add((int)tempFs.Length);
+                    for (int i = 0; i < Count; i++) {
+                        newLinePos.Add((int)tempFs.Length);
 
-						var sourceLine = ReadLine(sr, i);//read line from source file
-						string line;
+                        var sourceLine = ReadLine(sr, i);//read line from source file
+                        string line;
 
-						bool lineIsChanged = lines[i] != null && lines[i].IsChanged;
+                        bool lineIsChanged = lines[i] != null && lines[i].IsChanged;
 
-						if (lineIsChanged)
-							line = lines[i].Text;
-						else
-							line = sourceLine;
+                        if (lineIsChanged)
+                            line = lines[i].Text;
+                        else
+                            line = sourceLine;
 
-						//call event handler
-						if (LinePushed != null) {
-							var args = new LinePushedEventArgs(sourceLine, i, lineIsChanged ? line : null);
-							LinePushed(this, args);
+                        //call event handler
+                        if (LinePushed != null) {
+                            var args = new LinePushedEventArgs(sourceLine, i, lineIsChanged ? line : null);
+                            LinePushed(this, args);
 
-							if (args.SavedText != null)
-								line = args.SavedText;
-						}
+                            if (args.SavedText != null)
+                                line = args.SavedText;
+                        }
 
-						//save line to file
-						sw.Write(line);
+                        //save line to file
+                        sw.Write(line);
 
-						if (i < Count - 1)
-							sw.Write(SaveEOL);
+                        if (i < Count - 1)
+                            sw.Write(SaveEOL);
 
-						sw.Flush();
-					}
+                        sw.Flush();
+                    }
                 }
-			} finally {
-				if (tempFs != null)
-					tempFs.Dispose();
-			}
+            } finally {
+                if (tempFs != null)
+                    tempFs.Dispose();
+            }
 
             //clear lines buffer
             for (int i = 0; i < Count; i++)
@@ -399,13 +399,13 @@ namespace FastColoredTextBoxNS
                 return !string.IsNullOrEmpty(lines[iLine].FoldingEndMarker);
         }
 
-		protected sealed override void Dispose(bool disposible) {
-			if (fs != null) fs.Dispose();
-			timer.Dispose();
-			base.Dispose();
-		}
+        protected sealed override void Dispose(bool disposible) {
+            if (fs != null) fs.Dispose();
+            timer.Dispose();
+            base.Dispose();
+        }
 
-		internal void UnloadLine(int iLine)
+        internal void UnloadLine(int iLine)
         {
             if (lines[iLine] != null && !lines[iLine].IsChanged)
                 lines[iLine] = null;

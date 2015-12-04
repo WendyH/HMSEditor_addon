@@ -97,6 +97,11 @@ gsUserVariable5: String|Глобальная переменная, сохран�
 * gsPodcastUpdateProgress|
 
 * [Параметры медиа-ресурса]
+mpFilePath: String|Путь (ссылка) до файла
+mpTitle: String|Название
+mpTimeLength: String|Длительность
+mpThumbnail: String|Ссылка на изображение
+mpYear: Integer|Год
 mp3DVideoType: Integer|Тип 3D ("Нет", "Горизонтальная пара", "Вертикальная пара", "Две видео-дорожки")
 mpActor: String|Актёры
 mpAddDate: Variant|Дата добавления
@@ -136,7 +141,6 @@ mpDvbItem: Boolean|Флаг, определяющий, что это элеме�
 mpDvdItem: Boolean|Флаг, определяющий, что это элемент DVD
 mpFileDate: String|Дата файла
 mpFileName: String|Имя файла
-mpFilePath: String|Путь (ссылка) до файла
 mpFileSize: Variant|Размер файла
 mpFileType: String|Тип файла
 mpFrameRate: Extended
@@ -188,13 +192,10 @@ mpSubItemsCount: Integer|Количество подчинённых элеме�
 mpSubtitleLanguage: String|Язык субтитров
 mpSubtitleList: String|Список файлов субтитров, разделённых знаком "|"
 mpTempo: Variant|Музыкальный темп
-mpThumbnail: String|Ссылка на изображение
 mpThumbnailDimension: Variant|Разрешение изображения
 mpThumbnailHeight: Variant|Высота изображения
 mpThumbnailWidth: Variant|Ширина изображения
-mpTimeLength: String|Длительность
 mpTimeStart: String|Время, с которого будет воспроизводиться файл
-mpTitle: String|Название
 mpTrack: Integer|Номер трека
 mpTrackTotal: Variant|Всего треков
 mpTranscodingActive: Boolean|Флаг, определяющий активность транскодирования
@@ -204,7 +205,6 @@ mpVideoBitRate: Integer|Видео битрейт
 mpVideoCodec: String|Видео кодек
 mpVideoSelected: String|Выбранная видео-дорожка
 mpWidth: Integer|Ширина
-mpYear: Integer|Год
 
 * [Параметры настройки]
 cfgAudioPlaylistMimeType: Variant

@@ -199,15 +199,15 @@ namespace FastColoredTextBoxNS
     {
         public string InsertedText;
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="ts">Underlaying textbox</param>
-		/// <param name="insertedText">Text for inserting</param>
-		public InsertTextCommand(TextSource ts, string insertedText, bool fastUndo=false): base(ts)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="ts">Underlaying textbox</param>
+        /// <param name="insertedText">Text for inserting</param>
+        public InsertTextCommand(TextSource ts, string insertedText, bool fastUndo=false): base(ts)
         {
             this.InsertedText = insertedText;
-			FastUndo = fastUndo;
+            FastUndo = fastUndo;
         }
 
         /// <summary>
@@ -217,9 +217,9 @@ namespace FastColoredTextBoxNS
         {
             ts.CurrentTB.Selection.Start = sel.Start;
             ts.CurrentTB.Selection.End   = lastSel.Start;
-			if (!FastUndo) ts.OnTextChanging();
+            if (!FastUndo) ts.OnTextChanging();
             ClearSelectedCommand.ClearSelected(ts);
-			if (!FastUndo) base.Undo();
+            if (!FastUndo) base.Undo();
         }
 
         /// <summary>
@@ -286,9 +286,9 @@ namespace FastColoredTextBoxNS
         public ReplaceTextCommand(TextSource ts, List<Range> ranges, string insertedText, bool fastUndo=false)
             : base(ts)
         {
-			FastUndo = fastUndo;
-			//sort ranges by place
-			ranges.Sort((r1, r2)=>
+            FastUndo = fastUndo;
+            //sort ranges by place
+            ranges.Sort((r1, r2)=>
                 {
                     if (r1.Start.iLine == r2.Start.iLine)
                         return r1.Start.iChar.CompareTo(r2.Start.iChar);
@@ -396,13 +396,13 @@ namespace FastColoredTextBoxNS
     {
         string deletedText;
 
-		/// <summary>
-		/// Construstor
-		/// </summary>
-		/// <param name="ts">Underlaying textbox</param>
-		public ClearSelectedCommand(TextSource ts, bool fastUndo=false): base(ts)
+        /// <summary>
+        /// Construstor
+        /// </summary>
+        /// <param name="ts">Underlaying textbox</param>
+        public ClearSelectedCommand(TextSource ts, bool fastUndo=false): base(ts)
         {
-			FastUndo = fastUndo;
+            FastUndo = fastUndo;
         }
 
         /// <summary>
@@ -413,7 +413,7 @@ namespace FastColoredTextBoxNS
             ts.CurrentTB.Selection.Start = new Place(sel.FromX, Math.Min(sel.Start.iLine, sel.End.iLine));
             if (!FastUndo) ts.OnTextChanging();
             InsertTextCommand.InsertText(deletedText, ts);
-			if (!FastUndo) ts.OnTextChanged(sel.Start.iLine, sel.End.iLine);
+            if (!FastUndo) ts.OnTextChanged(sel.Start.iLine, sel.End.iLine);
             ts.CurrentTB.Selection.Start = sel.Start;
             ts.CurrentTB.Selection.End   = sel.End;
         }
@@ -568,12 +568,12 @@ namespace FastColoredTextBoxNS
         List<int> iLines;
         List<string> prevText = new List<string>();
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="ts">Underlaying textbox</param>
-		/// <param name="iLines">List of line numbers for replace</param>
-		public RemoveLinesCommand(TextSource ts, List<int> iLines)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="ts">Underlaying textbox</param>
+        /// <param name="iLines">List of line numbers for replace</param>
+        public RemoveLinesCommand(TextSource ts, List<int> iLines)
             : base(ts)
         {
             //sort iLines

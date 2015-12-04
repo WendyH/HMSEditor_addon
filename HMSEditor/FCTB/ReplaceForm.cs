@@ -11,29 +11,29 @@ namespace FastColoredTextBoxNS
         FastColoredTextBox tb;
         bool firstSearch = true;
         Place startPlace;
-		ToolTip tooltip1 = new ToolTip();
-		ToolTip tooltip2 = new ToolTip();
-		ToolTip tooltip3 = new ToolTip();
-		string MBCaption = "HMS Editor - Поиск и замена";
+        ToolTip tooltip1 = new ToolTip();
+        ToolTip tooltip2 = new ToolTip();
+        ToolTip tooltip3 = new ToolTip();
+        string MBCaption = "HMS Editor - Поиск и замена";
 
-		public ReplaceForm(FastColoredTextBox tb)
+        public ReplaceForm(FastColoredTextBox tb)
         {
-			InitializeComponent();
-			this.tb = tb;
-			tooltip1.ToolTipIcon = ToolTipIcon.Info;
-			tooltip1.ToolTipTitle = "Регистрозависимый поиск";
+            InitializeComponent();
+            this.tb = tb;
+            tooltip1.ToolTipIcon = ToolTipIcon.Info;
+            tooltip1.ToolTipTitle = "Регистрозависимый поиск";
             tooltip1.SetToolTip(cbMatchCase, "Поиск будет осуществляться согласно указанному регистру символов");
 
-			tooltip2.ToolTipIcon = ToolTipIcon.Info;
-			tooltip2.ToolTipTitle = "Поиск отдельных слов";
-			tooltip2.SetToolTip(cbWholeWord, "Поиск указанного цельного отдельного слова.\nБудут найдены только слова, стоящие отдельно, не входящие в состав другого.");
+            tooltip2.ToolTipIcon = ToolTipIcon.Info;
+            tooltip2.ToolTipTitle = "Поиск отдельных слов";
+            tooltip2.SetToolTip(cbWholeWord, "Поиск указанного цельного отдельного слова.\nБудут найдены только слова, стоящие отдельно, не входящие в состав другого.");
 
-			tooltip3.ToolTipIcon = ToolTipIcon.Info;
-			tooltip3.ToolTipTitle = "Regex - регулярные выражения";
-			tooltip3.SetToolTip(cbRegex    , "Поиск по указанному регулярному вырежению.\nНапример: MyVar\\s*?=");
-		}
+            tooltip3.ToolTipIcon = ToolTipIcon.Info;
+            tooltip3.ToolTipTitle = "Regex - регулярные выражения";
+            tooltip3.SetToolTip(cbRegex    , "Поиск по указанному регулярному вырежению.\nНапример: MyVar\\s*?=");
+        }
 
-		private void btClose_Click(object sender, EventArgs e)
+        private void btClose_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -43,8 +43,8 @@ namespace FastColoredTextBoxNS
             try
             {
                 if (!Find(tbFind.Text))
-					MessageBox.Show("Указанный текст не найден: \n\n"+tbFind.Text, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-			} catch (Exception ex)
+                    MessageBox.Show("Указанный текст не найден: \n\n"+tbFind.Text, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            } catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -114,8 +114,8 @@ namespace FastColoredTextBoxNS
                 Hide();
         }
 
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
-		protected override bool ProcessCmdKey(ref Message msg, Keys keyData) // David
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) // David
         {
             if (keyData == Keys.Escape)
             {
@@ -200,27 +200,27 @@ namespace FastColoredTextBoxNS
             ResetSerach();
         }
 
-		private void ReplaceForm_Load(object sender, EventArgs e) {
+        private void ReplaceForm_Load(object sender, EventArgs e) {
 
-		}
+        }
 
-		/// <summary>
-		/// Преобразование падежей, в зависимости от числа. Например: WH.getNumText(nCount, new[] {"замена", "замены", "замен" }) 
-		/// </summary>
-		/// <param name="num">Число</param>
-		/// <param name="words">Массив трёх строк, разного склонения. Напр.: ["День", "Дня", "Дней"]</param>
-		/// <returns></returns>
-		public static string getNumText(int num, string[] words) {
-			int x = num % 100;
-			if (x > 20) x = x % 10;
-			if (x > 4) return words[2];
-			else
-				switch (x) {
-					case 1: return words[0];
-					case 0: return words[2];
-					default: return words[1];
-				}
-		}
+        /// <summary>
+        /// Преобразование падежей, в зависимости от числа. Например: WH.getNumText(nCount, new[] {"замена", "замены", "замен" }) 
+        /// </summary>
+        /// <param name="num">Число</param>
+        /// <param name="words">Массив трёх строк, разного склонения. Напр.: ["День", "Дня", "Дней"]</param>
+        /// <returns></returns>
+        public static string getNumText(int num, string[] words) {
+            int x = num % 100;
+            if (x > 20) x = x % 10;
+            if (x > 4) return words[2];
+            else
+                switch (x) {
+                    case 1: return words[0];
+                    case 0: return words[2];
+                    default: return words[1];
+                }
+        }
 
-	}
+    }
 }
