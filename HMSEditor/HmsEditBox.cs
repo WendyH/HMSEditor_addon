@@ -41,11 +41,15 @@ namespace HmsAddons {
         }
 
         public void OnRunningStateChange(bool val) {
-
         }
 
         public void HotKeysDialog() {
+        }
 
+        public void SaveSettings() {
+        }
+
+        public void RestorePosition() {
         }
 
     }

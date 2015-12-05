@@ -89,10 +89,10 @@ namespace HmsAddons {
     [ClassInterface(ClassInterfaceType.None)]
     [ComVisible(true)]
     public class HmsScriptEditor: IHmsScriptEditor, IDisposable {
-        private HMSEditor EditBox  = null;
-        private bool FirstSetPos = false;
+        private HMSEditor EditBox = null;
+        private bool  FirstSetPos = false;
 
-        protected virtual void Dispose(bool disposing) {
+        protected void Dispose(bool disposing) {
             if (disposing) {
                 if (EditBox != null && !EditBox.IsDisposed) EditBox.Dispose();
             }
@@ -215,7 +215,7 @@ namespace HmsAddons {
 
         public uint SetFocus() {
             if (EditBox != null) {
-                EditBox.Editor.Focus();
+                EditBox.Focus();
                 return HRESULT.S_OK;
             }
             return HRESULT.E_UNEXPECTED;

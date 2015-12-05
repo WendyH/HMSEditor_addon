@@ -11,6 +11,7 @@ using System.Security.Permissions;
 using System.Threading;
 using HmsAddons;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace HMSEditorNS {
     public sealed partial class HMSEditor: UserControl {
@@ -178,12 +179,26 @@ namespace HMSEditorNS {
             base.OnEnter(e);
         }
 
+        const int WM_GETTEXTLENGTH = 0x000E;
+        const int WM_GETTEXT       = 0x000D;
         const int WM_GETDLGCODE    = 0x0087;
         const int DLGC_WANTALLKEYS = 0x0004;
         const int DLGC_WANTTAB     = 0x0002;
         const int DLGC_WANTARROWS  = 0x0001;
         const int DLGC_HASSETSEL   = 0x0008;
         protected override void WndProc(ref Message m) {
+            if (m.Msg == WM_GETTEXTLENGTH) {
+                m.Result = new IntPtr(Text.Length);
+                return;
+            }
+            if (m.Msg == WM_GETTEXT) {
+                int size = Marshal.SizeOf(typeof(char)) * Text.Length;
+                int bytesToCopy = Math.Min(m.WParam.ToInt32(), size);
+                Marshal.Copy(System.Text.Encoding.UTF8.GetBytes(Text), 0, m.LParam, bytesToCopy);
+                //m.LParam = Marshal.StringToHGlobalAuto(EditBox.Text.Substring(0, charsToCopy));
+                m.Result = new IntPtr(bytesToCopy);
+                return;
+            }
             if (m.Msg == WM_GETDLGCODE) {
                 int result = m.Result.ToInt32();
                 result = result | DLGC_WANTALLKEYS | DLGC_WANTTAB | DLGC_WANTARROWS | DLGC_HASSETSEL;
@@ -192,6 +207,8 @@ namespace HMSEditorNS {
                 base.WndProc(ref m);
             }
         }
+
+        public int TextLength { get { return Text.Length; } }
 
         #region Fuctions and procedures
         public bool ToLock() {
