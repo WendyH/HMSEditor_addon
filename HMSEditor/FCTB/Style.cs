@@ -111,8 +111,9 @@ namespace FastColoredTextBoxNS
             List<PointF> pointList = new List<PointF>();
             for (int i = 0; i < charCount; i++) {
                 pointList.Add(new PointF(x1, y1));
-                pointList.Add(new PointF(x1 += linedx, y1 - linedy));
-                pointList.Add(new PointF(x1 += linedx, y1));
+                pointList.Add(new PointF(x1 + linedx, y1 - linedy));
+                pointList.Add(new PointF(x1 + linedx + linedx, y1));
+                x1 += charW;
             }
             gr.DrawLines(redPen, pointList.ToArray());
         }

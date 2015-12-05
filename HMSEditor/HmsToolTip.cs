@@ -23,8 +23,6 @@ namespace FastColoredTextBoxNS {
         private static Color colorText    = Color.Black;
         private static Color colorKeyword = Color.Blue;
         private static Color colorRed     = Color.OrangeRed;
-//        private static Color colorString  = Color.Brown;
-//        private static Color colorKeyword = Color.FromArgb(0x04396C);
         private static Color colorClass   = Color.FromArgb(0x2B91AF);
         private static Color colorHelp    = Color.FromArgb(0x247256);
         private static Color colorString  = Color.FromArgb(0xAA5C36);

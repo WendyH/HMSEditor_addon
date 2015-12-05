@@ -17,7 +17,7 @@ namespace FastColoredTextBoxNS {
         public int LineNo = 0;
         // By WendyH > -------------------------------
         public string FoldingStartMarker { get; set; }
-        public string FoldingEndMarker { get; set; }
+        public string FoldingEndMarker   { get; set; }
         /// <summary>
         /// Text of line was changed
         /// </summary>

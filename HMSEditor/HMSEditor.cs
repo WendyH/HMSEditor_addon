@@ -20,6 +20,7 @@ namespace HMSEditorNS {
         public  static HMSEditor ActiveEditor    = null;
         public  static bool      NeedRestart     = false;
         public  static string    NeedCopyNewFile = "";
+        public  static string    NeedCopyDllFile = "";
         public  static INI       Settings        = new INI(HMS.SettingsFile);
         private static bool      EnableMouseHelp = false;
 
@@ -87,7 +88,14 @@ namespace HMSEditorNS {
             InitializeComponent();
             Editor.LostFocus += Editor_LostFocus; // for hiding all tooltipds when lost focus
             ActiveEditor = this;                  // static field - current editor for static tasks
+            AutoCheckSyntaxTimer.Tick += AutoCheckSyntaxTimer_Tick;
+            AutoCheckSyntaxTimer.Interval = 800;
             SetAutoCompleteMenu();
+        }
+
+        private void AutoCheckSyntaxTimer_Tick(object sender, EventArgs e) {
+            AutoCheckSyntaxTimer.Stop();
+            AutoCheckSyntax();
         }
 
         // Fields
@@ -114,6 +122,8 @@ namespace HMSEditorNS {
         public AutocompleteItems Variables = new AutocompleteItems();
         public AutocompleteItems Functions = new AutocompleteItems();
 
+        private System.Windows.Forms.Timer AutoCheckSyntaxTimer = new System.Windows.Forms.Timer();
+        private System.Threading.Timer Timer = new System.Threading.Timer(MouseTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
         private System.Threading.Timer MouseTimer = new System.Threading.Timer(MouseTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
         public  Point       MouseLocation         = new Point();
         public  Style       InvisibleCharsStyle   = new InvisibleCharsRenderer(Pens.Gray);
@@ -122,7 +132,7 @@ namespace HMSEditorNS {
         public  MarkerStyle SameWordsStyle        = new MarkerStyle(new SolidBrush(Color.FromArgb(33, Color.Gray)));
         private DateTime    LastNavigatedDateTime = DateTime.Now;
 
-        private MatchEvaluator evaluatorSameLines  = new MatchEvaluator(MatchReturnEmptyLines);
+        private MatchEvaluator evaluatorSameLines = new MatchEvaluator(MatchReturnEmptyLines);
         public  AutocompleteMenu PopupMenu;
 
         private bool TextBoxFindChanged = false;
@@ -249,7 +259,7 @@ namespace HMSEditorNS {
 
         public void ShowFoldingLines(bool flag) {
             Editor.ShowFoldingLines = flag;
-            Editor.Invalidate();
+            Editor.Refresh();
         }
 
         public void Undo() {
@@ -447,6 +457,23 @@ namespace HMSEditorNS {
             Editor.ClearUndo();
         }
 
+        public void RestorePosition() {
+            if (btnStorePositions.Checked) {
+                uint thisHash = (uint)Text.GetHashCode();
+                string hash   = thisHash.ToString();
+                string hashes = Settings.Get("LastHash", DialogClass, "");
+                if (hashes == "") return;
+                Match match   = Regex.Match(hashes, hash + ":(\\d+)");
+                if (match.Success) {
+                    uint pos = 0;
+                    uint.TryParse(match.Groups[1].Value, out pos);
+                    Editor.SelectionStart = (int)pos;
+                    Editor.DoCaretVisible();
+                }
+            }
+            Editor.Focus();
+        }
+
         /// <summary>
         /// Apply settings from .ini file to the this objects
         /// </summary>
@@ -458,6 +485,7 @@ namespace HMSEditorNS {
             btnHighlightCurrentLine .Checked = Settings.Get("HighlightCurrentLine", section, btnHighlightCurrentLine .Checked);
             btnShowLineNumbers      .Checked = Settings.Get("ShowLineNumbers"     , section, btnShowLineNumbers      .Checked);
             btnShowFoldingLines     .Checked = Settings.Get("ShowFoldingLines"    , section, btnShowFoldingLines     .Checked);
+            btnShowFoldingIndicator .Checked = Settings.Get("ShowFoldingIndicator", section, btnShowFoldingIndicator .Checked);
             btnEnableFolding        .Checked = Settings.Get("EnableFoldings"      , section, btnEnableFolding        .Checked);
             btnAutoCheckSyntax      .Checked = Settings.Get("AutoCheckSyntax"     , section, btnAutoCheckSyntax      .Checked);
             btnHighlightSameWords   .Checked = Settings.Get("HighlightSameWords"  , section, btnHighlightSameWords   .Checked);
@@ -473,6 +501,7 @@ namespace HMSEditorNS {
             btnRedStringsHighlight  .Checked = Settings.Get("StringsHighlight"    , section, btnRedStringsHighlight  .Checked);
             btnToolStripMenuItemFONT.Checked = Settings.Get("AlternateFont"       , section, btnToolStripMenuItemFONT.Checked);
             btnVerticalLineText     .Checked = Settings.Get("VerticalLineText"    , section, btnVerticalLineText     .Checked);
+            btnStorePositions       .Checked = Settings.Get("StorePositions"      , section, btnStorePositions       .Checked);
 
             btnUnderlinePascalKeywords.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywords.Checked);
             Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
@@ -554,6 +583,7 @@ namespace HMSEditorNS {
                 Settings.Set("HighlightSameWords"  , btnHighlightSameWords   .Checked, section);
                 Settings.Set("IntelliSense"        , btnSetIntelliSense      .Checked, section);
                 Settings.Set("ShowFoldingLines"    , btnShowFoldingLines     .Checked, section);
+                Settings.Set("ShowFoldingIndicator", btnShowFoldingIndicator .Checked, section);
                 Settings.Set("EnableFoldings"      , btnEnableFolding        .Checked, section);
                 Settings.Set("AutoCheckSyntax"     , btnAutoCheckSyntax      .Checked, section);
                 Settings.Set("HighlightSameWords"  , btnHighlightSameWords   .Checked, section);
@@ -569,6 +599,7 @@ namespace HMSEditorNS {
                 Settings.Set("StringsHighlight"    , btnRedStringsHighlight  .Checked, section);
                 Settings.Set("AlternateFont"       , btnToolStripMenuItemFONT.Checked, section);
                 Settings.Set("VerticalLineText"    , btnVerticalLineText     .Checked, section);
+                Settings.Set("StorePositions"      , btnStorePositions       .Checked, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -576,7 +607,10 @@ namespace HMSEditorNS {
                 Settings.Set("Zoom"                , Editor.Zoom                     , section);
 
                 Settings.Set("UnderlinePascalKeywords", btnUnderlinePascalKeywords.Checked, section);
-
+                if (btnStorePositions.Checked) {
+                    uint lastHash = (uint)Text.GetHashCode();
+                    Settings.Set("LastHash", lastHash.ToString()+":"+Editor.SelectionStart.ToString(), section);
+                }
                 string hotkeys = GetHotKeysMapping();
                 if (hotkeys.Length > 0)
                     Settings.Set("Map", hotkeys, "Hotkeys");
@@ -795,15 +829,15 @@ namespace HMSEditorNS {
                     LastNavigatedDateTime = Editor[Editor.Selection.Start.iLine].LastVisit;
                 }
             }
-            if (btnHighlightSameWords.Checked) HighlightSameWords();
-            if (btnSetIntelliSense   .Checked) UpdateCurrentVisibleVariables();
+            //if (btnHighlightSameWords.Checked) HighlightSameWords();
+           // if (btnSetIntelliSense   .Checked) UpdateCurrentVisibleVariables();
         }
 
         private void Editor_TextChangedDelayed(object sender, TextChangedEventArgs e) {
             Locked = true;       // Say to other processes we is busy - don't tuch us!
             BuildFunctionList(); // Only when text changed - build the list of functions
             if ((EnableFunctionToolTip && CheckFunctionHelp) || Editor.ToolTip4Function.Visible) CheckPositionIsInParametersSequence();
-            if (btnAutoCheckSyntax.Checked) AutoCheckSyntax();
+            if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxTimer.Start();
             Locked = false;
         }
 
@@ -829,6 +863,7 @@ namespace HMSEditorNS {
         }
 
         private void Editor_TextChanged(object sender, TextChangedEventArgs e) {
+            AutoCheckSyntaxTimer.Stop();
             NeedRecalcVars = true;
         }
 
@@ -878,6 +913,11 @@ namespace HMSEditorNS {
 
         private void btnShowFoldingLines_Click(object sender, EventArgs e) {
             ShowFoldingLines(btnShowFoldingLines.Checked);
+        }
+
+        private void btnEnableFoldingIndicator_Click(object sender, EventArgs e) {
+            Editor.EnableFoldingIndicator = btnShowFoldingIndicator.Checked;
+            Editor.Invalidate();
         }
 
         private void btnUndo_Click(object sender, EventArgs e) {
@@ -1635,48 +1675,6 @@ namespace HMSEditorNS {
             PopupMenu.Items.AddFilteredItems    (HMS.ItemsVariable);
             PopupMenu.Items.AddAutocompleteItems(HMS.ItemsConstant);
             PopupMenu.Items.AddAutocompleteItems(HMS.ItemsClass   );
-            SetVisibleAutocompleteItems();
-        }
-
-
-        private static Regex regexScriptDescriptionFindItems = new Regex("<item[^>]+text=\"(.*?)\""    , RegexOptions.Compiled);
-        private static Regex regexScriptDescriptionFunctions = new Regex("<Functions>(.*?)</Functions>", RegexOptions.Compiled);
-        private static Regex regexScriptDescriptionClasses   = new Regex("<Classes>(.*?)</Classes>"    , RegexOptions.Compiled);
-        private static Regex regexScriptDescriptionTypes     = new Regex("<Types>(.*?)</Types>"        , RegexOptions.Compiled);
-        private static Regex regexScriptDescriptionVariables = new Regex("<Variables>(.*?)</Variables>", RegexOptions.Compiled);
-        private static Regex regexScriptDescriptionConstants = new Regex("<Constants>(.*?)</Constants>", RegexOptions.Compiled);
-        private static Regex regexFirstWord = new Regex(@"[\w-\d]+", RegexOptions.Compiled);
-        private void SetVisibleAutocompleteItems() {
-            //string xmlScriptDescr = GetScriptDescriptions();
-            string xmlScriptDescr = File.ReadAllText(@"D:\scrdescr.xml");
-
-            Match m; MatchCollection mc; string text, key; HMSItem item;
-
-            m = regexScriptDescriptionFunctions.Match(xmlScriptDescr);
-            if (m.Success) {
-                mc = regexScriptDescriptionFindItems.Matches(m.Value);
-                foreach (Match match in mc) {
-                    text = match.Groups[1].Value.Replace("Function", "").Replace("Procedure", "");
-                    key = regexFirstWord.Match(text).Value;
-                    item = HMS.ItemsFunction[key];
-                    //if (item.)
-
-                }
-            }
-
-
-            string textFunctions = regexScriptDescriptionFunctions.Match(xmlScriptDescr).Value;
-            string textClasses   = regexScriptDescriptionClasses  .Match(xmlScriptDescr).Value;
-            string textVariables = regexScriptDescriptionVariables.Match(xmlScriptDescr).Value;
-            string textConstants = regexScriptDescriptionConstants.Match(xmlScriptDescr).Value;
-
-            //foreach (var item in HMS.ItemsFunction) item.Enabled = Regex.IsMatch(item.MenuText, "text=\""+ item.MenuText);
-
-                
-
-
-
-
         }
 
         private void CreateInsertTemplateItems() {
@@ -1704,5 +1702,8 @@ namespace HMSEditorNS {
 
         } // end AddTemplateItemsRecursive
 
+        private void btnStorePositions_Click(object sender, EventArgs e) {
+
+        }
     }
 }

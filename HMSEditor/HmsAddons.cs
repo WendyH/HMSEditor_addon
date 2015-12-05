@@ -73,6 +73,16 @@ namespace HmsAddons {
         smHandleHTTPRequest        // Обработка HTTP-запросов
     }
 
+    // Для вызова из списка дополнений
+    [ComVisible(true), Guid("C5B24BFB-1F30-4F8A-91AD-943B82D8A067")]
+    public interface IHmsAddonTools {
+        uint Setup(IntPtr aParent, ref int aReload);
+        uint Update(ref int aFlags, ref object aResult);
+        /* Результатом (aResult) может быть ссылка на zip-файл обновления, загруженный zip-файл обновления, результат обновления.
+           Флаги (aFlags) будут определять тип результата (Out) или тип вызова (In) Update (например, проверить наличие новой версии без загрузки обновления).
+        */
+    }
+
     // Для получения списка классов и интерфейсов
     [ComVisible(true), Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A")]
     public interface IHmsAddonList {

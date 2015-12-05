@@ -948,7 +948,6 @@ namespace FastColoredTextBoxNS
         }
 
         public void AddAutocompleteItems(AutocompleteItems items) {
-            //foreach(var item in items) if (item.Enabled) sourceItems.Add(item);
             sourceItems.AddRange(items);
         }
 

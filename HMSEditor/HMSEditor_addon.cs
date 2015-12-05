@@ -5,6 +5,25 @@ using HMSEditorNS;
 
 namespace HmsAddons {
 
+    [Guid("29243ED1-7499-4015-BAF9-0001CA8781BC")]
+    [ClassInterface(ClassInterfaceType.None)]
+    [ComVisible(true)]
+    public class HmsAddonTools: IHmsAddonTools {
+        public uint Setup(IntPtr aParent, ref int aReload) {
+            AboutDialog about = new AboutDialog();
+            about.ShowDialog();
+            return HRESULT.S_OK;
+        }
+
+        public uint Update(ref int aFlags, ref object aResult) {
+            if (aFlags==0) {
+                aResult = HMSEditor.NeedCopyNewFile;
+                return HRESULT.S_OK;
+            }
+            return HRESULT.E_UNEXPECTED;
+        }
+    }
+
     [Guid("9A871DC9-D8ED-4790-A5AB-E1A825639F2B")]
     [ClassInterface(ClassInterfaceType.None)]
     [ComVisible(true)]
@@ -53,6 +72,7 @@ namespace HmsAddons {
         }
 
         public uint CanUnloadNow() {
+            AboutDialog.CopyNewFile();
             return HRESULT.S_OK;
         }
 
@@ -63,6 +83,7 @@ namespace HmsAddons {
     [ComVisible(true)]
     public class HmsScriptEditor: IHmsScriptEditor, IDisposable {
         private HMSEditor EditBox  = null;
+        private bool FirstSetPos = false;
 
         protected virtual void Dispose(bool disposing) {
             if (disposing) {
@@ -171,16 +192,23 @@ namespace HmsAddons {
             uint result = HRESULT.E_UNEXPECTED;
             if (EditBox != null) {
                 try {
-                    EditBox.SetCaretPos(aLine, aChar);
+                    if (FirstSetPos) {
+                        EditBox.RestorePosition();
+                    } else {
+                        EditBox.SetCaretPos(aLine, aChar);
+                    }
+                    
                     return HRESULT.S_OK;
-                } catch { }
+                } finally {
+                    FirstSetPos = false;
+                }
             }
             return result;
         }
 
         public uint SetFocus() {
             if (EditBox != null) {
-                EditBox.Focus();
+                EditBox.Editor.Focus();
                 return HRESULT.S_OK;
             }
             return HRESULT.E_UNEXPECTED;
@@ -203,6 +231,7 @@ namespace HmsAddons {
             if (EditBox != null) {
                 EditBox.Text     = (string)aText;
                 EditBox.Modified = false;
+                FirstSetPos = true;
                 return HRESULT.S_OK;
             }
             return HRESULT.E_UNEXPECTED;

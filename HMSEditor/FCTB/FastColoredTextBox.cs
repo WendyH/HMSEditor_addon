@@ -20,6 +20,7 @@
 // Uncomment following definition if you need 32 styles instead of 16:
 //
 // #define Styles32
+//#define debug
 
 using System;
 using System.Collections.Generic;
@@ -38,12 +39,14 @@ using System.Security.Permissions;
 using Microsoft.Win32;
 using Timer = System.Windows.Forms.Timer;
 using HMSEditorNS;
+using System.Diagnostics;
 
 namespace FastColoredTextBoxNS {
     /// <summary>
     /// Fast colored textbox
     /// </summary>
     public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
+        private Timer HighlightTimer = new Timer();
         public Regex       RegexStringAndComments = null;
         public HmsToolTip  ToolTip4Function = new HmsToolTip(); // By WendyH
         public bool        DebugMode        = false;
@@ -227,6 +230,14 @@ namespace FastColoredTextBoxNS {
             timer2.Tick += timer2_Tick;
             timer3.Tick += timer3_Tick;
             middleClickScrollingTimer.Tick += middleClickScrollingTimer_Tick;
+            HighlightTimer.Tick += HighlightTimer_Tick;
+            HighlightTimer.Interval = 1;
+        }
+
+        private void HighlightTimer_Tick(object sender, EventArgs e) {
+            HighlightTimer.Stop();
+            Timer timer = sender as Timer;
+            OnSyntaxHighlight((TextChangedEventArgs)timer.Tag);
         }
 
         private char[] autoCompleteBracketsList = { '(', ')', '{', '}', '[', ']', '"', '"', '\'', '\'' };
@@ -336,12 +347,13 @@ namespace FastColoredTextBoxNS {
         public Color BookmarkColor { get; set; }
 
         // By WendyH < ---------------------------------------
-        /// <summary>
-        /// Image of bookmarks. If not set - used BookmarkColor.
-        /// </summary>
         [Browsable(true)]
         [Description("Show folding markers.")]
         public bool ShowFoldingMarkers = true;
+
+        [Browsable(true)]
+        [Description("Show folding left indicator vertical line")]
+        public bool EnableFoldingIndicator = true;
 
         /// <summary>
         /// Image of bookmarks. If not set - used BookmarkColor.
@@ -4846,19 +4858,19 @@ namespace FastColoredTextBoxNS {
             //
             e.Graphics.SmoothingMode = SmoothingMode.None;
             //draw folding indicator
-            if ((startFoldingLine >= 0 || endFoldingLine >= 0) && Selection.Start == Selection.End)
-                if (endFoldingLine < LineInfos.Count) {
+            if (EnableFoldingIndicator) {
+                if ((startFoldingLine >= 0 || endFoldingLine >= 0) && (Selection.Start == Selection.End) && (endFoldingLine < LineInfos.Count)) {
                     //folding indicator
-                    int startFoldingY = (startFoldingLine >= 0 ? LineInfos[startFoldingLine].startY : 0) -
-                                        VerticalScroll.Value + CharHeight / 2;
-                    int endFoldingY = (endFoldingLine >= 0
-                                           ? LineInfos[endFoldingLine].startY +
-                                             (LineInfos[endFoldingLine].WordWrapStringsCount - 1) * CharHeight
-                                           : TextHeight + CharHeight) - VerticalScroll.Value + CharHeight;
+                    int startFoldingY = (startFoldingLine >= 0 ? LineInfos[startFoldingLine].startY : 0) - VerticalScroll.Value + 1;
+                    int endFoldingY   = (endFoldingLine >= 0
+                                            ? LineInfos[endFoldingLine].startY +
+                                                (LineInfos[endFoldingLine].WordWrapStringsCount - 1) * CharHeight
+                                            : TextHeight + CharHeight) - VerticalScroll.Value + CharHeight;
 
                     using (var indicatorPen = new Pen(Color.FromArgb(100, FoldingIndicatorColor), 4))
                         e.Graphics.DrawLine(indicatorPen, LeftIndent - 5, startFoldingY, LeftIndent - 5, endFoldingY);
                 }
+            }
             //draw hint's brackets
             PaintHintBrackets(e.Graphics);
             //draw markers
@@ -5633,6 +5645,7 @@ namespace FastColoredTextBoxNS {
         /// Fires TextChanged event
         /// </summary>
         private void OnTextChanged(TextChangedEventArgs args) {
+            HighlightTimer.Stop();
             //
             args.ChangedRange.Normalize();
             //
@@ -5674,8 +5687,9 @@ namespace FastColoredTextBoxNS {
             needRiseTextChangedDelayed = true;
             ResetTimer(timer2);
             //
-            OnSyntaxHighlight(args);
+            //OnSyntaxHighlight(args); // By WendyH
             //
+
             if (TextChanged != null)
                 TextChanged(this, args);
             //
@@ -5687,7 +5701,9 @@ namespace FastColoredTextBoxNS {
 #if debug
             Console.WriteLine("OnTextChanged: " + sw.ElapsedMilliseconds);
 #endif
-
+            HighlightTimer.Interval = (LinesCount > 220) ? 200 : 1;
+            HighlightTimer.Tag = args;
+            HighlightTimer.Start();
             OnVisibleRangeChanged();
         }
 
@@ -5735,10 +5751,10 @@ namespace FastColoredTextBoxNS {
                 return;
             //
             int prevStartFoldingLine = startFoldingLine;
-            int prevEndFoldingLine = endFoldingLine;
+            int prevEndFoldingLine   = endFoldingLine;
             //
             startFoldingLine = -1;
-            endFoldingLine = -1;
+            endFoldingLine   = -1;
             int counter = 0;
             for (int i = Selection.Start.iLine; i >= Math.Max(Selection.Start.iLine - maxLinesForFolding, 0); i--) {
                 bool hasStartMarker = lines.LineHasFoldingStartMarker(i);

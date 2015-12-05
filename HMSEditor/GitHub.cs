@@ -172,7 +172,7 @@ namespace HMSEditorNS {
                 var assets = releaseInfo.GetObject("assets");
                 foreach (var assetInfo in assets.ChildItems) {
                     string url = assetInfo["browser_download_url"];
-                    if ((ReleaseUrl.Length == 0) && url.EndsWith("HMSEditor.exe")) {
+                    if ((ReleaseUrl.Length == 0) && url.EndsWith("HMSEditor_addon.zip")) {
                         version    = releaseInfo["tag_name"];
                         ReleaseUrl = url;
                     }

@@ -812,8 +812,12 @@ namespace FastColoredTextBoxNS {
             foreach (var range in GetRanges(startFoldingPattern, options, true))
                 tb[range.Start.iLine].FoldingStartMarker = startFoldingPattern;
 
-            foreach (var range in GetRanges(finishFoldingPattern, options, true))
-                tb[range.Start.iLine].FoldingEndMarker = startFoldingPattern;
+            foreach (var range in GetRanges(finishFoldingPattern, options, true)) {
+                if (tb[range.Start.iLine].FoldingStartMarker == startFoldingPattern) // By WendyH
+                    tb[range.Start.iLine].FoldingStartMarker = null;
+                else
+                    tb[range.Start.iLine].FoldingEndMarker = startFoldingPattern;
+            }
             //
             tb.Invalidate();
         }

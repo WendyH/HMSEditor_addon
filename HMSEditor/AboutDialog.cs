@@ -18,15 +18,15 @@ namespace HMSEditorNS {
         private string UpdateInfo    = "";
         private string TemplatesInfo = "";
         private string TemplatesDate = "";
-        private string ExecutableDir = Path.GetDirectoryName(Application.ExecutablePath);
-        
-        private static bool DeniedClose = false;
+        private int ProgressProcent  = 0;
+        private static string ExecutableDir = Path.GetDirectoryName(Application.ExecutablePath);
+        private static bool   DeniedClose   = false;
 
         public AboutDialog() {
             ThisDialog = this;
             InitializeComponent();
             
-            tmpFileRelease  = HMS.DownloadDir + "HMSEditor.zip";
+            tmpFileRelease  = HMS.DownloadDir + "HMSEditor_addon.zip";
             tmpFileTemplate = HMS.DownloadDir + "HMSEditorTemplates.zip";
             
             this.Text = string.Format("О программе {0}", AssemblyTitle);
@@ -159,14 +159,19 @@ namespace HMSEditorNS {
             Process.Start(linkLabel1.Text);
         }
 
-        public void DrawProgress(int proc) {
+        protected override void OnPaintBackground(PaintEventArgs e) {
+            base.OnPaintBackground(e);
+            DrawProgress();
+        }
+
+        public void DrawProgress() {
             int penWidth = 4;
             System.Drawing.Pen      pen = new System.Drawing.Pen(System.Drawing.Color.Green, penWidth);
             System.Drawing.Graphics g   = CreateGraphics();
             int w = ClientSize.Width  - (penWidth / 2);
             int h = ClientSize.Height - (penWidth / 2); 
             int P = w * 2 + h * 2;
-            int L = P * proc / 100 ;
+            int L = P * ProgressProcent / 100 ;
             int DL1 = Math.Min(L, w / 2); L -= DL1;
             int DL2 = Math.Min(L, h);     L -= DL2;
             int DL3 = Math.Min(L, w);     L -= DL3;
@@ -183,40 +188,6 @@ namespace HMSEditorNS {
         }
 
         private void btnUpdate_Click(object sender, EventArgs e) {
-            if (HMSEditor.NeedRestart && AuthenticodeTools.IsTrusted(HMSEditor.NeedCopyNewFile)) {
-                string msg = "При перезапуске программы будет возвращён встроенный редактор.\n" +
-                             "После перезапуска, чтобы вернуться к данному альтернативному редактору, " +
-                             "достаточно закрыть окно и открыть редактирование скриптов заного. ";
-                MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                // waiting 3 sek, copy new file to our path and start our executable
-                string rargs = "/C ping 127.0.0.1 -n 3 && Copy /Y \"" + HMSEditor.NeedCopyNewFile + "\" \"" + Application.ExecutablePath + "\" &&  Del \"" + HMSEditor.NeedCopyNewFile + "\"";
-                ProcessStartInfo Info = new ProcessStartInfo();
-                Info.Arguments      = rargs;
-                Info.WindowStyle    = ProcessWindowStyle.Hidden;
-                Info.CreateNoWindow = true;
-                Info.FileName       = "cmd.exe";
-                if (!DirIsWriteable(ExecutableDir)) {
-                    msg = "HMSEditor находится в каталоге, где нужны привилегии для записи файлов.\n" +
-                          "Будет сделан запрос на ввод имени и пароля пользователя,\n" +
-                          "который данными привилегиями обладает.";
-                    MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    Info.Verb = "runas";
-                }
-                try {
-                    Process.Start(Info);
-                } catch (Exception ex) {
-                    msg = "Ошибка обновления программы.\n" +
-                          "Возможно, из-за нарушения прав доступа или по какой-то другой причине.\n" +
-                          "Автоматическое обновление не произошло.";
-                    MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                    HMS.LogError(ex.ToString());
-                    return;
-                }
-                TryDeleteFile(HMS.ErrorLogFile);
-                Application.Exit();
-                Close();
-                return;
-            }
             //progress.Show();
             Refresh();
             btnUpdateProgram.Text = "Идёт загрузка...";
@@ -228,7 +199,7 @@ namespace HMSEditorNS {
             GitHub.DownloadLatestReleaseAsync(tmpFileRelease);
         }
 
-        private bool DirIsWriteable(string dir) {
+        private static bool DirIsWriteable(string dir) {
             DirectoryInfo dirInfo = new DirectoryInfo(dir);
             AuthorizationRuleCollection rules;
             WindowsIdentity identity;
@@ -258,7 +229,7 @@ namespace HMSEditorNS {
             return isAllow;
         }
 
-        private void TryDeleteFile(string file) {
+        private static void TryDeleteFile(string file) {
             try {
                 if (File.Exists(file))
                     File.Delete(file);
@@ -267,12 +238,14 @@ namespace HMSEditorNS {
         }
 
         public void SetNeedRestart() {
-            labelNewVersion .Text    = "Требуется перезапуск программы";
+            labelNewVersion .Text    = "Требуется перезапуск дополнения";
             labelNewVersion .Visible = true;
             btnUpdateProgram.Text    = "Перезапустить";
-            btnUpdateProgram.Visible = true;
+            btnUpdateProgram.Visible = false;
             btnUpdateProgram  .Enabled = true;
             btnUpdateTemplates.Enabled = true;
+            ToolTip tip = new ToolTip();
+            tip.SetToolTip(labelNewVersion, "Для перезапуска необходимо зайти в список дополнений программы");
         }
 
         private void InstallNewFile() {
@@ -285,21 +258,28 @@ namespace HMSEditorNS {
             GitHub.RequestState state = sender as GitHub.RequestState;
             GitHub.DownloadFileCompleted   -= DownloadReleaseCallback;
             GitHub.DownloadProgressChanged -= DownloadProgressCallback;
+
             if (ThisDialog != null && ThisDialog.Visible) {
                 DeniedClose = true;
                 try {
                     ThisDialog.Invoke((MethodInvoker)delegate {
+                        ProgressProcent = 100;
+                        DrawProgress();
                         progress.Hide();
-                        if (!AuthenticodeTools.IsTrusted(tmpFileRelease)) {
+                        string tmpFile = HMS.DownloadDir + "HMSEditor.dll";
+                        HMS.ExtractZipTo(tmpFileRelease, HMS.DownloadDir, "HMSEditor.dll");
+
+                        if (!AuthenticodeTools.IsTrusted(tmpFile)) {
                             string msg = "У полученного файла не верная цифровая подпись. Обновление прервано.\n\n" +
                                          "Это может означать, что произошла подмена файла или автор забыл подписать файл. " +
                                          "Может быть временные проблемы с интернетом. В любом случае, можно попробовать " +
                                          "посетить пару мест, где знают о существовании данной программы и спросить там:\n" +
-                                         "https://homemediaserver.ru/forum\nhttps://hms.lostcut.net\nhttps://github.com/WendyH/HMSEditor/issues";
+                                         "https://homemediaserver.ru/forum\nhttps://hms.lostcut.net\nhttps://github.com/WendyH/HMSEditor_addon/issues";
                             MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
                             return;
                         }
                         InstallNewFile();
+                        HMSEditor.NeedCopyDllFile = tmpFile;
                     });
                 } finally {
                     DeniedClose = false;
@@ -317,8 +297,8 @@ namespace HMSEditorNS {
                             if (state.TotalBytes > 0) {
                                 progress.Maximum = (int)state.TotalBytes;
                                 progress.Value   = (int)state.BytesRead;
-                                int proc = (int)(state.BytesRead / (state.TotalBytes / 100));
-                                DrawProgress(proc);
+                                ProgressProcent = (int)(state.BytesRead / (state.TotalBytes / 100));
+                                DrawProgress();
                             }
                         });
                     } finally {
@@ -403,21 +383,32 @@ namespace HMSEditorNS {
             string msg;
             msg = "ВНИМАНИЕ!\n" +
                   "Программа, загруженные шаблоны, настройки и установленные темы будут УДАЛЕНЫ!\n" +
-                  "Вы уверены, что хотите удалить HMSEditor, а также папку и всё её содержимое: "+HMS.WorkingDir+"?";
+                  "Вы уверены, что хотите удалить папку и всё её содержимое: "+HMS.WorkingDir+"?";
             DialogResult answ = MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (answ == DialogResult.Yes) {
                 try {
                     Directory.Delete(HMS.WorkingDir, true);
                 } catch { }
+                TryDeleteFile(HMS.ErrorLogFile);
+                DeleteGarbage();
+            }
+        }
+
+        public static void CopyNewFile() {
+            if (HMSEditor.NeedCopyDllFile == "") return;
+            if (File.Exists(HMSEditor.NeedCopyDllFile)) {
+                string msg;
+                string addonDir  = ExecutableDir + "\\Addons\\";
+                string addonfile = addonDir + "HMSEditor.dll";
                 // waiting 3 sek, copy new file to our path and start our executable
-                string rargs = "/C ping 127.0.0.1 -n 3 && Del /F \"" + Application.ExecutablePath + "\"";
+                string rargs = "/C ping 127.0.0.1 -n 3 && Copy /Y \"" + HMSEditor.NeedCopyDllFile + "\" \"" + addonfile + "\" &&  Del \"" + HMSEditor.NeedCopyDllFile + "\"";
                 ProcessStartInfo Info = new ProcessStartInfo();
                 Info.Arguments = rargs;
                 Info.WindowStyle = ProcessWindowStyle.Hidden;
                 Info.CreateNoWindow = true;
                 Info.FileName = "cmd.exe";
-                if (!DirIsWriteable(ExecutableDir)) {
-                    msg = "Текущая программа находится в каталоге, где нужны привилегии для удаления файлов.\n" +
+                if (!DirIsWriteable(addonDir)) {
+                    msg = "Дополнение находится в каталоге, где нужны привилегии для записи файлов.\n" +
                           "Будет сделан запрос на ввод имени и пароля пользователя,\n" +
                           "который данными привилегиями обладает.";
                     MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -426,19 +417,16 @@ namespace HMSEditorNS {
                 try {
                     Process.Start(Info);
                 } catch (Exception ex) {
-                    msg = "Ошибка удаления программы.\n" +
+                    msg = "Ошибка обновления программы.\n" +
                           "Возможно, из-за нарушения прав доступа или по какой-то другой причине.\n" +
-                          "Автоматическое удаление исполняемого файла не произошло.";
+                          "Автоматическое обновление не произошло.";
                     MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     HMS.LogError(ex.ToString());
                     return;
                 }
                 TryDeleteFile(HMS.ErrorLogFile);
-                DeleteGarbage();
-                Application.Exit();
-                Close();
-                return;
             }
         }
+
     }
 }

@@ -13,9 +13,12 @@
             if (disposing && (components != null)) {
                 components.Dispose();
             }
-            MouseTimer.Dispose();
-            if (InvisibleCharsStyle!=null) InvisibleCharsStyle.Dispose();
-            if (SameWordsStyle != null) SameWordsStyle.Dispose();
+            if (disposing) {
+                AutoCheckSyntaxTimer.Dispose();
+                MouseTimer.Dispose();
+                if (InvisibleCharsStyle != null) InvisibleCharsStyle.Dispose();
+                if (SameWordsStyle != null) SameWordsStyle.Dispose();
+            }
             base.Dispose(disposing);
         }
 
@@ -83,10 +86,10 @@
             this.toolStripDropDownButtonSettings = new System.Windows.Forms.ToolStripDropDownButton();
             this.btnHighlightCurrentLine = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowLineNumbers = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnShowFoldingLines = new System.Windows.Forms.ToolStripMenuItem();
             this.btnInvisibleChars = new System.Windows.Forms.ToolStripMenuItem();
             this.btnVerticalLineText = new System.Windows.Forms.ToolStripMenuItem();
             this.btnEnableFolding = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnAutoCheckSyntax = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.btnHighlightSameWords = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSubMenuIntelliSense = new System.Windows.Forms.ToolStripMenuItem();
@@ -94,6 +97,8 @@
             this.btnMouseHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAutoIdent = new System.Windows.Forms.ToolStripMenuItem();
             this.btnMarkChangedLines = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnShowFoldingIndicator = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnShowFoldingLines = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAutoIdentChars = new System.Windows.Forms.ToolStripMenuItem();
             this.btnIntelliSenseFunctions = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAutoCompleteBrackets = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,8 +112,8 @@
             this.btnThemes = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnStorePositions = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
-            this.btnAutoCheckSyntax = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
@@ -143,7 +148,7 @@
             this.Editor.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);^\\s*(case|default)\\s*[^:]*(?<" +
     "range>:)\\s*(?<range>[^;]+);";
             this.Editor.AutoIndentExistingLines = false;
-            this.Editor.AutoScrollMinSize = new System.Drawing.Size(25, 15);
+            this.Editor.AutoScrollMinSize = new System.Drawing.Size(27, 15);
             this.Editor.BackBrush = null;
             this.Editor.BookmarkIcon = global::HMSEditorNS.Properties.Resources.togglebookmark;
             this.Editor.BreakpointIcon = global::HMSEditorNS.Properties.Resources.breakpoint_x16;
@@ -164,6 +169,7 @@
             this.Editor.IsReplaceMode = false;
             this.Editor.Language = FastColoredTextBoxNS.Language.PascalScript;
             this.Editor.LeftBracket = '(';
+            this.Editor.LeftPadding = 2;
             this.Editor.Location = new System.Drawing.Point(0, 25);
             this.Editor.Name = "Editor";
             this.Editor.Paddings = new System.Windows.Forms.Padding(0);
@@ -644,11 +650,11 @@
             this.toolStripDropDownButtonSettings.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.btnHighlightCurrentLine,
             this.btnShowLineNumbers,
-            this.btnShowFoldingLines,
             this.btnInvisibleChars,
             this.btnVerticalLineText,
             this.btnEnableFolding,
             this.btnAutoCheckSyntax,
+            this.btnStorePositions,
             this.toolStripSeparator12,
             this.btnHighlightSameWords,
             this.toolStripSubMenuIntelliSense,
@@ -679,23 +685,12 @@
             // 
             // btnShowLineNumbers
             // 
-            this.btnShowLineNumbers.Checked = true;
             this.btnShowLineNumbers.CheckOnClick = true;
-            this.btnShowLineNumbers.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnShowLineNumbers.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnShowLineNumbers.Name = "btnShowLineNumbers";
             this.btnShowLineNumbers.Size = new System.Drawing.Size(313, 22);
             this.btnShowLineNumbers.Text = "Показывать номера строк";
             this.btnShowLineNumbers.Click += new System.EventHandler(this.btnShowLineNumbers_Click);
-            // 
-            // btnShowFoldingLines
-            // 
-            this.btnShowFoldingLines.CheckOnClick = true;
-            this.btnShowFoldingLines.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnShowFoldingLines.Name = "btnShowFoldingLines";
-            this.btnShowFoldingLines.Size = new System.Drawing.Size(313, 22);
-            this.btnShowFoldingLines.Text = "Показывать линии действия блока";
-            this.btnShowFoldingLines.Click += new System.EventHandler(this.btnShowFoldingLines_Click);
             // 
             // btnInvisibleChars
             // 
@@ -725,6 +720,16 @@
             this.btnEnableFolding.ToolTipText = "Отображать элементы для возможности свернуть/развернуть участки кода";
             this.btnEnableFolding.Click += new System.EventHandler(this.btnEnableFolding_Click);
             // 
+            // btnAutoCheckSyntax
+            // 
+            this.btnAutoCheckSyntax.Checked = true;
+            this.btnAutoCheckSyntax.CheckOnClick = true;
+            this.btnAutoCheckSyntax.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnAutoCheckSyntax.Name = "btnAutoCheckSyntax";
+            this.btnAutoCheckSyntax.Size = new System.Drawing.Size(313, 22);
+            this.btnAutoCheckSyntax.Text = "Автоматическая проверка синтаксиса";
+            this.btnAutoCheckSyntax.Click += new System.EventHandler(this.btnAutoCheckSyntax_Click);
+            // 
             // toolStripSeparator12
             // 
             this.toolStripSeparator12.Name = "toolStripSeparator12";
@@ -748,6 +753,8 @@
             this.btnMouseHelp,
             this.btnAutoIdent,
             this.btnMarkChangedLines,
+            this.btnShowFoldingIndicator,
+            this.btnShowFoldingLines,
             this.btnAutoIdentChars,
             this.btnIntelliSenseFunctions,
             this.btnAutoCompleteBrackets,
@@ -797,6 +804,25 @@
             this.btnMarkChangedLines.Size = new System.Drawing.Size(428, 22);
             this.btnMarkChangedLines.Text = "Помечать изменённые строки";
             this.btnMarkChangedLines.Click += new System.EventHandler(this.btnMarkChangedLines_Click);
+            // 
+            // btnShowFoldingIndicator
+            // 
+            this.btnShowFoldingIndicator.Checked = true;
+            this.btnShowFoldingIndicator.CheckOnClick = true;
+            this.btnShowFoldingIndicator.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnShowFoldingIndicator.Name = "btnShowFoldingIndicator";
+            this.btnShowFoldingIndicator.Size = new System.Drawing.Size(428, 22);
+            this.btnShowFoldingIndicator.Text = "Отображать индикатор действия текущего блока";
+            this.btnShowFoldingIndicator.Click += new System.EventHandler(this.btnEnableFoldingIndicator_Click);
+            // 
+            // btnShowFoldingLines
+            // 
+            this.btnShowFoldingLines.CheckOnClick = true;
+            this.btnShowFoldingLines.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnShowFoldingLines.Name = "btnShowFoldingLines";
+            this.btnShowFoldingLines.Size = new System.Drawing.Size(428, 22);
+            this.btnShowFoldingLines.Text = "Показывать вертикальные пунктирные линии начала блока";
+            this.btnShowFoldingLines.Click += new System.EventHandler(this.btnShowFoldingLines_Click);
             // 
             // btnAutoIdentChars
             // 
@@ -903,6 +929,17 @@
             this.btnAbout.Text = "О программе";
             this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
+            // btnStorePositions
+            // 
+            this.btnStorePositions.Checked = true;
+            this.btnStorePositions.CheckOnClick = true;
+            this.btnStorePositions.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnStorePositions.Name = "btnStorePositions";
+            this.btnStorePositions.Size = new System.Drawing.Size(313, 22);
+            this.btnStorePositions.Text = "Запоминать последнюю позицию";
+            this.btnStorePositions.Visible = false;
+            this.btnStorePositions.Click += new System.EventHandler(this.btnStorePositions_Click);
+            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -920,16 +957,6 @@
             this.imageList1.Images.SetKeyName(10, "Constant_495.png");
             this.imageList1.Images.SetKeyName(11, "Event_594.png");
             this.imageList1.Images.SetKeyName(12, "Template_Application_16xLG.png");
-            // 
-            // btnAutoCheckSyntax
-            // 
-            this.btnAutoCheckSyntax.Checked = true;
-            this.btnAutoCheckSyntax.CheckOnClick = true;
-            this.btnAutoCheckSyntax.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.btnAutoCheckSyntax.Name = "btnAutoCheckSyntax";
-            this.btnAutoCheckSyntax.Size = new System.Drawing.Size(313, 22);
-            this.btnAutoCheckSyntax.Text = "Автоматическая проверка синтаксиса";
-            this.btnAutoCheckSyntax.Click += new System.EventHandler(this.btnAutoCheckSyntax_Click);
             // 
             // HMSEditor
             // 
@@ -1028,5 +1055,7 @@
         private System.Windows.Forms.ToolStripMenuItem btnContextMenuToolBar;
         private System.Windows.Forms.ToolStripMenuItem btnEnableFolding;
         private System.Windows.Forms.ToolStripMenuItem btnAutoCheckSyntax;
+        private System.Windows.Forms.ToolStripMenuItem btnShowFoldingIndicator;
+        private System.Windows.Forms.ToolStripMenuItem btnStorePositions;
     }
 }

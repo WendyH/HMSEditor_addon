@@ -133,6 +133,28 @@ namespace HMSEditorNS {
             } catch { }
         }
 
+        /// <summary>
+        /// Exctract file(s) from zip to specific path
+        /// </summary>
+        /// <param name="zipfile">Path existing to zip file</param>
+        /// <param name="path">Path exctact to</param>
+        /// <param name="criteria">Example: name = *.xml  and  mtime > 2009-01-15</param>
+        /// <returns></returns>
+        internal static bool ExtractZipTo(string zipfile, string path, string criteria = "*") {
+            bool success = false;
+            try {
+                if (File.Exists(zipfile)) {
+                    using (ZipFile zip = ZipFile.Read(zipfile)) {
+                        zip.ExtractSelectedEntries(criteria, null, path, ExtractExistingFileAction.OverwriteSilently);
+                    }
+                    success = true;
+                }
+            } catch (Exception e) {
+                HMS.LogError(e.ToString());
+            }
+            return success;
+        }
+
         internal static bool ExtractZip(string zipfile, bool excludeTopDir = false, bool deleteAfter = true) {
             bool success = false;
             try {
@@ -613,6 +635,18 @@ namespace HMSEditorNS {
                     , String.Empty
                 )
             );
+        }
+
+        private static void ThreadTaskSyntaxHighlight(TextChangedEventArgs args) {
+            if (HMSEditor.ActiveEditor!=null) {
+                HMSEditor.ActiveEditor.Editor.OnSyntaxHighlight(args);
+            }
+        }
+
+        private static Thread StartTheThreadSyntaxHighlight(TextChangedEventArgs args) {
+            var t = new Thread(() => ThreadTaskSyntaxHighlight(args));
+            t.Start();
+            return t;
         }
 
         /// <summary>
