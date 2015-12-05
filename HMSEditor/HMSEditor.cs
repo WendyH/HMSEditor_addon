@@ -106,6 +106,7 @@ namespace HMSEditorNS {
         private bool   NeedRecalcVars     = false;
         private bool   CheckFunctionHelp  = false;
         private string CurrentValidTypes  = ""; // Sets in CreateAutocomplete() procedure
+        private bool   IsFirstActivate    = true;
 
         public IHmsScriptFrame HmsScriptFrame = null;
         private HmsScriptMode  HmsScriptMode  = HmsScriptMode.smUnknown;
@@ -471,7 +472,6 @@ namespace HMSEditorNS {
                     Editor.DoCaretVisible();
                 }
             }
-            Editor.Focus();
         }
 
         /// <summary>
@@ -839,6 +839,10 @@ namespace HMSEditorNS {
             if ((EnableFunctionToolTip && CheckFunctionHelp) || Editor.ToolTip4Function.Visible) CheckPositionIsInParametersSequence();
             if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxTimer.Start();
             Locked = false;
+            if (IsFirstActivate) {
+                IsFirstActivate = false;
+                Editor.Focus();
+            }
         }
 
         private void AutoCheckSyntax() {

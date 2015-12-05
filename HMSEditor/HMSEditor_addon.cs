@@ -16,11 +16,14 @@ namespace HmsAddons {
         }
 
         public uint Update(ref int aFlags, ref object aResult) {
+            return HRESULT.E_NOTIMPL;
+            /*
             if (aFlags==0) {
                 aResult = HMSEditor.NeedCopyNewFile;
                 return HRESULT.S_OK;
             }
             return HRESULT.E_UNEXPECTED;
+            */
         }
     }
 
