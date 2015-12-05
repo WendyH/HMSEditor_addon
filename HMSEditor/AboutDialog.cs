@@ -6,6 +6,7 @@ using System.Threading;
 using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
+using System.Security.Permissions;
 
 namespace HMSEditorNS {
     partial class AboutDialog: Form {
@@ -394,6 +395,7 @@ namespace HMSEditorNS {
             }
         }
 
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public static void CopyNewFile() {
             if (HMSEditor.NeedCopyDllFile == "") return;
             if (File.Exists(HMSEditor.NeedCopyDllFile)) {

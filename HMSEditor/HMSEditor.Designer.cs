@@ -12,8 +12,6 @@
         protected override void Dispose(bool disposing) {
             if (disposing && (components != null)) {
                 components.Dispose();
-            }
-            if (disposing) {
                 AutoCheckSyntaxTimer.Dispose();
                 MouseTimer.Dispose();
                 if (InvisibleCharsStyle != null) InvisibleCharsStyle.Dispose();

@@ -6995,7 +6995,7 @@ window.status = ""#print"";
                 ToolTip.Dispose();
                 debugColor.Dispose();
                 middleClickScrollingTimer.Dispose();
-
+                ErrorStyle.Dispose();
                 if (findForm != null)
                     findForm.Dispose();
 

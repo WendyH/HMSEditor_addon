@@ -8,6 +8,7 @@ namespace HMSEditorNS {
     /// Класс для работы и отображения всплывающей подсказки при наведении курсора мыши на часть слова редакторе
     /// </summary>
     class MouseHelpTimer {
+        const int MaxValueLength = 2000;
         internal static Regex regexRemoveParams = new Regex(@"\(([^\)])*\)|\[([^\]])*\]|(//.*|\/\*[\s\S]*?\*\/)", RegexOptions.Compiled);
         internal static Regex regexNoNewLines   = new Regex(@"[^\n]", RegexOptions.Compiled);
 
@@ -45,8 +46,8 @@ namespace HMSEditorNS {
         public static void Task(HMSEditor ActiveHMSEditor) {
             if (ActiveHMSEditor.Locked) return;
             try {
-                var    Editor = ActiveHMSEditor.Editor;
-                Point  point  = ActiveHMSEditor.MouseLocation;
+                var    Editor  = ActiveHMSEditor.Editor;
+                Point  point   = ActiveHMSEditor.MouseLocation;
                 int iStartLine = ActiveHMSEditor.Editor.YtoLineIndex(0);
                 int CharHeight = ActiveHMSEditor.Editor.CharHeight;
                 int i = point.Y / CharHeight;
@@ -57,10 +58,15 @@ namespace HMSEditorNS {
                 string value  = "";
                 bool evalSelection = false;
                 if (Editor.DebugMode && (Editor.SelectedText.Length > 2)) {
-                    Place selStart = Editor.Selection.Start;
-                    Place selEnd   = Editor.Selection.End;
+                    int posStart = Editor.PlaceToPosition(Editor.Selection.Start);
+                    int posEnd   = Editor.PlaceToPosition(Editor.Selection.End  );
+                    int posCur   = Editor.PlaceToPosition(place);
                     // Если указатель мыши в области виделения, то будем вычислять выдиление
-                    evalSelection  = (selStart.iLine == iLine) && (selStart.iChar >= place.iChar) && (selEnd.iChar <= place.iChar);
+                    if (posStart < posEnd) {
+                        evalSelection = ((posCur >= posStart) && (posCur <= posEnd));
+                    } else {
+                        evalSelection = ((posCur >= posEnd) && (posCur <= posStart));
+                    }
                 }
                 HMSItem item = null; string text = "";
                 Range r = new Range(Editor, place, place);
@@ -101,6 +107,7 @@ namespace HMSEditorNS {
                         // Внедряемся в поток - показываем вплывающее окно со значением
                         Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
                             value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
+                            if (value.Length > MaxValueLength) value = value.Substring(0, MaxValueLength) +"...";
                             ActiveHMSEditor.ValueHint.ShowValue(Editor, value, point);
                         });
                         return;

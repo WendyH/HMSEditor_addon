@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
 using System.Windows.Forms;
 using HMSEditorNS;
 
@@ -9,12 +10,14 @@ namespace HmsAddons {
     [ClassInterface(ClassInterfaceType.None)]
     [ComVisible(true)]
     public class HmsAddonTools: IHmsAddonTools {
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public uint Setup(IntPtr aParent, ref int aReload) {
             AboutDialog about = new AboutDialog();
             about.ShowDialog();
             return HRESULT.S_OK;
         }
 
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public uint Update(ref int aFlags, ref object aResult) {
             return HRESULT.E_NOTIMPL;
             /*
@@ -74,6 +77,7 @@ namespace HmsAddons {
             return result;
         }
 
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public uint CanUnloadNow() {
             AboutDialog.CopyNewFile();
             return HRESULT.S_OK;

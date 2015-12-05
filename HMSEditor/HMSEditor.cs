@@ -124,7 +124,6 @@ namespace HMSEditorNS {
         public AutocompleteItems Functions = new AutocompleteItems();
 
         private System.Windows.Forms.Timer AutoCheckSyntaxTimer = new System.Windows.Forms.Timer();
-        private System.Threading.Timer Timer = new System.Threading.Timer(MouseTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
         private System.Threading.Timer MouseTimer = new System.Threading.Timer(MouseTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
         public  Point       MouseLocation         = new Point();
         public  Style       InvisibleCharsStyle   = new InvisibleCharsRenderer(Pens.Gray);
@@ -208,11 +207,11 @@ namespace HMSEditorNS {
         }
 
         private void Editor_LostFocus(object sender, EventArgs e) {
-            HideAllToolTipsAndHints();
+            //HideAllToolTipsAndHints();
         }
 
         private void HideAllToolTipsAndHints() {
-            HideToolTip4Function(true);
+            if (!PopupMenu.Visible) HideToolTip4Function(true);
             if (Editor.ToolTip != null) Editor.ToolTip.Hide(Editor);
         }
 
@@ -789,7 +788,9 @@ namespace HMSEditorNS {
             if      (e.KeyCode == Keys.F11   ) tsMain.Visible = !tsMain.Visible;
             else if (e.KeyCode == Keys.F12   ) GotoDefinition();
             else if (e.KeyCode == Keys.F2    ) RenameVariable();
-            else if (e.KeyCode == Keys.Escape) HideAllToolTipsAndHints();
+            else if (e.KeyCode == Keys.Escape) {
+                    HideAllToolTipsAndHints();
+            }
             else if (e.Alt) {
                 if      (e.KeyCode == Keys.D1) Editor.SetBookmarkByName(Editor.Selection.Start.iLine, "1");
                 else if (e.KeyCode == Keys.D2) Editor.SetBookmarkByName(Editor.Selection.Start.iLine, "2");
@@ -829,8 +830,8 @@ namespace HMSEditorNS {
                     LastNavigatedDateTime = Editor[Editor.Selection.Start.iLine].LastVisit;
                 }
             }
-            //if (btnHighlightSameWords.Checked) HighlightSameWords();
-           // if (btnSetIntelliSense   .Checked) UpdateCurrentVisibleVariables();
+            if (btnHighlightSameWords.Checked) HighlightSameWords();
+            if (btnSetIntelliSense   .Checked) UpdateCurrentVisibleVariables();
         }
 
         private void Editor_TextChangedDelayed(object sender, TextChangedEventArgs e) {

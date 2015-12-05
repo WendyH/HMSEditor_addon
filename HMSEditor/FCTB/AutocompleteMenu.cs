@@ -111,7 +111,7 @@ namespace FastColoredTextBoxNS
 
         public new void Close()
         {
-            listView.toolTip.Hide(listView);
+            listView.ToolTip.Hide(listView);
             base.Close();
         }
 
@@ -193,8 +193,8 @@ namespace FastColoredTextBoxNS
         /// </summary>
         public HmsToolTip ToolTip
         {
-            get { return Items.toolTip; }
-            set { Items.toolTip = value; }
+            get { return Items.ToolTip; }
+            set { Items.ToolTip = value; }
         }
 
         private void InitializeComponent() {
@@ -240,15 +240,15 @@ namespace FastColoredTextBoxNS
         AutocompleteMenu Menu { get { return Parent as AutocompleteMenu; } }
         int oldItemCount = 0;
         FastColoredTextBox tb;
-        internal HmsToolTip toolTip = new HmsToolTip();
+        public HmsToolTip ToolTip = new HmsToolTip();
 
         Timer timer = new System.Windows.Forms.Timer();
 
         // < By WendyH -----------------------------------
         protected override void Dispose(bool disposing) {
             if (disposing) {
-                if (toolTip != null)
-                    toolTip.Dispose();
+                if (ToolTip != null)
+                    ToolTip.Dispose();
                 if (timer != null)
                     timer.Dispose();
             }
@@ -259,7 +259,7 @@ namespace FastColoredTextBoxNS
             VisibleLocalVars = null;
             VisibleFunctions = null;
             tb      = null;
-            toolTip = null;
+            ToolTip = null;
             timer   = null;
             base.Dispose(disposing);
         }
@@ -304,7 +304,7 @@ namespace FastColoredTextBoxNS
             visibleItems    = new AutocompleteItems();
             VerticalScroll.SmallChange = ItemHeight;
             MaximumSize     = new Size(Size.Width, 180);
-            toolTip.ShowAlways = false;
+            ToolTip.ShowAlways = false;
             AppearInterval  = 250;
             timer.Tick     += new EventHandler(timer_Tick);
             SelectedColor   = Color.Orange;
@@ -859,7 +859,10 @@ namespace FastColoredTextBoxNS
                     OnSelecting();
                     return true;
                 case Keys.Escape:
-                    Menu.Close();
+                    if (ToolTip.Visible)
+                        ToolTip.Hide(this);
+                    else
+                        Menu.Close();
                     return true;
             }
 
@@ -898,10 +901,10 @@ namespace FastColoredTextBoxNS
         {
             if (IsDisposed) return;
             IWin32Window window = this.Parent ?? this;
-            toolTip.Hide(window);
+            ToolTip.Hide(window);
             if (string.IsNullOrEmpty(autocompleteItem.ToolTipTitle)) return;        // By WendyH
-            toolTip.Help         = autocompleteItem.Help;
-            toolTip.ToolTipTitle = autocompleteItem.ToolTipTitle;
+            ToolTip.Help         = autocompleteItem.Help;
+            ToolTip.ToolTipTitle = autocompleteItem.ToolTipTitle;
             string text          = autocompleteItem.ToolTipText;
 
             Point location = new Point((window == this ? Width : Right) + 3, 0);
@@ -912,9 +915,9 @@ namespace FastColoredTextBoxNS
             location.Y = y;
 
             if (text.Length > 0)
-                toolTip.Show(text, window, location.X, location.Y, ToolTipDuration);
+                ToolTip.Show(text, window, location.X, location.Y, ToolTipDuration);
             else
-                toolTip.Show(" ", window, location.X, location.Y, ToolTipDuration);
+                ToolTip.Show(" ", window, location.X, location.Y, ToolTipDuration);
 
         }
 
