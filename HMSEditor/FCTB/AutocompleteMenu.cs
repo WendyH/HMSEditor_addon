@@ -17,10 +17,10 @@ namespace FastColoredTextBoxNS
     public class AutocompleteMenu : ToolStripDropDown
     {
         // < By WendyH -------------------------------
-        public  string[]  lastwords = new string[20];
+        public  string[]  lastwords     = new string[20];
         public  bool      OnlyCtrlSpace = false;
         public  bool      AfterComplete = false;
-        public  string    Filter    = "";
+        public  string    Filter        = "";
         // > By WendyH -------------------------------
 
         private AutocompleteListView listView;
@@ -594,13 +594,6 @@ namespace FastColoredTextBoxNS
 
         void tb_SelectionChanged(object sender, EventArgs e)
         {
-            /*
-            FastColoredTextBox tb = sender as FastColoredTextBox;
-            
-            if (Math.Abs(prevSelection.iChar - tb.Selection.Start.iChar) > 1 ||
-                        prevSelection.iLine != tb.Selection.Start.iLine)
-                Menu.Close();
-            prevSelection = tb.Selection.Start;*/
             if (Menu.Visible)
             {
                 bool needClose = false;
@@ -803,11 +796,11 @@ namespace FastColoredTextBoxNS
             if (tb.Selection.ColumnSelectionMode)
             {
                 var start = tb.Selection.Start;
-                var end = tb.Selection.End;
+                var end   = tb.Selection.End;
                 start.iChar = fragment.Start.iChar;
-                end.iChar = fragment.End.iChar;
+                end  .iChar = fragment.End  .iChar;
                 tb.Selection.Start = start;
-                tb.Selection.End = end;
+                tb.Selection.End   = end;
             }
             else
             {
@@ -903,6 +896,7 @@ namespace FastColoredTextBoxNS
             IWin32Window window = this.Parent ?? this;
             ToolTip.Hide(window);
             if (string.IsNullOrEmpty(autocompleteItem.ToolTipTitle)) return;        // By WendyH
+            ToolTip.ParentRect   = new Rectangle(Location.X, Location.Y, Width, Height);
             ToolTip.Help         = autocompleteItem.Help;
             ToolTip.ToolTipTitle = autocompleteItem.ToolTipTitle;
             string text          = autocompleteItem.ToolTipText;
@@ -913,7 +907,6 @@ namespace FastColoredTextBoxNS
             if (y < 0) y = 0;
             if (y > ClientSize.Height - ItemHeight) y = ClientSize.Height - ItemHeight;
             location.Y = y;
-
             if (text.Length > 0)
                 ToolTip.Show(text, window, location.X, location.Y, ToolTipDuration);
             else

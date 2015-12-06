@@ -37,6 +37,7 @@ namespace FastColoredTextBoxNS {
         public Rectangle Bounds  = new Rectangle();
         public int       iLine   = 0;
         public bool      Visible = false;
+        public Rectangle ParentRect = new Rectangle();
 
         public string Value {
             get { return _value; }
@@ -73,14 +74,33 @@ namespace FastColoredTextBoxNS {
             Visible = false;
         }
 
+        public new void Show(string text, IWin32Window win, int x, int y, int duration) {
+            // Если указан прямоугольник родителя (меню подсказок), то проверяем не перекрываем ли мы его.
+            // Отодвигаем вверх, если перекрываем по ширине.
+            if (ParentRect.Width > 0) {
+                Control ctrl = win as Control;
+                Size size = CalcSize(text);
+                Rectangle tipRect = ctrl.RectangleToScreen(new Rectangle(x, y, size.Width, size.Height));
+                Rectangle scrRect = Screen.FromHandle(win.Handle).Bounds;
+                if ((tipRect.X + tipRect.Width) > scrRect.Width) {
+                    x = ParentRect.X - tipRect.Width;
+                }
+            }
+            base.Show(text, win, x , y, duration);
+        }
+
         private void OnPopup(object sender, PopupEventArgs e) // use this event to set the size of the tool tip
         {
+            e.ToolTipSize = CalcSize(GetToolTip(e.AssociatedControl));
+        }
+
+        private Size CalcSize(string toolTipText) {
             float heightCorrection = 0;
-            string text  = GetText(GetToolTip(e.AssociatedControl), out heightCorrection);
+            string text  = GetText(toolTipText, out heightCorrection);
             Size   size  = TextRenderer.MeasureText(text, FontTextBold, MaxSize, TextFormatFlags.WordBreak);
             size.Width  += Margin.Width  * 2;
             size.Height += Margin.Height * 2 + (int)heightCorrection;
-            e.ToolTipSize = size;
+            return size;
         }
 
         private string GetText(string tooltipText, out float heightCorrection) {
@@ -103,6 +123,7 @@ namespace FastColoredTextBoxNS {
             HmsToolTip        tip = sender as HmsToolTip;
             Graphics            g = e.Graphics;
             LinearGradientBrush b = new LinearGradientBrush(Bounds, Color.White, Color.FromArgb(0xE4, 0xE5, 0xF0), 90f);
+
             g.FillRectangle(b, Bounds);
             e.DrawBorder();
             g.SmoothingMode = SmoothingMode.HighQuality;
