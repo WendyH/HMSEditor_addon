@@ -83,7 +83,7 @@ namespace FastColoredTextBoxNS {
                 Rectangle tipRect = ctrl.RectangleToScreen(new Rectangle(x, y, size.Width, size.Height));
                 Rectangle scrRect = Screen.FromHandle(win.Handle).Bounds;
                 if ((tipRect.X + tipRect.Width) > scrRect.Width) {
-                    x = ParentRect.X - tipRect.Width;
+                    x = ParentRect.X - tipRect.Width - 2;
                 }
             }
             base.Show(text, win, x , y, duration);
