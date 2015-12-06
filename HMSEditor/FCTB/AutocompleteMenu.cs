@@ -309,7 +309,7 @@ namespace FastColoredTextBoxNS
             timer.Tick     += new EventHandler(timer_Tick);
             SelectedColor   = Color.Orange;
             HoveredColor    = Color.Red;
-            ToolTipDuration = 10000;
+            ToolTipDuration = 30000;
             this.tb = tb;
 
             tb.KeyDown          += new KeyEventHandler(tb_KeyDown);
@@ -340,9 +340,11 @@ namespace FastColoredTextBoxNS
             if (Menu.OnlyCtrlSpace) return; // By WendyH
             bool backspaceORdel = e.KeyChar == '\b' || e.KeyChar == 0xff;
 
-            /*
-            if (backspaceORdel)
-                prevSelection = tb.Selection.Start;*/
+            
+            if (backspaceORdel && !Menu.Visible) {
+                timer.Stop();
+                return;
+            }
 
             if (Menu.Visible && !backspaceORdel)
                 DoAutocomplete(false);
@@ -786,7 +788,7 @@ namespace FastColoredTextBoxNS
                 Range fwords = fragment.GetFragmentLookedLeft();
                 var f = new Range(tb, new Place(0, iLine), new Place(fwords.Start.iChar, iLine));
                 string line = f.Text.Trim();
-                if (line.Length == 0) newText += (tb.Language == Language.PascalScript) ? " := " : " = ";
+                if ((line.Length == 0) && (tb.Lines[iLine].IndexOf('=')<0)) newText += (tb.Language == Language.PascalScript) ? " := " : " = ";
             }
 
             // > By WendyH ---------------------------
@@ -893,25 +895,20 @@ namespace FastColoredTextBoxNS
         private void SetToolTip(HMSItem autocompleteItem)
         {
             if (IsDisposed) return;
-            IWin32Window window = this.Parent ?? this;
-            ToolTip.Hide(window);
-            if (string.IsNullOrEmpty(autocompleteItem.ToolTipTitle)) return;        // By WendyH
+            if (ToolTip.Visible && ToolTip.HmsItem == autocompleteItem) return;
+            IWin32Window window = this.Parent;
+            // By WendyH
+            if (string.IsNullOrEmpty(autocompleteItem.ToolTipTitle)) {
+                ToolTip.Hide(window);
+                return;        
+            }
             ToolTip.ParentRect   = new Rectangle(Location.X, Location.Y, Width, Height);
-            ToolTip.Help         = autocompleteItem.Help;
-            ToolTip.ToolTipTitle = autocompleteItem.ToolTipTitle;
-            string text          = autocompleteItem.ToolTipText;
-
             Point location = new Point((window == this ? Width : Right) + 3, 0);
-
             int y = FocussedItemIndex * ItemHeight - VerticalScroll.Value; // By WendyH
             if (y < 0) y = 0;
             if (y > ClientSize.Height - ItemHeight) y = ClientSize.Height - ItemHeight;
             location.Y = y;
-            if (text.Length > 0)
-                ToolTip.Show(text, window, location.X, location.Y, ToolTipDuration);
-            else
-                ToolTip.Show(" ", window, location.X, location.Y, ToolTipDuration);
-
+            ToolTip.Show(autocompleteItem, window, location, ToolTipDuration);
         }
 
         public int Count

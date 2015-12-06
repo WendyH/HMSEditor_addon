@@ -1,24 +1,25 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Drawing;
 using System.Drawing.Design;
 using System.Globalization;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 using KEYS = System.Windows.Forms.Keys;
 
+    namespace System.Runtime.CompilerServices {
+        [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Class | AttributeTargets.Method)]
+        public sealed class ExtensionAttribute: Attribute { }
+    }
+
 namespace FastColoredTextBoxNS
 {
     /// <summary>
     /// Dictionary of shortcuts for FCTB
     /// </summary>
-    public class HotkeysMapping : SortedDictionary<Keys, FCTBAction>
+    public class HotkeysMapping : SortedDictionary<KEYS, FCTBAction>
     {
         public virtual void InitDefault()
         {
@@ -38,7 +39,7 @@ namespace FastColoredTextBoxNS
             this[KEYS.Control | KEYS.V       ] = FCTBAction.Paste;
             this[KEYS.Control | KEYS.A       ] = FCTBAction.SelectAll;
             this[KEYS.Control | KEYS.Z       ] = FCTBAction.Undo;
-            this[KEYS.Control | KEYS.R       ] = FCTBAction.Redo;
+            this[KEYS.Control | KEYS.Z       | KEYS.Shift] = FCTBAction.Redo;
             this[KEYS.Control | KEYS.U       ] = FCTBAction.UpperCase;
             this[KEYS.Shift   | KEYS.Control | KEYS.U] = FCTBAction.LowerCase;
             this[KEYS.Control | KEYS.OemMinus] = FCTBAction.NavigateBackward;
@@ -134,6 +135,12 @@ namespace FastColoredTextBoxNS
             Thread.CurrentThread.CurrentUICulture = cult;
 
             return result;
+        }
+    }
+
+    public static class EnumExtensions {
+        public static string ToFriendlyString(this Enum code) {
+            return Enum.GetName(code.GetType(), code);
         }
     }
 

@@ -169,9 +169,7 @@
     </Compile>
     <Compile Include="FCTB\Hints.cs" />
     <Compile Include="FCTB\Hotkeys.cs" />
-    <Compile Include="FCTB\HotkeysEditorForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FCTB\HotkeysEditorForm.cs" />
     <Compile Include="FCTB\HotkeysEditorForm.Designer.cs">
       <DependentUpon>HotkeysEditorForm.cs</DependentUpon>
     </Compile>

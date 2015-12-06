@@ -9,6 +9,9 @@ using HMSEditorNS;
 
 namespace FastColoredTextBoxNS
 {
+    public class myCombo: DataGridViewComboBoxColumn {
+    }
+
     public partial class HotkeysEditorForm : Form
     {
         BindingList<HotkeyWrapper> wrappers = new BindingList<HotkeyWrapper>();
@@ -223,7 +226,7 @@ namespace FastColoredTextBoxNS
             }
         }
 
-        public Keys Key { get; set; }
+        public Keys       Key    { get; set; }
         public FCTBAction Action { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Windows.Forms;
 using HMSEditorNS;
+using NativeMethods = HMSEditorNS.NativeMethods;
 
 namespace HmsAddons {
 
@@ -107,6 +108,16 @@ namespace HmsAddons {
             Dispose(true);
         }
 
+        public void LoadSettings() {
+            if (EditBox!=null)
+                EditBox.LoadSettings();
+        }
+
+        public void SaveSettings() {
+            if (EditBox != null)
+                EditBox.SaveSettings();
+        }
+
         public uint AddMessage(ref object aMessage) {
             return HRESULT.E_NOTIMPL;
         }
@@ -115,7 +126,7 @@ namespace HmsAddons {
             try {
                 EditBox = new HMSEditor(aScriptFrame, aScriptMode);
                 NativeMethods.SetParent(EditBox.Handle, aParent);
-                EditBox.LoadSettings();
+                LoadSettings();
                 aEditor = EditBox.Handle;
 
             } catch {

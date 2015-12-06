@@ -86,6 +86,10 @@ namespace test {
                             EditorHandle = (IntPtr)parameters2[3];
 
                             Form1_Resize(null, EventArgs.Empty);
+
+                            MethodInfo methodLoadSettings = typeScriptEditor.GetMethod("LoadSettings");
+                            methodLoadSettings.Invoke(objScriptEditor, new object[] {});
+
                             string file = @"D:\tesst2.cpp";
                             if (System.IO.File.Exists(file)) {
                                 string text = System.IO.File.ReadAllText(file);
@@ -129,6 +133,11 @@ namespace test {
                 MethodInfo method = typeScriptEditor.GetMethod("Setup");
                 method.Invoke(objScriptEditor, new object[] {});
             }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
+            MethodInfo methodSaveSettings = typeScriptEditor.GetMethod("SaveSettings");
+            methodSaveSettings.Invoke(objScriptEditor, new object[] { });
         }
     }
 }

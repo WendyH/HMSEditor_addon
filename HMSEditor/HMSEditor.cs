@@ -73,9 +73,11 @@ namespace HMSEditorNS {
         private string RemoveLinebeaks(string text) { return regexLineBreaks.Replace(text, ""); }
 
         public static void MouseTimer_Task(object StateObj) {
-            if (!EnableMouseHelp) return;
             if (ActiveEditor != null) {
-                MouseHelpTimer.Task(ActiveEditor);
+                if (ActiveEditor.PopupMenu.Visible || ActiveEditor.Editor.ToolTip4Function.Visible) return;
+                if (EnableMouseHelp || (ActiveEditor.EnableEvaluateByMouse && ActiveEditor.DebugMode)) {
+                    MouseHelpTimer.Task(ActiveEditor);
+                }
             }
         }
         #endregion Static
@@ -104,8 +106,8 @@ namespace HMSEditorNS {
         private string ThemeName          = "";
         public  string Filename           = HMS.TemplatesDir; // last opened or saved file 
         public  int    LastPtocedureIndex = -1;
+        public  bool   WasCommaOrBracket  = false;
         private bool   NeedRecalcVars     = false;
-        private bool   CheckFunctionHelp  = false;
         private string CurrentValidTypes  = ""; // Sets in CreateAutocomplete() procedure
         private bool   IsFirstActivate    = true;
 
@@ -224,7 +226,7 @@ namespace HMSEditorNS {
         }
 
         private void Editor_LostFocus(object sender, EventArgs e) {
-            //HideAllToolTipsAndHints();
+            if (!PopupMenu.Visible) HideToolTip4Function(true);
         }
 
         private void HideAllToolTipsAndHints() {
@@ -560,6 +562,7 @@ namespace HMSEditorNS {
             btnMouseHelp_Click       (null, EventArgs.Empty);
             btnVerticalLineText_Click(null, EventArgs.Empty);
 
+            Editor.HotkeysMapping.InitDefault(); 
             string hotkeys = Settings.Get("Map", "Hotkeys", "");
             if (hotkeys.Length > 0) {
                 HotkeysMapping ourMap = HotkeysMapping.Parse(hotkeys);
@@ -628,8 +631,7 @@ namespace HMSEditorNS {
                     Settings.Set("LastHash", lastHash.ToString()+":"+Editor.SelectionStart.ToString(), section);
                 }
                 string hotkeys = GetHotKeysMapping();
-                if (hotkeys.Length > 0)
-                    Settings.Set("Map", hotkeys, "Hotkeys");
+                Settings.Set("Map", hotkeys, "Hotkeys");
 
                 Settings.Save();
 
@@ -829,7 +831,7 @@ namespace HMSEditorNS {
                 else if (e.KeyCode == Keys.D8) Editor.GotoBookmarkByName("8");
                 else if (e.KeyCode == Keys.D9) Editor.GotoBookmarkByName("9");
             } else if (e.KeyCode == Keys.Oemcomma || (e.Shift && e.KeyCode == Keys.D9)) {
-                CheckFunctionHelp = true;
+                WasCommaOrBracket = true;
             }
 
                 if      (e.KeyCode == Keys.F5) ToggleBreakpoint();
@@ -837,6 +839,11 @@ namespace HMSEditorNS {
                 else if (e.KeyCode == Keys.F8) RunLine();
                 else if (e.KeyCode == Keys.F9) RunScript();
 
+        }
+
+        private void Editor_SelectionChanged(object sender, EventArgs e) {
+            if (EnableFunctionToolTip && WasCommaOrBracket || Editor.ToolTip4Function.Visible && !CheckPositionIsInParametersSequenceWorker.IsBusy)
+                CheckPositionIsInParametersSequenceWorker.RunWorkerAsync();
         }
 
         private void Editor_SelectionChangedDelayed(object sender, EventArgs e) {
@@ -854,34 +861,12 @@ namespace HMSEditorNS {
         private void Editor_TextChangedDelayed(object sender, TextChangedEventArgs e) {
             Locked = true;       // Say to other processes we is busy - don't tuch us!
             BuildFunctionList(); // Only when text changed - build the list of functions
-            if ((EnableFunctionToolTip && CheckFunctionHelp) || Editor.ToolTip4Function.Visible) CheckPositionIsInParametersSequence();
             if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxTimer.Start();
             Locked = false;
             if (IsFirstActivate) {
                 IsFirstActivate = false;
                 Editor.Focus();
             }
-        }
-
-        private void AutoCheckSyntax() {
-            if (HmsScriptFrame != null) {
-                object objScriptName   = Editor.Language;
-                object objScriptText   = Editor.Text;
-                object objErrorMessage = "";
-                int nErrorLine = 0;
-                int nErrorChar = 0;
-                int nResult    = 0;
-                HmsScriptFrame.CompileScript(ref objScriptName, ref objScriptText, ref objErrorMessage, ref nErrorLine, ref nErrorChar, ref nResult);
-                bool done = (nResult < 0);
-                if (done) {
-                    Editor.ClearErrorLines();
-                } else { 
-                    nErrorChar = Math.Max(0, nErrorChar-1);
-                    nErrorLine = Math.Max(0, nErrorLine-1);
-                    Editor.SetErrorLines(nErrorChar, nErrorLine, objErrorMessage.ToString());
-                }
-            }
-
         }
 
         private void Editor_TextChanged(object sender, TextChangedEventArgs e) {
@@ -1152,11 +1137,6 @@ namespace HMSEditorNS {
             Editor.RefreshTheme();
         }
 
-        private void Editor_SelectionChanged(object sender, EventArgs e) {
-            HideToolTip4Function();
-            ActiveEditor = this;
-        }
-
         private void Editor_Scroll(object sender, ScrollEventArgs e) {
             HideToolTip4Function(true);
         }
@@ -1178,7 +1158,7 @@ namespace HMSEditorNS {
         }
 
         public void Editor_MouseMove(object sender, MouseEventArgs e) {
-            if (EnableMouseHelp) {
+            if (EnableMouseHelp || (EnableEvaluateByMouse && DebugMode)) {
                 if (MouseLocation == e.Location) {
                     // Mouse stopped
                 } else {
@@ -1224,6 +1204,27 @@ namespace HMSEditorNS {
         private static string MatchRemoveLinebreaks(Match m) { return regexLineBreaks.Replace(m.Value, String.Empty); }
 
         public Place PointToPlace(Point point) { return Editor.PointToPlace(point); }
+
+        private void AutoCheckSyntax() {
+            if (HmsScriptFrame != null) {
+                object objScriptName = Editor.Language;
+                object objScriptText = Editor.Text;
+                object objErrorMessage = "";
+                int nErrorLine = 0;
+                int nErrorChar = 0;
+                int nResult = 0;
+                HmsScriptFrame.CompileScript(ref objScriptName, ref objScriptText, ref objErrorMessage, ref nErrorLine, ref nErrorChar, ref nResult);
+                bool done = (nResult < 0);
+                if (done) {
+                    Editor.ClearErrorLines();
+                } else {
+                    nErrorChar = Math.Max(0, nErrorChar - 1);
+                    nErrorLine = Math.Max(0, nErrorLine - 1);
+                    Editor.SetErrorLines(nErrorChar, nErrorLine, objErrorMessage.ToString());
+                }
+            }
+
+        }
 
         public string EvalVariableValue(string varName) {
             object varname = varName;
@@ -1605,6 +1606,10 @@ namespace HMSEditorNS {
             Editor.Invalidate();
         }
 
+        private void CheckPositionIsInParametersSequence_DoWork(object sender, DoWorkEventArgs e) {
+            CheckPositionIsInParametersSequence();
+        }
+
         private void CheckPositionIsInParametersSequence() {
             string name, parameters;
 
@@ -1625,7 +1630,7 @@ namespace HMSEditorNS {
                 if (Editor.ToolTip4Function.Visible)
                     HideToolTip4Function(true);
             }
-            CheckFunctionHelp = false;
+            WasCommaOrBracket = false;
             return;
         }
 
@@ -1636,7 +1641,6 @@ namespace HMSEditorNS {
             if (item != null) {
                 if ((Editor.SelectionStart >= item.PositionStart) && (Editor.SelectionStart <= item.PositionEnd)) return; // we writing this function
                 Editor.ToolTip4Function.ShowFunctionParams(item, paramNum, Editor, p);
-                if (HMS.CurrentParamType.Length > 0) PopupMenu.Show(false);
             }
         }
 
@@ -1725,6 +1729,10 @@ namespace HMSEditorNS {
         } // end AddTemplateItemsRecursive
 
         private void btnStorePositions_Click(object sender, EventArgs e) {
+
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
 
         }
     }

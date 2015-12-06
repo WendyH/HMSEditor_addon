@@ -20,7 +20,6 @@
 // Uncomment following definition if you need 32 styles instead of 16:
 //
 // #define Styles32
-//#define debug
 
 using System;
 using System.Collections.Generic;
@@ -40,6 +39,7 @@ using Microsoft.Win32;
 using Timer = System.Windows.Forms.Timer;
 using HMSEditorNS;
 using System.Diagnostics;
+using NativeMethods = HMSEditorNS.NativeMethods;
 
 namespace FastColoredTextBoxNS {
     /// <summary>
@@ -232,6 +232,7 @@ namespace FastColoredTextBoxNS {
             middleClickScrollingTimer.Tick += middleClickScrollingTimer_Tick;
             HighlightTimer.Tick += HighlightTimer_Tick;
             HighlightTimer.Interval = 1;
+            DoubleBuffered = true;
         }
 
         private void HighlightTimer_Tick(object sender, EventArgs e) {

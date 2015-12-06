@@ -15,7 +15,8 @@ namespace HMSEditorNS {
         public int PositionEnd   = 0;
         public string  Filter    = "";
         public bool    Enabled   = true;
-
+        public List<WordStyle> Words = new List<WordStyle>();
+        public System.Drawing.Size ToolTipSize = new System.Drawing.Size();
         // constructors
         public HMSItem() {
         }
@@ -59,6 +60,9 @@ namespace HMSEditorNS {
             e.Tb.Selection.GoLeft(true);
             e.Tb.InsertText("");
             //
+            char ch = e.Tb.Selection.CharBeforeStart;
+            if (HMSEditor.ActiveEditor!=null)
+                HMSEditor.ActiveEditor.WasCommaOrBracket = ((ch == '(') || (ch == '['));
             e.Tb.Selection.EndUpdate();
             e.Tb.EndUpdate();
         }

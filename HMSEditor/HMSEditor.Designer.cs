@@ -88,6 +88,7 @@
             this.btnVerticalLineText = new System.Windows.Forms.ToolStripMenuItem();
             this.btnEnableFolding = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAutoCheckSyntax = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnStorePositions = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.btnHighlightSameWords = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSubMenuIntelliSense = new System.Windows.Forms.ToolStripMenuItem();
@@ -110,8 +111,9 @@
             this.btnThemes = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnStorePositions = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.CheckPositionIsInParametersSequenceWorker = new System.ComponentModel.BackgroundWorker();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
@@ -535,7 +537,7 @@
             this.btnRedo.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRedo.Name = "btnRedo";
             this.btnRedo.Size = new System.Drawing.Size(23, 22);
-            this.btnRedo.Text = "Повторить (Ctrl+R)";
+            this.btnRedo.Text = "Повторить (Ctrl+Shift+Z)";
             this.btnRedo.Click += new System.EventHandler(this.btnRedo_Click);
             // 
             // toolStripSeparator5
@@ -728,6 +730,17 @@
             this.btnAutoCheckSyntax.Text = "Автоматическая проверка синтаксиса";
             this.btnAutoCheckSyntax.Click += new System.EventHandler(this.btnAutoCheckSyntax_Click);
             // 
+            // btnStorePositions
+            // 
+            this.btnStorePositions.Checked = true;
+            this.btnStorePositions.CheckOnClick = true;
+            this.btnStorePositions.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnStorePositions.Name = "btnStorePositions";
+            this.btnStorePositions.Size = new System.Drawing.Size(313, 22);
+            this.btnStorePositions.Text = "Запоминать последнюю позицию";
+            this.btnStorePositions.Visible = false;
+            this.btnStorePositions.Click += new System.EventHandler(this.btnStorePositions_Click);
+            // 
             // toolStripSeparator12
             // 
             this.toolStripSeparator12.Name = "toolStripSeparator12";
@@ -815,7 +828,9 @@
             // 
             // btnShowFoldingLines
             // 
+            this.btnShowFoldingLines.Checked = true;
             this.btnShowFoldingLines.CheckOnClick = true;
+            this.btnShowFoldingLines.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnShowFoldingLines.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnShowFoldingLines.Name = "btnShowFoldingLines";
             this.btnShowFoldingLines.Size = new System.Drawing.Size(428, 22);
@@ -927,17 +942,6 @@
             this.btnAbout.Text = "О программе";
             this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
-            // btnStorePositions
-            // 
-            this.btnStorePositions.Checked = true;
-            this.btnStorePositions.CheckOnClick = true;
-            this.btnStorePositions.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.btnStorePositions.Name = "btnStorePositions";
-            this.btnStorePositions.Size = new System.Drawing.Size(313, 22);
-            this.btnStorePositions.Text = "Запоминать последнюю позицию";
-            this.btnStorePositions.Visible = false;
-            this.btnStorePositions.Click += new System.EventHandler(this.btnStorePositions_Click);
-            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -955,6 +959,14 @@
             this.imageList1.Images.SetKeyName(10, "Constant_495.png");
             this.imageList1.Images.SetKeyName(11, "Event_594.png");
             this.imageList1.Images.SetKeyName(12, "Template_Application_16xLG.png");
+            // 
+            // CheckPositionIsInParametersSequenceWorker
+            // 
+            this.CheckPositionIsInParametersSequenceWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.CheckPositionIsInParametersSequence_DoWork);
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
             // 
             // HMSEditor
             // 
@@ -1055,5 +1067,7 @@
         private System.Windows.Forms.ToolStripMenuItem btnAutoCheckSyntax;
         private System.Windows.Forms.ToolStripMenuItem btnShowFoldingIndicator;
         private System.Windows.Forms.ToolStripMenuItem btnStorePositions;
+        private System.ComponentModel.BackgroundWorker CheckPositionIsInParametersSequenceWorker;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }
