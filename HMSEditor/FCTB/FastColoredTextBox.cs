@@ -932,7 +932,10 @@ namespace FastColoredTextBoxNS {
                        (!Selection.ColumnSelectionMode) &&
                        Selection.Start.iChar < lines[Selection.Start.iLine].Count;
             }
-            set { isReplaceMode = value; }
+            set {
+                isReplaceMode = value;
+                caretCreated = false; // By WendyH
+            }
         }
 
         /// <summary>
@@ -2846,7 +2849,12 @@ namespace FastColoredTextBoxNS {
 
             if (Created) {
                 if (ShowLineNumbers)
-                    LeftIndent += charsForLineNumber * CharWidth + minLeftIndent + 1;
+                    LeftIndent = charsForLineNumber * CharWidth + minLeftIndent + 1;
+                else if (ShowFoldingMarkers)
+                    LeftIndent = minLeftIndent + 2;
+                else if (EnableFoldingIndicator)
+                    LeftIndent = minLeftIndent - 2;
+
                 // By WendyH < ------------------------------------------------
                 if ((Bookmarks.Count > 0) || (Breakpoints.Count > 0) || HmsDebugLine >= 0) {
                     LeftIndent += (BookmarkIcon != null) ? (BookmarkIcon.Width - 2) : (CharHeight - 3);
@@ -3471,7 +3479,8 @@ namespace FastColoredTextBoxNS {
 
                 case FCTBAction.ReplaceMode:
                     if (!ReadOnly)
-                        isReplaceMode = !isReplaceMode;
+                        IsReplaceMode = !isReplaceMode;
+
                     break;
 
                 case FCTBAction.DeleteCharRight:
@@ -4452,11 +4461,6 @@ namespace FastColoredTextBoxNS {
             Selection.Start = new Place(Math.Min(lines[iLine].Count, Math.Max(0, oldStart.iChar + needToInsert)), iLine);
         }
 
-        private string RemoveInlineStartAndEndBlocks(string text) {
-
-            return text;
-        }
-
         /// <summary>
         /// Returns needed start space count for the line
         /// </summary>
@@ -4478,8 +4482,6 @@ namespace FastColoredTextBoxNS {
                 var args = new AutoIndentEventArgs(i, lines[i].Text, i > 0 ? lines[i - 1].Text : "", TabLength, 0);
                 args.LineText     = WithoutStringAndComments(args.LineText);  // By WendyH
                 args.PrevLineText = WithoutStringAndComments(args.PrevLineText);
-                args.LineText     = RemoveInlineStartAndEndBlocks(args.LineText);
-                args.PrevLineText = RemoveInlineStartAndEndBlocks(args.PrevLineText);
                 calculator(this, args);
                 stack.Push(args);
                 if (args.Shift == 0 && args.AbsoluteIndentation == 0 && args.LineText.Trim() != "")
@@ -4891,26 +4893,35 @@ namespace FastColoredTextBoxNS {
             car.Offset(0, lineInterval / 2);
 
             if ((Focused || IsDragDrop) && car.X >= LeftIndent && CaretVisible) {
-                int carWidth = (IsReplaceMode || WideCaret) ? CharWidth : 1;
-                if (WideCaret) {
-                    using (var brush = new SolidBrush(CaretColor))
-                        e.Graphics.FillRectangle(brush, car.X, car.Y, carWidth, caretHeight + 1);
-                } else
-                    using (var pen = new Pen(CaretColor))
-                        e.Graphics.DrawLine(pen, car.X, car.Y, car.X, car.Y + caretHeight);
+                int carWidth = (IsReplaceMode || WideCaret) ? CharWidth : CharWidth / 6;
+                if (!CaretBlinking) {
+                    if (WideCaret) {
+                        using (var brush = new SolidBrush(CaretColor))
+                            e.Graphics.FillRectangle(brush, car.X, car.Y, carWidth, caretHeight + 1);
+                    } else {
+                        using (var pen = new Pen(CaretColor)) {
+                            e.Graphics.DrawLine(pen, car.X, car.Y, car.X, car.Y + caretHeight);
+                        }
+                    }
+                }
 
                 var caretRect = new Rectangle(HorizontalScroll.Value + car.X, VerticalScroll.Value + car.Y, carWidth, caretHeight + 1);
 
                 if (CaretBlinking)
                     if (prevCaretRect != caretRect || !ShowScrollBars) {
-                        NativeMethods.CreateCaret(Handle, 0, carWidth, caretHeight + 1);
+                        if (!caretCreated) {
+                            caretCreated = true;
+                            NativeMethods.CreateCaret(Handle, 0, carWidth, caretHeight + 1);
+                            NativeMethods.ShowCaret(Handle);
+                        }
                         NativeMethods.SetCaretPos(car.X, car.Y);
-                        NativeMethods.ShowCaret(Handle);
+                        NativeMethods.SetCaretBlinkTime(500);
                     }
 
                 prevCaretRect = caretRect;
             } else {
                 NativeMethods.HideCaret(Handle);
+                caretCreated = false;
                 prevCaretRect = Rectangle.Empty;
             }
 
@@ -4939,7 +4950,7 @@ namespace FastColoredTextBoxNS {
             //
             base.OnPaint(e);
         }
-
+        private bool caretCreated = false;
         private void DrawMarkers(PaintEventArgs e, Pen servicePen) {
             foreach (VisualMarker m in visibleMarkers) {
                 if (m is CollapseFoldingMarker)
@@ -5351,6 +5362,7 @@ namespace FastColoredTextBoxNS {
             get { return zoom; }
             set {
                 zoom = value;
+                caretCreated = false;
                 DoZoom(zoom / 100f);
                 OnZoomChanged();
             }
@@ -7911,27 +7923,27 @@ window.status = ""#print"";
 
     public class AutoIndentEventArgs: EventArgs {
         public AutoIndentEventArgs(int iLine, string lineText, string prevLineText, int tabLength, int currentIndentation) {
-            this.iLine = iLine;
-            LineText = lineText;
+            this.iLine   = iLine;
+            LineText     = lineText;
             PrevLineText = prevLineText;
-            TabLength = tabLength;
+            TabLength    = tabLength;
             AbsoluteIndentation = currentIndentation;
         }
 
-        public int iLine { get; internal set; }
-        public int TabLength { get; internal set; }
-        public string LineText { get; internal set; }
+        public int    iLine        { get; internal set; }
+        public int    TabLength    { get; internal set; }
+        public string LineText     { get; internal set; }
         public string PrevLineText { get; internal set; }
 
         /// <summary>
         /// Additional spaces count for this line, relative to previous line
         /// </summary>
-        public int Shift { get; set; }
+        public int    Shift        { get; set; }
 
         /// <summary>
         /// Additional spaces count for next line, relative to previous line
         /// </summary>
-        public int ShiftNextLines { get; set; }
+        public int ShiftNextLines  { get; set; }
 
         /// <summary>
         /// Absolute indentation of current line. You can change this property if you want to set absolute indentation.

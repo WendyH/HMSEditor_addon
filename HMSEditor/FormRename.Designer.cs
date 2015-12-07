@@ -133,17 +133,17 @@
         '\"',
         '\'',
         '\''};
-            this.fastColoredTextBox1.AutoIndent = false;
-            this.fastColoredTextBox1.AutoIndentChars = false;
+            this.fastColoredTextBox1.AutoIndent = true;
+            this.fastColoredTextBox1.AutoIndentChars = true;
             this.fastColoredTextBox1.AutoIndentCharsPatterns = "";
-            this.fastColoredTextBox1.AutoIndentExistingLines = false;
+            this.fastColoredTextBox1.AutoIndentExistingLines = true;
             this.fastColoredTextBox1.AutoScrollMinSize = new System.Drawing.Size(158, 15);
             this.fastColoredTextBox1.BackBrush = null;
             this.fastColoredTextBox1.BookmarkIcon = null;
             this.fastColoredTextBox1.BreakpointIcon = null;
             this.fastColoredTextBox1.BreakpointLineColor = System.Drawing.Color.Empty;
-            this.fastColoredTextBox1.CaretBlinking = false;
-            this.fastColoredTextBox1.CaretVisible = false;
+            this.fastColoredTextBox1.CaretBlinking = true;
+            this.fastColoredTextBox1.CaretVisible = true;
             this.fastColoredTextBox1.CharHeight = 15;
             this.fastColoredTextBox1.CharWidth = 7;
             this.fastColoredTextBox1.Cursor = System.Windows.Forms.Cursors.IBeam;

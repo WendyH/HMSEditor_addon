@@ -278,6 +278,7 @@ namespace HMSEditorNS {
 
         public void ShowFoldingLines(bool flag) {
             Editor.ShowFoldingLines = flag;
+            Editor.NeedRecalc(true);
             Editor.Refresh();
         }
 
@@ -366,7 +367,7 @@ namespace HMSEditorNS {
                 Editor.UnbreakpointLine(iLine);
             } else {
                 string name = regexPartOfLine.Match(Editor.Lines[iLine]).Value;
-                Editor.BreakpointLine(Editor.Selection.Start.iLine, "Точка останова " + (Editor.Breakpoints.counter + 1) + " " + name + "...");
+                Editor.BreakpointLine(iLine, "Точка останова " + (Editor.Breakpoints.counter + 1) + " " + name + "...");
             }
             if (HmsScriptFrame != null)
                 HmsScriptFrame.ToggleBreakpoint(iLine+1);
@@ -378,7 +379,7 @@ namespace HMSEditorNS {
                 Editor.UnbookmarkLine(iLine);
             } else {
                 string name = regexPartOfLine.Match(Editor.Lines[iLine]).Value;
-                Editor.BookmarkLine(Editor.Selection.Start.iLine, "Закладка " + (Editor.Bookmarks.counter+1) + " " + name + "...");
+                Editor.BookmarkLine(iLine, "Закладка " + (Editor.Bookmarks.counter+1) + " " + name + "...");
             }
         }
 
@@ -513,7 +514,7 @@ namespace HMSEditorNS {
             btnEvaluateByMouse      .Checked = Settings.Get("EvaluateByMouse"     , section, btnEvaluateByMouse      .Checked);
             btnAutoCompleteBrackets .Checked = Settings.Get("AutoCompleteBrackets", section, btnAutoCompleteBrackets .Checked);
             btnAutoIdent            .Checked = Settings.Get("AutoIdent"           , section, btnAutoIdent            .Checked);
-            btnAutoIdentChars       .Checked = Settings.Get("AutoIdentChars"      , section, btnAutoIdentChars       .Checked);
+            btnAutoIdentLines       .Checked = Settings.Get("AutoIdentLines"      , section, btnAutoIdentLines       .Checked);
             btnMarkChangedLines     .Checked = Settings.Get("MarkChangedLines"    , section, btnMarkChangedLines     .Checked);
             btnMouseHelp            .Checked = Settings.Get("MouseHelp"           , section, btnMouseHelp            .Checked);
             btnRedStringsHighlight  .Checked = Settings.Get("StringsHighlight"    , section, btnRedStringsHighlight  .Checked);
@@ -536,14 +537,15 @@ namespace HMSEditorNS {
             sVal = Settings.Get("Zoom", section, "100");
             Editor.Zoom = Int32.Parse(sVal);
 
-            PopupMenu.OnlyCtrlSpace     = btnHints4CtrlSpace      .Checked;
-            PopupMenu.Enabled           = btnSetIntelliSense      .Checked;
-            Editor.AutoCompleteBrackets = btnAutoCompleteBrackets .Checked;
-            Editor.AutoIndent           = btnAutoIdent            .Checked;
-            Editor.AutoIndentChars      = btnAutoIdentChars       .Checked;
-            Editor.ChangedLineColor     = btnMarkChangedLines     .Checked ? ColorChangedLine : Color.Transparent;
-            EnableFunctionToolTip       = btnIntelliSenseFunctions.Checked;
-            EnableEvaluateByMouse       = btnEvaluateByMouse      .Checked;
+            PopupMenu.OnlyCtrlSpace        = btnHints4CtrlSpace      .Checked;
+            PopupMenu.Enabled              = btnSetIntelliSense      .Checked;
+            Editor.AutoCompleteBrackets    = btnAutoCompleteBrackets .Checked;
+            Editor.AutoIndent              = btnAutoIdent            .Checked;
+            Editor.AutoIndentExistingLines = btnAutoIdentLines       .Checked;
+            Editor.ChangedLineColor        = btnMarkChangedLines     .Checked ? ColorChangedLine : Color.Transparent;
+            EnableFunctionToolTip          = btnIntelliSenseFunctions.Checked;
+            EnableEvaluateByMouse          = btnEvaluateByMouse      .Checked;
+            Editor.EnableFoldingIndicator  = btnShowFoldingIndicator .Checked;
 
             Themes.Init();
 
@@ -561,6 +563,7 @@ namespace HMSEditorNS {
             btnEnableFolding_Click   (null, EventArgs.Empty);
             btnMouseHelp_Click       (null, EventArgs.Empty);
             btnVerticalLineText_Click(null, EventArgs.Empty);
+            btnAutoIdent_Click       (null, EventArgs.Empty);
 
             Editor.HotkeysMapping.InitDefault(); 
             string hotkeys = Settings.Get("Map", "AddonHotkeys", "");
@@ -612,7 +615,7 @@ namespace HMSEditorNS {
                 Settings.Set("EvaluateByMouse"     , btnEvaluateByMouse      .Checked, section);
                 Settings.Set("AutoCompleteBrackets", btnAutoCompleteBrackets .Checked, section);
                 Settings.Set("AutoIdent"           , btnAutoIdent            .Checked, section);
-                Settings.Set("AutoIdentChars"      , btnAutoIdentChars       .Checked, section);
+                Settings.Set("AutoIdentLines"      , btnAutoIdentLines       .Checked, section);
                 Settings.Set("MarkChangedLines"    , btnMarkChangedLines     .Checked, section);
                 Settings.Set("MouseHelp"           , btnMouseHelp            .Checked, section);
                 Settings.Set("StringsHighlight"    , btnRedStringsHighlight  .Checked, section);
@@ -1039,10 +1042,16 @@ namespace HMSEditorNS {
 
         private void btnAutoIdent_Click(object sender, EventArgs e) {
             Editor.AutoIndent = btnAutoIdent.Checked;
+            btnAutoIdentLines.Enabled = Editor.AutoIndent;
+            if (btnAutoIdentLines.Enabled) {
+                btnAutoIdentLines.ToolTipText = "";
+            } else {
+                btnAutoIdentLines.ToolTipText = "Доступно только при включенном автоматическом отступе";
+            }
         }
 
         private void btnAutoIdentChars_Click(object sender, EventArgs e) {
-            Editor.AutoIndentChars = btnAutoIdentChars.Checked;
+            Editor.AutoIndentExistingLines = btnAutoIdentLines.Checked;
         }
 
         public void btnMarkChangedLines_Click(object sender, EventArgs e) {
@@ -1194,12 +1203,12 @@ namespace HMSEditorNS {
 
         private void btnVerticalLineText_Click(object sender, EventArgs e) {
             Editor.PreferredLineWidth = btnVerticalLineText.Checked ? 80 : 0;
-            Editor.Invalidate();
+            Editor.NeedRecalc();
         }
 
         private void btnEnableFolding_Click(object sender, EventArgs e) {
             Editor.ShowFoldingMarkers = btnEnableFolding.Checked;
-            Editor.Invalidate();
+            Editor.NeedRecalc();
         }
 
         private void btnAbout_Click(object sender, EventArgs e) {

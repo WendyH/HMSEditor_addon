@@ -33,9 +33,10 @@ namespace FastColoredTextBoxNS {
         private static Color colorHelp    = Color.FromArgb(0x247256);
         private static Color colorString  = Color.FromArgb(0xAA5C36);
         private static Color colorValue   = Color.FromArgb(0xAA5C36);
-        private static Size  MaxSize      = new Size(600, 600);
+        private static Size  MaxSize      = new Size(640, 600);
         private static TextFormatFlags tf = TextFormatFlags.NoPadding | TextFormatFlags.PreserveGraphicsClipping;
         private static int MaxValueLenght = 100;
+        public static Color ColorBackgrnd = Color.FromArgb(0xE4E5F0);
         #endregion Static computed field
 
         private string  _value   = "";
@@ -76,7 +77,8 @@ namespace FastColoredTextBoxNS {
         }
 
         protected override void Dispose(bool disposing) {
-            HmsItem = null;
+            HmsItem  = null;
+            OwnWords = null;
             base.Dispose(disposing);
         }
 
@@ -180,8 +182,7 @@ namespace FastColoredTextBoxNS {
             Bounds = e.Bounds; // Store show Bounds
             HmsToolTip        tip = sender as HmsToolTip;
             Graphics            g = e.Graphics;
-            LinearGradientBrush b = new LinearGradientBrush(Bounds, Color.White, Color.FromArgb(0xE4, 0xE5, 0xF0), 90f);
-
+            LinearGradientBrush b = new LinearGradientBrush(Bounds, Color.White, Color.FromArgb(255, ColorBackgrnd), 90f);
             g.FillRectangle(b, Bounds);
             e.DrawBorder();
             g.SmoothingMode = SmoothingMode.HighQuality;
@@ -195,6 +196,7 @@ namespace FastColoredTextBoxNS {
             }
             b.Dispose();
             Visible = true;
+            HmsItem = null;
             LastTS = System.Diagnostics.Stopwatch.GetTimestamp();
 #if debug
             sw.Stop();

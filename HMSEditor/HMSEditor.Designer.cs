@@ -96,10 +96,10 @@
             this.btnMouseHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAutoCheckSyntax = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAutoIdent = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnAutoIdentLines = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowFoldingIndicator = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowFoldingLines = new System.Windows.Forms.ToolStripMenuItem();
             this.btnEnableFolding = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnAutoIdentChars = new System.Windows.Forms.ToolStripMenuItem();
             this.btnIntelliSenseFunctions = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAutoCompleteBrackets = new System.Windows.Forms.ToolStripMenuItem();
             this.btnEvaluateByMouse = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,7 +148,7 @@
         '\''};
             this.Editor.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);^\\s*(case|default)\\s*[^:]*(?<" +
     "range>:)\\s*(?<range>[^;]+);";
-            this.Editor.AutoScrollMinSize = new System.Drawing.Size(27, 15);
+            this.Editor.AutoScrollMinSize = new System.Drawing.Size(25, 15);
             this.Editor.BackBrush = null;
             this.Editor.BookmarkIcon = global::HMSEditorNS.Properties.Resources.togglebookmark;
             this.Editor.BreakpointIcon = global::HMSEditorNS.Properties.Resources.breakpoint_x16;
@@ -766,10 +766,10 @@
             this.btnMouseHelp,
             this.btnAutoCheckSyntax,
             this.btnAutoIdent,
+            this.btnAutoIdentLines,
             this.btnShowFoldingIndicator,
             this.btnShowFoldingLines,
             this.btnEnableFolding,
-            this.btnAutoIdentChars,
             this.btnIntelliSenseFunctions,
             this.btnAutoCompleteBrackets,
             this.btnEvaluateByMouse,
@@ -784,7 +784,7 @@
             this.btnSetIntelliSense.CheckOnClick = true;
             this.btnSetIntelliSense.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnSetIntelliSense.Name = "btnSetIntelliSense";
-            this.btnSetIntelliSense.Size = new System.Drawing.Size(428, 22);
+            this.btnSetIntelliSense.Size = new System.Drawing.Size(421, 22);
             this.btnSetIntelliSense.Text = "Подсказки IntelliSense";
             this.btnSetIntelliSense.ToolTipText = "Включение/Отключение подсказок ключевых слов и методов";
             this.btnSetIntelliSense.Click += new System.EventHandler(this.btnSetIntelliSense_Click);
@@ -795,8 +795,8 @@
             this.btnMouseHelp.CheckOnClick = true;
             this.btnMouseHelp.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnMouseHelp.Name = "btnMouseHelp";
-            this.btnMouseHelp.Size = new System.Drawing.Size(428, 22);
-            this.btnMouseHelp.Text = "Подсказки при наведении мышкой";
+            this.btnMouseHelp.Size = new System.Drawing.Size(421, 22);
+            this.btnMouseHelp.Text = "Описания функций и переменных при наведении мышки";
             this.btnMouseHelp.Click += new System.EventHandler(this.btnMouseHelp_Click);
             // 
             // btnAutoCheckSyntax
@@ -805,7 +805,7 @@
             this.btnAutoCheckSyntax.CheckOnClick = true;
             this.btnAutoCheckSyntax.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnAutoCheckSyntax.Name = "btnAutoCheckSyntax";
-            this.btnAutoCheckSyntax.Size = new System.Drawing.Size(428, 22);
+            this.btnAutoCheckSyntax.Size = new System.Drawing.Size(421, 22);
             this.btnAutoCheckSyntax.Text = "Автоматическая проверка синтаксиса";
             this.btnAutoCheckSyntax.Click += new System.EventHandler(this.btnAutoCheckSyntax_Click);
             // 
@@ -815,9 +815,19 @@
             this.btnAutoIdent.CheckOnClick = true;
             this.btnAutoIdent.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnAutoIdent.Name = "btnAutoIdent";
-            this.btnAutoIdent.Size = new System.Drawing.Size(428, 22);
+            this.btnAutoIdent.Size = new System.Drawing.Size(421, 22);
             this.btnAutoIdent.Text = "Автоматический отступ";
             this.btnAutoIdent.Click += new System.EventHandler(this.btnAutoIdent_Click);
+            // 
+            // btnAutoIdentLines
+            // 
+            this.btnAutoIdentLines.Checked = true;
+            this.btnAutoIdentLines.CheckOnClick = true;
+            this.btnAutoIdentLines.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnAutoIdentLines.Name = "btnAutoIdentLines";
+            this.btnAutoIdentLines.Size = new System.Drawing.Size(421, 22);
+            this.btnAutoIdentLines.Text = "Выравнивание конструкций кода";
+            this.btnAutoIdentLines.Click += new System.EventHandler(this.btnAutoIdentChars_Click);
             // 
             // btnShowFoldingIndicator
             // 
@@ -825,8 +835,8 @@
             this.btnShowFoldingIndicator.CheckOnClick = true;
             this.btnShowFoldingIndicator.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnShowFoldingIndicator.Name = "btnShowFoldingIndicator";
-            this.btnShowFoldingIndicator.Size = new System.Drawing.Size(428, 22);
-            this.btnShowFoldingIndicator.Text = "Отображать индикатор действия текущего блока";
+            this.btnShowFoldingIndicator.Size = new System.Drawing.Size(421, 22);
+            this.btnShowFoldingIndicator.Text = "Зелёный индикатор действия текущего блока";
             this.btnShowFoldingIndicator.Click += new System.EventHandler(this.btnEnableFoldingIndicator_Click);
             // 
             // btnShowFoldingLines
@@ -836,7 +846,7 @@
             this.btnShowFoldingLines.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnShowFoldingLines.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnShowFoldingLines.Name = "btnShowFoldingLines";
-            this.btnShowFoldingLines.Size = new System.Drawing.Size(428, 22);
+            this.btnShowFoldingLines.Size = new System.Drawing.Size(421, 22);
             this.btnShowFoldingLines.Text = "Показывать вертикальные пунктирные линии начала блока";
             this.btnShowFoldingLines.Click += new System.EventHandler(this.btnShowFoldingLines_Click);
             // 
@@ -844,21 +854,10 @@
             // 
             this.btnEnableFolding.CheckOnClick = true;
             this.btnEnableFolding.Name = "btnEnableFolding";
-            this.btnEnableFolding.Size = new System.Drawing.Size(428, 22);
+            this.btnEnableFolding.Size = new System.Drawing.Size(421, 22);
             this.btnEnableFolding.Text = "Элементы свёртки блоков кода";
             this.btnEnableFolding.ToolTipText = "Отображать элементы для возможности свернуть/развернуть участки кода";
             this.btnEnableFolding.Click += new System.EventHandler(this.btnEnableFolding_Click);
-            // 
-            // btnAutoIdentChars
-            // 
-            this.btnAutoIdentChars.Checked = true;
-            this.btnAutoIdentChars.CheckOnClick = true;
-            this.btnAutoIdentChars.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.btnAutoIdentChars.Name = "btnAutoIdentChars";
-            this.btnAutoIdentChars.Size = new System.Drawing.Size(428, 22);
-            this.btnAutoIdentChars.Text = "Автоматический отступ конструкций";
-            this.btnAutoIdentChars.Visible = false;
-            this.btnAutoIdentChars.Click += new System.EventHandler(this.btnAutoIdentChars_Click);
             // 
             // btnIntelliSenseFunctions
             // 
@@ -866,7 +865,7 @@
             this.btnIntelliSenseFunctions.CheckOnClick = true;
             this.btnIntelliSenseFunctions.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnIntelliSenseFunctions.Name = "btnIntelliSenseFunctions";
-            this.btnIntelliSenseFunctions.Size = new System.Drawing.Size(428, 22);
+            this.btnIntelliSenseFunctions.Size = new System.Drawing.Size(421, 22);
             this.btnIntelliSenseFunctions.Text = "Подсказки для параметров функций";
             this.btnIntelliSenseFunctions.ToolTipText = "Включение/Отключение подсказок для функций";
             this.btnIntelliSenseFunctions.Click += new System.EventHandler(this.btnIntelliSenseFunctions_Click);
@@ -875,7 +874,7 @@
             // 
             this.btnAutoCompleteBrackets.CheckOnClick = true;
             this.btnAutoCompleteBrackets.Name = "btnAutoCompleteBrackets";
-            this.btnAutoCompleteBrackets.Size = new System.Drawing.Size(428, 22);
+            this.btnAutoCompleteBrackets.Size = new System.Drawing.Size(421, 22);
             this.btnAutoCompleteBrackets.Text = "Автозавершение скобок и кавычек";
             this.btnAutoCompleteBrackets.Click += new System.EventHandler(this.btnAutoCompleteBrackets_Click);
             // 
@@ -885,15 +884,15 @@
             this.btnEvaluateByMouse.CheckOnClick = true;
             this.btnEvaluateByMouse.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnEvaluateByMouse.Name = "btnEvaluateByMouse";
-            this.btnEvaluateByMouse.Size = new System.Drawing.Size(428, 22);
-            this.btnEvaluateByMouse.Text = "Вычислять значение в режиме отладки при наведении мышкой";
+            this.btnEvaluateByMouse.Size = new System.Drawing.Size(421, 22);
+            this.btnEvaluateByMouse.Text = "Вычислять значение в режиме отладки при наведении мышки";
             this.btnEvaluateByMouse.Click += new System.EventHandler(this.btnEvaluateByMouse_Click);
             // 
             // btnHints4CtrlSpace
             // 
             this.btnHints4CtrlSpace.CheckOnClick = true;
             this.btnHints4CtrlSpace.Name = "btnHints4CtrlSpace";
-            this.btnHints4CtrlSpace.Size = new System.Drawing.Size(428, 22);
+            this.btnHints4CtrlSpace.Size = new System.Drawing.Size(421, 22);
             this.btnHints4CtrlSpace.Text = "Подсказки только по Ctrl-Space";
             this.btnHints4CtrlSpace.Click += new System.EventHandler(this.btnHints4CtrlSpace_Click);
             // 
@@ -1047,7 +1046,7 @@
         private System.Windows.Forms.ToolStripMenuItem btnMouseHelp;
         private System.Windows.Forms.ToolStripMenuItem btnAutoIdent;
         private System.Windows.Forms.ToolStripMenuItem btnMarkChangedLines;
-        private System.Windows.Forms.ToolStripMenuItem btnAutoIdentChars;
+        private System.Windows.Forms.ToolStripMenuItem btnAutoIdentLines;
         private System.Windows.Forms.ToolStripMenuItem btnIntelliSenseFunctions;
         private System.Windows.Forms.ToolStripMenuItem btnAutoCompleteBrackets;
         private System.Windows.Forms.ToolStripMenuItem btnEvaluateByMouse;

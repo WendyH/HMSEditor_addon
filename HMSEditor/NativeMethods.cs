@@ -27,12 +27,15 @@ namespace HMSEditorNS {
         public static extern bool ShowCaret(IntPtr hWnd);
 
         [DllImport("User32")]
+        public static extern bool SetCaretBlinkTime(uint uMSeconds);
+
+        [DllImport("User32")]
         public static extern bool HideCaret(IntPtr hWnd);
 
-        [DllImport("user32")]
+        [DllImport("User32")]
         public static extern IntPtr GetOpenClipboardWindow();
 
-        [DllImport("user32")]
+        [DllImport("User32")]
         public static extern IntPtr CloseClipboard();
 
         [DllImport("Imm32")]

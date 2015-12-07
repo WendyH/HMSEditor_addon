@@ -312,7 +312,20 @@ namespace FastColoredTextBoxNS {
 
         // < By WendyH ------------------------------------------
         private void PascalAutoIndentNeeded(object sender, AutoIndentEventArgs args) {
-            int opened = DetectStartOrEndBlock(args.LineText, "\\b(Begin|Try|Repeat)\\b", "\\b(End|Until|EndIf|Next|Loop)\\b"); // By WendyH
+            string beginBlock = "\\b(Begin|Try|Repeat)\\b"; string endBlock = "\\b(End|Until)\\b";
+            if (Regex.IsMatch(args.LineText, @"^\s*(Begin)\b", RegexOptions.IgnoreCase)) {
+                if (!Regex.IsMatch(args.PrevLineText, @"\b(Then|Do)\s*$", RegexOptions.IgnoreCase)) {
+                    args.AbsoluteIndentation = 0;
+                    args.ShiftNextLines = args.TabLength;
+                    return;
+                }
+            }
+            if (Regex.IsMatch(args.LineText, @"^\s*(Function|Procedure|Var)\b", RegexOptions.IgnoreCase)) {
+                args.AbsoluteIndentation = 0;
+                args.ShiftNextLines = args.TabLength;
+                return;
+            }
+            int opened = DetectStartOrEndBlock(args.LineText, beginBlock, endBlock); // By WendyH
             //end of block
 //            if (Regex.IsMatch(args.LineText, @"^\s*(End|EndIf|Next|Loop)\b", RegexOptions.IgnoreCase)) {
             if (opened < 0) {
@@ -326,22 +339,28 @@ namespace FastColoredTextBoxNS {
                 args.ShiftNextLines = args.TabLength;
                 return;
             }
+            // end block in begining and start block in end (if opened == 0)
+            if (Regex.IsMatch(args.LineText, "^\\s+" + endBlock.Replace("End|", "End|Finally|"), RegexOptions.IgnoreCase)) {
+                args.Shift = -args.TabLength;
+                return;
+            }
             // then ...
             if (Regex.IsMatch(args.LineText, @"\b(Then)\s*\S+", RegexOptions.IgnoreCase)) {
                 return;
             }
-            if (Regex.IsMatch(args.PrevLineText, @"\b(Then)\s*$", RegexOptions.IgnoreCase)) {
-                args.ShiftNextLines = -args.TabLength;
-                return;
-            }
             //start of operator block
             if (Regex.IsMatch(args.LineText, @"^\s*(If|While|For|Do|Try|With|Using|Select)\b", RegexOptions.IgnoreCase)) {
-                args.ShiftNextLines = args.TabLength;
-                return;
+                //args.ShiftNextLines = args.TabLength;
+                //return;
             }
             //Statements else, elseif, case etc
-            if (Regex.IsMatch(args.LineText, @"^\s*(Else|ElseIf|Case|Catch|Finally)\b", RegexOptions.IgnoreCase)) {
-                args.Shift = -args.TabLength;
+            if (Regex.IsMatch(args.LineText, @"^\s*(Else|ElseIf|Else If|Case|Catch|Finally)\b", RegexOptions.IgnoreCase)) {
+                //args.Shift = -args.TabLength;
+                //return;
+            }
+            if (Regex.IsMatch(args.PrevLineText, @"\b(Then|Else)\s*$", RegexOptions.IgnoreCase)) {
+                args.Shift = args.TabLength;
+                //args.ShiftNextLines = -args.TabLength;
                 return;
             }
 
@@ -387,6 +406,10 @@ namespace FastColoredTextBoxNS {
                 args.Shift = args.TabLength;
                 return;
             }
+            if (args.PrevLineText.TrimEnd().EndsWith(",")) {
+                args.Shift = args.TabLength;
+                return;
+            }
         }
 
         // By WendyH
@@ -418,7 +441,7 @@ namespace FastColoredTextBoxNS {
                 args.ShiftNextLines = -args.TabLength;
                 return;
             }
-            if (Regex.IsMatch(args.LineText, @"^[^""']*\{")) {
+            if (Regex.IsMatch(args.LineText, @"^\s+}")) {
                 args.Shift = -args.TabLength;
                 return;
             }

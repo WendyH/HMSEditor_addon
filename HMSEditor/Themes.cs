@@ -137,12 +137,37 @@ namespace HMSEditorNS {
             }
         }
 
+        public static Color MixColor(double balance, Color c1, Color c2) {
+            int R = (int)Math.Round(c1.R * balance + c2.R * (1 - balance));
+            int G = (int)Math.Round(c1.G * balance + c2.G * (1 - balance));
+            int B = (int)Math.Round(c1.B * balance + c2.B * (1 - balance));
+            return Color.FromArgb(R, G, B);
+        }
+
+        public static Color MediaColor(int top, Color color) {
+            int maxVal = 0;
+            maxVal = Math.Max(maxVal, color.R);
+            maxVal = Math.Max(maxVal, color.G);
+            maxVal = Math.Max(maxVal, color.B);
+            int dx = top - maxVal;
+            int R = color.R + dx;
+            int G = color.G + dx;
+            int B = color.B + dx;
+            R = Math.Max(0, R); R = Math.Min(255, R);
+            G = Math.Max(0, G); G = Math.Min(255, G);
+            B = Math.Max(0, B); B = Math.Min(255, B);
+            return Color.FromArgb(255, R, G, B);
+        }
+
         public static void SetTheme(HMSEditor editor, string name) {
             if (Dict.ContainsKey(name)) {
                 SetTheme(editor.Editor, name);
                 Theme t = Dict[name];
                 editor.ColorCurrentLine = t.LineHighlight;
                 editor.ColorChangedLine = t.ChangedLines;
+
+                //Color c1 = MixColor(0.5, t.KeywordStyle.GetRTF().ForeColor, t.StringStyle.GetRTF().ForeColor);
+                HmsToolTip.ColorBackgrnd = MediaColor(0xF0, t.Background);
 
                 // Для тёмных тем цвет изменённых строк меняем тоже на более тёмный
                 uint icol = (uint)editor.Editor.IndentBackColor.ToArgb() & 0xFFFFFF;
@@ -151,6 +176,8 @@ namespace HMSEditorNS {
                 editor.btnMarkChangedLines_Click(null, EventArgs.Empty);
             }
         }
+
+        
 
         public static void Init() {
             string data = HMS.ReadTextFromResource("ColorThemes.txt");
