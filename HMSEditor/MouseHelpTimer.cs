@@ -52,9 +52,10 @@ namespace HMSEditorNS {
                 int CharHeight = ActiveHMSEditor.Editor.CharHeight;
                 int i = point.Y / CharHeight;
                 int iLine = iStartLine + i;
-                if ((iLine + 1) > ActiveHMSEditor.Editor.LinesCount) return;
-                Place place  = ActiveHMSEditor.PointToPlace(point);
-                string line   = Editor.Lines[iLine];
+                if (iLine >= Editor.Lines.Count) return;
+                Place place   = Editor.PointToPlace(point);
+                string line   = "";
+                try {  line   = Editor.Lines[iLine]; } catch { return; }
                 string value  = "";
                 bool evalSelection = false;
                 if (Editor.DebugMode && (Editor.SelectedText.Length > 2)) {
@@ -63,9 +64,9 @@ namespace HMSEditorNS {
                     int posCur   = Editor.PlaceToPosition(place);
                     // Если указатель мыши в области виделения, то будем вычислять выдиление
                     if (posStart < posEnd) {
-                        evalSelection = ((posCur >= posStart) && (posCur <= posEnd));
+                        evalSelection = ((posCur >= posStart) && (posCur <= posEnd  ));
                     } else {
-                        evalSelection = ((posCur >= posEnd) && (posCur <= posStart));
+                        evalSelection = ((posCur >= posEnd  ) && (posCur <= posStart));
                     }
                 }
                 HMSItem item = null; string text = "";

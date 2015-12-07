@@ -359,6 +359,7 @@ namespace HMSEditorNS {
                             HMSEditor.Settings.Save();
                             HMS.LoadTemplates();
                             labelNewTemplates.Text = "Обновлено";
+                            if (HMSEditor.ActiveEditor != null) HMSEditor.ActiveEditor.CreateInsertTemplateItems();
                         }
                     });
                 } finally {
@@ -377,7 +378,6 @@ namespace HMSEditorNS {
             GitHub.DownloadProgressChanged += new EventHandler(DownloadProgressCallback);
 
             GitHub.DownloadFileAsync("https://codeload.github.com/" + HMS.GitHubTemplates + "/legacy.zip/master", tmpFileTemplate);
-
         }
 
         private void btnDelete_Click(object sender, EventArgs e) {

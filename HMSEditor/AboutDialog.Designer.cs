@@ -128,7 +128,7 @@
             this.okButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.okButton.Location = new System.Drawing.Point(406, 290);
             this.okButton.Name = "okButton";
-            this.okButton.Size = new System.Drawing.Size(84, 23);
+            this.okButton.Size = new System.Drawing.Size(84, 25);
             this.okButton.TabIndex = 34;
             this.okButton.Text = "&ОК";
             // 
@@ -136,7 +136,7 @@
             // 
             this.btnUpdateProgram.Location = new System.Drawing.Point(188, 255);
             this.btnUpdateProgram.Name = "btnUpdateProgram";
-            this.btnUpdateProgram.Size = new System.Drawing.Size(131, 23);
+            this.btnUpdateProgram.Size = new System.Drawing.Size(131, 25);
             this.btnUpdateProgram.TabIndex = 36;
             this.btnUpdateProgram.Text = "Обновить программу";
             this.btnUpdateProgram.UseVisualStyleBackColor = true;
@@ -223,7 +223,7 @@
             // 
             this.btnUpdateTemplates.Location = new System.Drawing.Point(188, 290);
             this.btnUpdateTemplates.Name = "btnUpdateTemplates";
-            this.btnUpdateTemplates.Size = new System.Drawing.Size(131, 23);
+            this.btnUpdateTemplates.Size = new System.Drawing.Size(131, 25);
             this.btnUpdateTemplates.TabIndex = 45;
             this.btnUpdateTemplates.Text = "Обновить шаблоны";
             this.btnUpdateTemplates.UseVisualStyleBackColor = true;
@@ -245,7 +245,7 @@
             this.btnDelete.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnDelete.Location = new System.Drawing.Point(406, 14);
             this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(84, 23);
+            this.btnDelete.Size = new System.Drawing.Size(84, 25);
             this.btnDelete.TabIndex = 47;
             this.btnDelete.Text = "Удаление";
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);

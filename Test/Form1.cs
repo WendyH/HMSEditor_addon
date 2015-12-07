@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using HmsAddons;
+using System.IO;
 
 namespace test {
 
@@ -19,7 +20,7 @@ namespace test {
         object objAddonList     = null;
         object objScriptEditor  = null;
         Type   typeScriptEditor = null;
-
+		
         public Form1() {
             InitializeComponent();
             comboBox1.Items.Add("C++Script"   );
@@ -36,7 +37,9 @@ namespace test {
             Assembly assembly = null;
             try {
 #if (DEBUG)
-                assembly = Assembly.LoadFrom(@"D:\Projects\HMSEditor_addon\HMSEditor\bin\Debug\HMSEditor.dll");
+                string filedll = @"D:\Projects\HMSEditor_addon\HMSEditor\bin\Debug\HMSEditor.dll";
+                if (!File.Exists(filedll)) filedll = @"D:\Projects\GitHub\HMSEditor_addon\HMSEditor\bin\Debug\HMSEditor.dll";
+                assembly = Assembly.LoadFrom(filedll);
 #else
                 assembly = Assembly.LoadFrom("HMSEditor.dll");
 #endif
@@ -135,9 +138,12 @@ namespace test {
             }
         }
 
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e) {
-            MethodInfo methodSaveSettings = typeScriptEditor.GetMethod("SaveSettings");
-            methodSaveSettings.Invoke(objScriptEditor, new object[] { });
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e) {
+            try {
+                MethodInfo methodSaveSettings = typeScriptEditor.GetMethod("SaveSettings");
+                methodSaveSettings.Invoke(objScriptEditor, new object[] { });
+            }
+            catch { }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FastColoredTextBoxNS;
+using System.Windows.Forms;
 
 namespace HMSEditorNS {
     /// <summary>
@@ -77,4 +78,5 @@ namespace HMSEditorNS {
             return item;
         }
     }
+
 }

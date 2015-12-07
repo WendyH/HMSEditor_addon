@@ -119,7 +119,7 @@ namespace HMSEditorNS {
         public ImageList  IconList { get { return imageList1; } }
         public string SelectedText { get { return Editor.Selection.Text; } set { Editor.InsertText(value); } }
 
-        public string       DialogClass = "Main";
+        public string       DialogClass = "AddonMain";
         public ValueToolTip ValueHint   = new ValueToolTip();
 
         public AutocompleteItems LocalVars = new AutocompleteItems();
@@ -226,7 +226,7 @@ namespace HMSEditorNS {
         }
 
         private void Editor_LostFocus(object sender, EventArgs e) {
-            if (!PopupMenu.Visible) HideToolTip4Function(true);
+            HideAllToolTipsAndHints();
         }
 
         private void HideAllToolTipsAndHints() {
@@ -563,7 +563,7 @@ namespace HMSEditorNS {
             btnVerticalLineText_Click(null, EventArgs.Empty);
 
             Editor.HotkeysMapping.InitDefault(); 
-            string hotkeys = Settings.Get("Map", "Hotkeys", "");
+            string hotkeys = Settings.Get("Map", "AddonHotkeys", "");
             if (hotkeys.Length > 0) {
                 HotkeysMapping ourMap = HotkeysMapping.Parse(hotkeys);
                 foreach(var pair in ourMap)
@@ -631,7 +631,7 @@ namespace HMSEditorNS {
                     Settings.Set("LastHash", lastHash.ToString()+":"+Editor.SelectionStart.ToString(), section);
                 }
                 string hotkeys = GetHotKeysMapping();
-                Settings.Set("Map", hotkeys, "Hotkeys");
+                Settings.Set("Map", hotkeys, "AddonHotkeys");
 
                 Settings.Save();
 
@@ -1113,6 +1113,11 @@ namespace HMSEditorNS {
             btnContextMenuForward.Enabled = Editor.NavigateForward (true);
             FillGoToItems(btnGotoContextMenu.DropDownItems);
             btnContextMenuToolBar.Checked = tsMain.Visible;
+            btnContextMenuAutoIndent.Enabled = (Editor.SelectionLength > 0);
+        }
+
+        private void btnContextMenuAutoIndent_Click(object sender, EventArgs e) {
+            Editor.DoAutoIndent();
         }
 
         private void ToolStripMenuItemZoom100_Click(object sender, EventArgs e) {
@@ -1155,6 +1160,11 @@ namespace HMSEditorNS {
                 int iLine = (int)((e.Y - yFirstLine) / (Editor.Font.Height - 1)) + iFirstLine;
                 ToggleBreakpoint(iLine);
             }
+        }
+
+        private void Editor_MouseLeave(object sender, EventArgs e) {
+            // Do not show help tooltip when mouse is out
+            MouseTimer.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
         public void Editor_MouseMove(object sender, MouseEventArgs e) {
@@ -1669,7 +1679,7 @@ namespace HMSEditorNS {
                     snippets = "if (^) {\n}|if (^) {\n}\nelse {\n}|for (^;;) {\n}|while (^) {\n}|do {\n^}while ();";
                     break;
                 case "PascalScript":
-                    keywords = "Program|Uses|Const|Var|Not|In|Is|OR|XOR|DIV|MOD|AND|SHL|SHR|Break|Continue|Exit|Begin|End|If|Then|Else|Casr|Of|Repeat|Until|While|Do|For|To|DownTo|Try|Finally|Except|With|Function|Procedure";
+                    keywords = "Program|Uses|Const|Var|Not|In|Is|OR|XOR|DIV|MOD|AND|SHL|SHR|Break|Continue|Exit|Begin|End|If|Then|Else|Case|Of|Repeat|Until|While|Do|For|To|DownTo|Try|Finally|Except|With|Function|Procedure";
                     snippets = "If ^ Then |If (^) Then Begin\nEnd else Begin\nEnd;";
                     break;
                 case "BasicScript":
@@ -1703,7 +1713,7 @@ namespace HMSEditorNS {
             PopupMenu.Items.AddAutocompleteItems(HMS.ItemsClass   );
         }
 
-        private void CreateInsertTemplateItems() {
+        public void CreateInsertTemplateItems() {
             // Set templates for selected script language
             btnInsertTemplate.DropDownItems.Clear();
             AddTemplateItemsRecursive(btnInsertTemplate, HMS.Templates[Editor.Language]);
@@ -1718,15 +1728,56 @@ namespace HMSEditorNS {
 
                 } else {
                     item.Click += (o, a) => {
-                        if (HMSEditor.ActiveEditor != null) {
-                            Editor.InsertText((o as ToolStripItem).AccessibleDescription);
-                        }
+                        InsertTemplate((o as ToolStripItem).AccessibleDescription);
                     };
 
                 } // if
             } // foreach
 
         } // end AddTemplateItemsRecursive
+
+        private void InsertTemplate(string text) {
+            int posSta = Editor.SelectionStart;
+            int posEnd = posSta + text.Length;
+            text = FormatCodeText(text);
+            Editor.InsertText(text);
+            //Editor.Selection.Start = Editor.PositionToPlace(posSta);
+            //Editor.Selection.End   = Editor.PositionToPlace(posEnd);
+            //Editor.DoAutoIndent();
+        }
+
+        private string FormatCodeText(string text) {
+            // Поиск минимального отступа в коде вставляемого текста
+            int codeIndent = 200;
+            foreach (string line in text.Split('\n')) {
+                int indent = line.Length - line.TrimStart().Length;
+                codeIndent = Math.Min(indent, codeIndent);
+                if (codeIndent == 0) break;
+            }
+            // Поиск текущего отступа для кода в редакторе по текущей позиции
+            int iLine = Editor.Selection.Start.iLine;
+            int needIndent = Editor.GetRealLine(iLine).AutoIndentSpacesNeededCount;
+            for (int i=iLine; i>=0; i--) {
+                string line = Editor.Lines[i];
+                needIndent = line.Length - line.TrimStart().Length;
+                if (line.Trim().Length > 0) break;
+            }
+            bool firstLine = true; 
+            Range fragmentLine = new Range(Editor, new Place(0, Editor.Selection.Start.iLine), Editor.Selection.Start);
+            bool currentLineWithText = (fragmentLine.Text.Trim().Length > 0);
+            StringBuilder sb = new StringBuilder();
+            foreach (string line in text.Split('\n')) {
+                string newLine = line.Substring(codeIndent).TrimEnd();
+                if (firstLine && currentLineWithText) {
+                } else {
+                    newLine = newLine.PadLeft(newLine.Length + needIndent);
+                }
+                sb.AppendLine(newLine);
+                firstLine = false;
+            }
+            text = sb.ToString();
+            return text;
+        }
 
         private void btnStorePositions_Click(object sender, EventArgs e) {
 
@@ -1735,5 +1786,6 @@ namespace HMSEditorNS {
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
 
         }
+
     }
 }

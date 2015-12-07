@@ -824,7 +824,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         [Description("Here you can change hotkeys for FastColoredTextBox.")]
         [Editor(typeof(HotkeysEditor), typeof(UITypeEditor))]
-        [DefaultValue("Tab=IndentIncrease, Escape=ClearHints, PgUp=GoPageUp, PgDn=GoPageDown, End=GoEnd, Home=GoHome, Left=GoLeft, Up=GoUp, Right=GoRight, Down=GoDown, Ins=ReplaceMode, Del=DeleteCharRight, F3=FindNext, Shift+Tab=IndentDecrease, Shift+PgUp=GoPageUpWithSelection, Shift+PgDn=GoPageDownWithSelection, Shift+End=GoEndWithSelection, Shift+Home=GoHomeWithSelection, Shift+Left=GoLeftWithSelection, Shift+Up=GoUpWithSelection, Shift+Right=GoRightWithSelection, Shift+Down=GoDownWithSelection, Shift+Ins=Paste, Shift+Del=Cut, Ctrl+Back=ClearWordLeft, Ctrl+Space=AutocompleteMenu, Ctrl+End=GoLastLine, Ctrl+Home=GoFirstLine, Ctrl+Left=GoWordLeft, Ctrl+Up=ScrollUp, Ctrl+Right=GoWordRight, Ctrl+Down=ScrollDown, Ctrl+Ins=Copy, Ctrl+Del=ClearWordRight, Ctrl+0=ZoomNormal, Ctrl+A=SelectAll, Ctrl+B=BookmarkLine, Ctrl+C=Copy, Ctrl+E=MacroExecute, Ctrl+F=FindDialog, Ctrl+G=GoToDialog, Ctrl+H=ReplaceDialog, Ctrl+I=AutoIndentChars, Ctrl+M=MacroRecord, Ctrl+N=GoNextBookmark, Ctrl+R=Redo, Ctrl+U=UpperCase, Ctrl+V=Paste, Ctrl+X=Cut, Ctrl+Z=Undo, Ctrl+Add=ZoomIn, Ctrl+Subtract=ZoomOut, Ctrl+OemMinus=NavigateBackward, Ctrl+Shift+End=GoLastLineWithSelection, Ctrl+Shift+Home=GoFirstLineWithSelection, Ctrl+Shift+Left=GoWordLeftWithSelection, Ctrl+Shift+Right=GoWordRightWithSelection, Ctrl+Shift+B=UnbookmarkLine, Ctrl+Shift+C=CommentSelected, Ctrl+Shift+N=GoPrevBookmark, Ctrl+Shift+U=LowerCase, Ctrl+Shift+OemMinus=NavigateForward, Alt+Back=Undo, Alt+Up=MoveSelectedLinesUp, Alt+Down=MoveSelectedLinesDown, Alt+F=FindChar, Alt+Shift+Left=GoLeft_ColumnSelectionMode, Alt+Shift+Up=GoUp_ColumnSelectionMode, Alt+Shift+Right=GoRight_ColumnSelectionMode, Alt+Shift+Down=GoDown_ColumnSelectionMode")]
+        [DefaultValue("Tab = IndentIncrease, Escape = ClearHints, PgUp = GoPageUp, PgDn = GoPageDown, End = GoEnd, Home = GoHome, Left = GoLeft, Up = GoUp, Right = GoRight, Down = GoDown, Ins = ReplaceMode, Del = DeleteCharRight, F3 = FindNext, Shift + Tab = IndentDecrease, Shift + PgUp = GoPageUpWithSelection, Shift + PgDn = GoPageDownWithSelection, Shift + End = GoEndWithSelection, Shift + Home = GoHomeWithSelection, Shift + Left = GoLeftWithSelection, Shift + Up = GoUpWithSelection, Shift + Right = GoRightWithSelection, Shift + Down = GoDownWithSelection, Shift + Ins = Paste, Shift + Del = Cut, Ctrl + Back = ClearWordLeft, Ctrl + Space = AutocompleteMenu, Ctrl + End = GoLastLine, Ctrl + Home = GoFirstLine, Ctrl + Left = GoWordLeft, Ctrl + Up = ScrollUp, Ctrl + Right = GoWordRight, Ctrl + Down = ScrollDown, Ctrl + Ins = Copy, Ctrl + Del = ClearWordRight, Ctrl + A = SelectAll, Ctrl + B = BookmarkLine, Ctrl + C = Copy, Ctrl + E = MacroExecute, Ctrl + F = FindDialog, Ctrl + G = GoToDialog, Ctrl + H = ReplaceDialog, Ctrl + I = AutoIndentChars, Ctrl + M = MacroRecord, Ctrl + N = GoNextBookmark, Ctrl + U = UpperCase, Ctrl + V = Paste, Ctrl + X = Cut, Ctrl + Z = Undo, Ctrl + Multiply = ZoomNormal, Ctrl + Add = ZoomIn, Ctrl + Subtract = ZoomOut, Ctrl + OemMinus = NavigateBackward, Ctrl + Shift + End = GoLastLineWithSelection, Ctrl + Shift + Home = GoFirstLineWithSelection, Ctrl + Shift + Left = GoWordLeftWithSelection, Ctrl + Shift + Right = GoWordRightWithSelection, Ctrl + Shift + B = UnbookmarkLine, Ctrl + Shift + C = CommentSelected, Ctrl + Shift + N = GoPrevBookmark, Ctrl + Shift + U = LowerCase, Ctrl + Shift + Z = Redo, Ctrl + Shift + OemMinus = NavigateForward, Alt + Back = Undo, Alt + Left = NavigateBackward, Alt + Up = MoveSelectedLinesUp, Alt + Right = NavigateForward, Alt + Down = MoveSelectedLinesDown, Alt + F = FindChar, Alt + Shift + Left = GoLeft_ColumnSelectionMode, Alt + Shift + Up = GoUp_ColumnSelectionMode, Alt + Shift + Right = GoRight_ColumnSelectionMode, Alt + Shift + Down = GoDown_ColumnSelectionMode")]
         public string Hotkeys {
             get { return HotkeysMapping.ToString(); }
             set { HotkeysMapping = HotkeysMapping.Parse(value); }
@@ -4452,13 +4452,16 @@ namespace FastColoredTextBoxNS {
             Selection.Start = new Place(Math.Min(lines[iLine].Count, Math.Max(0, oldStart.iChar + needToInsert)), iLine);
         }
 
+        private string RemoveInlineStartAndEndBlocks(string text) {
+
+            return text;
+        }
+
         /// <summary>
         /// Returns needed start space count for the line
         /// </summary>
         public int CalcAutoIndent(int iLine) {
             if (iLine < 0 || iLine >= LinesCount) return 0;
-
-
             EventHandler<AutoIndentEventArgs> calculator = AutoIndentNeeded;
             if (calculator == null)
                 if (Language != Language.Custom && SyntaxHighlighter != null)
@@ -4473,6 +4476,10 @@ namespace FastColoredTextBoxNS {
             int i;
             for (i = iLine - 1; i >= 0; i--) {
                 var args = new AutoIndentEventArgs(i, lines[i].Text, i > 0 ? lines[i - 1].Text : "", TabLength, 0);
+                args.LineText     = WithoutStringAndComments(args.LineText);  // By WendyH
+                args.PrevLineText = WithoutStringAndComments(args.PrevLineText);
+                args.LineText     = RemoveInlineStartAndEndBlocks(args.LineText);
+                args.PrevLineText = RemoveInlineStartAndEndBlocks(args.PrevLineText);
                 calculator(this, args);
                 stack.Push(args);
                 if (args.Shift == 0 && args.AbsoluteIndentation == 0 && args.LineText.Trim() != "")
@@ -4488,6 +4495,8 @@ namespace FastColoredTextBoxNS {
             }
             //clalc shift for current line
             var a = new AutoIndentEventArgs(iLine, lines[iLine].Text, iLine > 0 ? lines[iLine - 1].Text : "", TabLength, indent);
+            a.LineText     = WithoutStringAndComments(a.LineText);  // By WendyH
+            a.PrevLineText = WithoutStringAndComments(a.PrevLineText);
             calculator(this, a);
             needSpaces = a.AbsoluteIndentation + a.Shift;
 

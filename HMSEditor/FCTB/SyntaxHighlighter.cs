@@ -312,20 +312,28 @@ namespace FastColoredTextBoxNS {
 
         // < By WendyH ------------------------------------------
         private void PascalAutoIndentNeeded(object sender, AutoIndentEventArgs args) {
+            int opened = DetectStartOrEndBlock(args.LineText, "\\b(Begin|Try|Repeat)\\b", "\\b(End|Until|EndIf|Next|Loop)\\b"); // By WendyH
             //end of block
-            if (Regex.IsMatch(args.LineText, @"^\s*(End|EndIf|Next|Loop)\b", RegexOptions.IgnoreCase)) {
+//            if (Regex.IsMatch(args.LineText, @"^\s*(End|EndIf|Next|Loop)\b", RegexOptions.IgnoreCase)) {
+            if (opened < 0) {
                 args.Shift = -args.TabLength;
                 args.ShiftNextLines = -args.TabLength;
                 return;
             }
             //start of declaration
-            if (Regex.IsMatch(args.LineText, @"\b(Begin)\b", RegexOptions.IgnoreCase)) {
+            //if (Regex.IsMatch(args.LineText, @"\b(Begin)\b", RegexOptions.IgnoreCase)) {
+            if (opened > 0) {
                 args.ShiftNextLines = args.TabLength;
                 return;
             }
             // then ...
-            if (Regex.IsMatch(args.LineText, @"\b(Then)\s*\S+", RegexOptions.IgnoreCase))
+            if (Regex.IsMatch(args.LineText, @"\b(Then)\s*\S+", RegexOptions.IgnoreCase)) {
                 return;
+            }
+            if (Regex.IsMatch(args.PrevLineText, @"\b(Then)\s*$", RegexOptions.IgnoreCase)) {
+                args.ShiftNextLines = -args.TabLength;
+                return;
+            }
             //start of operator block
             if (Regex.IsMatch(args.LineText, @"^\s*(If|While|For|Do|Try|With|Using|Select)\b", RegexOptions.IgnoreCase)) {
                 args.ShiftNextLines = args.TabLength;
@@ -381,19 +389,37 @@ namespace FastColoredTextBoxNS {
             }
         }
 
+        // By WendyH
+        private int DetectStartOrEndBlock(string text, string startBlock, string endBlock) {
+            int result = 0;
+            MatchCollection mc = Regex.Matches(text, "("+ startBlock +"|"+ endBlock + ")", RegexOptions.IgnoreCase);
+            foreach (Match m in mc) {
+                if (Regex.IsMatch(m.Value, startBlock, RegexOptions.IgnoreCase)) result++;
+                if (Regex.IsMatch(m.Value, endBlock  , RegexOptions.IgnoreCase)) result--;
+            }
+            return result;
+        }
+
         private void CSharpAutoIndentNeeded(object sender, AutoIndentEventArgs args) {
+            int opened = DetectStartOrEndBlock(args.LineText, "{", "}");
             //block {}
-            if (Regex.IsMatch(args.LineText, @"^[^""']*\{.*\}[^""']*$"))
-                return;
+            //if (Regex.IsMatch(args.LineText, @"^[^""']*\{.*\}[^""']*$"))
+            //    return;
             //start of block {}
-            if (Regex.IsMatch(args.LineText, @"^[^""']*\{")) {
+            //if (Regex.IsMatch(args.LineText, @"^[^""']*\{")) {
+            if (opened>0) {
                 args.ShiftNextLines = args.TabLength;
                 return;
             }
             //end of block {}
-            if (Regex.IsMatch(args.LineText, @"}[^""']*$")) {
+            //if (Regex.IsMatch(args.LineText, @"}[^""']*$")) {
+            if (opened<0) {
                 args.Shift = -args.TabLength;
                 args.ShiftNextLines = -args.TabLength;
+                return;
+            }
+            if (Regex.IsMatch(args.LineText, @"^[^""']*\{")) {
+                args.Shift = -args.TabLength;
                 return;
             }
             //label
@@ -1380,6 +1406,7 @@ namespace FastColoredTextBoxNS {
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionPAS);
             range.SetStylesStringsAndComments(PascalScriptStringRegex, StringStyle, CommentStyle);
             range.ClearFoldingMarkers();
+            range.SetFoldingMarkers(@"\b(repeat)\b", @"\b(until)\b", RegexCompiledOption | RegexOptions.IgnoreCase); //allow to collapse brackets block
             range.SetFoldingMarkers(@"\b(begin|try)\b", @"\b(end)\b", RegexCompiledOption | RegexOptions.IgnoreCase); //allow to collapse brackets block
         }
 

@@ -594,12 +594,14 @@ namespace HMSEditorNS {
                 item = menuItem.DropDownItems.Add(name, Properties.Resources.Template_Application_16xLG);
             item.Name = name;
             item.AccessibleDescription = text;
-            string hint = ""; int maxLines = 15;
+            string hint = ""; int maxLines = 10; int maxChars = 100;
             foreach (string line in item.AccessibleDescription.Split('\n')) {
-                hint += line + '\n';
+                string cut = line.Substring(0, Math.Min(line.Length, maxChars));
+                hint += cut + '\n';
                 if (maxLines-- < 0) { hint += "..."; break; }
             }
             item.ToolTipText = hint;
+            
             return item;
         }
 
