@@ -1123,7 +1123,7 @@ namespace HMSEditorNS {
             FillGoToItems(btnGotoContextMenu.DropDownItems);
             btnContextMenuToolBar.Checked = tsMain.Visible;
             btnContextMenuAutoIndent.Enabled = (Editor.SelectionLength > 0);
-            btnAdd2Watch.Visible = (Editor.SelectionLength > 0); //&& DebugMode
+            btnAdd2Watch.Visible = DebugMode && (Editor.SelectionLength > 0);
         }
 
         private void btnContextMenuAutoIndent_Click(object sender, EventArgs e) {
