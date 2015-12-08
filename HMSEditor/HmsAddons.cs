@@ -139,6 +139,7 @@ namespace HmsAddons {
 
         uint ChangeScriptName(ref object aScriptName);
 
+        [MTAThread]
         uint CompileScript(ref object aScriptName, ref object aScriptText, ref object aErrorMessage, ref int aErrorLine, ref int aErrorChar, ref int aResult);
 
         uint GenerateScriptDescriptions(ref object aXMLDescriptions);

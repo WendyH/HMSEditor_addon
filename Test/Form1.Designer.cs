@@ -41,7 +41,7 @@
             this.panel1.Controls.Add(this.richTextBox1);
             this.panel1.Location = new System.Drawing.Point(13, 37);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(814, 296);
+            this.panel1.Size = new System.Drawing.Size(1034, 546);
             this.panel1.TabIndex = 0;
             // 
             // richTextBox1
@@ -51,7 +51,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBox1.Location = new System.Drawing.Point(4, 4);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(803, 285);
+            this.richTextBox1.Size = new System.Drawing.Size(1023, 535);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
@@ -70,10 +70,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LogTextBox.BackColor = System.Drawing.SystemColors.ControlDarkDark;
             this.LogTextBox.ForeColor = System.Drawing.SystemColors.Window;
-            this.LogTextBox.Location = new System.Drawing.Point(13, 339);
+            this.LogTextBox.Location = new System.Drawing.Point(13, 589);
             this.LogTextBox.Name = "LogTextBox";
             this.LogTextBox.ReadOnly = true;
-            this.LogTextBox.Size = new System.Drawing.Size(814, 84);
+            this.LogTextBox.Size = new System.Drawing.Size(1034, 84);
             this.LogTextBox.TabIndex = 2;
             this.LogTextBox.Text = "Log here\n";
             // 
@@ -91,7 +91,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(839, 426);
+            this.ClientSize = new System.Drawing.Size(1059, 676);
             this.Controls.Add(this.btnSetup);
             this.Controls.Add(this.LogTextBox);
             this.Controls.Add(this.comboBox1);

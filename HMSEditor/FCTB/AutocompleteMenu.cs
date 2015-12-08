@@ -76,6 +76,18 @@ namespace FastColoredTextBoxNS
             set { listView.HoveredColor = value; }
         }
 
+        protected override void OnPaint(PaintEventArgs e) {
+            Graphics g = e.Graphics;
+            using (SolidBrush brush = new SolidBrush(Color.White)) {
+                g.FillRectangle(brush, new Rectangle(0, 0, Width, Height));
+            }
+            int R = SelectedColor.R - 30; R = Math.Max(0, R);
+            int G = SelectedColor.G - 30; G = Math.Max(0, G);
+            int B = SelectedColor.B - 30; B = Math.Max(0, B);
+            Color c = Color.FromArgb(255, R, G, B);
+            g.DrawRectangle(new Pen(c, 1), new Rectangle(0, 0, Width-1, Height-1));
+            //base.OnPaint(e);
+        }
         public AutocompleteMenu(FastColoredTextBox tb, HMSEditor ed)
         {
             // create a new popup and add the list view to it 
@@ -301,7 +313,8 @@ namespace FastColoredTextBoxNS
             } else {
                 base.Font = new Font("Segoe UI", 9.25f, FontStyle.Regular, GraphicsUnit.Point);
             }
-            visibleItems    = new AutocompleteItems();
+            //base.Font = new Font("Consolas", 10f, FontStyle.Regular, GraphicsUnit.Point);
+            visibleItems = new AutocompleteItems();
             VerticalScroll.SmallChange = ItemHeight;
             MaximumSize     = new Size(Size.Width, 180);
             ToolTip.ShowAlways = false;
@@ -311,11 +324,10 @@ namespace FastColoredTextBoxNS
             HoveredColor    = Color.Red;
             ToolTipDuration = 30000;
             this.tb = tb;
-
+            BorderStyle = BorderStyle.None;
             tb.KeyDown          += new KeyEventHandler(tb_KeyDown);
             tb.SelectionChanged += new EventHandler(tb_SelectionChanged);
             tb.KeyPressed       += new KeyPressEventHandler(tb_KeyPressed);
-
             Form form = tb.FindForm();
             if (form != null) {
                 form.LocationChanged += (o, e) => Menu.Close();
@@ -334,6 +346,7 @@ namespace FastColoredTextBoxNS
                 if (this.Visible)
                     DoSelectedVisible();
             };
+            this.VScroll = false;
         }
 
         void tb_KeyPressed(object sender, KeyPressEventArgs e) {
@@ -467,6 +480,7 @@ namespace FastColoredTextBoxNS
             foundSelected = AddInVisibleItems(text, lastword, VisibleFunctions, foundSelected);
             return foundSelected;
         }
+        private string writtentext = "";
         // > By WendyH ------------------------------------------ 
 
 
@@ -506,6 +520,7 @@ namespace FastColoredTextBoxNS
                     }
                 }
             }
+            writtentext = text;
             // > By WendyH ------------------------
             //calc screen point for popup menu
             Point point = tb.PlaceToPoint(fragment.End);
@@ -664,9 +679,9 @@ namespace FastColoredTextBoxNS
             AdjustScroll();
 
             var itemHeight = ItemHeight;
-            int startI = VerticalScroll.Value / itemHeight - 1;
-            int finishI = (VerticalScroll.Value + ClientSize.Height) / itemHeight + 1;
-            startI = Math.Max(startI, 0);
+            int startI     = VerticalScroll.Value / itemHeight - 1;
+            int finishI    = (VerticalScroll.Value + ClientSize.Height) / itemHeight + 1;
+            startI  = Math.Max(startI , 0);
             finishI = Math.Min(finishI, visibleItems.Count);
             int y = 0;
             int leftPadding = 18;
@@ -675,28 +690,29 @@ namespace FastColoredTextBoxNS
                 y = i * itemHeight - VerticalScroll.Value;
 
                 var item = visibleItems[i];
-                e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-                if (item.BackColor != Color.Transparent)
-                using (var brush = new SolidBrush(item.BackColor))
-                    e.Graphics.FillRectangle(brush, 1, y, ClientSize.Width - 1 - 1, itemHeight - 1);
-
-                if (ImageList != null && item.ImageIndex >= 0 && item.ImageIndex < ImageList.Images.Count)
-                    e.Graphics.DrawImage(ImageList.Images[item.ImageIndex], 1, y);
-
-                if (i == FocussedItemIndex)
-                using (var selectedBrush = new LinearGradientBrush(new Point(0, y - 3), new Point(0, y + itemHeight), Color.Transparent, SelectedColor))
-                using (var pen = new Pen(SelectedColor))
-                {
-                    e.Graphics.FillRectangle(selectedBrush, leftPadding, y, ClientSize.Width - 1 - leftPadding, itemHeight - 1);
-                    e.Graphics.DrawRectangle(pen, leftPadding, y, ClientSize.Width - 1 - leftPadding, itemHeight - 1);
+                // draw item background
+                if (item.BackColor != Color.Transparent) {
+                    using (var brush = new SolidBrush(item.BackColor)) {
+                        e.Graphics.FillRectangle(brush, 1, y, ClientSize.Width - 1 - 1, itemHeight - 1);
+                    }
                 }
-
-                if (i == hoveredItemIndex)
-                using(var pen = new Pen(HoveredColor))
-                    e.Graphics.DrawRectangle(pen, leftPadding, y, ClientSize.Width - 1 - leftPadding, itemHeight - 1);
-
-                using (var brush = new SolidBrush(item.ForeColor != Color.Transparent ? item.ForeColor : ForeColor))
-                    e.Graphics.DrawString(item.ToString(), Font, brush, leftPadding, y + 1);
+                // draw item image
+                if (ImageList != null && item.ImageIndex >= 0 && item.ImageIndex < ImageList.Images.Count) {
+                    e.Graphics.DrawImage(ImageList.Images[item.ImageIndex], 1, y);
+                }
+                // draw selected item
+                if (i == FocussedItemIndex) {
+                    using (var selectedBrush = new SolidBrush(SelectedColor)) {
+                        using (var pen = new Pen(SelectedColor)) {
+                            e.Graphics.FillRectangle(selectedBrush, leftPadding, y, ClientSize.Width - 1 - leftPadding, itemHeight - 1);
+                        }
+                    }
+                }
+                // draw item text
+                e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                using (var brush = new SolidBrush(item.ForeColor != Color.Transparent ? item.ForeColor : ForeColor)) {
+                     e.Graphics.DrawString(writtentext+item.ToString(), Font, brush, leftPadding, y);
+                }
             }
         }
 

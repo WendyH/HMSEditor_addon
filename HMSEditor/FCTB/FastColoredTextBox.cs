@@ -4893,7 +4893,7 @@ namespace FastColoredTextBoxNS {
             car.Offset(0, lineInterval / 2);
 
             if ((Focused || IsDragDrop) && car.X >= LeftIndent && CaretVisible) {
-                int carWidth = (IsReplaceMode || WideCaret) ? CharWidth : CharWidth / 6;
+                int carWidth = (IsReplaceMode || WideCaret) ? CharWidth : CharWidth / 4;
                 if (!CaretBlinking) {
                     if (WideCaret) {
                         using (var brush = new SolidBrush(CaretColor))

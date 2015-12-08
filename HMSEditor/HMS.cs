@@ -75,7 +75,7 @@ namespace HMSEditorNS {
         private static System.Threading.Timer DownloadTimer = new System.Threading.Timer(DownloadTemplateUpdates_Task, null, Timeout.Infinite, Timeout.Infinite);
         private static bool initialized = false;
 
-        [STAThread, EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public static void Init() {
             if (initialized) return;
             initialized = true;

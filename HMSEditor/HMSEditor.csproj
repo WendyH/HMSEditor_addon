@@ -92,6 +92,17 @@
   <PropertyGroup>
     <DelaySign>false</DelaySign>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release2GitHub|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Release2GitHub\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ionic.Zip.Reduced">
       <HintPath>Resources\Ionic.Zip.Reduced.dll</HintPath>
@@ -122,6 +133,12 @@
     <Compile Include="FCTB\Char.cs" />
     <Compile Include="FCTB\CommandManager.cs" />
     <Compile Include="FCTB\Commands.cs" />
+    <Compile Include="FlatScrollbar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FlatScrollbar.Designer.cs">
+      <DependentUpon>FlatScrollbar.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormRename.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -334,7 +351,8 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>if "$(ConfigurationName)"=="Release" sign.bat</PostBuildEvent>
+    <PostBuildEvent>if "$(ConfigurationName)"=="Release" copy2hms.bat
+if "$(ConfigurationName)"=="Release2GitHub" sign.bat</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

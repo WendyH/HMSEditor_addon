@@ -168,6 +168,8 @@ namespace HMSEditorNS {
 
                 //Color c1 = MixColor(0.5, t.KeywordStyle.GetRTF().ForeColor, t.StringStyle.GetRTF().ForeColor);
                 HmsToolTip.ColorBackgrnd = MediaColor(0xF0, t.Background);
+                //editor.PopupMenu.BackColor = t.Background;
+                //editor.PopupMenu.ForeColor = t.Foreground;
 
                 // Для тёмных тем цвет изменённых строк меняем тоже на более тёмный
                 uint icol = (uint)editor.Editor.IndentBackColor.ToArgb() & 0xFFFFFF;

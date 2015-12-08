@@ -1123,6 +1123,7 @@ namespace HMSEditorNS {
             FillGoToItems(btnGotoContextMenu.DropDownItems);
             btnContextMenuToolBar.Checked = tsMain.Visible;
             btnContextMenuAutoIndent.Enabled = (Editor.SelectionLength > 0);
+            btnAdd2Watch.Visible = (Editor.SelectionLength > 0); //&& DebugMode
         }
 
         private void btnContextMenuAutoIndent_Click(object sender, EventArgs e) {
@@ -1226,7 +1227,7 @@ namespace HMSEditorNS {
 
         private void AutoCheckSyntax() {
             if (HmsScriptFrame != null) {
-                object objScriptName = Editor.Language;
+                object objScriptName = ScriptLanguage;
                 object objScriptText = Editor.Text;
                 object objErrorMessage = "";
                 int nErrorLine = 0;
@@ -1793,8 +1794,19 @@ namespace HMSEditorNS {
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
+            object objScriptName = Editor.Language;
+            object objScriptText = Editor.Text;
+            object objErrorMessage = "";
+            int nErrorLine = 0;
+            int nErrorChar = 0;
+            int nResult = 0;
+            HmsScriptFrame.CompileScript(ref objScriptName, ref objScriptText, ref objErrorMessage, ref nErrorLine, ref nErrorChar, ref nResult);
 
         }
 
+        private void btnAdd2Watch_Click(object sender, EventArgs e) {
+            object text = Editor.SelectedText;
+            HmsScriptFrame.AddWatch(ref text);
+        }
     }
 }

@@ -15,6 +15,9 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|Mixed Platforms = Release|Mixed Platforms
 		Release|x86 = Release|x86
+		Release2GitHub|Any CPU = Release2GitHub|Any CPU
+		Release2GitHub|Mixed Platforms = Release2GitHub|Mixed Platforms
+		Release2GitHub|x86 = Release2GitHub|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{BAD3EC9D-FC26-4E64-B7C3-D5A2639D479A}.Debug|Any CPU.ActiveCfg = Debug|x86
@@ -27,6 +30,11 @@ Global
 		{BAD3EC9D-FC26-4E64-B7C3-D5A2639D479A}.Release|Mixed Platforms.Build.0 = Release|x86
 		{BAD3EC9D-FC26-4E64-B7C3-D5A2639D479A}.Release|x86.ActiveCfg = Release|x86
 		{BAD3EC9D-FC26-4E64-B7C3-D5A2639D479A}.Release|x86.Build.0 = Release|x86
+		{BAD3EC9D-FC26-4E64-B7C3-D5A2639D479A}.Release2GitHub|Any CPU.ActiveCfg = Release2GitHub|x86
+		{BAD3EC9D-FC26-4E64-B7C3-D5A2639D479A}.Release2GitHub|Mixed Platforms.ActiveCfg = Release2GitHub|x86
+		{BAD3EC9D-FC26-4E64-B7C3-D5A2639D479A}.Release2GitHub|Mixed Platforms.Build.0 = Release2GitHub|x86
+		{BAD3EC9D-FC26-4E64-B7C3-D5A2639D479A}.Release2GitHub|x86.ActiveCfg = Release2GitHub|x86
+		{BAD3EC9D-FC26-4E64-B7C3-D5A2639D479A}.Release2GitHub|x86.Build.0 = Release2GitHub|x86
 		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -39,6 +47,12 @@ Global
 		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Release|x86.ActiveCfg = Release|Any CPU
 		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Release|x86.Build.0 = Release|Any CPU
+		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Release2GitHub|Any CPU.ActiveCfg = Release2GitHub|Any CPU
+		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Release2GitHub|Any CPU.Build.0 = Release2GitHub|Any CPU
+		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Release2GitHub|Mixed Platforms.ActiveCfg = Release2GitHub|Any CPU
+		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Release2GitHub|Mixed Platforms.Build.0 = Release2GitHub|Any CPU
+		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Release2GitHub|x86.ActiveCfg = Release2GitHub|Any CPU
+		{AF00FBBE-4DF1-4A8A-92D1-5C06D3444ABA}.Release2GitHub|x86.Build.0 = Release2GitHub|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
