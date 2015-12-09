@@ -260,6 +260,9 @@
     <EmbeddedResource Include="FCTB\ReplaceForm.resx">
       <DependentUpon>ReplaceForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FlatScrollbar.resx">
+      <DependentUpon>FlatScrollbar.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormRename.resx">
       <DependentUpon>FormRename.cs</DependentUpon>
     </EmbeddedResource>
@@ -294,6 +297,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <None Include="Resources\ArrowDown.png" />
+    <None Include="Resources\ArrowUp.png" />
     <None Include="Resources\WorkItem_16xLG.png" />
     <None Include="Resources\BookmarkPrevious_2391.png" />
     <None Include="Resources\BookmarkNext_2389.png" />

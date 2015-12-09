@@ -85,15 +85,16 @@ namespace HMSEditorNS {
         // Constructor
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public HMSEditor(IHmsScriptFrame aScriptFrame, int aScriptMode) {
+            ActiveEditor   = this;                // static field - current editor for static tasks
             HmsScriptFrame = aScriptFrame;
             HmsScriptMode  = (HmsScriptMode)aScriptMode;
             HMS.Init();                           // Create knowledge database of HMS and initializing
             InitializeComponent();
             Editor.LostFocus += Editor_LostFocus; // for hiding all tooltipds when lost focus
-            ActiveEditor = this;                  // static field - current editor for static tasks
             AutoCheckSyntaxTimer.Tick += AutoCheckSyntaxTimer_Tick;
             AutoCheckSyntaxTimer.Interval = 800;
             SetAutoCompleteMenu();
+            backgroundWorker1.RunWorkerAsync();
         }
 
         private void AutoCheckSyntaxTimer_Tick(object sender, EventArgs e) {
@@ -1702,25 +1703,26 @@ namespace HMSEditorNS {
             }
             HMS.KeywordsString = keywords.ToLower();
             snippets += "|ShowMessage(\"^\");|HmsLogMessage(1, \"^\");";
+            lock (this) {
+                var items = new AutocompleteItems();
 
-            var items = new AutocompleteItems();
+                foreach (var s in keywords.Split('|')) if (s.Length > 0) items.Add(new HMSItem(s, ImagesIndex.Keyword, s, s, "Ключевое слово"));
+                foreach (var s in snippets.Split('|')) if (s.Length > 0) items.Add(new SnippetHMSItem(s) { ImageIndex = ImagesIndex.Snippet });
 
-            foreach (var s in keywords.Split('|')) if (s.Length > 0) items.Add(new HMSItem(s, ImagesIndex.Keyword, s, s, "Ключевое слово"));
-            foreach (var s in snippets.Split('|')) if (s.Length > 0) items.Add(new SnippetHMSItem(s) { ImageIndex = ImagesIndex.Snippet });
+                foreach (var name in hmsTypes.Split('|')) {
+                    Match m = Regex.Match(name, "{(.*?)}");
+                    if (m.Success) hlp = m.Groups[1].Value;
+                    key = Regex.Replace(name, "{.*?}", "");
+                    items.Add(new HMSItem(key, ImagesIndex.Keyword, key, key, hlp));
+                }
 
-            foreach (var name in hmsTypes.Split('|')) {
-                Match m = Regex.Match(name, "{(.*?)}");
-                if (m.Success) hlp = m.Groups[1].Value;
-                key = Regex.Replace(name, "{.*?}", "");
-                items.Add(new HMSItem(key, ImagesIndex.Keyword, key, key, hlp));
+                PopupMenu.Items.SetAutocompleteItems(items);
+                PopupMenu.Filter = HmsScriptMode.ToString();
+                PopupMenu.Items.AddAutocompleteItems(HMS.ItemsFunction);
+                PopupMenu.Items.AddFilteredItems    (HMS.ItemsVariable);
+                PopupMenu.Items.AddAutocompleteItems(HMS.ItemsConstant);
+                PopupMenu.Items.AddAutocompleteItems(HMS.ItemsClass   );
             }
-
-            PopupMenu.Items.SetAutocompleteItems(items);
-            PopupMenu.Filter = HmsScriptMode.ToString();
-            PopupMenu.Items.AddAutocompleteItems(HMS.ItemsFunction);
-            PopupMenu.Items.AddFilteredItems    (HMS.ItemsVariable);
-            PopupMenu.Items.AddAutocompleteItems(HMS.ItemsConstant);
-            PopupMenu.Items.AddAutocompleteItems(HMS.ItemsClass   );
         }
 
         public void CreateInsertTemplateItems() {
@@ -1794,14 +1796,18 @@ namespace HMSEditorNS {
         }
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
-            object objScriptName = Editor.Language;
-            object objScriptText = Editor.Text;
-            object objErrorMessage = "";
-            int nErrorLine = 0;
-            int nErrorChar = 0;
-            int nResult = 0;
-            HmsScriptFrame.CompileScript(ref objScriptName, ref objScriptText, ref objErrorMessage, ref nErrorLine, ref nErrorChar, ref nResult);
+            Graphics g = null;
+            if (InvokeRequired) {
+                Invoke((MethodInvoker)delegate { g = Graphics.FromHwnd(Handle); });
+            } else {
+                g = Graphics.FromHwnd(Handle);
+            }
 
+            foreach (var item in HMS.ItemsFunction) HmsToolTip.PrepareFastDraw(item, g);
+            foreach (var item in HMS.ItemsVariable) HmsToolTip.PrepareFastDraw(item, g);
+            foreach (var item in HMS.ItemsConstant) HmsToolTip.PrepareFastDraw(item, g);
+            foreach (var item in HMS.ItemsClass   ) HmsToolTip.PrepareFastDraw(item, g);
+            CreateAutocomplete();
         }
 
         private void btnAdd2Watch_Click(object sender, EventArgs e) {

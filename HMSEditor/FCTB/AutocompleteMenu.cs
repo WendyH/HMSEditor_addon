@@ -107,6 +107,8 @@ namespace FastColoredTextBoxNS
             listView.Parent   = this;
             SearchPattern     = @"[\{\#\w\.]";
             MinFragmentLength = 2;
+            //listView.VerticalScrollBar.ThumbHoverColor = Color.FromArgb(255, Color.SkyBlue);
+
         }
 
         public new Font Font
@@ -243,7 +245,8 @@ namespace FastColoredTextBoxNS
         public AutocompleteItems VisibleFunctions = new AutocompleteItems();
 
         int focussedItemIndex = 0;
-        int hoveredItemIndex = -1;
+
+        public FlatScrollbar VerticalScrollBar = new FlatScrollbar();
 
         private int ItemHeight {
             get { return Font.Height + 2; }
@@ -263,6 +266,8 @@ namespace FastColoredTextBoxNS
                     ToolTip.Dispose();
                 if (timer != null)
                     timer.Dispose();
+                if (VerticalScrollBar!=null)
+                    VerticalScrollBar.Dispose();
             }
             FocussedItemIndexChanged = null;
             visibleItems = null;
@@ -273,6 +278,7 @@ namespace FastColoredTextBoxNS
             tb      = null;
             ToolTip = null;
             timer   = null;
+            VerticalScrollBar = null;
             base.Dispose(disposing);
         }
         // > By WendyH -----------------------------------
@@ -307,6 +313,7 @@ namespace FastColoredTextBoxNS
         }
 
         internal AutocompleteListView(FastColoredTextBox tb) {
+            this.Controls.Add(VerticalScrollBar);
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
             if (HMS.PFC.Families.Length > 0) { // By WendyH
                 base.Font = new Font(HMS.PFC.Families[0], 10f, FontStyle.Regular, GraphicsUnit.Point);
@@ -315,14 +322,15 @@ namespace FastColoredTextBoxNS
             }
             //base.Font = new Font("Consolas", 10f, FontStyle.Regular, GraphicsUnit.Point);
             visibleItems = new AutocompleteItems();
-            VerticalScroll.SmallChange = ItemHeight;
+            VerticalScrollBar.SmallChange = ItemHeight;
+            VerticalScrollBar.LargeChange = Height;
             MaximumSize     = new Size(Size.Width, 180);
             ToolTip.ShowAlways = false;
             AppearInterval  = 250;
             timer.Tick     += new EventHandler(timer_Tick);
             SelectedColor   = Color.Orange;
             HoveredColor    = Color.Red;
-            ToolTipDuration = 30000;
+            ToolTipDuration = 300000;
             this.tb = tb;
             BorderStyle = BorderStyle.None;
             tb.KeyDown          += new KeyEventHandler(tb_KeyDown);
@@ -347,6 +355,9 @@ namespace FastColoredTextBoxNS
                     DoSelectedVisible();
             };
             this.VScroll = false;
+            this.HScroll = false;
+            VerticalScrollBar.Scroll += VerticalScrollBar_Scroll;
+            DoubleBuffered = true;
         }
 
         void tb_KeyPressed(object sender, KeyPressEventArgs e) {
@@ -491,10 +502,10 @@ namespace FastColoredTextBoxNS
             if (!forced && Menu.AfterComplete) { Menu.AfterComplete = false; return; }
             visibleItems.Clear();
             FocussedItemIndex = 0;
-            VerticalScroll.Value = 0;
+            VerticalScrollBar.Value = 0;
             //some magic for update scrolls
-            AutoScrollMinSize -= new Size(1, 0);
-            AutoScrollMinSize += new Size(1, 0);
+            //AutoScrollMinSize -= new Size(1, 0);
+            //AutoScrollMinSize += new Size(1, 0);
             //get fragment around caret
 
             //Range fragment = tb.Selection.GetFragment(Menu.SearchPattern);
@@ -661,6 +672,18 @@ namespace FastColoredTextBoxNS
             }
         }
 
+        protected override void OnMouseWheel(MouseEventArgs e) {
+            int newVal = VerticalScrollBar.Value - e.Delta;
+            newVal = Math.Max(VerticalScrollBar.Minimum, newVal);
+            newVal = Math.Min(VerticalScrollBar.Maximum, newVal);
+            VerticalScrollBar.Value = newVal;
+            Invalidate();
+        }
+
+        private void VerticalScrollBar_Scroll(object sender, EventArgs e) {
+            Invalidate();
+        }
+
         void AdjustScroll()
         {
             if (oldItemCount == visibleItems.Count)
@@ -670,7 +693,8 @@ namespace FastColoredTextBoxNS
             Height = Math.Min(needHeight, MaximumSize.Height);
             Menu.CalcSize();
 
-            AutoScrollMinSize = new Size(0, needHeight);
+            VerticalScrollBar.Maximum = needHeight - Height;
+            //AutoScrollMinSize = new Size(0, needHeight);
             oldItemCount = visibleItems.Count;
         }
 
@@ -679,15 +703,15 @@ namespace FastColoredTextBoxNS
             AdjustScroll();
 
             var itemHeight = ItemHeight;
-            int startI     = VerticalScroll.Value / itemHeight - 1;
-            int finishI    = (VerticalScroll.Value + ClientSize.Height) / itemHeight + 1;
+            int startI     = VerticalScrollBar.Value / itemHeight - 1;
+            int finishI    = (VerticalScrollBar.Value + ClientSize.Height) / itemHeight + 1;
             startI  = Math.Max(startI , 0);
             finishI = Math.Min(finishI, visibleItems.Count);
             int y = 0;
             int leftPadding = 18;
             for (int i = startI; i < finishI; i++)
             {
-                y = i * itemHeight - VerticalScroll.Value;
+                y = i * itemHeight - VerticalScrollBar.Value;
 
                 var item = visibleItems[i];
                 // draw item background
@@ -711,7 +735,7 @@ namespace FastColoredTextBoxNS
                 // draw item text
                 e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
                 using (var brush = new SolidBrush(item.ForeColor != Color.Transparent ? item.ForeColor : ForeColor)) {
-                     e.Graphics.DrawString(writtentext+item.ToString(), Font, brush, leftPadding, y);
+                     e.Graphics.DrawString(item.ToString(), Font, brush, leftPadding, y);
                 }
             }
         }
@@ -833,7 +857,7 @@ namespace FastColoredTextBoxNS
 
         int PointToItemIndex(Point p)
         {
-            return (p.Y + VerticalScroll.Value) / ItemHeight;
+            return (p.Y + VerticalScrollBar.Value) / ItemHeight;
         }
 
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
@@ -896,16 +920,16 @@ namespace FastColoredTextBoxNS
                 SetToolTip(FocussedItem);
 
             if (FocussedItemIndex >= 0) {
-                var y = FocussedItemIndex * ItemHeight - VerticalScroll.Value;
+                var y = FocussedItemIndex * ItemHeight - VerticalScrollBar.Value;
                 if (y < 0)
-                    VerticalScroll.Value = FocussedItemIndex * ItemHeight;
+                    VerticalScrollBar.Value = FocussedItemIndex * ItemHeight;
                 if (y > ClientSize.Height - ItemHeight)
-                    VerticalScroll.Value = Math.Min(VerticalScroll.Maximum, FocussedItemIndex * ItemHeight - ClientSize.Height + ItemHeight);
+                    VerticalScrollBar.Value = Math.Min(VerticalScrollBar.Maximum, FocussedItemIndex * ItemHeight - ClientSize.Height + ItemHeight);
 
             }
             //some magic for update scrolls
-            AutoScrollMinSize -= new Size(1, 0);
-            AutoScrollMinSize += new Size(1, 0);
+            //AutoScrollMinSize -= new Size(1, 0);
+            //AutoScrollMinSize += new Size(1, 0);
         }
 
         private void SetToolTip(HMSItem autocompleteItem)
@@ -920,7 +944,7 @@ namespace FastColoredTextBoxNS
             }
             ToolTip.ParentRect   = new Rectangle(Location.X, Location.Y, Width, Height);
             Point location = new Point((window == this ? Width : Right) + 3, 0);
-            int y = FocussedItemIndex * ItemHeight - VerticalScroll.Value; // By WendyH
+            int y = FocussedItemIndex * ItemHeight - VerticalScrollBar.Value; // By WendyH
             if (y < 0) y = 0;
             if (y > ClientSize.Height - ItemHeight) y = ClientSize.Height - ItemHeight;
             location.Y = y;

@@ -15,7 +15,7 @@ namespace FastColoredTextBoxNS {
     /// </summary>
     public sealed class HmsToolTip: ToolTip {
         #region Static computed field
-        private static Regex regexWords          = new Regex(@"(<.*?>|\w+|.)", RegexOptions.Compiled);
+        private static Regex regexWords          = new Regex(@"(<.*?>|[\w-_]+|[^\w-_<]+)", RegexOptions.Compiled);
         private static Regex regexSplitFuncParam = new Regex("[,;]"          , RegexOptions.Compiled);
         private static Regex regexFunctionParams = new Regex(@"\(([^\)]+)"   , RegexOptions.Compiled);
         private static Size Margin        = new Size(6, 4);
@@ -92,11 +92,15 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        public void PrepareFastDraw(IWin32Window win, HMSItem item) {
+        public static void PrepareFastDraw(IWin32Window win, HMSItem item) {
+            Graphics g = Graphics.FromHwnd(win.Handle);
+            PrepareFastDraw(item, g);
+        }
+
+        public static void PrepareFastDraw(HMSItem item, Graphics g) {
             float heightCorrection = 0;
-            Graphics  g  = Graphics.FromHwnd(win.Handle);
             string text  = GetText(item, out heightCorrection);
-            Size   size  = TextRenderer.MeasureText(g, text, FontTextBold, MaxSize, TextFormatFlags.WordBreak);
+            Size   size  = TextRenderer.MeasureText(text, FontText, MaxSize, TextFormatFlags.WordBreak);
             size.Width  += Margin.Width  * 2;
             size.Height += Margin.Height * 2 + (int)heightCorrection;
             item.ToolTipSize = size;
@@ -127,7 +131,7 @@ namespace FastColoredTextBoxNS {
                 Graphics g = Graphics.FromHwnd(e.AssociatedControl.Handle);
                 float heightCorrection = 0;
                 string text  = GetText(GetToolTip(e.AssociatedControl), out heightCorrection);
-                Size size    = TextRenderer.MeasureText(g, text, FontTextBold, MaxSize, TextFormatFlags.WordBreak);
+                Size size    = TextRenderer.MeasureText(g, text, FontText, MaxSize, TextFormatFlags.WordBreak);
                 size.Width  += Margin.Width  * 2;
                 size.Height += Margin.Height * 2 + (int)heightCorrection;
                 e.ToolTipSize = size;
@@ -139,7 +143,7 @@ namespace FastColoredTextBoxNS {
         private Size CalcSize(string toolTipText) {
             float heightCorrection = 0;
             string text  = GetText(toolTipText, out heightCorrection);
-            Size   size  = TextRenderer.MeasureText(text, FontTextBold, MaxSize, TextFormatFlags.WordBreak);
+            Size   size  = TextRenderer.MeasureText(text, FontText, MaxSize, TextFormatFlags.WordBreak);
             size.Width  += Margin.Width  * 2;
             size.Height += Margin.Height * 2 + (int)heightCorrection;
             return size;
@@ -150,19 +154,19 @@ namespace FastColoredTextBoxNS {
             string s2 = tooltipText .Trim();
             string s3 = Help .Trim();
             string s4 = Value.Trim();
-            return GetText(out heightCorrection, s1, s2, s3, s4);
+            return StructuredText(out heightCorrection, s1, s2, s3, s4);
         }
 
-        private string GetText(HMSItem item, out float heightCorrection) {
+        private static string GetText(HMSItem item, out float heightCorrection) {
             string s1 = item.ToolTipTitle.Trim();
             string s2 = item.ToolTipText .Trim();
             string s3 = item.Help .Trim();
             string s4 = item.Value.Trim();
-            return GetText(out heightCorrection, s1, s2, s3, s4);
+            return StructuredText(out heightCorrection, s1, s2, s3, s4);
         }
 
 
-        private string GetText(out float heightCorrection, string s1, string s2, string s3, string s4) {
+        private static string StructuredText(out float heightCorrection, string s1, string s2, string s3, string s4) {
             heightCorrection = 0;
             string text = "";
             if (s1.Length > 0) { text += "<t>" + s1  + "</b>"; heightCorrection += 3; }
@@ -182,7 +186,7 @@ namespace FastColoredTextBoxNS {
             Bounds = e.Bounds; // Store show Bounds
             HmsToolTip        tip = sender as HmsToolTip;
             Graphics            g = e.Graphics;
-            LinearGradientBrush b = new LinearGradientBrush(Bounds, Color.White, Color.FromArgb(255, ColorBackgrnd), 90f);
+            LinearGradientBrush b = new LinearGradientBrush(Bounds, Color.WhiteSmoke, Color.FromArgb(255, ColorBackgrnd), 90f);
             g.FillRectangle(b, Bounds);
             e.DrawBorder();
             g.SmoothingMode = SmoothingMode.HighQuality;
@@ -234,7 +238,9 @@ namespace FastColoredTextBoxNS {
         }
 
         private void DrawFast(Graphics g, List<WordStyle> words) {
-            foreach(var word in words) {
+            int count = words.Count;
+            for (int i=0; i< count; i++) {
+                WordStyle word = words[i];
                 TextRenderer.DrawText(g, word.Text, word.Font, word.Point, word.Color, tf);
             }
         }
@@ -287,8 +293,18 @@ namespace FastColoredTextBoxNS {
         }
 
         private static void DrawText(Graphics g, string text, Font font, Point point, Color color, List<WordStyle> words) {
-            if (words == null) TextRenderer.DrawText(g, text, font, point, color, tf);
-            else words.Add(new WordStyle(text, font, point, color));
+            if (words == null) {
+                TextRenderer.DrawText(g, text, font, point, color, tf);
+            } else {
+                WordStyle s = new WordStyle(text, font, point, color);
+                if (words.Count > 0) {
+                    if (words[words.Count - 1].SameStyle(s)) {
+                        words[words.Count - 1].Text += text;
+                        return;
+                    }
+                }
+                words.Add(s);
+            }
         }
 
         private static bool isKeyWord(string word) {
@@ -312,6 +328,10 @@ namespace FastColoredTextBoxNS {
             Font  = font;
             Point = point;
             Color = color;
+        }
+
+        public bool SameStyle(WordStyle o) {
+            return ((Font == o.Font) && (Color == o.Color) && (Point.Y == o.Point.Y));
         }
 
         public void Draw(Graphics g) {

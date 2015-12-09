@@ -320,9 +320,11 @@ namespace FastColoredTextBoxNS {
                     return;
                 }
             }
-            if (Regex.IsMatch(args.LineText, @"^\s*(Function|Procedure|Var)\b", RegexOptions.IgnoreCase)) {
+            if (Regex.IsMatch(args.LineText, @"^\s*(Program|Function|Procedure|Var)\b", RegexOptions.IgnoreCase)) {
                 args.AbsoluteIndentation = 0;
-                args.ShiftNextLines = args.TabLength;
+                if (Regex.IsMatch(args.LineText, @"^\s*(Var)\b", RegexOptions.IgnoreCase)) {
+                    args.ShiftNextLines = args.TabLength;
+                }
                 return;
             }
             int opened = DetectStartOrEndBlock(args.LineText, beginBlock, endBlock); // By WendyH

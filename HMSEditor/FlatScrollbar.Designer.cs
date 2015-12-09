@@ -1,4 +1,4 @@
-﻿namespace Test {
+﻿namespace FastColoredTextBoxNS {
     partial class FlatScrollbar {
         /// <summary> 
         /// Обязательная переменная конструктора.
@@ -12,7 +12,16 @@
         protected override void Dispose(bool disposing) {
             if (disposing && (components != null)) {
                 components.Dispose();
+                if (repeatTimer != null)
+                    repeatTimer.Dispose();
+                if (DownArrowImage != null)
+                    DownArrowImage.Dispose();
+                if (UpArrowImage != null)
+                    UpArrowImage.Dispose();
             }
+            repeatTimer    = null;
+            DownArrowImage = null;
+            UpArrowImage   = null;
             base.Dispose(disposing);
         }
 
@@ -23,16 +32,17 @@
         /// содержимое этого метода с помощью редактора кода.
         /// </summary>
         private void InitializeComponent() {
-            components = new System.ComponentModel.Container();
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.SuspendLayout();
             // 
-            // CustomScrollbar
+            // FlatScrollbar
             // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "FlatScrollbar";
+            this.Size = new System.Drawing.Size(16, 244);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CustomScrollbar_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.CustomScrollbar_MouseMove);
-            this.MouseUp   += new System.Windows.Forms.MouseEventHandler(this.CustomScrollbar_MouseUp);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.CustomScrollbar_MouseUp);
             this.ResumeLayout(false);
 
         }
