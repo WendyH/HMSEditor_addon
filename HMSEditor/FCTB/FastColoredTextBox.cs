@@ -46,7 +46,7 @@ namespace FastColoredTextBoxNS {
     /// Fast colored textbox
     /// </summary>
     public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
-        private Timer HighlightTimer = new Timer();
+        private Timer      HighlightTimer   = new Timer();
         public Regex       RegexStringAndComments = null;
         public HmsToolTip  ToolTip4Function = new HmsToolTip(); // By WendyH
         public bool        DebugMode        = false;
@@ -225,7 +225,7 @@ namespace FastColoredTextBoxNS {
             AutoIndentChars = true;
             CaretBlinking = true;
             //
-            base.AutoScroll = true;
+            base.AutoScroll = false;
             timer.Tick += timer_Tick;
             timer2.Tick += timer2_Tick;
             timer3.Tick += timer3_Tick;
@@ -4915,7 +4915,6 @@ namespace FastColoredTextBoxNS {
                             NativeMethods.ShowCaret(Handle);
                         }
                         NativeMethods.SetCaretPos(car.X, car.Y);
-                        NativeMethods.SetCaretBlinkTime(500);
                     }
 
                 prevCaretRect = caretRect;
@@ -7014,7 +7013,6 @@ window.status = ""#print"";
                 timer .Dispose();
                 timer2.Dispose();
                 ToolTip4Function.Dispose();
-                ToolTip.Dispose();
                 debugColor.Dispose();
                 middleClickScrollingTimer.Dispose();
                 ErrorStyle.Dispose();

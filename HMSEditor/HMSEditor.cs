@@ -94,7 +94,38 @@ namespace HMSEditorNS {
             AutoCheckSyntaxTimer.Tick += AutoCheckSyntaxTimer_Tick;
             AutoCheckSyntaxTimer.Interval = 800;
             SetAutoCompleteMenu();
-            backgroundWorker1.RunWorkerAsync();
+            Editor.ScrollbarsUpdated += Editor_ScrollbarsUpdated;
+        }
+
+        private void Editor_ScrollbarsUpdated(object sender, EventArgs e) {
+            flatVerticalScrollbar1  .SuspendLayout();
+            flatHorizontalScrollbar1.SuspendLayout();
+            if (!flatHorizontalScrollbar1.Visible) {
+                flatHorizontalScrollbar1.Width = Editor.Width;
+            }
+            if (!flatVerticalScrollbar1.Visible) {
+                flatVerticalScrollbar1.Height = Editor.Height;
+            }
+            flatVerticalScrollbar1  .Maximum = Editor.VerticalScroll  .Maximum;
+            flatHorizontalScrollbar1.Maximum = Editor.HorizontalScroll.Maximum;
+            flatVerticalScrollbar1  .Value   = Editor.VerticalScroll  .Value;
+            flatHorizontalScrollbar1.Value   = Editor.HorizontalScroll.Value;
+            flatVerticalScrollbar1  .SmallChange = Editor.CharHeight;
+            flatHorizontalScrollbar1.SmallChange = Editor.CharWidth;
+            flatVerticalScrollbar1  .ResumeLayout();
+            flatHorizontalScrollbar1.ResumeLayout();
+            flatVerticalScrollbar1  .Invalidate();
+            flatHorizontalScrollbar1.Invalidate();
+        }
+
+        private void flatVerticalScrollbar1_Scroll(object sender, EventArgs e) {
+            Editor.VerticalScroll.Value = flatVerticalScrollbar1.Value;
+            Editor.Invalidate();
+        }
+
+        private void flatHorizontalScrollbar1_Scroll(object sender, EventArgs e) {
+            Editor.HorizontalScroll.Value = flatHorizontalScrollbar1.Value;
+            Editor.Invalidate();
         }
 
         private void AutoCheckSyntaxTimer_Tick(object sender, EventArgs e) {
@@ -1660,8 +1691,10 @@ namespace HMSEditorNS {
             HMS.CurrentParamType = "";
             HMSItem item = GetHMSItemByText(name);
             if (item != null) {
-                if ((Editor.SelectionStart >= item.PositionStart) && (Editor.SelectionStart <= item.PositionEnd)) return; // we writing this function
-                Editor.ToolTip4Function.ShowFunctionParams(item, paramNum, Editor, p);
+                if (item.IsFuncOrProcedure || (item.Kind == DefKind.Method)) {
+                    if ((Editor.SelectionStart >= item.PositionStart) && (Editor.SelectionStart <= item.PositionEnd)) return; // we writing this function
+                    Editor.ToolTip4Function.ShowFunctionParams(item, paramNum, Editor, p);
+                }
             }
         }
 
@@ -1670,13 +1703,12 @@ namespace HMSEditorNS {
         private void SetAutoCompleteMenu() {
             PopupMenu = new AutocompleteMenu(Editor, this);
             PopupMenu.ImageList         = imageList1;
-            PopupMenu.SelectedColor     = Color.DeepSkyBlue;
             PopupMenu.MinFragmentLength = 1;
             PopupMenu.Items.MaximumSize = new Size(200, 300);
             PopupMenu.Items.Width       = 200;
         }
 
-        private void CreateAutocomplete() {
+        public void CreateAutocomplete() {
             if (PopupMenu == null || PopupMenu.IsDisposed) return;
             string hmsTypes = HMS.HmsTypesStringWithHelp;
             string keywords = "", snippets = "";
@@ -1753,9 +1785,6 @@ namespace HMSEditorNS {
             int posEnd = posSta + text.Length;
             text = FormatCodeText(text);
             Editor.InsertText(text);
-            //Editor.Selection.Start = Editor.PositionToPlace(posSta);
-            //Editor.Selection.End   = Editor.PositionToPlace(posEnd);
-            //Editor.DoAutoIndent();
         }
 
         private string FormatCodeText(string text) {
@@ -1795,24 +1824,10 @@ namespace HMSEditorNS {
 
         }
 
-        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e) {
-            Graphics g = null;
-            if (InvokeRequired) {
-                Invoke((MethodInvoker)delegate { g = Graphics.FromHwnd(Handle); });
-            } else {
-                g = Graphics.FromHwnd(Handle);
-            }
-
-            foreach (var item in HMS.ItemsFunction) HmsToolTip.PrepareFastDraw(item, g);
-            foreach (var item in HMS.ItemsVariable) HmsToolTip.PrepareFastDraw(item, g);
-            foreach (var item in HMS.ItemsConstant) HmsToolTip.PrepareFastDraw(item, g);
-            foreach (var item in HMS.ItemsClass   ) HmsToolTip.PrepareFastDraw(item, g);
-            CreateAutocomplete();
-        }
-
         private void btnAdd2Watch_Click(object sender, EventArgs e) {
             object text = Editor.SelectedText;
             HmsScriptFrame.AddWatch(ref text);
         }
+
     }
 }

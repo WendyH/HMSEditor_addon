@@ -93,7 +93,7 @@ namespace HmsAddons {
         private HMSEditor EditBox = null;
         private bool  FirstSetPos = false;
 
-        protected void Dispose(bool disposing) {
+        protected virtual void Dispose(bool disposing) {
             if (disposing) {
                 if (EditBox != null && !EditBox.IsDisposed) EditBox.Dispose();
             }
@@ -129,8 +129,8 @@ namespace HmsAddons {
                 LoadSettings();
                 aEditor = EditBox.Handle;
 
-            } catch {
-                MessageBox.Show("Ошибка создания окна редактора " + HMSEditor.Title);
+            } catch (Exception e) {
+                MessageBox.Show("Ошибка создания окна редактора.\n\n" + e.ToString(), HMSEditor.Title);
                 Dispose();
                 return HRESULT.E_UNEXPECTED;
             }

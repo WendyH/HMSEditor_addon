@@ -92,9 +92,35 @@ namespace HMSEditorNS {
 
                 // Заполняем базу знаний функций, классов, встроенных констант и переменных...
                 InitAndLoadHMSKnowledgeDatabase();
+
+                Thread thread = new Thread(HMS.backgroundThread_DoWork);
+                thread.IsBackground = true;
+                thread.Start(BackgraundTask.PrepareFastDraw);
+
             } catch (Exception e) {
                 LogError(e.ToString());
 
+            }
+        }
+
+        enum BackgraundTask { None = 0, PrepareFastDraw }
+
+        private static void backgroundThread_DoWork(object parameter) {
+            BackgraundTask taskType = (BackgraundTask)parameter;
+            if (taskType == BackgraundTask.PrepareFastDraw) {
+                if (HMSEditor.ActiveEditor != null) return;
+                Graphics g = null;
+                if (HMSEditor.ActiveEditor.InvokeRequired) {
+                    HMSEditor.ActiveEditor.Invoke((MethodInvoker)delegate { g = Graphics.FromHwnd(HMSEditor.ActiveEditor.Handle); });
+                } else {
+                    g = Graphics.FromHwnd(HMSEditor.ActiveEditor.Handle);
+                }
+
+                foreach (var item in HMS.ItemsFunction) HmsToolTip.PrepareFastDraw(item, g);
+                foreach (var item in HMS.ItemsVariable) HmsToolTip.PrepareFastDraw(item, g);
+                foreach (var item in HMS.ItemsConstant) HmsToolTip.PrepareFastDraw(item, g);
+                foreach (var item in HMS.ItemsClass   ) HmsToolTip.PrepareFastDraw(item, g);
+                HMSEditor.ActiveEditor.CreateAutocomplete();
             }
         }
 

@@ -246,7 +246,7 @@ namespace FastColoredTextBoxNS
 
         int focussedItemIndex = 0;
 
-        public FlatScrollbar VerticalScrollBar = new FlatScrollbar();
+        public FlatVerticalScrollbar VerticalScrollBar = new FlatVerticalScrollbar();
 
         private int ItemHeight {
             get { return Font.Height + 2; }
@@ -316,11 +316,10 @@ namespace FastColoredTextBoxNS
             this.Controls.Add(VerticalScrollBar);
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
             if (HMS.PFC.Families.Length > 0) { // By WendyH
-                base.Font = new Font(HMS.PFC.Families[0], 10f, FontStyle.Regular, GraphicsUnit.Point);
+                base.Font = new Font(HMS.PFC.Families[0], 9.25f, FontStyle.Regular, GraphicsUnit.Point);
             } else {
-                base.Font = new Font("Segoe UI", 9.25f, FontStyle.Regular, GraphicsUnit.Point);
+                base.Font = new Font("Consolas", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
             }
-            //base.Font = new Font("Consolas", 10f, FontStyle.Regular, GraphicsUnit.Point);
             visibleItems = new AutocompleteItems();
             VerticalScrollBar.SmallChange = ItemHeight;
             VerticalScrollBar.LargeChange = Height;
@@ -328,7 +327,7 @@ namespace FastColoredTextBoxNS
             ToolTip.ShowAlways = false;
             AppearInterval  = 250;
             timer.Tick     += new EventHandler(timer_Tick);
-            SelectedColor   = Color.Orange;
+            SelectedColor   = Color.CornflowerBlue;
             HoveredColor    = Color.Red;
             ToolTipDuration = 300000;
             this.tb = tb;
@@ -701,6 +700,7 @@ namespace FastColoredTextBoxNS
         protected override void OnPaint(PaintEventArgs e)
         {
             AdjustScroll();
+            Graphics g = e.Graphics;
 
             var itemHeight = ItemHeight;
             int startI     = VerticalScrollBar.Value / itemHeight - 1;
@@ -717,26 +717,28 @@ namespace FastColoredTextBoxNS
                 // draw item background
                 if (item.BackColor != Color.Transparent) {
                     using (var brush = new SolidBrush(item.BackColor)) {
-                        e.Graphics.FillRectangle(brush, 1, y, ClientSize.Width - 1 - 1, itemHeight - 1);
+                        g.FillRectangle(brush, 1, y, ClientSize.Width - 1 - 1, itemHeight - 1);
                     }
                 }
                 // draw item image
                 if (ImageList != null && item.ImageIndex >= 0 && item.ImageIndex < ImageList.Images.Count) {
-                    e.Graphics.DrawImage(ImageList.Images[item.ImageIndex], 1, y);
+                    g.DrawImage(ImageList.Images[item.ImageIndex], 1, y);
                 }
                 // draw selected item
                 if (i == FocussedItemIndex) {
                     using (var selectedBrush = new SolidBrush(SelectedColor)) {
                         using (var pen = new Pen(SelectedColor)) {
-                            e.Graphics.FillRectangle(selectedBrush, leftPadding, y, ClientSize.Width - 1 - leftPadding, itemHeight - 1);
+                            g.FillRectangle(selectedBrush, leftPadding, y, ClientSize.Width - 1 - leftPadding, itemHeight);
                         }
                     }
                 }
                 // draw item text
-                e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-                using (var brush = new SolidBrush(item.ForeColor != Color.Transparent ? item.ForeColor : ForeColor)) {
-                     e.Graphics.DrawString(item.ToString(), Font, brush, leftPadding, y);
-                }
+                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                Color foreColor = item.ForeColor != Color.Transparent ? item.ForeColor : (i == FocussedItemIndex) ? Color.White : ForeColor;
+                TextRenderer.DrawText(g, item.ToString(), Font, new Point(leftPadding + 1, y), foreColor);
+                //using (var brush = new SolidBrush(foreColor)) {
+                     //g.DrawString(item.ToString(), Font, brush, leftPadding+2, y, StringFormat.GenericTypographic);
+                //}
             }
         }
 

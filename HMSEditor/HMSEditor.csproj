@@ -133,11 +133,17 @@
     <Compile Include="FCTB\Char.cs" />
     <Compile Include="FCTB\CommandManager.cs" />
     <Compile Include="FCTB\Commands.cs" />
-    <Compile Include="FlatScrollbar.cs">
-      <SubType>UserControl</SubType>
+    <Compile Include="FlatHorizontalScrollbar.cs">
+      <SubType>Component</SubType>
     </Compile>
-    <Compile Include="FlatScrollbar.Designer.cs">
-      <DependentUpon>FlatScrollbar.cs</DependentUpon>
+    <Compile Include="FlatHorizontalScrollbar.Designer.cs">
+      <DependentUpon>FlatHorizontalScrollbar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FlatVerticalScrollbar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FlatVerticalScrollbar.Designer.cs">
+      <DependentUpon>FlatVerticalScrollbar.cs</DependentUpon>
     </Compile>
     <Compile Include="FormRename.cs">
       <SubType>Form</SubType>
@@ -260,8 +266,11 @@
     <EmbeddedResource Include="FCTB\ReplaceForm.resx">
       <DependentUpon>ReplaceForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="FlatScrollbar.resx">
-      <DependentUpon>FlatScrollbar.cs</DependentUpon>
+    <EmbeddedResource Include="FlatHorizontalScrollbar.resx">
+      <DependentUpon>FlatHorizontalScrollbar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FlatVerticalScrollbar.resx">
+      <DependentUpon>FlatVerticalScrollbar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormRename.resx">
       <DependentUpon>FormRename.cs</DependentUpon>

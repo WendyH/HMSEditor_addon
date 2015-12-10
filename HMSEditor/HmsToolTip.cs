@@ -181,8 +181,8 @@ namespace FastColoredTextBoxNS {
 #if debug
             var sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
-            long ts = System.Diagnostics.Stopwatch.GetTimestamp();
-            if (ts - LastTS < 5000) return;
+            //long ts = System.Diagnostics.Stopwatch.GetTimestamp();
+            //if (ts - LastTS < 5000) return;
             Bounds = e.Bounds; // Store show Bounds
             HmsToolTip        tip = sender as HmsToolTip;
             Graphics            g = e.Graphics;
@@ -201,7 +201,7 @@ namespace FastColoredTextBoxNS {
             b.Dispose();
             Visible = true;
             HmsItem = null;
-            LastTS = System.Diagnostics.Stopwatch.GetTimestamp();
+            //LastTS = System.Diagnostics.Stopwatch.GetTimestamp();
 #if debug
             sw.Stop();
             System.Console.WriteLine("OnDraw: " + sw.ElapsedMilliseconds);
