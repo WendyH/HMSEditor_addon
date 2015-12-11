@@ -14,14 +14,8 @@
                 components.Dispose();
                 if (repeatTimer != null)
                     repeatTimer.Dispose();
-                if (ArrowDownImage != null)
-                    ArrowDownImage.Dispose();
-                if (ArrowUpImage != null)
-                    ArrowUpImage.Dispose();
             }
             repeatTimer    = null;
-            ArrowDownImage = null;
-            ArrowUpImage   = null;
             base.Dispose(disposing);
         }
 

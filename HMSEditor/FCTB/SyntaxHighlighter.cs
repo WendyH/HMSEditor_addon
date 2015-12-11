@@ -1522,15 +1522,6 @@ namespace FastColoredTextBoxNS {
             //range.SetFoldingMarkers(@"^\s*(?<range>Do)\b", @"^\s*(?<range>Loop)\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         }
 
-        public bool IsCommentOrString(Range range) {
-            foreach (var c in range.Chars) {
-                var si1 = Range.ToStyleIndex(range.tb.GetStyleIndex(StringStyle ));
-                var si2 = Range.ToStyleIndex(range.tb.GetStyleIndex(CommentStyle));
-                if ((c.style & si1) != 0 || (c.style & si2) != 0) return true;
-                break;
-            }
-            return false;
-        }
         // By WendyH > ----------------------------------------------------------------------------
 
         #region Styles

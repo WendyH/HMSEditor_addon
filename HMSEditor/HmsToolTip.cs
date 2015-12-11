@@ -46,7 +46,7 @@ namespace FastColoredTextBoxNS {
         public bool      Visible = false;
         public Rectangle ParentRect = new Rectangle();
         public HMSItem   HmsItem;
-        private long LastTS = 0;
+        //private long LastTS = 0;
         private List<WordStyle> OwnWords = new List<WordStyle>();
 
         public string Value {
@@ -104,7 +104,8 @@ namespace FastColoredTextBoxNS {
             size.Width  += Margin.Width  * 2;
             size.Height += Margin.Height * 2 + (int)heightCorrection;
             item.ToolTipSize = size;
-            WriteWords(text, new Rectangle(0, 0, size.Width, size.Height), g, item.Words);
+            int y = WriteWords(text, new Rectangle(0, 0, size.Width, size.Height), g, item.Words);
+            item.ToolTipSize = new Size(item.ToolTipSize.Width, y + Margin.Height);
         }
 
         public void Show(HMSItem item, IWin32Window win, Point point, int duration) {
@@ -138,15 +139,6 @@ namespace FastColoredTextBoxNS {
                 OwnWords.Clear();
                 WriteWords(text, new Rectangle(0, 0, size.Width, size.Height), g, OwnWords);
             }
-        }
-
-        private Size CalcSize(string toolTipText) {
-            float heightCorrection = 0;
-            string text  = GetText(toolTipText, out heightCorrection);
-            Size   size  = TextRenderer.MeasureText(text, FontText, MaxSize, TextFormatFlags.WordBreak);
-            size.Width  += Margin.Width  * 2;
-            size.Height += Margin.Height * 2 + (int)heightCorrection;
-            return size;
         }
 
         private string GetText(string tooltipText, out float heightCorrection) {
@@ -245,8 +237,8 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        private static void WriteWords(string text, Rectangle bounds, Graphics g, List<WordStyle> words = null) {
-            if (text.Length == 0) return;
+        private static int WriteWords(string text, Rectangle bounds, Graphics g, List<WordStyle> words = null) {
+            if (text.Length == 0) return 0;
             Point  point      = new Point(Margin.Width, Margin.Height);
             Font   font       = FontText;
             Color  color      = colorText;
@@ -290,6 +282,7 @@ namespace FastColoredTextBoxNS {
                 }
                 point.Y += wordSize.Height; point.X = Margin.Width;
             }
+            return point.Y;
         }
 
         private static void DrawText(Graphics g, string text, Font font, Point point, Color color, List<WordStyle> words) {

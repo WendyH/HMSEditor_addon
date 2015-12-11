@@ -56,6 +56,7 @@ namespace HMSEditorNS {
                 Place place   = Editor.PointToPlace(point);
                 string line   = "";
                 try {  line   = Editor.Lines[iLine]; } catch { return; }
+                if (line.Length <= place.iChar) return;
                 string value  = "";
                 bool evalSelection = false;
                 if (Editor.DebugMode && (Editor.SelectedText.Length > 2)) {
@@ -72,7 +73,7 @@ namespace HMSEditorNS {
                 HMSItem item = null; string text = "";
                 Range r = new Range(Editor, place, place);
 
-                if (r.IsErrorPlace()) {
+                if (r.IsErrorPlace) {
                     // Показываем инофрмацию об ошибке через ToolTip
                     Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
                         var tip = Editor.ToolTip;
@@ -82,6 +83,7 @@ namespace HMSEditorNS {
                     });
                     return;
                 }
+                if (r.IsStringOrComment) return;
                 Range fragment = r.GetFragmentLookedLeft();
                 text = fragment.Text.Replace("#", "");
                 if (text.Length == 0) return;

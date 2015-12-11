@@ -53,6 +53,8 @@ namespace FastColoredTextBoxNS {
         public int         HmsDebugLine     = -1;
         public int         HmsDebugChar     = -1;
         public ErrorStyle  ErrorStyle       = new ErrorStyle();
+        public TextStyle   StringStyle      = null;
+        public TextStyle   CommentStyle     = null;
         private Brush      debugColor       = new SolidBrush(Color.FromArgb(100, 250, 11, 11));
 
         internal const int minLeftIndent              = 8;
@@ -3861,7 +3863,7 @@ namespace FastColoredTextBoxNS {
 
         public string GetCurrentWord() {
             Range fragment = Selection.GetFragmentLookedLeft();
-            if (SyntaxHighlighter.IsCommentOrString(fragment)) return ""; // if in comment or string - return nothing
+            if (fragment.IsStringOrComment) return ""; // if in comment or string - return nothing
             return fragment.Text;
         }
 

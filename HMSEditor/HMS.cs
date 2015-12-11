@@ -31,7 +31,7 @@ namespace HMSEditorNS {
         internal static string WorkingDir {
             get {
                 if (_workingdir.Length == 0) {
-                    try { Application.SetCompatibleTextRenderingDefault(false); } catch { } // firstest code in static class
+                    InitialiseWinFormsSettings(); // firstest code in static class
 #if DEBUG
                     _workingdir = @"D:\Projects\HMSEditor_addon\HMSEditor\bin\Debug\";
 #else
@@ -74,6 +74,13 @@ namespace HMSEditorNS {
         public  static Templates Templates    = new Templates();
         private static System.Threading.Timer DownloadTimer = new System.Threading.Timer(DownloadTemplateUpdates_Task, null, Timeout.Infinite, Timeout.Infinite);
         private static bool initialized = false;
+
+        private static void InitialiseWinFormsSettings() {
+            try {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+            } catch {; }
+        }
 
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public static void Init() {

@@ -991,8 +991,6 @@
             // 
             // flatVerticalScrollbar1
             // 
-            this.flatVerticalScrollbar1.ArrowDownImage = null;
-            this.flatVerticalScrollbar1.ArrowUpImage = null;
             this.flatVerticalScrollbar1.Dock = System.Windows.Forms.DockStyle.Right;
             this.flatVerticalScrollbar1.LargeChange = 10;
             this.flatVerticalScrollbar1.Location = new System.Drawing.Point(932, 0);
@@ -1010,8 +1008,6 @@
             // 
             // flatHorizontalScrollbar1
             // 
-            this.flatHorizontalScrollbar1.ArrowLeftImage = null;
-            this.flatHorizontalScrollbar1.ArrowRightImage = null;
             this.flatHorizontalScrollbar1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.flatHorizontalScrollbar1.Location = new System.Drawing.Point(0, 514);
             this.flatHorizontalScrollbar1.Maximum = 100;

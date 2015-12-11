@@ -24,6 +24,7 @@ namespace HMSEditorNS {
         public  static string    NeedCopyDllFile = "";
         public  static INI       Settings        = new INI(HMS.SettingsFile);
         private static bool      EnableMouseHelp = false;
+        private static object    LockObject      = new object();
 
         #region Regular Expressions Magnetic Field
         private static Regex regexProceduresCPP    = new Regex(@"(?:^|[\r\n])\s*?(?<type>\w+)\s+(\w+)\s*?\("  , RegexOptions.Singleline | RegexOptions.Compiled);
@@ -98,8 +99,6 @@ namespace HMSEditorNS {
         }
 
         private void Editor_ScrollbarsUpdated(object sender, EventArgs e) {
-            flatVerticalScrollbar1  .SuspendLayout();
-            flatHorizontalScrollbar1.SuspendLayout();
             if (!flatHorizontalScrollbar1.Visible) {
                 flatHorizontalScrollbar1.Width = Editor.Width;
             }
@@ -112,19 +111,19 @@ namespace HMSEditorNS {
             flatHorizontalScrollbar1.Value   = Editor.HorizontalScroll.Value;
             flatVerticalScrollbar1  .SmallChange = Editor.CharHeight;
             flatHorizontalScrollbar1.SmallChange = Editor.CharWidth;
-            flatVerticalScrollbar1  .ResumeLayout();
-            flatHorizontalScrollbar1.ResumeLayout();
-            flatVerticalScrollbar1  .Invalidate();
             flatHorizontalScrollbar1.Invalidate();
+            flatVerticalScrollbar1  .Invalidate();
         }
 
         private void flatVerticalScrollbar1_Scroll(object sender, EventArgs e) {
-            Editor.VerticalScroll.Value = flatVerticalScrollbar1.Value;
+            int val = (int)(Math.Ceiling(1d * flatVerticalScrollbar1.Value / Editor.CharHeight) * Editor.CharHeight);
+            Editor.VerticalScroll.Value = Math.Max(Editor.VerticalScroll.Minimum, Math.Min(Editor.VerticalScroll.Maximum, val));
             Editor.Invalidate();
         }
 
         private void flatHorizontalScrollbar1_Scroll(object sender, EventArgs e) {
-            Editor.HorizontalScroll.Value = flatHorizontalScrollbar1.Value;
+            int val = (int)(Math.Ceiling(1d * flatHorizontalScrollbar1.Value / Editor.CharWidth) * Editor.CharWidth);
+            Editor.HorizontalScroll.Value = Math.Max(Editor.HorizontalScroll.Minimum, Math.Min(Editor.HorizontalScroll.Maximum, val));
             Editor.Invalidate();
         }
 
@@ -1406,7 +1405,7 @@ namespace HMSEditorNS {
         private string CurrentWord() {
             Range r = new Range(Editor, Editor.Selection.Start, Editor.Selection.Start);
             r = r.GetFragment(@"[\w]");
-            if (Editor.SyntaxHighlighter.IsCommentOrString(r)) return "";
+            if (r.IsStringOrComment) return "";
             return r.Text;
         }
 
@@ -1735,7 +1734,7 @@ namespace HMSEditorNS {
             }
             HMS.KeywordsString = keywords.ToLower();
             snippets += "|ShowMessage(\"^\");|HmsLogMessage(1, \"^\");";
-            lock (this) {
+            lock (LockObject) {
                 var items = new AutocompleteItems();
 
                 foreach (var s in keywords.Split('|')) if (s.Length > 0) items.Add(new HMSItem(s, ImagesIndex.Keyword, s, s, "Ключевое слово"));

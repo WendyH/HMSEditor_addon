@@ -80,7 +80,7 @@ namespace HMSEditorNS {
             if (word == "") return;
             var range = TextBox.Range.Clone();
             foreach (var r in range.GetRangesByLines("\\b" + word + "\\b", RegexOptions.IgnoreCase)) {
-                if (TextBox.SyntaxHighlighter.IsCommentOrString(r)) continue;
+                if (r.IsStringOrComment) continue;
                 r.SetStyle(TextBox.SelectionStyle);
             }
         }

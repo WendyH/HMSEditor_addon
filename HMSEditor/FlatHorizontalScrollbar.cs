@@ -1,11 +1,11 @@
-﻿using System;
+﻿//#define debug
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace FastColoredTextBoxNS {
     public partial class FlatHorizontalScrollbar: Control {
-        const int DefaultArrowWidth = 16;
 
         public Color ChannelColor    = Color.WhiteSmoke;
         public Color ThumbColor      = Color.DarkGray;
@@ -19,15 +19,12 @@ namespace FastColoredTextBoxNS {
         public int LargeChange = 10;
         public int SmallChange = 1;
 
-        protected Image  moUpArrowImage   = null;
-        protected Image  moDownArrowImage = null;
-        protected int    LeftArrowWidth   = DefaultArrowWidth;
-        protected int    RightArrowWidth  = DefaultArrowWidth;
-        protected Cursor oldCursor        = Cursors.Arrow;
+        protected int    ArrowAreaWidth = 16;
+        protected Cursor oldCursor  = Cursors.Arrow;
 
-        protected int _minimum     = 0;
-        protected int _maximum     = 100;
-        protected int _value       = 0;
+        protected int _minimum      = 0;
+        protected int _maximum      = 100;
+        protected int _value        = 0;
         private   int nClickPoint;
 
         protected int ThumbLeft = 0;
@@ -43,24 +40,9 @@ namespace FastColoredTextBoxNS {
         private bool ArrowLeftIsHover  { get { return _arrowUpIsHover  ; } set { if (_arrowUpIsHover   != value) { _arrowUpIsHover   = value; Invalidate(); } } }
         private bool ArrowRightIsHover { get { return _arrowDownIsHover; } set { if (_arrowDownIsHover != value) { _arrowDownIsHover = value; Invalidate(); } } }
 
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Skin"), Description("Up Arrow Graphic")]
-        public Image ArrowLeftImage {
-            get { return moUpArrowImage; }
-            set { moUpArrowImage = value; LeftArrowWidth = (value != null) ? value.Width : DefaultArrowWidth; }
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Skin"), Description("Up Arrow Graphic")]
-        public Image ArrowRightImage {
-            get { return moDownArrowImage; }
-            set { moDownArrowImage = value; RightArrowWidth = (value != null) ? value.Width : DefaultArrowWidth; }
-        }
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Behavior"), Description("Minimum")]
         public int Minimum { get { return _minimum; } set { if (_minimum != value) { _minimum = value; Recalc(); } } }
-
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Behavior"), Description("Maximum")]
         public int Maximum { get { return _maximum; } set { if (_maximum != value) { _maximum = value; Recalc(); } } }
 
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Behavior"), Description("Value")]
         public int Value {
             get { return _value; }
             set {
@@ -107,7 +89,7 @@ namespace FastColoredTextBoxNS {
             repeatTimer.Interval = FirstRepeatInterval;
             repeatTimer.Tick += RepeatTimer_Tick;
             TabStop = false;
-            MinimumSize = new Size(LeftArrowWidth + RightArrowWidth + MinThumbLength, Height);
+            MinimumSize = new Size(ArrowAreaWidth * 2 + MinThumbLength, Height);
         }
 
         private void RepeatTimer_Tick(object sender, EventArgs e) {
@@ -142,7 +124,7 @@ namespace FastColoredTextBoxNS {
         }
 
         public void Recalc() {
-            TrackWidth = (Width - (LeftArrowWidth + RightArrowWidth));
+            TrackWidth = (Width - (ArrowAreaWidth * 2));
             ThumbWidth = 0;
             if ((Maximum + Width) != 0) ThumbWidth = (int)((float)((float)Width / (float)(Maximum+Width)) * (float)TrackWidth);
             ThumbWidth  = Math.Min(TrackWidth, ThumbWidth);
@@ -169,64 +151,41 @@ namespace FastColoredTextBoxNS {
             }
             //draw up arrow
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            if (ArrowLeftImage != null) {
-                g.DrawImage(ArrowLeftImage, new Rectangle(new Point(0, 0), new Size(LeftArrowWidth, this.Height)));
-            } else {
-                Point[] points = new Point[] {
-                    new Point(arrowsXPadding + arrowsWidth, arrowsYPadding),
-                    new Point(arrowsXPadding + arrowsWidth, Height - arrowsYPadding),
-                    new Point(arrowsXPadding, Height / 2)
-                };
-                using (Brush brush = new SolidBrush((ArrowLeftIsHover) ? ArrowHoverColor : ArrowColor)) {
-                    g.FillPolygon(brush, points);
-                }
+            Point[] points1 = new Point[] {
+                new Point(arrowsXPadding + arrowsWidth, arrowsYPadding),
+                new Point(arrowsXPadding + arrowsWidth, Height - arrowsYPadding),
+                new Point(arrowsXPadding, Height / 2)
+            };
+            using (Brush brush = new SolidBrush((ArrowLeftIsHover) ? ArrowHoverColor : ArrowColor)) {
+                g.FillPolygon(brush, points1);
             }
             //draw thumb
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-            int nLeft = ThumbLeft + LeftArrowWidth;
+            int nLeft = ThumbLeft + ArrowAreaWidth;
             using (Brush oBrush = new SolidBrush((ThumbIsHover) ? ThumbHoverColor : ThumbColor)) {
                 g.FillRectangle(oBrush, new Rectangle(nLeft, 2, ThumbWidth, Height - 3));
             }
             //draw down arrow
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            if (ArrowRightImage != null) {
-                g.DrawImage(ArrowRightImage, new Rectangle(new Point(0, (Height - RightArrowWidth)), new Size(Width, RightArrowWidth)));
-            } else {
-                Point[] points = new Point[] {
-                    new Point(Width - arrowsXPadding - arrowsWidth, arrowsYPadding),
-                    new Point(Width - arrowsXPadding - arrowsWidth, Height - arrowsYPadding),
-                    new Point(Width - arrowsXPadding, Height / 2)
-                };
-                using (Brush brush = new SolidBrush((ArrowRightIsHover) ? ArrowHoverColor : ArrowColor)) {
-                    g.FillPolygon(brush, points);
-                }
-            }
-        }
-
-        public override bool AutoSize {
-            get {
-                return base.AutoSize;
-            }
-            set {
-                base.AutoSize = value;
-                if (base.AutoSize) {
-                    if (moUpArrowImage != null)
-                        this.Height = moUpArrowImage.Height;
-                    else
-                        this.Height = 16;
-                }
+            Point[] points2 = new Point[] {
+                new Point(Width - arrowsXPadding - arrowsWidth, arrowsYPadding),
+                new Point(Width - arrowsXPadding - arrowsWidth, Height - arrowsYPadding),
+                new Point(Width - arrowsXPadding, Height / 2)
+            };
+            using (Brush brush = new SolidBrush((ArrowRightIsHover) ? ArrowHoverColor : ArrowColor)) {
+                g.FillPolygon(brush, points2);
             }
         }
 
         private void CustomScrollbar_MouseDown(object sender, MouseEventArgs e) {
-            int   nLeft   = ThumbLeft + LeftArrowWidth;
+            int   nLeft   = ThumbLeft + ArrowAreaWidth;
             Point ptPoint = this.PointToClient(Cursor.Position);
 
-            Rectangle leftArrowRect   = new Rectangle(new Point(0, 1), new Size(LeftArrowWidth, Height));
-            Rectangle beforeThumbRect = new Rectangle(new Point(LeftArrowWidth + 1, 1), new Size(ThumbLeft, Height));
+            Rectangle leftArrowRect   = new Rectangle(new Point(0, 1), new Size(ArrowAreaWidth, Height));
+            Rectangle beforeThumbRect = new Rectangle(new Point(ArrowAreaWidth + 1, 1), new Size(ThumbLeft, Height));
             Rectangle thumbRect       = new Rectangle(new Point(nLeft, 1), new Size(ThumbWidth, Height));
-            Rectangle afterThumbRect  = new Rectangle(new Point(nLeft + ThumbWidth, 1), new Size(Width - nLeft - ThumbWidth - RightArrowWidth, Height));
-            Rectangle rightArrowRect  = new Rectangle(new Point(RightArrowWidth + TrackWidth, 1), new Size(RightArrowWidth, Height));
+            Rectangle afterThumbRect  = new Rectangle(new Point(nLeft + ThumbWidth, 1), new Size(Width - nLeft - ThumbWidth - ArrowAreaWidth, Height));
+            Rectangle rightArrowRect  = new Rectangle(new Point(ArrowAreaWidth + TrackWidth, 1), new Size(ArrowAreaWidth, Height));
 
             int oldVal = Value;
             if (thumbRect.Contains(ptPoint)) {
@@ -291,14 +250,14 @@ namespace FastColoredTextBoxNS {
             int nPixelRange = (TrackWidth - ThumbWidth);
             if (ThumbIsDown && nRealRange > 0) {
                 if (nPixelRange > 0) {
-                    int nNewThumbLeft = x - (LeftArrowWidth + nSpot);
+                    int nNewThumbLeft = x - (ArrowAreaWidth + nSpot);
 
                     if (nNewThumbLeft < 0) {
                         ThumbLeft = nNewThumbLeft = 0;
                     } else if (nNewThumbLeft > nPixelRange) {
                         ThumbLeft = nNewThumbLeft = nPixelRange;
                     } else {
-                        ThumbLeft = x - (LeftArrowWidth + nSpot);
+                        ThumbLeft = x - (ArrowAreaWidth + nSpot);
                     }
 
                     //figure out value
@@ -307,7 +266,6 @@ namespace FastColoredTextBoxNS {
                     _value = (int)fValue;
 
                     Application.DoEvents();
-
                     Invalidate();
                 }
             }
@@ -322,9 +280,9 @@ namespace FastColoredTextBoxNS {
 
         private void CheckHover() {
             Point ptPoint = this.PointToClient(Cursor.Position);
-            Rectangle leftArrowRect  = new Rectangle(new Point(0, 1), new Size(LeftArrowWidth, Height));
+            Rectangle leftArrowRect  = new Rectangle(new Point(0, 1), new Size(ArrowAreaWidth, Height));
             Rectangle thumbRect      = new Rectangle(new Point(ThumbLeft, 1), new Size(ThumbWidth, Height));
-            Rectangle rightArrowRect = new Rectangle(new Point(RightArrowWidth + TrackWidth, 1), new Size(RightArrowWidth, Height));
+            Rectangle rightArrowRect = new Rectangle(new Point(ArrowAreaWidth + TrackWidth, 1), new Size(ArrowAreaWidth, Height));
             ThumbIsHover = ThumbIsDown || thumbRect.Contains(ptPoint);
             ArrowLeftIsHover  = leftArrowRect .Contains(ptPoint);
             ArrowRightIsHover = rightArrowRect.Contains(ptPoint);

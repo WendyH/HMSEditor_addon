@@ -566,17 +566,19 @@ namespace FastColoredTextBoxNS
                     AutocompleteItems notExacctly = new AutocompleteItems();
                     foreach (var item in sourceItems) {
                         item.Parent = Menu;
-                        CompareResult res = item.Compare(text);
-                        if (res != CompareResult.Hidden)
+                        CompareResult resultCompare = item.Compare(text);
+                        if (resultCompare != CompareResult.Hidden) {
                             visibleItems.Add(item);
-                        else if (item.NotExactlyCompare(text) == CompareResult.Visible)
+
+                        } else if (item.NotExactlyCompare(text) == CompareResult.Visible) {
                             notExacctly.Add(item);
-                        if (lastword.Length > 0) {
-                            if (item.MenuText == lastword) {
-                                foundSelected = true;
-                                FocussedItemIndex = visibleItems.Count - 1;
-                            }
-                        } else if (res == CompareResult.VisibleAndSelected && !foundSelected) {
+
+                        }
+                        if ((lastword.Length > 0) && (item.MenuText == lastword)) {
+                            foundSelected = true;
+                            FocussedItemIndex = visibleItems.Count - 1;
+                        }
+                        if (resultCompare == CompareResult.VisibleAndSelected && !foundSelected) {
                             foundSelected = true;
                             FocussedItemIndex = visibleItems.Count - 1;
                         }
@@ -939,6 +941,7 @@ namespace FastColoredTextBoxNS
             if (IsDisposed) return;
             if (ToolTip.Visible && ToolTip.HmsItem == autocompleteItem) return;
             IWin32Window window = this.Parent;
+            ToolTip.Hide(window);
             // By WendyH
             if (string.IsNullOrEmpty(autocompleteItem.ToolTipTitle)) {
                 ToolTip.Hide(window);

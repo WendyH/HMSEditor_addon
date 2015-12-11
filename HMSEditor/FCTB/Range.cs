@@ -823,13 +823,31 @@ namespace FastColoredTextBoxNS {
         }
 
         // By WendyH < -----------------------------------------
-        public bool IsErrorPlace() {
-            try {
-                Char c = tb[Start.iLine][Start.iChar];
-                var si1 = ToStyleIndex(tb.GetStyleIndex(tb.ErrorStyle));
-                if ((c.style & si1) != 0) return true;
-            } catch { }
-            return false;
+        public bool IsStringOrComment {
+            get {
+                // when is typing and other thread check range - need additional checks
+                if ((tb.Lines.Count <= Start.iLine) || (tb[Start.iLine].Count <= Start.iChar)) return false;
+                try {
+                    Char c = tb[Start.iLine][Start.iChar];
+                    var si1 = ToStyleIndex(tb.GetStyleIndex(tb.SyntaxHighlighter.StringStyle));
+                    var si2 = ToStyleIndex(tb.GetStyleIndex(tb.SyntaxHighlighter.CommentStyle));
+                    if ((c.style & si1) != 0 || (c.style & si2) != 0) return true;
+                } catch {; }
+                return false;
+            }
+        }
+
+        public bool IsErrorPlace {
+            get {
+                // when is typing and other thread check range - need additional checks
+                if ((tb.Lines.Count <= Start.iLine) || (tb[Start.iLine].Count <= Start.iChar)) return false;
+                try {
+                    Char c = tb[Start.iLine][Start.iChar];
+                    var si1 = ToStyleIndex(tb.GetStyleIndex(tb.ErrorStyle));
+                    if ((c.style & si1) != 0) return true;
+                } catch {; }
+                return false;
+            }
         }
 
         /// <summary>

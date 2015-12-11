@@ -1,12 +1,10 @@
-﻿//#define debug
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace FastColoredTextBoxNS {
     public partial class FlatVerticalScrollbar: Control {
-        const int DefaultArrowHeght = 16;
 
         public Color ChannelColor    = Color.WhiteSmoke;
         public Color ThumbColor      = Color.DarkGray;
@@ -16,56 +14,59 @@ namespace FastColoredTextBoxNS {
         public int   ThumbHeight     = 0;
         public int   TrackHeight     = 0;
 
-        protected Image moUpArrowImage    = null;
-        protected Image moDownArrowImage  = null;
-        protected int UpArrowHeight   = DefaultArrowHeght;
-        protected int DownArrowHeight = DefaultArrowHeght;
+        public int MinThumbLength  = 16;
+        public int LargeChange     = 10;
+        public int SmallChange     = 1;
+
+        protected int ArrowAreaHeight = 16;
         protected Cursor oldCursor = Cursors.Arrow;
 
-        protected int moLargeChange = 10;
-        protected int moSmallChange = 1;
-        protected int moMinimum     = 0;
-        protected int moMaximum     = 100;
-        protected int moValue       = 0;
+        protected int _minimum     = 0;
+        protected int _maximum     = 100;
+        protected int _value       = 0;
         private   int nClickPoint;
 
-        protected int moThumbTop = 0;
+        protected int ThumbTop = 0;
 
-        private bool moThumbDown     = false;
-        private bool moThumbDragging = false;
+        private bool ThumbIsDown     = false;
+        private bool ThumbIsDragging = false;
 
         private bool _thumbIsHover     = false;
         private bool _arrowUpIsHover   = false;
         private bool _arrowDownIsHover = false;
 
-        private bool ThumbIsHover {
-            get { return _thumbIsHover; }
-            set { if (_thumbIsHover != value) { _thumbIsHover = value; Invalidate(); }
-            }
-        }
-        private bool ArrowUpIsHover {
-            get { return _arrowUpIsHover; }
-            set {
-                if (_arrowUpIsHover != value) { _arrowUpIsHover = value; Invalidate(); }
-            }
-        }
-        private bool ArrowDownIsHover {
-            get { return _arrowDownIsHover; }
-            set {
-                if (_arrowDownIsHover != value) { _arrowDownIsHover = value; Invalidate(); }
-            }
-        }
+        private bool ThumbIsHover     { get { return _thumbIsHover    ; } set { if (_thumbIsHover     != value) { _thumbIsHover     = value; Invalidate(); } } }
+        private bool ArrowUpIsHover   { get { return _arrowUpIsHover  ; } set { if (_arrowUpIsHover   != value) { _arrowUpIsHover   = value; Invalidate(); } } }
+        private bool ArrowDownIsHover { get { return _arrowDownIsHover; } set { if (_arrowDownIsHover != value) { _arrowDownIsHover = value; Invalidate(); } } }
 
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Skin"), Description("Up Arrow Graphic")]
-        public Image ArrowUpImage {
-            get { return moUpArrowImage; }
-            set { moUpArrowImage = value; UpArrowHeight = (value != null) ? value.Height : DefaultArrowHeght; }
-        }
+        public int Minimum { get { return _minimum; } set { if (_minimum != value) { _minimum = value; Recalc(); } } }
+        public int Maximum { get { return _maximum; } set { if (_maximum != value) { _maximum = value; Recalc(); } } }
 
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Skin"), Description("Up Arrow Graphic")]
-        public Image ArrowDownImage {
-            get { return moDownArrowImage; }
-            set { moDownArrowImage = value; DownArrowHeight = (value != null) ? value.Width : DefaultArrowHeght; }
+        public int Value {
+            get { return _value; }
+            set {
+                if (_value == value) return;
+                if (value < Minimum) {
+                    _value = Minimum;
+                    repeatTimer.Stop();
+                } else if (value > Maximum) {
+                    _value = Maximum;
+                    repeatTimer.Stop();
+                } else {
+                    _value = value;
+                }
+                int nPixelRange = TrackHeight - ThumbHeight;
+                int nRealRange = Maximum - Minimum;
+                float fPerc = 0.0f;
+                if (nRealRange != 0) {
+                    fPerc = (float)_value / (float)nRealRange;
+                }
+                float fTop = fPerc * nPixelRange;
+                ThumbTop = (int)fTop;
+
+                Invalidate();
+                Application.DoEvents();
+            }
         }
 
         public event EventHandler Scroll  = null;
@@ -87,7 +88,7 @@ namespace FastColoredTextBoxNS {
             repeatTimer.Interval = FirstRepeatInterval;
             repeatTimer.Tick += RepeatTimer_Tick;
             TabStop = false;
-            MinimumSize = new Size(Width, DownArrowHeight + UpArrowHeight + MinThumbLength);
+            MinimumSize = new Size(Width, ArrowAreaHeight * 2 + MinThumbLength);
         }
 
         private void RepeatTimer_Tick(object sender, EventArgs e) {
@@ -116,98 +117,26 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(16), Category("Behavior"), Description("Minimum heigth of thumb")]
-        public int MinThumbLength = 16;
-
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Behavior"), Description("LargeChange")]
-        public int LargeChange {
-            get { return moLargeChange; }
-            set {
-                moLargeChange = value;
-            }
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Behavior"), Description("SmallChange")]
-        public int SmallChange {
-            get { return moSmallChange; }
-            set {
-                moSmallChange = value;
-            }
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Behavior"), Description("Minimum")]
-        public int Minimum {
-            get { return moMinimum; }
-            set {
-                if (moMinimum != value) {
-                    moMinimum = value;
-                    Recalc();
-                }
-            }
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Behavior"), Description("Maximum")]
-        public int Maximum {
-            get { return moMaximum; }
-            set {
-                if (moMaximum != value) {
-                    moMaximum = value;
-                    Recalc();
-                }
-            }
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Always), Browsable(true), DefaultValue(false), Category("Behavior"), Description("Value")]
-        public int Value {
-            get { return moValue; }
-            set {
-                if (moValue == value) return;
-                if (value < Minimum) {
-                    moValue = Minimum;
-                    repeatTimer.Stop();
-                } else if (value > Maximum) {
-                    moValue = Maximum;
-                    repeatTimer.Stop();
-                } else {
-                    moValue = value;
-                }
-                int nPixelRange = TrackHeight - ThumbHeight;
-                int nRealRange  = Maximum - Minimum;
-                float fPerc = 0.0f;
-                if (nRealRange != 0) {
-                    fPerc = (float)moValue / (float)nRealRange;
-                }
-                float fTop = fPerc * nPixelRange;
-                moThumbTop = (int)fTop;
-
-                Invalidate();
-                Application.DoEvents();
-            }
-        }
-
         protected override void OnSizeChanged(EventArgs e) {
             base.OnSizeChanged(e);
             Recalc();
         }
 
         public void Recalc() {
-            TrackHeight = (Height - (UpArrowHeight + DownArrowHeight));
+            TrackHeight = (Height - (ArrowAreaHeight * 2));
             ThumbHeight = 0;
             if ((Maximum + Height) != 0) ThumbHeight = (int)((float)((float)Height / (float)(Maximum+ Height)) * (float)TrackHeight);
             ThumbHeight = Math.Min(TrackHeight   , ThumbHeight);
             ThumbHeight = Math.Max(MinThumbLength, ThumbHeight);
             float k = 0; if ((Maximum - Minimum) != 0) k = (float)Value / (float)(Maximum - Minimum);
-            moThumbTop = (int)(((float)TrackHeight * k) - ((float)ThumbHeight / 2));
-            moThumbTop = Math.Max(0, moThumbTop);
-            moThumbTop = Math.Min(TrackHeight - ThumbHeight, moThumbTop);
+            ThumbTop = (int)(((float)TrackHeight * k) - ((float)ThumbHeight / 2));
+            ThumbTop = Math.Max(0, ThumbTop);
+            ThumbTop = Math.Min(TrackHeight - ThumbHeight, ThumbTop);
             if (!Visible && ((ThumbHeight < TrackHeight) && (Maximum >  Minimum))) Visible = true;
             if ( Visible && ((ThumbHeight > TrackHeight) || (Maximum <= Minimum))) Visible = false;
         }
 
         protected override void OnPaint(PaintEventArgs e) {
-#if debug
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-#endif
             Graphics g = e.Graphics;
             int arrowsXPadding = 3;
             int arrowsYPadding = 4;
@@ -221,74 +150,47 @@ namespace FastColoredTextBoxNS {
             }
             //draw up arrow
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            if (ArrowUpImage != null) {
-                g.DrawImage(ArrowUpImage, new Rectangle(new Point(0, 0), new Size(this.Width, UpArrowHeight)));
-            } else {
-                Point[] points = new Point[] {
-                    new Point(arrowsXPadding, arrowsYPadding + arrowsHeight),
-                    new Point(Width - arrowsXPadding, arrowsYPadding + arrowsHeight),
-                    new Point(Width / 2, arrowsYPadding)
-                };
-                using (Brush brush = new SolidBrush((ArrowUpIsHover) ? ArrowHoverColor : ArrowColor)) {
-                    g.FillPolygon(brush, points);
-                }
+            Point[] points1 = new Point[] {
+                new Point(arrowsXPadding, arrowsYPadding + arrowsHeight),
+                new Point(Width - arrowsXPadding, arrowsYPadding + arrowsHeight),
+                new Point(Width / 2, arrowsYPadding)
+            };
+            using (Brush brush = new SolidBrush((ArrowUpIsHover) ? ArrowHoverColor : ArrowColor)) {
+                g.FillPolygon(brush, points1);
             }
             //draw thumb
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
-            int nTop = moThumbTop + UpArrowHeight;
-            using (Brush oBrush = new SolidBrush((ThumbIsHover) ? ThumbHoverColor : ThumbColor)) {
-                g.FillRectangle(oBrush, new Rectangle(1, nTop, Width - 2, ThumbHeight));
+            int nTop = ThumbTop + ArrowAreaHeight;
+            using (Brush brush = new SolidBrush((ThumbIsHover) ? ThumbHoverColor : ThumbColor)) {
+                g.FillRectangle(brush, new Rectangle(1, nTop, Width - 2, ThumbHeight));
             }
             //draw down arrow
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-            if (ArrowDownImage != null) {
-                g.DrawImage(ArrowDownImage, new Rectangle(new Point(0, (Height - DownArrowHeight)), new Size(Width, DownArrowHeight)));
-            } else {
-                Point[] points = new Point[] {
-                    new Point(arrowsXPadding, Height - arrowsYPadding - arrowsHeight),
-                    new Point(Width - arrowsXPadding, Height - arrowsYPadding - arrowsHeight),
-                    new Point(Width / 2, Height - arrowsYPadding)
-                };
-                using (Brush brush = new SolidBrush((ArrowDownIsHover) ? ArrowHoverColor : ArrowColor)) {
-                    g.FillPolygon(brush, points);
-                }
-            }
-#if debug
-            sw.Stop();
-            System.Console.WriteLine("FlatScrollBar OnPaint: " + sw.ElapsedMilliseconds);
-#endif
-        }
-
-        public override bool AutoSize {
-            get {
-                return base.AutoSize;
-            }
-            set {
-                base.AutoSize = value;
-                if (base.AutoSize) {
-                    if (moUpArrowImage != null)
-                        this.Width = moUpArrowImage.Width;
-                    else
-                        this.Width = 16;
-                }
+            Point[] points2 = new Point[] {
+                new Point(arrowsXPadding, Height - arrowsYPadding - arrowsHeight),
+                new Point(Width - arrowsXPadding, Height - arrowsYPadding - arrowsHeight),
+                new Point(Width / 2, Height - arrowsYPadding)
+            };
+            using (Brush brush = new SolidBrush((ArrowDownIsHover) ? ArrowHoverColor : ArrowColor)) {
+                g.FillPolygon(brush, points2);
             }
         }
 
         private void CustomScrollbar_MouseDown(object sender, MouseEventArgs e) {
-            int   nTop    = moThumbTop + UpArrowHeight;
+            int nTop    = ThumbTop + ArrowAreaHeight;
             Point ptPoint = this.PointToClient(Cursor.Position);
 
-            Rectangle upArrowRect     = new Rectangle(new Point(1, 0), new Size(Width, UpArrowHeight));
-            Rectangle beforeThumbRect = new Rectangle(new Point(1, UpArrowHeight + 1), new Size(Width, moThumbTop));
+            Rectangle upArrowRect     = new Rectangle(new Point(1, 0), new Size(Width, ArrowAreaHeight));
+            Rectangle beforeThumbRect = new Rectangle(new Point(1, ArrowAreaHeight + 1), new Size(Width, ThumbTop));
             Rectangle thumbRect       = new Rectangle(new Point(1, nTop), new Size(Width, ThumbHeight));
-            Rectangle afterThumbRect  = new Rectangle(new Point(1, nTop + ThumbHeight), new Size(Width, Height - nTop - ThumbHeight - DownArrowHeight));
-            Rectangle downArrowRect   = new Rectangle(new Point(1, DownArrowHeight + TrackHeight), new Size(Width, DownArrowHeight));
+            Rectangle afterThumbRect  = new Rectangle(new Point(1, nTop + ThumbHeight), new Size(Width, Height - nTop - ThumbHeight - ArrowAreaHeight));
+            Rectangle downArrowRect   = new Rectangle(new Point(1, ArrowAreaHeight + TrackHeight), new Size(Width, ArrowAreaHeight));
 
             int oldVal = Value;
             if (thumbRect.Contains(ptPoint)) {
                 //hit the thumb
                 nClickPoint = (ptPoint.Y - nTop);
-                this.moThumbDown = true;
+                this.ThumbIsDown = true;
 
             } else if (beforeThumbRect.Contains(ptPoint)) {
                 Value -= Height;
@@ -320,8 +222,8 @@ namespace FastColoredTextBoxNS {
         }
 
         private void CustomScrollbar_MouseUp(object sender, MouseEventArgs e) {
-            this.moThumbDown     = false;
-            this.moThumbDragging = false;
+            this.ThumbIsDown     = false;
+            this.ThumbIsDragging = false;
             repeatTimer.Stop();
         }
 
@@ -345,25 +247,24 @@ namespace FastColoredTextBoxNS {
             int nSpot        = nClickPoint;
 
             int nPixelRange = (TrackHeight - ThumbHeight);
-            if (moThumbDown && nRealRange > 0) {
+            if (ThumbIsDown && nRealRange > 0) {
                 if (nPixelRange > 0) {
-                    int nNewThumbTop = y - (UpArrowHeight + nSpot);
+                    int nNewThumbTop = y - (ArrowAreaHeight + nSpot);
 
                     if (nNewThumbTop < 0) {
-                        moThumbTop = nNewThumbTop = 0;
+                        ThumbTop = nNewThumbTop = 0;
                     } else if (nNewThumbTop > nPixelRange) {
-                        moThumbTop = nNewThumbTop = nPixelRange;
+                        ThumbTop = nNewThumbTop = nPixelRange;
                     } else {
-                        moThumbTop = y - (UpArrowHeight + nSpot);
+                        ThumbTop = y - (ArrowAreaHeight + nSpot);
                     }
 
                     //figure out value
-                    float fPerc = (float)moThumbTop / (float)nPixelRange;
+                    float fPerc = (float)ThumbTop / (float)nPixelRange;
                     float fValue = fPerc * (Maximum);
-                    moValue = (int)fValue;
+                    _value = (int)fValue;
 
                     Application.DoEvents();
-
                     Invalidate();
                 }
             }
@@ -385,10 +286,10 @@ namespace FastColoredTextBoxNS {
 
         private void CheckHover() {
             Point ptPoint = this.PointToClient(Cursor.Position);
-            Rectangle thumbRect     = new Rectangle(new Point(1, moThumbTop + UpArrowHeight), new Size(Width, ThumbHeight));
-            Rectangle arrowUpRect   = new Rectangle(new Point(1, 0), new Size(Width, UpArrowHeight));
-            Rectangle arrowDownRect = new Rectangle(new Point(1, DownArrowHeight + TrackHeight), new Size(Width, DownArrowHeight));
-            ThumbIsHover     = moThumbDown || thumbRect.Contains(ptPoint);
+            Rectangle thumbRect     = new Rectangle(new Point(1, ThumbTop + ArrowAreaHeight), new Size(Width, ThumbHeight));
+            Rectangle arrowUpRect   = new Rectangle(new Point(1, 0), new Size(Width, ArrowAreaHeight));
+            Rectangle arrowDownRect = new Rectangle(new Point(1, ArrowAreaHeight + TrackHeight), new Size(Width, ArrowAreaHeight));
+            ThumbIsHover     = ThumbIsDown || thumbRect.Contains(ptPoint);
             ArrowUpIsHover   = arrowUpRect  .Contains(ptPoint);
             ArrowDownIsHover = arrowDownRect.Contains(ptPoint);
         }
@@ -396,11 +297,11 @@ namespace FastColoredTextBoxNS {
         private void CustomScrollbar_MouseMove(object sender, MouseEventArgs e) {
             CheckHover();
 
-            if (moThumbDown == true) {
-                this.moThumbDragging = true;
+            if (ThumbIsDown == true) {
+                this.ThumbIsDragging = true;
             }
 
-            if (this.moThumbDragging) {
+            if (this.ThumbIsDragging) {
                 MoveThumb(e.Y);
                 if (Scroll != null) Scroll(this, new EventArgs());
             }
