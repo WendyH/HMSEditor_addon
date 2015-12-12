@@ -7,34 +7,10 @@ using NativeMethods = HMSEditorNS.NativeMethods;
 
 namespace HmsAddons {
 
-    [Guid("29243ED1-7499-4015-BAF9-0001CA8781BC")]
-    [ClassInterface(ClassInterfaceType.None)]
-    [ComVisible(true)]
-    public class HmsAddonTools: IHmsAddonTools {
-        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
-        public uint Setup(IntPtr aParent, ref int aReload) {
-            AboutDialog about = new AboutDialog();
-            about.ShowDialog();
-            return HRESULT.S_OK;
-        }
-
-        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
-        public uint Update(ref int aFlags, ref object aResult) {
-            return HRESULT.E_NOTIMPL;
-            /*
-            if (aFlags==0) {
-                aResult = HMSEditor.NeedCopyNewFile;
-                return HRESULT.S_OK;
-            }
-            return HRESULT.E_UNEXPECTED;
-            */
-        }
-    }
-
     [Guid("9A871DC9-D8ED-4790-A5AB-E1A825639F2B")]
     [ClassInterface(ClassInterfaceType.None)]
     [ComVisible(true)]
-    public class HmsAddonList: IHmsAddonList {
+    public class HmsAddonList: IHmsAddonList, IHmsAddonTools {
         private int AddonsCount = 1;
         private HmsAddonInfo[] AddonInfoList = new HmsAddonInfo[] {
                         new HmsAddonInfo() {
@@ -43,7 +19,7 @@ namespace HmsAddons {
                             Title            = HMSEditor.Title,
                             Description      = HMSEditor.Description,
                             RequiredVersion  = "2.03",
-                            CheckedOnVersion = "2.03"
+                            CheckedOnVersion = "2.05"
                         }
                     };
 
@@ -80,10 +56,26 @@ namespace HmsAddons {
 
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public uint CanUnloadNow() {
-            AboutDialog.CopyNewFile();
+            if ((HMSEditor.NeedCopyDllFile != "") && (System.IO.File.Exists(HMSEditor.NeedCopyDllFile))) {
+                MessageBox.Show("Будет установлена новая версия дополнения. Просканируйте список дополнений через несколько секунд.", HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                AboutDialog.CopyNewFile();
+            }
             return HRESULT.S_OK;
         }
 
+        // from IHmsAddonTools
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+        public uint Setup(IntPtr aParent, ref int aReload) {
+            AboutDialog about = new AboutDialog();
+            about.ShowDialog();
+            return HRESULT.S_OK;
+        }
+
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+        public uint Update(ref int aFlags, ref object aResult) {
+            //MessageBox.Show("Update! aFlags="+ aFlags.ToString()+ " aResult=" + aResult.ToString());
+            return HRESULT.E_NOTIMPL;
+        }
     }
 
     [Guid("5384995C-F7A9-426A-9F2A-A03ADEFAD336")]

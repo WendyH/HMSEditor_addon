@@ -75,7 +75,7 @@ namespace HMSEditorNS {
 
         public static void MouseTimer_Task(object StateObj) {
             if (ActiveEditor != null) {
-                if (ActiveEditor.PopupMenu.Visible || ActiveEditor.Editor.ToolTip4Function.Visible) return;
+                //if (ActiveEditor.PopupMenu.Visible || ActiveEditor.Editor.ToolTip4Function.Visible) return;
                 if (EnableMouseHelp || (ActiveEditor.EnableEvaluateByMouse && ActiveEditor.DebugMode)) {
                     MouseHelpTimer.Task(ActiveEditor);
                 }
@@ -95,36 +95,6 @@ namespace HMSEditorNS {
             AutoCheckSyntaxTimer.Tick += AutoCheckSyntaxTimer_Tick;
             AutoCheckSyntaxTimer.Interval = 800;
             SetAutoCompleteMenu();
-            Editor.ScrollbarsUpdated += Editor_ScrollbarsUpdated;
-        }
-
-        private void Editor_ScrollbarsUpdated(object sender, EventArgs e) {
-            if (!flatHorizontalScrollbar1.Visible) {
-                flatHorizontalScrollbar1.Width = Editor.Width;
-            }
-            if (!flatVerticalScrollbar1.Visible) {
-                flatVerticalScrollbar1.Height = Editor.Height;
-            }
-            flatVerticalScrollbar1  .Maximum = Editor.VerticalScroll  .Maximum;
-            flatHorizontalScrollbar1.Maximum = Editor.HorizontalScroll.Maximum;
-            flatVerticalScrollbar1  .Value   = Editor.VerticalScroll  .Value;
-            flatHorizontalScrollbar1.Value   = Editor.HorizontalScroll.Value;
-            flatVerticalScrollbar1  .SmallChange = Editor.CharHeight;
-            flatHorizontalScrollbar1.SmallChange = Editor.CharWidth;
-            flatHorizontalScrollbar1.Invalidate();
-            flatVerticalScrollbar1  .Invalidate();
-        }
-
-        private void flatVerticalScrollbar1_Scroll(object sender, EventArgs e) {
-            int val = (int)(Math.Ceiling(1d * flatVerticalScrollbar1.Value / Editor.CharHeight) * Editor.CharHeight);
-            Editor.VerticalScroll.Value = Math.Max(Editor.VerticalScroll.Minimum, Math.Min(Editor.VerticalScroll.Maximum, val));
-            Editor.Invalidate();
-        }
-
-        private void flatHorizontalScrollbar1_Scroll(object sender, EventArgs e) {
-            int val = (int)(Math.Ceiling(1d * flatHorizontalScrollbar1.Value / Editor.CharWidth) * Editor.CharWidth);
-            Editor.HorizontalScroll.Value = Math.Max(Editor.HorizontalScroll.Minimum, Math.Min(Editor.HorizontalScroll.Maximum, val));
-            Editor.Invalidate();
         }
 
         private void AutoCheckSyntaxTimer_Tick(object sender, EventArgs e) {

@@ -41,6 +41,13 @@ namespace HmsAddons {
         public const int ecEvaluate         = ecUserFirst + 104;
         public const int ecWatches          = ecUserFirst + 105;
 
+        public const int ufCheckExistsOnly  = 0x01; // проверить существование обновления (in)
+        public const int ufIsHttpLink       = 0x02; // результат - http-ссылка на zip-файл дополнения (out)
+        public const int ufIsLocalFile      = 0x04; // результат - скаченный zip-файл дополнения (out)
+        public const int ufIsInfoMessage    = 0x08; // результат - информационное сообщение (например, что обновление прошло успешно) (out)
+        public const int ufIsErrorMessage   = 0x10; // результат - сообщение об ошибке (out)
+        public const int ufIsWarningMessage = 0x20; // результат - сообщение, требующее внимания (например, что требуется перезагрузка программы) (out)
+
         public const string CLASS_HmsAddonList = "1C6BC2D4-5AF8-4203-98D3-5D4CA48E6C6F";
 
         public static Guid Guid(Type t) {
@@ -154,5 +161,28 @@ namespace HmsAddons {
 
         uint ToggleBreakpoint(int aLine);
     }
+
+    // Интерфейс дополнений, расширяющих список функций встроенных скриптов
+    [ComVisible(true), Guid("99546421-6D4B-4BEB-B778-285591F25D79")]
+    public interface IHmsScriptFunctions {
+        uint ExecuteFunction (ref object aFunctionName, ref object aFunctionParameters, ref object aFunctionResult);
+        uint GetFunctionCount(ref int aCount);
+        uint GetFunctionInfo (int aIndex, ref object aFunctionName, ref object objectaFunctionDeclaration, ref object objectaFunctionDescription);
+    }
+
+    // Интерфейс дополнений, расширяющих список функций встроенных скриптов
+    [ComVisible(true), Guid("6E86502E-15BC-4358-A4A1-29D97CDEF073")]
+    public interface IHmsMainFormControl {
+        uint CreateControl (IntPtr aParent, ref object aReserved, ref IntPtr aControl);
+        uint DestroyControl(IntPtr aControl);
+
+        uint GetCaption(ref object aCaption);
+        uint SetFocus();
+
+        uint ExecuteAction (ref object aActionName, ref object aActionParameters);
+        uint GetActionCount(ref int aCount);
+        uint GetActionInfo (int aIndex, ref object aActionName, ref object aActionTitle, ref object aActionDescription);
+    }
+
 
 }

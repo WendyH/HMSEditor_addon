@@ -117,7 +117,7 @@ namespace HMSEditorNS {
             if (lastVersion.Length == 0) {
                 labelNewVersion.Text = "Не удалось проверить версию на GitHub";
             } else if (resultCompares == 0) {
-                labelNewVersion.Text = "У вас последняя версия программы";
+                labelNewVersion.Text = "У вас последняя версия";
             } else if (resultCompares > 0) {
                 labelNewVersion.Text = "Есть новая версия " + lastVersion;
                 ExistUpdate = true;
@@ -246,7 +246,8 @@ namespace HMSEditorNS {
             btnUpdateProgram  .Enabled = true;
             btnUpdateTemplates.Enabled = true;
             ToolTip tip = new ToolTip();
-            tip.SetToolTip(labelNewVersion, "Для перезапуска необходимо зайти в список дополнений программы");
+            //string msg = "Необходимо зайти в список дополнений и удалить существующее дополнение. После чего будет автоматически запущено обновление на новую версию.";
+            tip.SetToolTip(labelNewVersion, "Для перезапуска необходимо зайти в список дополнений программы\nи удалить его из списка дополнений.\nПосле чего заново просканировать на наличие обновлённой версии.");
         }
 
         private void InstallNewFile() {
@@ -383,7 +384,7 @@ namespace HMSEditorNS {
         private void btnDelete_Click(object sender, EventArgs e) {
             string msg;
             msg = "ВНИМАНИЕ!\n" +
-                  "Программа, загруженные шаблоны, настройки и установленные темы будут УДАЛЕНЫ!\n" +
+                  "Загруженные шаблоны, настройки и установленные темы будут УДАЛЕНЫ!\n" +
                   "Вы уверены, что хотите удалить папку и всё её содержимое: "+HMS.WorkingDir+"?";
             DialogResult answ = MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (answ == DialogResult.Yes) {
@@ -419,7 +420,7 @@ namespace HMSEditorNS {
                 try {
                     Process.Start(Info);
                 } catch (Exception ex) {
-                    msg = "Ошибка обновления программы.\n" +
+                    msg = "Ошибка обновления дополнения.\n" +
                           "Возможно, из-за нарушения прав доступа или по какой-то другой причине.\n" +
                           "Автоматическое обновление не произошло.";
                     MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);

@@ -138,7 +138,7 @@
             this.btnUpdateProgram.Name = "btnUpdateProgram";
             this.btnUpdateProgram.Size = new System.Drawing.Size(131, 25);
             this.btnUpdateProgram.TabIndex = 36;
-            this.btnUpdateProgram.Text = "Обновить программу";
+            this.btnUpdateProgram.Text = "Обновить дополнение";
             this.btnUpdateProgram.UseVisualStyleBackColor = true;
             this.btnUpdateProgram.Visible = false;
             this.btnUpdateProgram.Click += new System.EventHandler(this.btnUpdate_Click);

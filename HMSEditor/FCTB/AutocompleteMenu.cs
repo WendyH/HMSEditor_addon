@@ -17,7 +17,7 @@ namespace FastColoredTextBoxNS
     public class AutocompleteMenu : ToolStripDropDown
     {
         // < By WendyH -------------------------------
-        public  string[]  lastwords     = new string[20];
+        public Dictionary<string, int> LastWords = new Dictionary<string, int>();
         public  bool      OnlyCtrlSpace = false;
         public  bool      AfterComplete = false;
         public  string    Filter        = "";
@@ -153,10 +153,12 @@ namespace FastColoredTextBoxNS
 
         public void OnSelected(SelectedEventArgs args)
         {
-            if (lastwords[0] != args.Item.MenuText) {
-                Array.Copy(lastwords, 0, lastwords, 1, lastwords.Length - 1); // By WendyH
-                lastwords[0] = args.Item.MenuText;
-            }
+            string word = args.Item.MenuText;
+            if (LastWords.ContainsKey(word))
+                LastWords[word]++;
+            else
+                LastWords[word] = 1;
+
             if (Selected != null)
                 Selected(this, args);
         }
@@ -246,7 +248,7 @@ namespace FastColoredTextBoxNS
 
         int focussedItemIndex = 0;
 
-        public FlatVerticalScrollbar VerticalScrollBar = new FlatVerticalScrollbar();
+        public FlatScrollbar VerticalScrollBar = new FlatScrollbar();
 
         private int ItemHeight {
             get { return Font.Height + 2; }
@@ -355,7 +357,7 @@ namespace FastColoredTextBoxNS
             };
             this.VScroll = false;
             this.HScroll = false;
-            VerticalScrollBar.Scroll += VerticalScrollBar_Scroll;
+            VerticalScrollBar.ValueChanged += VerticalScrollBar_Scroll;
             DoubleBuffered = true;
         }
 
@@ -455,8 +457,11 @@ namespace FastColoredTextBoxNS
 
         internal string GetLastSelectedWord(string text) {
             string lastword = "";
-            foreach (var word in Menu.lastwords) {
-                if (String.IsNullOrEmpty(word)) continue;
+            List<KeyValuePair<string, int>> sortedWords = new List<KeyValuePair<string, int>>();
+            foreach (var pair in Menu.LastWords) sortedWords.Add(pair);
+            sortedWords.Sort(delegate (KeyValuePair<string, int> firstPair, KeyValuePair<string, int> nextPair) { return nextPair.Value.CompareTo(firstPair.Value); });
+            foreach (var pair in sortedWords) {
+                string word = pair.Key;
                 if (word.IndexOf(text, StringComparison.InvariantCultureIgnoreCase)>=0 && word != text) {
                     lastword = word; break;
                 }
@@ -564,6 +569,7 @@ namespace FastColoredTextBoxNS
                 // > By WendyH -------------------------------------
                 if (!doNotGetFromSourceItems) {
                     AutocompleteItems notExacctly = new AutocompleteItems();
+                    bool notExacctlySelected = false;
                     foreach (var item in sourceItems) {
                         item.Parent = Menu;
                         CompareResult resultCompare = item.Compare(text);
@@ -573,17 +579,19 @@ namespace FastColoredTextBoxNS
                         } else if (item.NotExactlyCompare(text) == CompareResult.Visible) {
                             notExacctly.Add(item);
 
-                        }
-                        if ((lastword.Length > 0) && (item.MenuText == lastword)) {
+                        } else continue;
+                        if (!foundSelected && (lastword.Length > 0) && (item.MenuText == lastword)) {
                             foundSelected = true;
-                            FocussedItemIndex = visibleItems.Count - 1;
-                        }
-                        if (resultCompare == CompareResult.VisibleAndSelected && !foundSelected) {
-                            foundSelected = true;
-                            FocussedItemIndex = visibleItems.Count - 1;
+                            if (resultCompare == CompareResult.Hidden) {
+                                FocussedItemIndex = notExacctly.Count - 1;
+                                notExacctlySelected = true;
+                            } else {
+                                FocussedItemIndex = visibleItems.Count - 1;
+                            }
                         }
                         if (visibleItems.Count > 150) break;
                     }
+                    if (notExacctlySelected) FocussedItemIndex += visibleItems.Count;
                     visibleItems.AddRange(notExacctly);
                 }
 

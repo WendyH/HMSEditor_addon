@@ -14,14 +14,8 @@
                 components.Dispose();
                 if (repeatTimer != null)
                     repeatTimer.Dispose();
-                if (DownArrowImage != null)
-                    DownArrowImage.Dispose();
-                if (UpArrowImage != null)
-                    UpArrowImage.Dispose();
             }
             repeatTimer    = null;
-            DownArrowImage = null;
-            UpArrowImage   = null;
             base.Dispose(disposing);
         }
 
@@ -36,8 +30,6 @@
             // 
             // FlatScrollbar
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "FlatScrollbar";
             this.Size = new System.Drawing.Size(16, 244);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.CustomScrollbar_MouseDown);

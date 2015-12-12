@@ -15,6 +15,7 @@ namespace FastColoredTextBoxNS {
     /// </summary>
     public sealed class HmsToolTip: ToolTip {
         #region Static computed field
+        private static Regex regexPhrases        = new Regex(@"(.*?[,;]|.*?$)", RegexOptions.Compiled | RegexOptions.Multiline);
         private static Regex regexWords          = new Regex(@"(<.*?>|[\w-_]+|[^\w-_<]+)", RegexOptions.Compiled);
         private static Regex regexSplitFuncParam = new Regex("[,;]"          , RegexOptions.Compiled);
         private static Regex regexFunctionParams = new Regex(@"\(([^\)]+)"   , RegexOptions.Compiled);
@@ -33,7 +34,7 @@ namespace FastColoredTextBoxNS {
         private static Color colorHelp    = Color.FromArgb(0x247256);
         private static Color colorString  = Color.FromArgb(0xAA5C36);
         private static Color colorValue   = Color.FromArgb(0xAA5C36);
-        private static Size  MaxSize      = new Size(640, 600);
+        private static Size  MaxSize      = new Size(650, 600);
         private static TextFormatFlags tf = TextFormatFlags.NoPadding | TextFormatFlags.PreserveGraphicsClipping;
         private static int MaxValueLenght = 100;
         public static Color ColorBackgrnd = Color.FromArgb(0xE4E5F0);
@@ -99,13 +100,12 @@ namespace FastColoredTextBoxNS {
 
         public static void PrepareFastDraw(HMSItem item, Graphics g) {
             float heightCorrection = 0;
+            item.ToolTipTitle = CalcPhrasesBreaks(g, item.ToolTipTitle);
             string text  = GetText(item, out heightCorrection);
             Size   size  = TextRenderer.MeasureText(text, FontText, MaxSize, TextFormatFlags.WordBreak);
             size.Width  += Margin.Width  * 2;
             size.Height += Margin.Height * 2 + (int)heightCorrection;
-            item.ToolTipSize = size;
-            int y = WriteWords(text, new Rectangle(0, 0, size.Width, size.Height), g, item.Words);
-            item.ToolTipSize = new Size(item.ToolTipSize.Width, y + Margin.Height);
+            item.ToolTipSize = WriteWords(text, new Rectangle(0, 0, size.Width, size.Height), g, item.Words);
         }
 
         public void Show(HMSItem item, IWin32Window win, Point point, int duration) {
@@ -132,12 +132,13 @@ namespace FastColoredTextBoxNS {
                 Graphics g = Graphics.FromHwnd(e.AssociatedControl.Handle);
                 float heightCorrection = 0;
                 string text  = GetText(GetToolTip(e.AssociatedControl), out heightCorrection);
-                Size size    = TextRenderer.MeasureText(g, text, FontText, MaxSize, TextFormatFlags.WordBreak);
-                size.Width  += Margin.Width  * 2;
-                size.Height += Margin.Height * 2 + (int)heightCorrection;
-                e.ToolTipSize = size;
+                //Size size    = TextRenderer.MeasureText(g, text, FontText, MaxSize, TextFormatFlags.WordBreak);
+                //size.Width  += Margin.Width  * 2;
+                //size.Height += Margin.Height * 2 + (int)heightCorrection;
+                e.ToolTipSize = WriteWords(text, new Rectangle(0, 0, MaxSize.Width, MaxSize.Height), g, OwnWords, true);
                 OwnWords.Clear();
-                WriteWords(text, new Rectangle(0, 0, size.Width, size.Height), g, OwnWords);
+                Bounds = new Rectangle(0, 0, e.ToolTipSize.Width, e.ToolTipSize.Height);
+                WriteWords(text, Bounds, g, OwnWords);
             }
         }
 
@@ -220,12 +221,14 @@ namespace FastColoredTextBoxNS {
             if (paramHelp.Length == 0) paramHelp = " ";
             Help = paramHelp;
             ToolTipTitle = title;
-            if (!Visible) {
-                if (((Control)window).InvokeRequired) {
-                    ((Control)window).Invoke((MethodInvoker)delegate { Show(" ", window, p); });
-                } else {
-                    Show(" ", window, p);
-                }
+            if (((Control)window).InvokeRequired) {
+                ((Control)window).Invoke((MethodInvoker)delegate {
+                    //ToolTipTitle = CalcPhrasesBreaks(window, title);
+                    if (!Visible) Show(" ", window, p);
+                });
+            } else {
+                //ToolTipTitle = CalcPhrasesBreaks(window, title);
+                if (!Visible) Show(" ", window, p);
             }
         }
 
@@ -237,8 +240,33 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        private static int WriteWords(string text, Rectangle bounds, Graphics g, List<WordStyle> words = null) {
-            if (text.Length == 0) return 0;
+        private static string CalcPhrasesBreaks(IWin32Window win, string text) {
+            Graphics g = Graphics.FromHwnd(win.Handle);
+            return CalcPhrasesBreaks(g, text);
+        }
+
+        private static string CalcPhrasesBreaks(Graphics g, string text) {
+            string newText = "";
+            Size wordSize; int x = Margin.Width;
+            string[] lines = text.Split('\n');
+            for (int iline = 0; iline < lines.Length; iline++) {
+                MatchCollection mc = regexPhrases.Matches(lines[iline]);
+                foreach (Match m in mc) {
+                    string word = m.Groups[1].Value;
+                    if (word.StartsWith("<")) { newText += word; continue; }
+                    wordSize = TextRenderer.MeasureText(g, Regex.Replace(word, "<.*?>", ""), FontTitle, MaxSize, tf);
+                    if (wordSize.Width > (MaxSize.Width - x - Margin.Width * 2 - 12)) { x = Margin.Width; newText += "\n"; word = word.TrimStart(); }
+                    x += wordSize.Width;
+                    newText += word;
+                }
+                newText += "\n";
+            }
+            if (newText.Length > 0) newText = newText.Substring(0, newText.Length - 1);
+            return newText;
+        }
+
+        private static Size WriteWords(string text, Rectangle bounds, Graphics g, List<WordStyle> words = null, bool notShow=false) {
+            if (text.Length == 0) return new Size();
             Point  point      = new Point(Margin.Width, Margin.Height);
             Font   font       = FontText;
             Color  color      = colorText;
@@ -246,6 +274,7 @@ namespace FastColoredTextBoxNS {
             Size   wordSize   = new Size();
             int    prevHeight = 0;
             bool   notColored = false;
+            int    maxWidth   = 0;
             string[] lines = text.Split('\n');
             for (int iline = 0; iline < lines.Length; iline++) {
                 MatchCollection mc = regexWords.Matches(lines[iline]);
@@ -266,23 +295,26 @@ namespace FastColoredTextBoxNS {
                     if (word == "</p>") { color = prevColor  ; font = FontTitle   ; continue; }
                     if (word == "<id>") { point.Y += 3       ; continue; }
                     wordSize = TextRenderer.MeasureText(g, word, font, MaxSize, tf);
-                    if (wordSize.Width > (bounds.Width - point.X - Margin.Width)) { point.X = Margin.Width; point.Y += prevHeight; }
+                    maxWidth = Math.Max(maxWidth, point.X+wordSize.Width);
+                    if (wordSize.Width > (bounds.Width - point.X - Margin.Width)) { point.X = Margin.Width; point.Y += prevHeight; word = word.TrimStart(); }
                     if (word == "<hr>") {
                         float y = point.Y + prevHeight + 2;
-                        g.DrawLine(Pens.Gray, Margin.Width, y, bounds.Width - Margin.Width, y);
+                        if (!notShow) g.DrawLine(Pens.Gray, Margin.Width, y, bounds.Width - Margin.Width, y);
                         point.Y += 4;
                         continue;
                     }
-                    notColored = (color == colorString) || (color == colorValue);
-                    if      (!notColored && isKeyWord(word)) DrawText(g, word, font, point, colorKeyword, words);
-                    else if (!notColored && isClass  (word)) DrawText(g, word, font, point, colorClass  , words);
-                    else                                     DrawText(g, word, font, point, color       , words);
+                    if (!notShow) {
+                        notColored = (color == colorString) || (color == colorValue);
+                        if      (!notColored && isKeyWord(word)) DrawText(g, word, font, point, colorKeyword, words);
+                        else if (!notColored && isClass  (word)) DrawText(g, word, font, point, colorClass  , words);
+                        else                                     DrawText(g, word, font, point, color       , words);
+                    }
                     point.X   += wordSize.Width;
                     prevHeight = wordSize.Height;
                 }
                 point.Y += wordSize.Height; point.X = Margin.Width;
             }
-            return point.Y;
+            return new Size(maxWidth+Margin.Width, point.Y+Margin.Height);
         }
 
         private static void DrawText(Graphics g, string text, Font font, Point point, Color color, List<WordStyle> words) {

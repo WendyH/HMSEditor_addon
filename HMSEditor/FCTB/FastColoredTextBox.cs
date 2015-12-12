@@ -46,6 +46,17 @@ namespace FastColoredTextBoxNS {
     /// Fast colored textbox
     /// </summary>
     public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
+        new FlatScrollbar VerticalScroll   = new FlatScrollbar(false);
+        new FlatScrollbar HorizontalScroll = new FlatScrollbar(true );
+
+        new Size ClientSize {
+            get {
+                int w = base.ClientSize.Width  - (VerticalScroll  .Visible ? VerticalScroll  .Width : 0);
+                int h = base.ClientSize.Height - (HorizontalScroll.Visible ? HorizontalScroll.Height: 0);
+                return new Size(w, h);
+            }
+        }
+
         private Timer      HighlightTimer   = new Timer();
         public Regex       RegexStringAndComments = null;
         public HmsToolTip  ToolTip4Function = new HmsToolTip(); // By WendyH
@@ -195,7 +206,7 @@ namespace FastColoredTextBoxNS {
             CommentPrefix = "//";
             lineNumberStartValue = 1;
             multiline = true;
-            scrollBars = true;
+            scrollBars = false;
             AcceptsTab = true;
             AcceptsReturn = true;
             caretVisible = true;
@@ -235,6 +246,26 @@ namespace FastColoredTextBoxNS {
             HighlightTimer.Tick += HighlightTimer_Tick;
             HighlightTimer.Interval = 1;
             DoubleBuffered = true;
+            Controls.Add(HorizontalScroll);
+            Controls.Add(VerticalScroll  );
+            VerticalScroll  .AlignByLines  = true;
+            HorizontalScroll.AlignByLines  = true;
+            VerticalScroll  .ValueChanged += VerticalScroll_Scroll;
+            HorizontalScroll.ValueChanged += HorizontalScroll_Scroll;
+        }
+
+        private void HorizontalScroll_Scroll(object sender, EventArgs e) {
+            Invalidate();
+        }
+
+        private void VerticalScroll_Scroll(object sender, EventArgs e) {
+            Invalidate();
+        }
+
+        protected override void OnResize(EventArgs e) {
+            if (!VerticalScroll  .Visible) VerticalScroll  .Height = Height;
+            if (!HorizontalScroll.Visible) HorizontalScroll.Width  = Width;
+            base.OnResize(e);
         }
 
         private void HighlightTimer_Tick(object sender, EventArgs e) {
@@ -249,6 +280,13 @@ namespace FastColoredTextBoxNS {
             get { return autoCompleteBracketsList; }
             set { autoCompleteBracketsList = value; }
         }
+
+        /// <summary>
+        /// Occurs when char size changed
+        /// </summary>
+        [Browsable(true)]
+        [Description("Occurs when char size changed")]
+        public event EventHandler CharSizeChanged;
 
         /// <summary>
         /// AutoComplete brackets
@@ -1490,9 +1528,9 @@ namespace FastColoredTextBoxNS {
                     if (base.AutoScroll)
                         base.AutoScroll = false;
                     base.AutoScrollMinSize = new Size(0, 0);
-                    VerticalScroll.Visible = false;
-                    HorizontalScroll.Visible = false;
-                    VerticalScroll.Maximum = Math.Max(0, value.Height - ClientSize.Height);
+                    //VerticalScroll.Visible = false;
+                    //HorizontalScroll.Visible = false;
+                    VerticalScroll  .Maximum = Math.Max(0, value.Height - ClientSize.Height);
                     HorizontalScroll.Maximum = Math.Max(0, value.Width - ClientSize.Width);
                     localAutoScrollMinSize = value;
                 }
@@ -1730,6 +1768,8 @@ namespace FastColoredTextBoxNS {
             VerticalScroll.SmallChange = charHeight;
             VerticalScroll.LargeChange = 10 * charHeight;
             HorizontalScroll.SmallChange = CharWidth;
+            if (CharSizeChanged != null)
+                CharSizeChanged(this, EventArgs.Empty);
         }
 
         /// <summary>

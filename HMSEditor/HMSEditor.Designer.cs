@@ -115,8 +115,6 @@
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.CheckPositionIsInParametersSequenceWorker = new System.ComponentModel.BackgroundWorker();
             this.Editor = new FastColoredTextBoxNS.FastColoredTextBox();
-            this.flatVerticalScrollbar1 = new FastColoredTextBoxNS.FlatVerticalScrollbar();
-            this.flatHorizontalScrollbar1 = new FastColoredTextBoxNS.FlatHorizontalScrollbar();
             this.panel1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.tsMain.SuspendLayout();
@@ -127,8 +125,6 @@
             // 
             this.panel1.Controls.Add(this.Editor);
             this.panel1.Controls.Add(this.tsMain);
-            this.panel1.Controls.Add(this.flatHorizontalScrollbar1);
-            this.panel1.Controls.Add(this.flatVerticalScrollbar1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
@@ -378,7 +374,7 @@
             this.toolStripDropDownButtonSettings});
             this.tsMain.Location = new System.Drawing.Point(0, 0);
             this.tsMain.Name = "tsMain";
-            this.tsMain.Size = new System.Drawing.Size(932, 25);
+            this.tsMain.Size = new System.Drawing.Size(948, 25);
             this.tsMain.TabIndex = 1;
             // 
             // btnNavigateBack
@@ -974,7 +970,7 @@
             serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
             this.Editor.ServiceColors = serviceColors1;
             this.Editor.ShowScrollBars = false;
-            this.Editor.Size = new System.Drawing.Size(932, 489);
+            this.Editor.Size = new System.Drawing.Size(948, 505);
             this.Editor.TabIndex = 10;
             this.Editor.TabLength = 2;
             this.Editor.Zoom = 100;
@@ -988,38 +984,6 @@
             this.Editor.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseDoubleClick);
             this.Editor.MouseLeave += new System.EventHandler(this.Editor_MouseLeave);
             this.Editor.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseMove);
-            // 
-            // flatVerticalScrollbar1
-            // 
-            this.flatVerticalScrollbar1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.flatVerticalScrollbar1.LargeChange = 10;
-            this.flatVerticalScrollbar1.Location = new System.Drawing.Point(932, 0);
-            this.flatVerticalScrollbar1.Maximum = 100;
-            this.flatVerticalScrollbar1.Minimum = 0;
-            this.flatVerticalScrollbar1.MinimumSize = new System.Drawing.Size(16, 48);
-            this.flatVerticalScrollbar1.Name = "flatVerticalScrollbar1";
-            this.flatVerticalScrollbar1.Size = new System.Drawing.Size(16, 530);
-            this.flatVerticalScrollbar1.SmallChange = 1;
-            this.flatVerticalScrollbar1.TabIndex = 11;
-            this.flatVerticalScrollbar1.TabStop = false;
-            this.flatVerticalScrollbar1.Text = "flatVerticalScrollbar1";
-            this.flatVerticalScrollbar1.Value = 0;
-            this.flatVerticalScrollbar1.Scroll += new System.EventHandler(this.flatVerticalScrollbar1_Scroll);
-            // 
-            // flatHorizontalScrollbar1
-            // 
-            this.flatHorizontalScrollbar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.flatHorizontalScrollbar1.Location = new System.Drawing.Point(0, 514);
-            this.flatHorizontalScrollbar1.Maximum = 100;
-            this.flatHorizontalScrollbar1.Minimum = 0;
-            this.flatHorizontalScrollbar1.MinimumSize = new System.Drawing.Size(48, 16);
-            this.flatHorizontalScrollbar1.Name = "flatHorizontalScrollbar1";
-            this.flatHorizontalScrollbar1.Size = new System.Drawing.Size(932, 16);
-            this.flatHorizontalScrollbar1.TabIndex = 12;
-            this.flatHorizontalScrollbar1.TabStop = false;
-            this.flatHorizontalScrollbar1.Text = "flatHorizontalScrollbar1";
-            this.flatHorizontalScrollbar1.Value = 0;
-            this.flatHorizontalScrollbar1.Scroll += new System.EventHandler(this.flatHorizontalScrollbar1_Scroll);
             // 
             // HMSEditor
             // 
@@ -1123,7 +1087,5 @@
         private System.ComponentModel.BackgroundWorker CheckPositionIsInParametersSequenceWorker;
         private System.Windows.Forms.ToolStripMenuItem btnContextMenuAutoIndent;
         private System.Windows.Forms.ToolStripMenuItem btnAdd2Watch;
-        private FastColoredTextBoxNS.FlatHorizontalScrollbar flatHorizontalScrollbar1;
-        private FastColoredTextBoxNS.FlatVerticalScrollbar flatVerticalScrollbar1;
     }
 }

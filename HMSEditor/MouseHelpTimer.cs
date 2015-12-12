@@ -48,7 +48,7 @@ namespace HMSEditorNS {
             try {
                 var    Editor  = ActiveHMSEditor.Editor;
                 Point  point   = ActiveHMSEditor.MouseLocation;
-                int iStartLine = ActiveHMSEditor.Editor.YtoLineIndex(0);
+                int iStartLine = ActiveHMSEditor.Editor.YtoLineIndex();
                 int CharHeight = ActiveHMSEditor.Editor.CharHeight;
                 int i = point.Y / CharHeight;
                 int iLine = iStartLine + i;
