@@ -58,5 +58,8 @@ namespace FastColoredTextBoxNS
             GotoPosition = (int)e.ClickedItem.Tag;
             this.Close();
         }
+
+        private void GoToForm_FormClosed(object sender, FormClosedEventArgs e) {
+        }
     }
 }

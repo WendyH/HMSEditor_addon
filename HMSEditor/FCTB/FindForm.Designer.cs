@@ -127,6 +127,7 @@
             this.Text = "Поиск";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FindForm_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FindForm_FormClosed);
             this.ResumeLayout(false);
             this.PerformLayout();
 

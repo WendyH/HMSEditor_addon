@@ -142,5 +142,8 @@ namespace FastColoredTextBoxNS
             ResetSerach();
         }
 
+        private void FindForm_FormClosed(object sender, FormClosedEventArgs e) {
+            tb.Focus();
+        }
     }
 }

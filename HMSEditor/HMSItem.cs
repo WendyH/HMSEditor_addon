@@ -60,9 +60,9 @@ namespace HMSEditorNS {
             e.Tb.Selection.GoLeft(true);
             e.Tb.InsertText("");
             //
-            char ch = e.Tb.Selection.CharBeforeStart;
-            if (HMSEditor.ActiveEditor!=null)
-                HMSEditor.ActiveEditor.WasCommaOrBracket = ((ch == '(') || (ch == '['));
+            //char ch = e.Tb.Selection.CharBeforeStart;
+            //if (HMSEditor.ActiveEditor!=null)
+            //    HMSEditor.ActiveEditor.WasCommaOrBracket = ((ch == '(') || (ch == '['));
             e.Tb.Selection.EndUpdate();
             e.Tb.EndUpdate();
         }

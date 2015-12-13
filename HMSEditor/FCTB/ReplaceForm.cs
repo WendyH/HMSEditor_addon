@@ -222,5 +222,8 @@ namespace FastColoredTextBoxNS
                 }
         }
 
+        private void ReplaceForm_FormClosed(object sender, FormClosedEventArgs e) {
+            tb.Focus();
+        }
     }
 }

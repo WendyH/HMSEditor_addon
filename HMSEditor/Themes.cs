@@ -163,8 +163,8 @@ namespace HMSEditorNS {
             if (Dict.ContainsKey(name)) {
                 SetTheme(editor.Editor, name);
                 Theme t = Dict[name];
-                editor.ColorCurrentLine = t.LineHighlight;
-                editor.ColorChangedLine = t.ChangedLines;
+                editor.Editor.CurrentLineColor = t.LineHighlight;
+                editor.Editor.ChangedLineColor = t.ChangedLines;
 
                 //Color c1 = MixColor(0.5, t.KeywordStyle.GetRTF().ForeColor, t.StringStyle.GetRTF().ForeColor);
                 HmsToolTip.ColorBackgrnd = MediaColor(0xF0, t.Background);
@@ -173,7 +173,7 @@ namespace HMSEditorNS {
 
                 // Для тёмных тем цвет изменённых строк меняем тоже на более тёмный
                 uint icol = (uint)editor.Editor.IndentBackColor.ToArgb() & 0xFFFFFF;
-                if (icol < 0x808080) editor.ColorChangedLine = ToColor("#024A02");
+                if (icol < 0x808080) editor.Editor.ChangedLineColor = ToColor("#024A02");
 
                 editor.btnMarkChangedLines_Click(null, EventArgs.Empty);
             }

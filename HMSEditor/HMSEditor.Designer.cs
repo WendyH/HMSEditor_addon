@@ -736,9 +736,7 @@
             // 
             // btnMarkChangedLines
             // 
-            this.btnMarkChangedLines.Checked = true;
             this.btnMarkChangedLines.CheckOnClick = true;
-            this.btnMarkChangedLines.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnMarkChangedLines.Name = "btnMarkChangedLines";
             this.btnMarkChangedLines.Size = new System.Drawing.Size(313, 22);
             this.btnMarkChangedLines.Text = "Помечать изменённые строки";

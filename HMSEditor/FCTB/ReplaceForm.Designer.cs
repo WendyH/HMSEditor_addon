@@ -176,6 +176,7 @@
             this.Text = "Поиск и замена текста";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ReplaceForm_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ReplaceForm_FormClosed);
             this.Load += new System.EventHandler(this.ReplaceForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

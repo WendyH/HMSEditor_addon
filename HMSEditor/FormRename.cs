@@ -73,6 +73,7 @@ namespace HMSEditorNS {
                 labelFounded.Text = getNumText(count, new[] { "Произведена", "Произведено", "Произведено" }) + " " + count.ToString() + " " + getNumText(count, new[] { "замена", "замены", "замен" });
             else
                 labelFounded.Text = "Найдено " + count.ToString() + " " + getNumText(count, new[] { "совпадение", "совпадения", "совпадений" });
+            textBoxName.Focus();
         }
 
         private void HighlightWord(string word) {

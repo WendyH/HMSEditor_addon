@@ -502,7 +502,7 @@ namespace FastColoredTextBoxNS
         internal void DoAutocomplete(bool forced) {
             if (tb.IsDisposed) return;
             if (!Menu.Enabled || !this.Enabled) { Menu.Close(); return; }
-            if (tb.CheckInTheStringOrComment()) return;
+            if (tb.Selection.IsStringOrComment) return;
             if (!forced && Menu.AfterComplete) { Menu.AfterComplete = false; return; }
             visibleItems.Clear();
             FocussedItemIndex = 0;

@@ -1,9 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace FastColoredTextBoxNS {
     public partial class FlatScrollbar: Control {
+
+        public List<int> Bookmarks   = new List<int>();
+        public List<int> Breakpoints = new List<int>();
+        public int       ErrorLine   = 0;
+        public int       CurrentLine = 0;
 
         public bool  AlignByLines    = false;
         public Color ChannelColor    = Color.WhiteSmoke;
@@ -215,6 +221,21 @@ namespace FastColoredTextBoxNS {
             }
             using (Brush brush = new SolidBrush((ArrowDownIsHover) ? ArrowHoverColor : ArrowColor)) {
                 g.FillPolygon(brush, points2);
+            }
+
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+            if (CurrentLine > 0) DrawRectByLine(g, CurrentLine, Color.CornflowerBlue, 0, Width, 3);
+            if (ErrorLine   > 0) DrawRectByLine(g, ErrorLine  , Color.OrangeRed     , 9, 5, 5);
+            foreach (int iLine in Bookmarks  ) DrawRectByLine(g, iLine, Color.LightSkyBlue, 4, 7, 4);
+            foreach (int iLine in Breakpoints) DrawRectByLine(g, iLine, Color.IndianRed, 0, 7, 4);
+
+        }
+
+        private void DrawRectByLine(Graphics g, int iLine, Color color, int x, int width, int height) {
+            float k = (float)(iLine-0.5) * (float)SmallChange / (float)(Maximum - Minimum + Height);
+            int top = (int)((float)TrackSize * k);
+            using (Brush brush = new SolidBrush(color)) {
+                g.FillRectangle(brush, new Rectangle(x, top + ArrowAreaSize - (height/2), width, height));
             }
         }
 

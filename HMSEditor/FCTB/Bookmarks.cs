@@ -283,14 +283,14 @@ namespace FastColoredTextBoxNS
             Color = tb.BookmarkColor;
         }
 
-        private static Font TextFont  = new Font("Arial", 6);
+        public static Font TextFont  = new Font("Arial", 6);
         public virtual void Paint(Graphics gr, Rectangle lineRect, bool itsreakpoint = false) {
             var size = TB.CharHeight - 1;
             // By WendyH < ---------------------------------------
             if (itsreakpoint && (TB.BreakpointIcon != null)) {
-                gr.DrawImage(TB.BreakpointIcon, 0, lineRect.Top, TB.BreakpointIcon.Width, TB.BreakpointIcon.Height);
+                gr.DrawImage(TB.BreakpointIcon, 0, lineRect.Top, lineRect.Height, lineRect.Height);
             } else if (TB.BookmarkIcon != null) {
-                gr.DrawImage(TB.BookmarkIcon, 0, lineRect.Top, TB.BookmarkIcon.Width, TB.BookmarkIcon.Height);
+                gr.DrawImage(TB.BookmarkIcon, 0, lineRect.Top, lineRect.Height, lineRect.Height);
             } else {
             // By WendyH > ---------------------------------------
                 using (var brush = new LinearGradientBrush(new Rectangle(0, lineRect.Top, size, size), Color.White, Color, 45))
@@ -298,7 +298,7 @@ namespace FastColoredTextBoxNS
                 using (var pen = new Pen(Color))
                     gr.DrawEllipse(pen, 0, lineRect.Top, size, size);
             }
-            if (Name.Length == 1) gr.DrawString(Name, TextFont, Brushes.DarkSlateGray, new Point(4, lineRect.Top+3));
+            if (Name.Length == 1) gr.DrawString(Name, TextFont, Brushes.DarkSlateGray, new Point(3, lineRect.Top+(int)((TB.CharHeight - TextFont.Size) /4)));
         }
     }
 }

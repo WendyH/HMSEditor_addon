@@ -345,17 +345,27 @@ namespace FastColoredTextBoxNS {
         /// Move range left
         /// </summary>
         /// <remarks>This method can to go inside folded blocks</remarks>
-        public bool GoRightThroughFolded() {
+        public bool GoRightThroughFolded(bool skipStringAndComments=false) {
             if (ColumnSelectionMode)
                 return GoRightThroughFolded_ColumnSelectionMode();
 
             if (start.iLine >= tb.LinesCount - 1 && start.iChar >= tb[tb.LinesCount - 1].Count)
                 return false;
 
-            if (start.iChar < tb[start.iLine].Count)
-                start.Offset(1, 0);
-            else
-                start = new Place(0, start.iLine + 1);
+            if (skipStringAndComments) {
+                while (!(start.iLine >= tb.LinesCount - 1 && start.iChar >= tb[tb.LinesCount - 1].Count)) {
+                    if (start.iChar < tb[start.iLine].Count)
+                        start.Offset(1, 0);
+                    else
+                        start = new Place(0, start.iLine + 1);
+                    if (!IsStringOrComment) break;
+                }
+            } else {
+                if (start.iChar < tb[start.iLine].Count)
+                    start.Offset(1, 0);
+                else
+                    start = new Place(0, start.iLine + 1);
+            }
 
             preferedPos = -1;
             end = start;
@@ -388,16 +398,25 @@ namespace FastColoredTextBoxNS {
         /// Move range left
         /// </summary>
         /// <remarks>This method can to go inside folded blocks</remarks>
-        public bool GoLeftThroughFolded() {
+        public bool GoLeftThroughFolded(bool skipStringAndComments = false) {
             ColumnSelectionMode = false;
 
             if (start.iChar == 0 && start.iLine == 0)
                 return false;
-
-            if (start.iChar > 0)
-                start.Offset(-1, 0);
-            else
-                start = new Place(tb[start.iLine - 1].Count, start.iLine - 1);
+            if (skipStringAndComments) {
+                while (!(start.iChar == 0 && start.iLine == 0)) {
+                    if (start.iChar > 0)
+                        start.Offset(-1, 0);
+                    else
+                        start = new Place(tb[start.iLine - 1].Count, start.iLine - 1);
+                    if (!IsStringOrComment) break;
+                }
+            } else {
+                if (start.iChar > 0)
+                    start.Offset(-1, 0);
+                else
+                    start = new Place(tb[start.iLine - 1].Count, start.iLine - 1);
+            }
 
             preferedPos = -1;
             end = start;
@@ -1275,7 +1294,7 @@ namespace FastColoredTextBoxNS {
         public string GetVariableForEqual(string allowedSymbolsPattern) {
             Range r = new Range(tb, Start, Start); string ch; bool equalExists = false;
             //go left, check symbols
-            while (r.GoLeftThroughFolded()) {
+            while (r.GoLeftThroughFolded(true)) {
                 ch = r.CharAfterStart.ToString();
                 if (ch == "=") equalExists = true;
                 if (!regexLookEqual.IsMatch(ch)) break;

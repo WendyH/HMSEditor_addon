@@ -133,17 +133,12 @@
         '\"',
         '\'',
         '\''};
-            this.fastColoredTextBox1.AutoIndent = true;
-            this.fastColoredTextBox1.AutoIndentChars = true;
             this.fastColoredTextBox1.AutoIndentCharsPatterns = "";
-            this.fastColoredTextBox1.AutoIndentExistingLines = true;
             this.fastColoredTextBox1.AutoScrollMinSize = new System.Drawing.Size(158, 15);
             this.fastColoredTextBox1.BackBrush = null;
             this.fastColoredTextBox1.BookmarkIcon = null;
             this.fastColoredTextBox1.BreakpointIcon = null;
             this.fastColoredTextBox1.BreakpointLineColor = System.Drawing.Color.Empty;
-            this.fastColoredTextBox1.CaretBlinking = true;
-            this.fastColoredTextBox1.CaretVisible = true;
             this.fastColoredTextBox1.CharHeight = 15;
             this.fastColoredTextBox1.CharWidth = 7;
             this.fastColoredTextBox1.Cursor = System.Windows.Forms.Cursors.IBeam;
@@ -166,9 +161,11 @@
             serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
             serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
             this.fastColoredTextBox1.ServiceColors = serviceColors1;
+            this.fastColoredTextBox1.ShowScrollBars = false;
             this.fastColoredTextBox1.Size = new System.Drawing.Size(534, 151);
             this.fastColoredTextBox1.TabIndex = 3;
             this.fastColoredTextBox1.TabLength = 2;
+            this.fastColoredTextBox1.TabStop = false;
             this.fastColoredTextBox1.Text = "fastColoredTextBox1";
             this.fastColoredTextBox1.Zoom = 100;
             this.fastColoredTextBox1.Load += new System.EventHandler(this.fastColoredTextBox1_Load);

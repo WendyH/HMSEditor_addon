@@ -91,6 +91,8 @@ namespace HMSEditorNS {
             HmsScriptMode  = (HmsScriptMode)aScriptMode;
             HMS.Init();                           // Create knowledge database of HMS and initializing
             InitializeComponent();
+            Editor.CurrentLineColor = Color.FromArgb(100, 210, 210, 255);
+            Editor.ChangedLineColor = Color.FromArgb(255, 152, 251, 152);
             Editor.LostFocus += Editor_LostFocus; // for hiding all tooltipds when lost focus
             AutoCheckSyntaxTimer.Tick += AutoCheckSyntaxTimer_Tick;
             AutoCheckSyntaxTimer.Interval = 800;
@@ -131,8 +133,6 @@ namespace HMSEditorNS {
         private System.Threading.Timer MouseTimer = new System.Threading.Timer(MouseTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
         public  Point       MouseLocation         = new Point();
         public  Style       InvisibleCharsStyle   = new InvisibleCharsRenderer(Pens.Gray);
-        public  Color       ColorCurrentLine      = Color.FromArgb(100, 210, 210, 255);
-        public  Color       ColorChangedLine      = Color.FromArgb(255, 152, 251, 152);
         public  MarkerStyle SameWordsStyle        = new MarkerStyle(new SolidBrush(Color.FromArgb(33, Color.Gray)));
         private DateTime    LastNavigatedDateTime = DateTime.Now;
 
@@ -253,7 +253,9 @@ namespace HMSEditorNS {
             if (iLine > 0) iLine -= 1;
             if (iChar > 0) iChar -= 1;
             Editor.Selection.Start = new Place(iChar, iLine);
-            Editor.DoCaretVisible();
+            int iFirstLine = Editor.YtoLineIndex();
+            int iLastLine  = Editor.YtoLineIndex(Editor.VerticalScroll.Value+ Editor.Height) + iFirstLine;
+            if ((iLine < iFirstLine) || (iLine > iLastLine)) Editor.DoCaretVisible();
             if (DebugMode) CheckDebugState(); // 4 getting debug line
             Editor.Focus();
         }
@@ -265,11 +267,6 @@ namespace HMSEditorNS {
         public void HighlightInvisibleChars(bool flag) {
             Editor.Range.ClearStyle(InvisibleCharsStyle);
             if (flag) Editor.Range.SetStyle(InvisibleCharsStyle, @".$|.\r\n|\s");
-            Editor.Invalidate();
-        }
-
-        public void HighlightCurrentLine(bool flag) {
-            Editor.CurrentLineColor = flag ? ColorCurrentLine : Color.Transparent;
             Editor.Invalidate();
         }
 
@@ -543,10 +540,10 @@ namespace HMSEditorNS {
             Editor.AutoCompleteBrackets    = btnAutoCompleteBrackets .Checked;
             Editor.AutoIndent              = btnAutoIdent            .Checked;
             Editor.AutoIndentExistingLines = btnAutoIdentLines       .Checked;
-            Editor.ChangedLineColor        = btnMarkChangedLines     .Checked ? ColorChangedLine : Color.Transparent;
             EnableFunctionToolTip          = btnIntelliSenseFunctions.Checked;
             EnableEvaluateByMouse          = btnEvaluateByMouse      .Checked;
             Editor.EnableFoldingIndicator  = btnShowFoldingIndicator .Checked;
+            Editor.HighlightCurrentLine    = btnHighlightCurrentLine .Checked;
 
             Themes.Init();
 
@@ -558,13 +555,13 @@ namespace HMSEditorNS {
 
             ScriptLanguage = Settings.Get("Language", section, "C++Script");
 
-            HighlightCurrentLine(btnHighlightCurrentLine.Checked);
             ShowLineNumbers (btnShowLineNumbers .Checked);
             ShowFoldingLines(btnShowFoldingLines.Checked);
             btnEnableFolding_Click   (null, EventArgs.Empty);
             btnMouseHelp_Click       (null, EventArgs.Empty);
             btnVerticalLineText_Click(null, EventArgs.Empty);
             btnAutoIdent_Click       (null, EventArgs.Empty);
+            btnMarkChangedLines_Click(null, EventArgs.Empty);
 
             Editor.HotkeysMapping.InitDefault(); 
             string hotkeys = Settings.Get("Map", "AddonHotkeys", "");
@@ -835,7 +832,7 @@ namespace HMSEditorNS {
                 else if (e.KeyCode == Keys.D8) Editor.GotoBookmarkByName("8");
                 else if (e.KeyCode == Keys.D9) Editor.GotoBookmarkByName("9");
             } else if (e.KeyCode == Keys.Oemcomma || (e.Shift && e.KeyCode == Keys.D9)) {
-                WasCommaOrBracket = true;
+                if (!Editor.Selection.IsStringOrComment) WasCommaOrBracket = true;
             }
 
                 if      (e.KeyCode == Keys.F5) ToggleBreakpoint();
@@ -846,8 +843,9 @@ namespace HMSEditorNS {
         }
 
         private void Editor_SelectionChanged(object sender, EventArgs e) {
-            if (EnableFunctionToolTip && WasCommaOrBracket || Editor.ToolTip4Function.Visible && !CheckPositionIsInParametersSequenceWorker.IsBusy)
-                CheckPositionIsInParametersSequenceWorker.RunWorkerAsync();
+            if (EnableFunctionToolTip && WasCommaOrBracket || Editor.ToolTip4Function.Visible)
+                if (!CheckPositionIsInParametersSequenceWorker.IsBusy)
+                    CheckPositionIsInParametersSequenceWorker.RunWorkerAsync();
         }
 
         private void Editor_SelectionChangedDelayed(object sender, EventArgs e) {
@@ -915,7 +913,8 @@ namespace HMSEditorNS {
         }
 
         private void btnHighlightCurrentLine_Click(object sender, EventArgs e) {
-            HighlightCurrentLine(btnHighlightCurrentLine.Checked);
+            Editor.HighlightCurrentLine = btnHighlightCurrentLine.Checked;
+            Editor.Invalidate();
         }
 
         private void btnShowLineNumbers_Click(object sender, EventArgs e) {
@@ -1056,7 +1055,7 @@ namespace HMSEditorNS {
         }
 
         public void btnMarkChangedLines_Click(object sender, EventArgs e) {
-            Editor.ChangedLineColor = btnMarkChangedLines.Checked ? ColorChangedLine : Color.Transparent;
+            Editor.HighlightChangedLine = btnMarkChangedLines.Checked;
         }
 
         private void ToolStripMenuItemCut_Click(object sender, EventArgs e) {
@@ -1165,10 +1164,10 @@ namespace HMSEditorNS {
         }
 
         private void EditorMouseClick(object sender, MouseEventArgs e) {
-            if (e.X < (Editor.LeftIndent - 4)) {
-                int iFirstLine = Editor.YtoLineIndex();
-                int yFirstLine = Editor.LineInfos[iFirstLine].startY - Editor.VerticalScroll.Value;
-                int iLine = (int)((e.Y - yFirstLine) / (Editor.Font.Height - 1)) + iFirstLine;
+            if (e.X < (Editor.LeftIndent - 4)) { 
+                //System.Windows.Forms.MessageBox.Show("VerticalScroll.Value=" + Editor.VerticalScroll.Value.ToString());
+                int iStartLine = Editor.YtoLineIndex();
+                int iLine = iStartLine + (e.Y / Editor.CharHeight);
                 ToggleBreakpoint(iLine);
             }
         }
@@ -1227,6 +1226,7 @@ namespace HMSEditorNS {
         public Place PointToPlace(Point point) { return Editor.PointToPlace(point); }
 
         private void AutoCheckSyntax() {
+            Editor.SetErrorLines(8, 50, "Проверка!");
             if (HmsScriptFrame != null) {
                 object objScriptName = ScriptLanguage;
                 object objScriptText = Editor.Text;
@@ -1269,12 +1269,13 @@ namespace HMSEditorNS {
             return Editor.DebugMode;
         }
 
+        private static Regex forbittenSameText = new Regex(@"\W+", RegexOptions.Compiled);
         private void HighlightSameWords() {
             Editor.Range.ClearStyle(SameWordsStyle);
             if (!Editor.Selection.IsEmpty) return;
             var fragment = Editor.Selection.GetFragment(@"\w");
             string text = fragment.Text;
-            if (text.Length > 0) {
+            if (text.Length > 0 && !forbittenSameText.IsMatch(text)) {
                 Editor.Range.SetStyle(SameWordsStyle, "\\b" + text + "\\b", RegexOptions.Multiline);
             }
         }
@@ -1628,7 +1629,13 @@ namespace HMSEditorNS {
         }
 
         private void CheckPositionIsInParametersSequence_DoWork(object sender, DoWorkEventArgs e) {
-            CheckPositionIsInParametersSequence();
+            if (Editor.IsUpdating) {
+                for (int i = 3; i > 0; i--) {
+                    Thread.Sleep(100);
+                    if (!Editor.IsUpdating) break;
+                }
+            }
+            if (!Editor.IsUpdating) CheckPositionIsInParametersSequence();
         }
 
         private void CheckPositionIsInParametersSequence() {
@@ -1672,7 +1679,7 @@ namespace HMSEditorNS {
         private void SetAutoCompleteMenu() {
             PopupMenu = new AutocompleteMenu(Editor, this);
             PopupMenu.ImageList         = imageList1;
-            PopupMenu.MinFragmentLength = 1;
+            PopupMenu.MinFragmentLength = 2; 
             PopupMenu.Items.MaximumSize = new Size(200, 300);
             PopupMenu.Items.Width       = 200;
         }
