@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace FastColoredTextBoxNS
 {
-    /// <summary>
-    /// Limited stack
-    /// </summary>
-    public class LimitedStack<T>
+	/// <summary>
+	/// Limited stack
+	/// </summary>
+	[ClassInterface(ClassInterfaceType.None)]
+	public class LimitedStack<T>
     {
         T[] items;
         int count;

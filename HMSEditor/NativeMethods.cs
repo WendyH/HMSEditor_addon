@@ -4,6 +4,18 @@ using System.Runtime.InteropServices;
 
 namespace HMSEditorNS {
     internal static class NativeMethods {
+
+        public const uint COINIT_MULTITHREADED     = 0x0; //Initializes the thread for multi-threaded object concurrency.
+        public const uint COINIT_APARTMENTTHREADED = 0x2; //Initializes the thread for apartment-threaded object concurrency
+        public const uint COINIT_DISABLE_OLE1DDE   = 0x4; //Disables DDE for OLE1 support
+        public const uint COINIT_SPEED_OVER_MEMORY = 0x8; //Trade memory for speed
+
+        [DllImport("Ole32")]
+        public static extern int CoInitializeEx(IntPtr pvReserved, uint dwCoInit);
+
+        [DllImport("Ole32")]
+        public static extern int CoInitialize(IntPtr pvReserved);
+
         [DllImport("User32")]
         public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndParent);
 

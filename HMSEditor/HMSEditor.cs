@@ -1,4 +1,5 @@
-﻿/* This code is released under WTFPL Version 2 (http://www.wtfpl.net/) * Created by WendyH. Copyleft. */
+﻿//#define testThread
+/* This code is released under WTFPL Version 2 (http://www.wtfpl.net/) * Created by WendyH. Copyleft. */
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -34,10 +35,6 @@ namespace HMSEditorNS {
         public  static Regex regexExcludeWords     = new Regex(@"\b(for|if|else|return|true|false|while|do)\b", RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static Regex regexDetectProcedure  = new Regex(@"\b(void|procedure)" , RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
         private static Regex regexPartOfLine       = new Regex(@"\b(.*?\s.*?\s.*?)\b", RegexOptions.Compiled);
-
-        private static Regex regexStringAndCommentsCPP    = new Regex(@"""(\\""|[^""])*""|'(\\'|[^'])*'|(//.*|\/\*[\s\S]*?\*\/)", RegexOptions.Compiled);
-        private static Regex regexStringAndCommentsPascal = new Regex(@"""(\\""|[^""\r])*""|'(\\'|[^'\r])*'|(//.*|\{[\s\S]*?\})", RegexOptions.Compiled);
-        private static Regex regexStringAndCommentsBasic  = new Regex(@"""(\\""|[^""])*""|('.*)"                                     , RegexOptions.Compiled);
 
         private static Regex regexSearchConstantsCPP      = new Regex(@"#define\s+(\w+)(.*)"                             , RegexOptions.Compiled);
         private static Regex regexSearchConstantsPascal1  = new Regex(@"\bconst\b(.*?)\b(var|procedure|function|begin)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -97,15 +94,25 @@ namespace HMSEditorNS {
             AutoCheckSyntaxTimer.Tick += AutoCheckSyntaxTimer_Tick;
             AutoCheckSyntaxTimer.Interval = 800;
             SetAutoCompleteMenu();
+            helpPanel1.Init();
         }
 
-        private void AutoCheckSyntaxTimer_Tick(object sender, EventArgs e) {
+		public void AutoCheckSyntaxBackground() {
+			Thread t = new Thread(AutoCheckSyntax);
+			t.Start();
+		} 
+
+		private void AutoCheckSyntaxTimer_Tick(object sender, EventArgs e) {
             AutoCheckSyntaxTimer.Stop();
-            AutoCheckSyntax();
-        }
+#if testThread
+			AutoCheckSyntaxBackground();
+#else
+			AutoCheckSyntax();
+#endif
+		}
 
-        // Fields
-        public  bool   Locked             = false;
+		// Fields
+		public  bool   Locked             = false;
         private string ThemeName          = "";
         public  string Filename           = HMS.TemplatesDir; // last opened or saved file 
         public  int    LastPtocedureIndex = -1;
@@ -213,7 +220,7 @@ namespace HMSEditorNS {
 
         public int TextLength { get { return Text.Length; } }
 
-        #region Fuctions and procedures
+#region Fuctions and procedures
         public bool ToLock() {
             int countout = 20; // Maximum - two sec
             while (Locked && (countout > 0)) { Thread.Sleep(100); countout--; } // Waiting if locked
@@ -801,9 +808,9 @@ namespace HMSEditorNS {
                 Editor.Focus();
             }
         }
-        #endregion Function and procedures
+#endregion Function and procedures
 
-        #region Control Events
+#region Control Events
         private void Editor_KeyDown(object sender, KeyEventArgs e) {
             if      (e.KeyCode == Keys.F11   ) tsMain.Visible = !tsMain.Visible;
             else if (e.KeyCode == Keys.F12   ) GotoDefinition();
@@ -864,8 +871,10 @@ namespace HMSEditorNS {
             Locked = true;       // Say to other processes we is busy - don't tuch us!
             BuildFunctionList(); // Only when text changed - build the list of functions
             if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxTimer.Start();
-            Locked = false;
-            if (IsFirstActivate) {
+			//if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxBackground();
+
+			Locked = false;
+            if (IsFirstActivate) { 
                 IsFirstActivate = false;
                 Editor.Focus();
             }
@@ -879,7 +888,8 @@ namespace HMSEditorNS {
         private void btnAutoCheckSyntax_Click(object sender, EventArgs e) {
             if (btnAutoCheckSyntax.Checked) {
                 AutoCheckSyntax();
-            } else {
+				//AutoCheckSyntaxBackground();
+			} else {
                 Editor.ClearErrorLines();
             }
         }
@@ -1217,32 +1227,32 @@ namespace HMSEditorNS {
             aboutDialog.ShowDialog();
         }
 
-        #endregion Control Events
+#endregion Control Events
 
-        #region Smart IDE functions
+#region Smart IDE functions
         private static string MatchReturnEmptyLines(Match m) { return regexNotNewLine.Replace(m.Value, CensChar.ToString()); }
         private static string MatchRemoveLinebreaks(Match m) { return regexLineBreaks.Replace(m.Value, String.Empty); }
 
-        public Place PointToPlace(Point point) { return Editor.PointToPlace(point); }
-
-        private void AutoCheckSyntax() {
-            Editor.SetErrorLines(8, 50, "Проверка!");
+		private void AutoCheckSyntax() {
             if (HmsScriptFrame != null) {
-                object objScriptName = ScriptLanguage;
-                object objScriptText = Editor.Text;
-                object objErrorMessage = "";
-                int nErrorLine = 0;
-                int nErrorChar = 0;
-                int nResult = 0;
-                HmsScriptFrame.CompileScript(ref objScriptName, ref objScriptText, ref objErrorMessage, ref nErrorLine, ref nErrorChar, ref nResult);
-                bool done = (nResult < 0);
-                if (done) {
-                    Editor.ClearErrorLines();
-                } else {
-                    nErrorChar = Math.Max(0, nErrorChar - 1);
-                    nErrorLine = Math.Max(0, nErrorLine - 1);
-                    Editor.SetErrorLines(nErrorChar, nErrorLine, objErrorMessage.ToString());
-                }
+				try {
+					object objScriptName   = ScriptLanguage;
+					object objScriptText   = Editor.Text;
+					object objErrorMessage = "";
+					int  nErrorLine = 0;
+					int  nErrorChar = 0;
+					int  nResult    = 0;
+					HmsScriptFrame.CompileScript(ref objScriptName, ref objScriptText, ref objErrorMessage, ref nErrorLine, ref nErrorChar, ref nResult);
+					if (nResult < 0) {
+						Editor.ClearErrorLines();
+					} else {
+						nErrorChar = Math.Max(0, nErrorChar - 1);
+						nErrorLine = Math.Max(0, nErrorLine - 1);
+						Editor.SetErrorLines(nErrorChar, nErrorLine, objErrorMessage.ToString());
+					}
+				} catch (Exception e) { MessageBox.Show(e.ToString()); }
+            } else {
+                Editor.SetErrorLines(8, 50, "Проверка!");
             }
 
         }
@@ -1279,21 +1289,8 @@ namespace HMSEditorNS {
                 Editor.Range.SetStyle(SameWordsStyle, "\\b" + text + "\\b", RegexOptions.Multiline);
             }
         }
-/*
-        public string WithoutStringAndComments(string txt, bool trimNotClosed = false) {
-            switch (Editor.Language) {
-                case Language.CPPScript   : txt = regexStringAndCommentsCPP   .Replace(txt, evaluatorSameLines); break;
-                case Language.PascalScript: txt = regexStringAndCommentsPascal.Replace(txt, evaluatorSameLines); break;
-                case Language.JScript     : txt = regexStringAndCommentsCPP   .Replace(txt, evaluatorSameLines); break;
-                case Language.BasicScript : txt = regexStringAndCommentsBasic .Replace(txt, evaluatorSameLines); break;
-            }
-            if (trimNotClosed) {
-                txt = Regex.Replace(txt, "[\"'].*", "");
-            }
-            return txt;
-        }
-*/
-        private static Regex regexTextOfComment = new Regex(@"^\s*?//.*?(\w.*)", RegexOptions.Compiled);
+
+		private static Regex regexTextOfComment = new Regex(@"^\s*?//.*?(\w.*)", RegexOptions.Compiled);
 
         private void BuildFunctionList() {
             Functions.Clear();
@@ -1674,7 +1671,7 @@ namespace HMSEditorNS {
             }
         }
 
-        #endregion
+#endregion
 
         private void SetAutoCompleteMenu() {
             PopupMenu = new AutocompleteMenu(Editor, this);

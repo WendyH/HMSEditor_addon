@@ -150,7 +150,7 @@ namespace FastColoredTextBoxNS {
             return StructuredText(out heightCorrection, s1, s2, s3, s4);
         }
 
-        private static string GetText(HMSItem item, out float heightCorrection) {
+        public static string GetText(HMSItem item, out float heightCorrection) {
             string s1 = item.ToolTipTitle.Trim();
             string s2 = item.ToolTipText .Trim();
             string s3 = item.Help .Trim();

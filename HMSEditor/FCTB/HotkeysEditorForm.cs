@@ -138,7 +138,7 @@ namespace FastColoredTextBoxNS
         }
 
         private void button3_Click(object sender, EventArgs e) {
-            testpanel.CompileScript();
+            //testpanel.CompileScript();
         }
 
         private void button4_Click(object sender, EventArgs e) {

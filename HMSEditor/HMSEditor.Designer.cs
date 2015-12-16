@@ -31,7 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HMSEditor));
             FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.Editor = new FastColoredTextBoxNS.FastColoredTextBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.btnContextMenuBack = new System.Windows.Forms.ToolStripMenuItem();
             this.btnContextMenuForward = new System.Windows.Forms.ToolStripMenuItem();
@@ -115,89 +114,27 @@
             this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.CheckPositionIsInParametersSequenceWorker = new System.ComponentModel.BackgroundWorker();
+            this.Editor = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.helpPanel1 = new HMSEditorNS.HelpPanel();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.tsMain.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.Editor);
+            this.panel1.Controls.Add(this.splitContainer1);
             this.panel1.Controls.Add(this.tsMain);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(948, 530);
             this.panel1.TabIndex = 0;
-            // 
-            // Editor
-            // 
-            this.Editor.AllowDrop = false;
-            this.Editor.AllowSeveralTextStyleDrawing = true;
-            this.Editor.AutoCompleteBrackets = true;
-            this.Editor.AutoCompleteBracketsList = new char[] {
-        '(',
-        ')',
-        '{',
-        '}',
-        '[',
-        ']',
-        '\"',
-        '\"',
-        '\'',
-        '\''};
-            this.Editor.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);^\\s*(case|default)\\s*[^:]*(?<" +
-    "range>:)\\s*(?<range>[^;]+);";
-            this.Editor.AutoScrollMinSize = new System.Drawing.Size(25, 15);
-            this.Editor.BackBrush = null;
-            this.Editor.BookmarkIcon = global::HMSEditorNS.Properties.Resources.togglebookmark;
-            this.Editor.BreakpointIcon = global::HMSEditorNS.Properties.Resources.breakpoint_x16;
-            this.Editor.BreakpointLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.Editor.ChangedLineColor = System.Drawing.Color.PaleGreen;
-            this.Editor.CharHeight = 15;
-            this.Editor.CharWidth = 7;
-            this.Editor.ContextMenuStrip = this.contextMenuStrip1;
-            this.Editor.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.Editor.DebugCurrentLineIcon = global::HMSEditorNS.Properties.Resources.arrow_run_16xMD;
-            this.Editor.DelayedEventsInterval = 600;
-            this.Editor.DelayedTextChangedInterval = 500;
-            this.Editor.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.Editor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Editor.Font = new System.Drawing.Font("Consolas", 9.75F);
-            this.Editor.HighlightingRangeType = FastColoredTextBoxNS.HighlightingRangeType.VisibleRange;
-            this.Editor.Hotkeys = resources.GetString("Editor.Hotkeys");
-            this.Editor.IsReplaceMode = false;
-            this.Editor.Language = FastColoredTextBoxNS.Language.PascalScript;
-            this.Editor.LeftBracket = '(';
-            this.Editor.LeftPadding = 2;
-            this.Editor.Location = new System.Drawing.Point(0, 25);
-            this.Editor.Name = "Editor";
-            this.Editor.Paddings = new System.Windows.Forms.Padding(0);
-            this.Editor.RightBracket = ')';
-            this.Editor.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
-            serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
-            serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
-            serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
-            serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
-            this.Editor.ServiceColors = serviceColors1;
-            this.Editor.ShowScrollBars = false;
-            this.Editor.Size = new System.Drawing.Size(948, 505);
-            this.Editor.TabIndex = 10;
-            this.Editor.TabLength = 2;
-            this.Editor.Zoom = 100;
-            this.Editor.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.Editor_TextChanged);
-            this.Editor.SelectionChanged += new System.EventHandler(this.Editor_SelectionChanged);
-            this.Editor.TextChangedDelayed += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.Editor_TextChangedDelayed);
-            this.Editor.SelectionChangedDelayed += new System.EventHandler(this.Editor_SelectionChangedDelayed);
-            this.Editor.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Editor_Scroll);
-            this.Editor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Editor_KeyDown);
-            this.Editor.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseClick);
-            this.Editor.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseDoubleClick);
-            this.Editor.MouseLeave += new System.EventHandler(this.Editor_MouseLeave);
-            this.Editor.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseMove);
             // 
             // contextMenuStrip1
             // 
@@ -705,7 +642,9 @@
             // 
             // btnShowLineNumbers
             // 
+            this.btnShowLineNumbers.Checked = true;
             this.btnShowLineNumbers.CheckOnClick = true;
+            this.btnShowLineNumbers.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnShowLineNumbers.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnShowLineNumbers.Name = "btnShowLineNumbers";
             this.btnShowLineNumbers.Size = new System.Drawing.Size(313, 22);
@@ -860,9 +799,7 @@
             // 
             // btnShowFoldingLines
             // 
-            this.btnShowFoldingLines.Checked = true;
             this.btnShowFoldingLines.CheckOnClick = true;
-            this.btnShowFoldingLines.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnShowFoldingLines.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnShowFoldingLines.Name = "btnShowFoldingLines";
             this.btnShowFoldingLines.Size = new System.Drawing.Size(463, 22);
@@ -892,7 +829,9 @@
             // 
             // btnAutoCompleteBrackets
             // 
+            this.btnAutoCompleteBrackets.Checked = true;
             this.btnAutoCompleteBrackets.CheckOnClick = true;
+            this.btnAutoCompleteBrackets.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnAutoCompleteBrackets.Name = "btnAutoCompleteBrackets";
             this.btnAutoCompleteBrackets.Size = new System.Drawing.Size(463, 22);
             this.btnAutoCompleteBrackets.Text = "Автозавершение скобок и кавычек";
@@ -1000,6 +939,99 @@
             // 
             this.CheckPositionIsInParametersSequenceWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.CheckPositionIsInParametersSequence_DoWork);
             // 
+            // Editor
+            // 
+            this.Editor.AllowDrop = false;
+            this.Editor.AllowSeveralTextStyleDrawing = true;
+            this.Editor.AutoCompleteBrackets = true;
+            this.Editor.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.Editor.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);^\\s*(case|default)\\s*[^:]*(?<" +
+    "range>:)\\s*(?<range>[^;]+);";
+            this.Editor.AutoScrollMinSize = new System.Drawing.Size(25, 15);
+            this.Editor.BackBrush = null;
+            this.Editor.BookmarkIcon = global::HMSEditorNS.Properties.Resources.togglebookmark;
+            this.Editor.BreakpointIcon = global::HMSEditorNS.Properties.Resources.breakpoint_x16;
+            this.Editor.BreakpointLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.Editor.ChangedLineColor = System.Drawing.Color.PaleGreen;
+            this.Editor.CharHeight = 15;
+            this.Editor.CharWidth = 7;
+            this.Editor.ContextMenuStrip = this.contextMenuStrip1;
+            this.Editor.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.Editor.DebugCurrentLineIcon = global::HMSEditorNS.Properties.Resources.arrow_run_16xMD;
+            this.Editor.DelayedEventsInterval = 600;
+            this.Editor.DelayedTextChangedInterval = 500;
+            this.Editor.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.Editor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Editor.Font = new System.Drawing.Font("Consolas", 9.75F);
+            this.Editor.HighlightingRangeType = FastColoredTextBoxNS.HighlightingRangeType.VisibleRange;
+            this.Editor.Hotkeys = resources.GetString("Editor.Hotkeys");
+            this.Editor.IsReplaceMode = false;
+            this.Editor.Language = FastColoredTextBoxNS.Language.PascalScript;
+            this.Editor.LeftBracket = '(';
+            this.Editor.LeftPadding = 2;
+            this.Editor.Location = new System.Drawing.Point(0, 0);
+            this.Editor.Name = "Editor";
+            this.Editor.Paddings = new System.Windows.Forms.Padding(0);
+            this.Editor.RightBracket = ')';
+            this.Editor.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
+            serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
+            serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
+            serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
+            this.Editor.ServiceColors = serviceColors1;
+            this.Editor.ShowScrollBars = false;
+            this.Editor.Size = new System.Drawing.Size(689, 505);
+            this.Editor.TabIndex = 10;
+            this.Editor.TabLength = 2;
+            this.Editor.Zoom = 100;
+            this.Editor.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.Editor_TextChanged);
+            this.Editor.SelectionChanged += new System.EventHandler(this.Editor_SelectionChanged);
+            this.Editor.TextChangedDelayed += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.Editor_TextChangedDelayed);
+            this.Editor.SelectionChangedDelayed += new System.EventHandler(this.Editor_SelectionChangedDelayed);
+            this.Editor.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Editor_Scroll);
+            this.Editor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Editor_KeyDown);
+            this.Editor.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseClick);
+            this.Editor.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseDoubleClick);
+            this.Editor.MouseLeave += new System.EventHandler(this.Editor_MouseLeave);
+            this.Editor.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseMove);
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 25);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.Editor);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.helpPanel1);
+            this.splitContainer1.Size = new System.Drawing.Size(948, 505);
+            this.splitContainer1.SplitterDistance = 689;
+            this.splitContainer1.TabIndex = 11;
+            // 
+            // helpPanel1
+            // 
+            this.helpPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.helpPanel1.Location = new System.Drawing.Point(0, 0);
+            this.helpPanel1.Name = "helpPanel1";
+            this.helpPanel1.Size = new System.Drawing.Size(255, 505);
+            this.helpPanel1.TabIndex = 0;
+            // 
             // HMSEditor
             // 
             this.Controls.Add(this.panel1);
@@ -1007,10 +1039,13 @@
             this.Name = "HMSEditor";
             this.Size = new System.Drawing.Size(948, 530);
             this.panel1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.Editor)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.tsMain.ResumeLayout(false);
             this.tsMain.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Editor)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1102,5 +1137,7 @@
         private System.ComponentModel.BackgroundWorker CheckPositionIsInParametersSequenceWorker;
         private System.Windows.Forms.ToolStripMenuItem btnContextMenuAutoIndent;
         private System.Windows.Forms.ToolStripMenuItem btnAdd2Watch;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private HelpPanel helpPanel1;
     }
 }

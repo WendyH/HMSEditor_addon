@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 /// <summary>
@@ -8,10 +9,11 @@ using System.Text.RegularExpressions;
 namespace whYamlParser {
     public enum YamlObjectType { Scalar, Mapping, Sequence }
 
-    /// <summary>
-    /// YamlObjects collection
-    /// </summary>
-    public class YamlObjects: List<YamlObject> {
+	/// <summary>
+	/// YamlObjects collection
+	/// </summary>
+	[ClassInterface(ClassInterfaceType.None)]
+	public class YamlObjects: List<YamlObject> {
         public bool ContainsName(string name) {
             foreach (YamlObject o in this) if (o.Name == name) return true;
             return false;

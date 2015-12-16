@@ -1,0 +1,189 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{EF6553C4-D315-411E-A96A-54222363C5AB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Darwen.Windows.Forms.General</RootNamespace>
+    <AssemblyName>DockingControls</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutoHideControlHandler.cs" />
+    <Compile Include="AutoResizeControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="AutoResizeControl.Designer.cs">
+      <DependentUpon>AutoResizeControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CaptionToolStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CaptionToolStrip.Designer.cs">
+      <DependentUpon>CaptionToolStrip.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlDrawHelpers.cs" />
+    <Compile Include="ControlRectangleDrag.cs" />
+    <Compile Include="DesktopGraphics.cs" />
+    <Compile Include="DockingType.cs" />
+    <Compile Include="DockedControlCollection.cs" />
+    <Compile Include="DockingControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DockingControl.Designer.cs">
+      <DependentUpon>DockingControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DockingManagerControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DockingManagerControl.Designer.cs">
+      <DependentUpon>DockingManagerControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DragHandler.cs" />
+    <Compile Include="ControlHelpers.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="GradientFillUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GradientFillUserControl.Designer.cs">
+      <DependentUpon>GradientFillUserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ControlResizeAnimator.cs" />
+    <Compile Include="RedrawStopper.cs" />
+    <Compile Include="SetCursor.cs" />
+    <Compile Include="SplitterDragHandler.cs" />
+    <Compile Include="DockControlContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DockControlContainer.Designer.cs">
+      <DependentUpon>DockControlContainer.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DockingControl.resx">
+      <DependentUpon>DockingControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DockingManagerControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DockingManagerControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DockControlContainer.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>DockControlContainer.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AutoHideOff.bmp" />
+    <EmbeddedResource Include="AutoHideOn.bmp" />
+    <EmbeddedResource Include="AutoResizeControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>AutoResizeControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FloatingForm.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FloatingForm.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ControlDragSizer.cs" />
+    <Compile Include="Direction.cs" />
+    <Compile Include="DockControlContainerCollectionHelpers.cs" />
+    <Compile Include="DockControlHelpers.cs" />
+    <Compile Include="DockControlContainerCollection.cs" />
+    <Compile Include="DockingControlData.cs" />
+    <Compile Include="DockingControlPersisterStructures.cs" />
+    <Compile Include="DockingControlsPersister.cs" />
+    <Compile Include="DockingWindowListMenuItem.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DoubleDictionary.cs" />
+    <Compile Include="DrawingNativeMethods.cs" />
+    <Compile Include="FloatingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FloatingForm.Designer.cs">
+      <DependentUpon>FloatingForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GraphicsHdc.cs" />
+    <Compile Include="IDockControlContainerHandler.cs" />
+    <Compile Include="MenuStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PaddingDrawHelper.cs" />
+    <Compile Include="RectangleDrag.cs" />
+    <Compile Include="RectangleHelpers.cs" />
+    <Compile Include="SplitterDockControlContainerHandler.cs">
+    </Compile>
+    <Compile Include="TabbedDockControlContainerHandler.cs">
+    </Compile>
+    <Compile Include="TabbedDocumentCollection.cs" />
+    <Compile Include="TabbedDocumentControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="TabbedDocumentControl.Designer.cs">
+      <DependentUpon>TabbedDocumentControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TabbedDocumentControlActiveFilesContextMenuHandler.cs" />
+    <Compile Include="TabbedDocumentControlHelper.cs" />
+    <Compile Include="TabbedDocumentControlRenderer.cs">
+    </Compile>
+    <Compile Include="ToolStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ToolStripHelpers.cs" />
+    <Compile Include="ToolStripRendererDecorator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TabbedDocumentControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>TabbedDocumentControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ToggleTabs.bmp" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

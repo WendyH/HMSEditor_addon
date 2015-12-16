@@ -2,6 +2,7 @@
 using System;
 using System.Text;
 using System.Drawing;
+using System.Runtime.InteropServices;
 
 namespace FastColoredTextBoxNS {
     /// <summary>
@@ -172,7 +173,7 @@ namespace FastColoredTextBoxNS {
         }
     }
 
-    public struct LineInfo {
+	public struct LineInfo {
         List<int> cutOffPositions;
         //Y coordinate of line on screen
         internal int startY;

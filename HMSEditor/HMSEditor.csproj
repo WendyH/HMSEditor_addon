@@ -56,6 +56,9 @@
     <Prefer32Bit>false</Prefer32Bit>
     <DebugSymbols>true</DebugSymbols>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject>
@@ -152,6 +155,12 @@
       <DependentUpon>FormUpdateInfo.cs</DependentUpon>
     </Compile>
     <Compile Include="GitHub.cs" />
+    <Compile Include="HelpPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="HelpPanel.Designer.cs">
+      <DependentUpon>HelpPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="HmsAddons.cs" />
     <Compile Include="HMSClassInfo.cs" />
     <Compile Include="HmsEditBox.cs">
@@ -268,6 +277,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormUpdateInfo.resx">
       <DependentUpon>FormUpdateInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HelpPanel.resx">
+      <DependentUpon>HelpPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HMSEditor.resx">
       <DependentUpon>HMSEditor.cs</DependentUpon>

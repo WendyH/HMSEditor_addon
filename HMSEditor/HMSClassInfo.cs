@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace HMSEditorNS {
     public class HMSClassInfo {
@@ -9,7 +10,8 @@ namespace HMSEditorNS {
         public AutocompleteItems StaticItems = new AutocompleteItems();
     }
 
-    public class HMSClasses: List<HMSClassInfo> {
+	[ClassInterface(ClassInterfaceType.None)]
+	public class HMSClasses: List<HMSClassInfo> {
         public bool ContainsName(string name) {
             name = name.Trim().ToLower();
             foreach (HMSClassInfo o in this) if (o.Name.ToLower() == name) return true;

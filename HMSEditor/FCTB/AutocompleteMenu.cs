@@ -153,11 +153,13 @@ namespace FastColoredTextBoxNS
 
         public void OnSelected(SelectedEventArgs args)
         {
-            string word = args.Item.MenuText;
-            if (LastWords.ContainsKey(word))
-                LastWords[word]++;
-            else
-                LastWords[word] = 1;
+            if (args.Item.MenuText != null) {
+                string word = args.Item.ToString();
+                if (LastWords.ContainsKey(word))
+                    LastWords[word]++;
+                else
+                    LastWords[word] = 1;
+            }
 
             if (Selected != null)
                 Selected(this, args);

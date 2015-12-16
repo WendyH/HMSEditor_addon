@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using FastColoredTextBoxNS;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 
 namespace HMSEditorNS {
     /// <summary>
@@ -22,10 +23,11 @@ namespace HMSEditorNS {
         }
     }
 
-    /// <summary>
-    /// Класс для хранения набора загруженных шаблонов кода для редактора
-    /// </summary>
-    public class Templates: List<TemplateItem> {
+	/// <summary>
+	/// Класс для хранения набора загруженных шаблонов кода для редактора
+	/// </summary>
+	[ClassInterface(ClassInterfaceType.None)]
+	public class Templates: List<TemplateItem> {
 
         /// <summary>
         /// Можно получить выборку из набора по указанному языку

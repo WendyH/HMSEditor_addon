@@ -21,19 +21,6 @@ namespace HMSEditorNS {
             MessageBox.Show("Test ok - " + ob1.ToString());
         }
 
-        public static void CompileScript() {
-            var Editor = HMSEditor.ActiveEditor;
-            var HmsScriptFrame = Editor.HmsScriptFrame;
-            object obScriptName = Editor.ScriptLanguage;
-            object obScriptText = Editor.Text;
-            object obErrorMessage = "";
-            int errorLine = 0, errorChar = 0, result = 0;
-
-            HmsScriptFrame.CompileScript(ref obScriptName, ref obScriptText, ref obErrorMessage, ref errorLine, ref errorChar, ref result);
-
-            MessageBox.Show("Test ok.\nobScriptName=" + obScriptName.ToString() + "\nobErrorMessage=" + obErrorMessage.ToString() + "\nerrorLine=" + errorLine.ToString() + "\nerrorChar=" + errorChar.ToString() + "\nresult=" + result.ToString());
-        }
-
         public static void GenerateScriptDescriptions() {
             var HmsScriptFrame = HMSEditor.ActiveEditor.HmsScriptFrame;
             object ob1 = "";

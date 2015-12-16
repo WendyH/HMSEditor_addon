@@ -146,7 +146,6 @@ namespace HmsAddons {
 
         uint ChangeScriptName(ref object aScriptName);
 
-        [MTAThread]
         uint CompileScript(ref object aScriptName, ref object aScriptText, ref object aErrorMessage, ref int aErrorLine, ref int aErrorChar, ref int aResult);
 
         uint GenerateScriptDescriptions(ref object aXMLDescriptions);
@@ -156,7 +155,7 @@ namespace HmsAddons {
         uint IsBreakpointLine(int aLine, ref int aResult);
         uint IsExecutableLine(int aLine, ref int aResult);
 
-        uint ProcessCommand(int aCommand);
+        uint ProcessCommand (int aCommand);
         uint SolveExpression(ref object aExpression, ref object aResult);
 
         uint ToggleBreakpoint(int aLine);

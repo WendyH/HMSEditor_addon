@@ -4,6 +4,7 @@ using System.Security.Permissions;
 using System.Windows.Forms;
 using HMSEditorNS;
 using NativeMethods = HMSEditorNS.NativeMethods;
+using System.Threading;
 
 namespace HmsAddons {
 
@@ -49,7 +50,6 @@ namespace HmsAddons {
             if (Constatns.IsEqualGUID(iid, typeof(IHmsScriptEditor))) {
                 instance = new HmsScriptEditor();
                 result = HRESULT.S_OK;
-
             }
             return result;
         }
@@ -162,8 +162,9 @@ namespace HmsAddons {
         public uint GetModified(ref int aModified) {
             if (EditBox != null) {
                 aModified = EditBox.Modified ? -1 : 0;
+                return HRESULT.S_OK;
             }
-            return HRESULT.E_NOTIMPL;
+            return HRESULT.E_UNEXPECTED;
         }
 
         public uint GetScriptName(ref object aScriptName) {
@@ -202,12 +203,11 @@ namespace HmsAddons {
             uint result = HRESULT.E_UNEXPECTED;
             if (EditBox != null) {
                 try {
-                    if (FirstSetPos) {
+                    if (FirstSetPos) { 
                         EditBox.RestorePosition();
                     } else {
                         EditBox.SetCaretPos(aLine, aChar);
                     }
-                    
                     return HRESULT.S_OK;
                 } finally {
                     FirstSetPos = false;
