@@ -233,7 +233,9 @@ namespace HMSEditorNS {
 
         private void HideAllToolTipsAndHints() {
             if (!PopupMenu.Visible) HideToolTip4Function(true);
-            if (Editor.ToolTip != null) Editor.ToolTip.Hide(Editor);
+            if (Editor.ToolTip != null) Editor.ToolTip.RemoveAll();
+            PopupMenu.ToolTip.RemoveAll();
+            if (PopupMenu.Visible) PopupMenu.Hide();
         }
 
         private void HideToolTip4Function(bool noCheckLine = false) {
@@ -497,6 +499,7 @@ namespace HMSEditorNS {
         /// </summary>
         public void LoadSettings() {
             try { Settings.Load(); } catch (Exception e) { HMS.LogError(e.ToString()); Console.WriteLine("Error loading config file '" + Settings.File + "'", e); return; }
+            DockingControlsPersister.Deserialize(dockingPanel1, HMS.DockingsFile);
             tsMain.Visible = false;
             string section = DialogClass, sVal;
             tsMain.Visible                   = Settings.Get("ToolStripVisible"    , section, tsMain.Visible);
@@ -520,6 +523,11 @@ namespace HMSEditorNS {
             btnToolStripMenuItemFONT.Checked = Settings.Get("AlternateFont"       , section, btnToolStripMenuItemFONT.Checked);
             btnVerticalLineText     .Checked = Settings.Get("VerticalLineText"    , section, btnVerticalLineText     .Checked);
             btnStorePositions       .Checked = Settings.Get("StorePositions"      , section, btnStorePositions       .Checked);
+            btnSprav                .Checked = Settings.Get("ShowSprav"           , section, btnSprav                .Checked);
+            btnStorePositions       .Checked = Settings.Get("StorePositions"      , section, btnStorePositions       .Checked);
+
+            string distance = Settings.Get("HelpSplitter", section, dockingPanel1.HelpPanel.SplitterDistance.ToString());
+            int ndistance; if (int.TryParse(distance, out ndistance)) dockingPanel1.HelpPanel.SplitterDistance = ndistance;
 
             btnUnderlinePascalKeywords.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywords.Checked);
             Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
@@ -529,7 +537,7 @@ namespace HMSEditorNS {
             if ((Editor.Font.Name.ToLower().IndexOf("consolas") < 0) && (HMS.PFC.Families.Length > 1)) {
                 btnToolStripMenuItemFONT.Visible = false;
                 Editor.Font = new Font(HMS.PFC.Families[1], 10f, FontStyle.Regular, GraphicsUnit.Point);
-            } else if (btnToolStripMenuItemFONT.Checked) {
+            } else if (btnToolStripMenuItemFONT.Checked) { 
                 btnToolStripMenuItemFONT_Click(null, new EventArgs());
             }
 
@@ -545,6 +553,7 @@ namespace HMSEditorNS {
             EnableEvaluateByMouse          = btnEvaluateByMouse      .Checked;
             Editor.EnableFoldingIndicator  = btnShowFoldingIndicator .Checked;
             Editor.HighlightCurrentLine    = btnHighlightCurrentLine .Checked;
+            dockingPanel1.HelpControl.Cancelled = !btnSprav.Checked;
 
             Themes.Init();
 
@@ -573,7 +582,6 @@ namespace HMSEditorNS {
                     Editor.HotkeysMapping[pair.Key] = pair.Value;
             }
 
-            DockingControlsPersister.Deserialize(dockingPanel1, HMS.DockingsFile);
             Editor.Refresh();
         }
 
@@ -627,6 +635,8 @@ namespace HMSEditorNS {
                 Settings.Set("AlternateFont"       , btnToolStripMenuItemFONT.Checked, section);
                 Settings.Set("VerticalLineText"    , btnVerticalLineText     .Checked, section);
                 Settings.Set("StorePositions"      , btnStorePositions       .Checked, section);
+                Settings.Set("ShowSprav"           , btnSprav                .Checked, section);
+                Settings.Set("HelpSplitter", dockingPanel1.HelpPanel.SplitterDistance, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -1226,9 +1236,22 @@ namespace HMSEditorNS {
             aboutDialog.ShowDialog();
         }
 
-#endregion Control Events
+        private void btnStorePositions_Click(object sender, EventArgs e) {
 
-#region Smart IDE functions
+        }
+
+        private void btnAdd2Watch_Click(object sender, EventArgs e) {
+            object text = Editor.SelectedText;
+            HmsScriptFrame.AddWatch(ref text);
+        }
+
+        private void btnSprav_Click(object sender, EventArgs e) {
+            dockingPanel1.HelpControl.Cancelled = !btnSprav.Checked;
+        }
+
+        #endregion Control Events
+
+        #region Smart IDE functions
         private static string MatchReturnEmptyLines(Match m) { return regexNotNewLine.Replace(m.Value, CensChar.ToString()); }
         private static string MatchRemoveLinebreaks(Match m) { return regexLineBreaks.Replace(m.Value, String.Empty); }
 
@@ -1795,17 +1818,5 @@ namespace HMSEditorNS {
             return text;
         }
 
-        private void btnStorePositions_Click(object sender, EventArgs e) {
-
-        }
-
-        private void btnAdd2Watch_Click(object sender, EventArgs e) {
-            object text = Editor.SelectedText;
-            HmsScriptFrame.AddWatch(ref text);
-        }
-
-        private void btnSprav_Click(object sender, EventArgs e) {
-            dockingPanel1.HelpControl.Cancelled = !btnSprav.Checked;
-        }
     }
 }

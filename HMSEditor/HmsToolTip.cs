@@ -340,7 +340,10 @@ namespace FastColoredTextBoxNS {
                     prevHeight = wordSize.Height;
                 }
                 point.Y += wordSize.Height; point.X = Margin.Width;
-                if (tb != null) tb.AppendText("\r\n"); if (iline==0) tb.AppendText("\r\n");
+                if (tb != null) {
+                    tb.AppendText("\r\n");
+                    if (iline == 0) tb.AppendText("\r\n");
+                }
             }
             return new Size(maxWidth+Margin.Width, point.Y+Margin.Height);
         }

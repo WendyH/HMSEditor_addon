@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 namespace HMSEditorNS {
 	public partial class HelpPanel: UserControl {
         public string Filter = "";
+        
+        public int SplitterDistance { get { return splitContainer1.SplitterDistance; } set { splitContainer1.SplitterDistance = value; } }
 
         private Timer timer = new Timer();
 

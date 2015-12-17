@@ -908,10 +908,8 @@ namespace FastColoredTextBoxNS
                     OnSelecting();
                     return true;
                 case Keys.Escape:
-                    if (ToolTip.Visible)
-                        ToolTip.Hide(this);
-                    else
-                        Menu.Close();
+                    ToolTip.Hide(this);
+                    Menu.Close();
                     return true;
             }
 
