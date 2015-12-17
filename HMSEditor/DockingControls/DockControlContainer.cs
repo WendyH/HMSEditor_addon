@@ -512,7 +512,11 @@ namespace Darwen.Windows.Forms.Controls.Docking
 
                 _menuStrip.Visible = true;
 
-                ToolStripButton button = new ToolStripButton(control.Title);
+                MyToolStripButton button = new MyToolStripButton(control.Title);
+                // < By WendyH ----------------------------------------------
+                button.Font = new Font("Serif", 9.00f, FontStyle.Regular, GraphicsUnit.Point);
+                button.Padding = new Padding(5);
+                // < By WendyH ----------------------------------------------
                 button.MouseHover += new EventHandler(button_MouseHover);
                 button.Click += new EventHandler(button_Click);
                 button.MouseEnter += new EventHandler(button_MouseEnter);
@@ -899,4 +903,16 @@ namespace Darwen.Windows.Forms.Controls.Docking
             }
         }        
     }    
+
+    public class MyToolStripButton : ToolStripButton {
+        public MyToolStripButton(string title) {
+            base.Text = title;
+        }
+
+        protected override void OnPaint(PaintEventArgs e) {
+            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+            base.OnPaint(e);
+        }
+    }
+
 }

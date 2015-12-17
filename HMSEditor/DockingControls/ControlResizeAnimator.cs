@@ -15,8 +15,8 @@ namespace Darwen.Windows.Forms.General
         private double _sizeStep;
         private int _currentStep;
         private Direction _direction = Direction.None;
-        private const int TimePeriod = 50;
-        private const int Steps = 6;
+        private const int TimePeriod = 40;
+        private const int Steps = 1;
 
         private enum State
         {

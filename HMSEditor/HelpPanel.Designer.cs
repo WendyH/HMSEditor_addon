@@ -25,29 +25,29 @@
 		private void InitializeComponent() {
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.TopPanel = new System.Windows.Forms.Panel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.flatListBox1 = new HMSEditorNS.FlatListBox();
+            this.HelpTextBox = new System.Windows.Forms.RichTextBox();
+            this.TopPanel = new System.Windows.Forms.Panel();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.TopPanel.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.TopPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // comboBox1
             // 
+            this.comboBox1.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
             this.comboBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(0, 0);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(261, 21);
+            this.comboBox1.Size = new System.Drawing.Size(352, 21);
             this.comboBox1.TabIndex = 1;
             this.comboBox1.TabStop = false;
             this.comboBox1.TextChanged += new System.EventHandler(this.comboBox1_TextChanged);
-            this.comboBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.comboBox1_KeyPress);
-            this.comboBox1.Validated += new System.EventHandler(this.comboBox1_Validated);
+            this.comboBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.comboBox1_KeyDown);
             // 
             // splitContainer1
             // 
@@ -62,29 +62,10 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.richTextBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(261, 573);
-            this.splitContainer1.SplitterDistance = 420;
+            this.splitContainer1.Panel2.Controls.Add(this.HelpTextBox);
+            this.splitContainer1.Size = new System.Drawing.Size(352, 573);
+            this.splitContainer1.SplitterDistance = 261;
             this.splitContainer1.TabIndex = 1;
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBox1.Location = new System.Drawing.Point(0, 0);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.ReadOnly = true;
-            this.richTextBox1.Size = new System.Drawing.Size(261, 149);
-            this.richTextBox1.TabIndex = 0;
-            this.richTextBox1.Text = "";
-            // 
-            // TopPanel
-            // 
-            this.TopPanel.Controls.Add(this.comboBox1);
-            this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.TopPanel.Location = new System.Drawing.Point(0, 0);
-            this.TopPanel.Name = "TopPanel";
-            this.TopPanel.Size = new System.Drawing.Size(261, 21);
-            this.TopPanel.TabIndex = 2;
             // 
             // panel1
             // 
@@ -93,7 +74,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(5);
-            this.panel1.Size = new System.Drawing.Size(261, 420);
+            this.panel1.Size = new System.Drawing.Size(352, 261);
             this.panel1.TabIndex = 1;
             // 
             // flatListBox1
@@ -108,9 +89,28 @@
             this.flatListBox1.Location = new System.Drawing.Point(5, 5);
             this.flatListBox1.Name = "flatListBox1";
             this.flatListBox1.SelectedColor = System.Drawing.Color.CornflowerBlue;
-            this.flatListBox1.Size = new System.Drawing.Size(251, 410);
+            this.flatListBox1.Size = new System.Drawing.Size(342, 251);
             this.flatListBox1.TabIndex = 2;
             this.flatListBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.flatListBox1_MouseDoubleClick);
+            // 
+            // HelpTextBox
+            // 
+            this.HelpTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.HelpTextBox.Location = new System.Drawing.Point(0, 0);
+            this.HelpTextBox.Name = "HelpTextBox";
+            this.HelpTextBox.ReadOnly = true;
+            this.HelpTextBox.Size = new System.Drawing.Size(352, 308);
+            this.HelpTextBox.TabIndex = 0;
+            this.HelpTextBox.Text = "";
+            // 
+            // TopPanel
+            // 
+            this.TopPanel.Controls.Add(this.comboBox1);
+            this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.TopPanel.Location = new System.Drawing.Point(0, 0);
+            this.TopPanel.Name = "TopPanel";
+            this.TopPanel.Size = new System.Drawing.Size(352, 21);
+            this.TopPanel.TabIndex = 2;
             // 
             // HelpPanel
             // 
@@ -119,12 +119,12 @@
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.TopPanel);
             this.Name = "HelpPanel";
-            this.Size = new System.Drawing.Size(261, 594);
+            this.Size = new System.Drawing.Size(352, 594);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
-            this.TopPanel.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.TopPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
 		}
@@ -133,7 +133,7 @@
 
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.RichTextBox richTextBox1;
+        private System.Windows.Forms.RichTextBox HelpTextBox;
         private System.Windows.Forms.Panel TopPanel;
         private FlatListBox flatListBox1;
         private System.Windows.Forms.Panel panel1;

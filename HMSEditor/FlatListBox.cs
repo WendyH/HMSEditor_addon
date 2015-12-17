@@ -10,6 +10,8 @@ namespace HMSEditorNS {
         new FlatScrollbar VerticalScroll   = new FlatScrollbar(false);
         new FlatScrollbar HorizontalScroll = new FlatScrollbar(true );
 
+        public string Filter = "";
+
         new Size ClientSize {
             get {
                 int w = base.ClientSize.Width  - (VerticalScroll  .Visible ? VerticalScroll  .Width  : 0);
@@ -27,13 +29,15 @@ namespace HMSEditorNS {
             }
         }
 
+        public new Font Font { get { return base.Font; } set { base.Font = value; VerticalScroll.SmallChange = ItemHeight; } }
+
         public event EventHandler FocussedItemIndexChanged;
 
         public AutocompleteItems Items = new AutocompleteItems();
 
         int focussedItemIndex = 0;
         
-        private int ItemHeight {
+        public int ItemHeight {
             get { return Font.Height + 2; }
         }
 
@@ -57,6 +61,7 @@ namespace HMSEditorNS {
                     focussedItemIndex = value;
                     if (FocussedItemIndexChanged != null)
                         FocussedItemIndexChanged(this, EventArgs.Empty);
+                    Recalc();
                 }
             }
         }
@@ -82,17 +87,17 @@ namespace HMSEditorNS {
             } else {
                 base.Font = new Font("Consolas", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
             }
-            VerticalScroll.SmallChange = ItemHeight;
-            VerticalScroll.LargeChange = Height;
             SelectedColor = Color.CornflowerBlue;
-            HoveredColor = Color.Red;
-            BorderStyle = BorderStyle.None;
-            this.VScroll = false;
-            this.HScroll = false;
+            HoveredColor  = Color.Red;
+            BorderStyle   = BorderStyle.None;
+            this.VScroll  = false;
+            this.HScroll  = false;
             Controls.Add(HorizontalScroll);
             Controls.Add(VerticalScroll  );
-            VerticalScroll  .AlignByLines = true;
-            HorizontalScroll.AlignByLines = true;
+            VerticalScroll.SmallChange     = ItemHeight;
+            VerticalScroll.LargeChange     = Height;
+            VerticalScroll.AlignByLines    = true;
+            HorizontalScroll.AlignByLines  = true;
             VerticalScroll  .ValueChanged += VerticalScroll_Scroll;
             HorizontalScroll.ValueChanged += HorizontalScroll_Scroll;
             HorizontalScroll.Maximum = 0;
@@ -106,16 +111,30 @@ namespace HMSEditorNS {
             Invalidate();
         }
 
-        protected override void OnResize(EventArgs e) {
-            if (!VerticalScroll  .Visible) VerticalScroll  .Height = Height;
-            if (!HorizontalScroll.Visible) HorizontalScroll.Width  = Width;
+        public void Recalc(bool force = false) {
+            if (!force && oldItemCount == Items.Count) return;
+
+            int needHeight = ItemHeight * Items.Count;
+            //Height = Math.Min(needHeight, MaximumSize.Height);
+
+            VerticalScroll.Maximum = needHeight - ClientSize.Height;
+
             RecalcWidth();
+
             Invalidate();
+            oldItemCount = Items.Count;
+        }
+
+        protected override void OnResize(EventArgs e) {
+            Recalc(true);
+            if (!VerticalScroll  .Visible) VerticalScroll  .Height = ClientSize.Height;
+            if (!HorizontalScroll.Visible) HorizontalScroll.Width  = ClientSize.Width;
             base.OnResize(e);
         }
 
         protected override void OnMouseWheel(MouseEventArgs e) {
             int newVal = VerticalScroll.Value - e.Delta;
+            newVal = (int)(Math.Ceiling(1d * newVal / ItemHeight) * ItemHeight);
             newVal = Math.Max(VerticalScroll.Minimum, newVal);
             newVal = Math.Min(VerticalScroll.Maximum, newVal);
             VerticalScroll.Value = newVal;
@@ -133,31 +152,23 @@ namespace HMSEditorNS {
             HorizontalScroll.Maximum = Math.Max(0, needWidth - Width);
         }
 
-        private void AdjustScroll() {
-            if (oldItemCount == Items.Count)
-                return;
-
-            int needHeight = ItemHeight * Items.Count + 1;
-            //Height = Math.Min(needHeight, MaximumSize.Height);
-
-            VerticalScroll.Maximum = needHeight - ClientSize.Height;
-            oldItemCount = Items.Count;
-        }
-
         protected override void OnPaint(PaintEventArgs e) {
-            AdjustScroll();
+            Recalc();
             Graphics g = e.Graphics;
-
             var itemHeight = ItemHeight;
-            int startI  = VerticalScroll.Value / itemHeight - 1;
-            int finishI = (VerticalScroll.Value + ClientSize.Height) / itemHeight + 1;
+
+            //int scrollValue = (int)(Math.Ceiling(1d * VerticalScroll.Value / itemHeight) * itemHeight);
+            int scrollValue = VerticalScroll.Value;
+
+            int startI  = VerticalScroll.Value / itemHeight;
+            int finishI = (VerticalScroll.Value + ClientSize.Height) / itemHeight;
             startI  = Math.Max(startI, 0);
             finishI = Math.Min(finishI, Items.Count);
             int y = 0;
             int x = -HorizontalScroll.Value;
             int leftPadding = (ImageList!=null ? 18 : 0);
             for (int i = startI; i < finishI; i++) {
-                y = i * itemHeight - VerticalScroll.Value;
+                y = i * itemHeight - scrollValue;
 
                 var item = Items[i];
                 // draw item background
@@ -227,19 +238,30 @@ namespace HMSEditorNS {
         }
 
         private bool ProcessKey(Keys keyData, Keys keyModifiers) {
+            int count = ClientSize.Height / ItemHeight;
             if (keyModifiers == Keys.None)
                 switch (keyData) {
                     case Keys.Down:
                         SelectNext(+1);
                         return true;
                     case Keys.PageDown:
-                        SelectNext(+10);
+                        SelectNext(+count);
                         return true;
                     case Keys.Up:
                         SelectNext(-1);
                         return true;
                     case Keys.PageUp:
-                        SelectNext(-10);
+                        SelectNext(-count);
+                        return true;
+                    case Keys.Home:
+                        FocussedItemIndex = 0;
+                        DoSelectedVisible();
+                        Invalidate();
+                        return true;
+                    case Keys.End:
+                        FocussedItemIndex = (Items.Count > 0) ? Items.Count - 1 : 0;
+                        DoSelectedVisible();
+                        Invalidate();
                         return true;
                     case Keys.Enter:
                         OnSelecting();
@@ -257,7 +279,7 @@ namespace HMSEditorNS {
             Invalidate();
         }
 
-        private void DoSelectedVisible() {
+        public void DoSelectedVisible() {
             if (FocussedItemIndex >= 0) {
                 var y = FocussedItemIndex * ItemHeight - VerticalScroll.Value;
                 if (y < 0)
@@ -275,7 +297,6 @@ namespace HMSEditorNS {
             foreach (var item in items)
                 list.Add(new HMSItem(item));
             SetAutocompleteItems(list);
-            RecalcWidth();
         }
 
         public void SetAutocompleteItems(AutocompleteItems items) {
@@ -291,7 +312,6 @@ namespace HMSEditorNS {
                 list.Add(item);
             }
             AddAutocompleteItems(list);
-            RecalcWidth();
         }
 
         public void AddAutocompleteItems(AutocompleteItems items) {
