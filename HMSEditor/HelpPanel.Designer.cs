@@ -27,10 +27,13 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.TopPanel = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.flatListBox1 = new HMSEditorNS.FlatListBox();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.TopPanel.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // comboBox1
@@ -40,7 +43,11 @@
             this.comboBox1.Location = new System.Drawing.Point(0, 0);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(261, 21);
-            this.comboBox1.TabIndex = 0;
+            this.comboBox1.TabIndex = 1;
+            this.comboBox1.TabStop = false;
+            this.comboBox1.TextChanged += new System.EventHandler(this.comboBox1_TextChanged);
+            this.comboBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.comboBox1_KeyPress);
+            this.comboBox1.Validated += new System.EventHandler(this.comboBox1_Validated);
             // 
             // splitContainer1
             // 
@@ -48,6 +55,10 @@
             this.splitContainer1.Location = new System.Drawing.Point(0, 21);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.panel1);
             // 
             // splitContainer1.Panel2
             // 
@@ -75,6 +86,32 @@
             this.TopPanel.Size = new System.Drawing.Size(261, 21);
             this.TopPanel.TabIndex = 2;
             // 
+            // panel1
+            // 
+            this.panel1.Controls.Add(this.flatListBox1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Padding = new System.Windows.Forms.Padding(5);
+            this.panel1.Size = new System.Drawing.Size(261, 420);
+            this.panel1.TabIndex = 1;
+            // 
+            // flatListBox1
+            // 
+            this.flatListBox1.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
+            this.flatListBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flatListBox1.FocussedItem = null;
+            this.flatListBox1.FocussedItemIndex = 0;
+            this.flatListBox1.Font = new System.Drawing.Font("Consolas", 9.75F);
+            this.flatListBox1.HoveredColor = System.Drawing.Color.Red;
+            this.flatListBox1.ImageList = null;
+            this.flatListBox1.Location = new System.Drawing.Point(5, 5);
+            this.flatListBox1.Name = "flatListBox1";
+            this.flatListBox1.SelectedColor = System.Drawing.Color.CornflowerBlue;
+            this.flatListBox1.Size = new System.Drawing.Size(251, 410);
+            this.flatListBox1.TabIndex = 2;
+            this.flatListBox1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.flatListBox1_MouseDoubleClick);
+            // 
             // HelpPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -87,6 +124,7 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
             this.TopPanel.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
 		}
@@ -97,5 +135,7 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.Panel TopPanel;
+        private FlatListBox flatListBox1;
+        private System.Windows.Forms.Panel panel1;
     }
 }

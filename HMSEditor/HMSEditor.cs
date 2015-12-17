@@ -98,7 +98,7 @@ namespace HMSEditorNS {
             dockingPanel1.Controls.Add(Editor); 
             Editor.Dock = DockStyle.Fill;
             dockingPanel1.HelpControl.CancelledChanged += HelpControl_CancelledChanged;
-            HelpPanel.Init();
+            HelpPanel.Init(imageList1);
         }
 
         public void AutoCheckSyntaxBackground() {

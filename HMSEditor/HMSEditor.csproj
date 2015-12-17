@@ -228,6 +228,12 @@
     <Compile Include="FlatScrollbar.Designer.cs">
       <DependentUpon>FlatScrollbar.cs</DependentUpon>
     </Compile>
+    <Compile Include="FlatListBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FlatListBox.Designer.cs">
+      <DependentUpon>FlatListBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormRename.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -321,9 +327,6 @@
     <Compile Include="INI.cs" />
     <Compile Include="InvisibleCharsRenderer.cs" />
     <Compile Include="MouseHelpTimer.cs" />
-    <Compile Include="MyListBox.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="SnippetHMSItem.cs" />
@@ -369,6 +372,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FlatScrollbar.resx">
       <DependentUpon>FlatScrollbar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FlatListBox.resx">
+      <DependentUpon>FlatListBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormRename.resx">
       <DependentUpon>FormRename.cs</DependentUpon>
