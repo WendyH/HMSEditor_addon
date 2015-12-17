@@ -114,7 +114,7 @@ namespace HmsAddons {
             return HRESULT.E_NOTIMPL;
         }
 
-        public uint CreateEditor(IntPtr aParent, IHmsScriptFrame aScriptFrame, int aScriptMode, ref IntPtr aEditor) {
+        public uint CreateEditor(IntPtr aParent, IntPtr aScriptFrame, int aScriptMode, ref IntPtr aEditor) {
             try {
                 EditBox = new HMSEditor(aScriptFrame, aScriptMode);
                 NativeMethods.SetParent(EditBox.Handle, aParent);

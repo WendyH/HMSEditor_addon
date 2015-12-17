@@ -109,7 +109,7 @@ namespace HmsAddons {
     public interface IHmsScriptEditor {
         uint AddMessage(ref object aMessage);
 
-        uint CreateEditor(IntPtr THandle, IHmsScriptFrame aScriptFrame, int aScriptMode, ref IntPtr aEditor);
+        uint CreateEditor(IntPtr THandle, IntPtr aScriptFrame, int aScriptMode, ref IntPtr aEditor);
         uint DestroyEditor(IntPtr aEditor);
 
         uint GetCapabilities(ref int aCapabilities);

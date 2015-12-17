@@ -14,6 +14,8 @@ namespace HMSEditorNS {
 		}
 
         public void Init() {
+            //listBox1.SetAutocompleteItems(HMS.ItemsFunction);
+            /*
             listBox1.Items.Clear();
             foreach (var item in HMS.ItemsClass) {
                 listBox1.Items.Add(item);
@@ -24,9 +26,11 @@ namespace HMSEditorNS {
             foreach (var item in HMS.ItemsVariable) {
                 listBox1.Items.Add(item);
             }
+            */
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e) {
+            /*
             var item = listBox1.SelectedItem as HMSItem;
             if (item!=null) {
                 float h;
@@ -35,9 +39,7 @@ namespace HMSEditorNS {
             } else {
                 richTextBox1.Text = "";
             }
-        }
-
-        private void buttonClose_Click(object sender, EventArgs e) {
+            */
         }
     }
 

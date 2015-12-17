@@ -12,7 +12,6 @@
         protected override void Dispose(bool disposing) {
             if (disposing && (components != null)) {
                 components.Dispose();
-                AutoCheckSyntaxTimer.Dispose();
                 MouseTimer.Dispose();
                 if (InvisibleCharsStyle != null) InvisibleCharsStyle.Dispose();
                 if (SameWordsStyle != null) SameWordsStyle.Dispose();
@@ -30,7 +29,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HMSEditor));
             FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
-            this.panel1 = new System.Windows.Forms.Panel();
+            System.Windows.Forms.ToolStripProfessionalRenderer toolStripProfessionalRenderer1 = new System.Windows.Forms.ToolStripProfessionalRenderer();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.btnContextMenuBack = new System.Windows.Forms.ToolStripMenuItem();
             this.btnContextMenuForward = new System.Windows.Forms.ToolStripMenuItem();
@@ -112,29 +111,15 @@
             this.btnThemes = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnSprav = new System.Windows.Forms.ToolStripButton();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.CheckPositionIsInParametersSequenceWorker = new System.ComponentModel.BackgroundWorker();
             this.Editor = new FastColoredTextBoxNS.FastColoredTextBox();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.helpPanel1 = new HMSEditorNS.HelpPanel();
-            this.panel1.SuspendLayout();
+            this.dockingPanel1 = new HMSEditorNS.DockingPanel();
             this.contextMenuStrip1.SuspendLayout();
             this.tsMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // panel1
-            // 
-            this.panel1.Controls.Add(this.splitContainer1);
-            this.panel1.Controls.Add(this.tsMain);
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(948, 530);
-            this.panel1.TabIndex = 0;
             // 
             // contextMenuStrip1
             // 
@@ -376,7 +361,8 @@
             this.toolStripSeparator1,
             this.btnGoTo,
             this.toolStripSeparator7,
-            this.toolStripDropDownButtonSettings});
+            this.toolStripDropDownButtonSettings,
+            this.btnSprav});
             this.tsMain.Location = new System.Drawing.Point(0, 0);
             this.tsMain.Name = "tsMain";
             this.tsMain.Size = new System.Drawing.Size(948, 25);
@@ -917,6 +903,17 @@
             this.btnAbout.Text = "О программе";
             this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
+            // btnSprav
+            // 
+            this.btnSprav.CheckOnClick = true;
+            this.btnSprav.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnSprav.Image = global::HMSEditorNS.Properties.Resources.RefactoringLog_12810;
+            this.btnSprav.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnSprav.Name = "btnSprav";
+            this.btnSprav.Size = new System.Drawing.Size(23, 22);
+            this.btnSprav.Text = "Справочник";
+            this.btnSprav.Click += new System.EventHandler(this.btnSprav_Click);
+            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -971,7 +968,6 @@
             this.Editor.DelayedEventsInterval = 600;
             this.Editor.DelayedTextChangedInterval = 500;
             this.Editor.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.Editor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Editor.Font = new System.Drawing.Font("Consolas", 9.75F);
             this.Editor.HighlightingRangeType = FastColoredTextBoxNS.HighlightingRangeType.VisibleRange;
             this.Editor.Hotkeys = resources.GetString("Editor.Hotkeys");
@@ -979,7 +975,7 @@
             this.Editor.Language = FastColoredTextBoxNS.Language.PascalScript;
             this.Editor.LeftBracket = '(';
             this.Editor.LeftPadding = 2;
-            this.Editor.Location = new System.Drawing.Point(0, 0);
+            this.Editor.Location = new System.Drawing.Point(3, 28);
             this.Editor.Name = "Editor";
             this.Editor.Paddings = new System.Windows.Forms.Padding(0);
             this.Editor.RightBracket = ')';
@@ -992,7 +988,7 @@
             serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
             this.Editor.ServiceColors = serviceColors1;
             this.Editor.ShowScrollBars = false;
-            this.Editor.Size = new System.Drawing.Size(689, 505);
+            this.Editor.Size = new System.Drawing.Size(746, 499);
             this.Editor.TabIndex = 10;
             this.Editor.TabLength = 2;
             this.Editor.Zoom = 100;
@@ -1007,52 +1003,33 @@
             this.Editor.MouseLeave += new System.EventHandler(this.Editor_MouseLeave);
             this.Editor.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseMove);
             // 
-            // splitContainer1
+            // dockingPanel1
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 25);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.Editor);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.helpPanel1);
-            this.splitContainer1.Size = new System.Drawing.Size(948, 505);
-            this.splitContainer1.SplitterDistance = 689;
-            this.splitContainer1.TabIndex = 11;
-            // 
-            // helpPanel1
-            // 
-            this.helpPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.helpPanel1.Location = new System.Drawing.Point(0, 0);
-            this.helpPanel1.Name = "helpPanel1";
-            this.helpPanel1.Size = new System.Drawing.Size(255, 505);
-            this.helpPanel1.TabIndex = 0;
+            this.dockingPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dockingPanel1.Location = new System.Drawing.Point(0, 25);
+            this.dockingPanel1.Name = "dockingPanel1";
+            toolStripProfessionalRenderer1.RoundedEdges = true;
+            this.dockingPanel1.Renderer = toolStripProfessionalRenderer1;
+            this.dockingPanel1.Size = new System.Drawing.Size(948, 505);
+            this.dockingPanel1.TabIndex = 11;
             // 
             // HMSEditor
             // 
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.Editor);
+            this.Controls.Add(this.dockingPanel1);
+            this.Controls.Add(this.tsMain);
             this.DoubleBuffered = true;
             this.Name = "HMSEditor";
             this.Size = new System.Drawing.Size(948, 530);
-            this.panel1.ResumeLayout(false);
             this.contextMenuStrip1.ResumeLayout(false);
             this.tsMain.ResumeLayout(false);
             this.tsMain.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Editor)).EndInit();
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Panel panel1;
         public FastColoredTextBoxNS.FastColoredTextBox Editor;
         private System.Windows.Forms.ToolStrip tsMain;
         private System.Windows.Forms.ToolStripButton btnNavigateBack;
@@ -1137,7 +1114,7 @@
         private System.ComponentModel.BackgroundWorker CheckPositionIsInParametersSequenceWorker;
         private System.Windows.Forms.ToolStripMenuItem btnContextMenuAutoIndent;
         private System.Windows.Forms.ToolStripMenuItem btnAdd2Watch;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private HelpPanel helpPanel1;
+        private System.Windows.Forms.ToolStripButton btnSprav;
+        private DockingPanel dockingPanel1;
     }
 }

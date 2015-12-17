@@ -113,6 +113,26 @@ namespace HMSEditorNS.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap AutoHideOff {
+            get {
+                object obj = ResourceManager.GetObject("AutoHideOff", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap AutoHideOn {
+            get {
+                object obj = ResourceManager.GetObject("AutoHideOn", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Bookmark_5776 {
             get {
                 object obj = ResourceManager.GetObject("Bookmark_5776", resourceCulture);
@@ -163,6 +183,16 @@ namespace HMSEditorNS.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Bullets_11690 {
+            get {
+                object obj = ResourceManager.GetObject("Bullets_11690", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap clearallbreakpoints_6551 {
             get {
                 object obj = ResourceManager.GetObject("clearallbreakpoints_6551", resourceCulture);
@@ -206,6 +236,16 @@ namespace HMSEditorNS.Properties {
         internal static System.Drawing.Bitmap Cut_6523 {
             get {
                 object obj = ResourceManager.GetObject("Cut_6523", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap DialogID_6220_16x {
+            get {
+                object obj = ResourceManager.GetObject("DialogID_6220_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -323,6 +363,16 @@ namespace HMSEditorNS.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap RefactoringLog_12810 {
+            get {
+                object obj = ResourceManager.GetObject("RefactoringLog_12810", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Save_6530 {
             get {
                 object obj = ResourceManager.GetObject("Save_6530", resourceCulture);
@@ -356,6 +406,16 @@ namespace HMSEditorNS.Properties {
         internal static System.Drawing.Bitmap togglebookmark {
             get {
                 object obj = ResourceManager.GetObject("togglebookmark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ToggleTabs {
+            get {
+                object obj = ResourceManager.GetObject("ToggleTabs", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

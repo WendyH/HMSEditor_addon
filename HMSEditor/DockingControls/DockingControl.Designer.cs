@@ -137,7 +137,7 @@ namespace Darwen.Windows.Forms.Controls.Docking
             // 
             this._autoHidetoolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this._autoHidetoolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._autoHidetoolStripButton.Image = global::Darwen.Windows.Forms.General.Properties.Resources.AutoHideOff;
+            this._autoHidetoolStripButton.Image = global::HMSEditorNS.Properties.Resources.AutoHideOff;
             this._autoHidetoolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this._autoHidetoolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._autoHidetoolStripButton.Name = "_autoHidetoolStripButton";
@@ -149,7 +149,7 @@ namespace Darwen.Windows.Forms.Controls.Docking
             // 
             this._tabsToolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this._tabsToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this._tabsToolStripButton.Image = global::Darwen.Windows.Forms.General.Properties.Resources.ToggleTabs;
+            this._tabsToolStripButton.Image = global::HMSEditorNS.Properties.Resources.ToggleTabs;
             this._tabsToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this._tabsToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this._tabsToolStripButton.Name = "_tabsToolStripButton";

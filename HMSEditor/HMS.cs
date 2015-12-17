@@ -51,6 +51,7 @@ namespace HMSEditorNS {
         public static string ThemesDir    { get { return WorkingDir + "Themes"       ; } }
         public static string SettingsFile { get { return WorkingDir + "HMSEditor.ini"; } }
         public static string ErrorLogFile { get { return WorkingDir + "errors.log"   ; } }
+        public static string DockingsFile { get { return WorkingDir + "layout.xml"   ; } }
 
         public static HMSClasses HmsClasses = new HMSClasses();
         public static HMSClasses HmsTypes   = new HMSClasses();

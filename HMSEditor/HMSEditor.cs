@@ -1,18 +1,18 @@
-﻿//#define testThread
-/* This code is released under WTFPL Version 2 (http://www.wtfpl.net/) * Created by WendyH. Copyleft. */
+﻿/* This code is released under WTFPL Version 2 (http://www.wtfpl.net/) * Created by WendyH. Copyleft. */
 using System;
 using System.Collections.Generic;
-using System.Text;
-using FastColoredTextBoxNS;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using System.Security.Permissions;
-using System.Threading;
-using HmsAddons;
-using System.ComponentModel;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
+using System.Windows.Forms;
+using Darwen.Windows.Forms.Controls.Docking.Serialization;
+using FastColoredTextBoxNS;
+using HmsAddons;
 
 namespace HMSEditorNS {
     public sealed partial class HMSEditor: UserControl {
@@ -79,37 +79,32 @@ namespace HMSEditorNS {
             }
         }
         #endregion Static
-
+        public HelpPanel HelpPanel { get { return dockingPanel1.HelpPanel; } }
         // Constructor
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
-        public HMSEditor(IHmsScriptFrame aScriptFrame, int aScriptMode) {
+        public HMSEditor(IntPtr aScriptFrame, int aScriptMode) {
             ActiveEditor   = this;                // static field - current editor for static tasks
-            HmsScriptFrame = aScriptFrame;
+            PtrScriptFrame = aScriptFrame;
+            if (PtrScriptFrame != IntPtr.Zero) {
+                HmsScriptFrame = (IHmsScriptFrame)System.Runtime.Remoting.Services.EnterpriseServicesHelper.WrapIUnknownWithComObject(PtrScriptFrame);
+            }
             HmsScriptMode  = (HmsScriptMode)aScriptMode;
             HMS.Init();                           // Create knowledge database of HMS and initializing
             InitializeComponent();
             Editor.CurrentLineColor = Color.FromArgb(100, 210, 210, 255);
             Editor.ChangedLineColor = Color.FromArgb(255, 152, 251, 152);
             Editor.LostFocus += Editor_LostFocus; // for hiding all tooltipds when lost focus
-            AutoCheckSyntaxTimer.Tick += AutoCheckSyntaxTimer_Tick;
-            AutoCheckSyntaxTimer.Interval = 800;
-            SetAutoCompleteMenu();
-            helpPanel1.Init();
+            SetAutoCompleteMenu(); 
+            dockingPanel1.Controls.Add(Editor); 
+            Editor.Dock = DockStyle.Fill;
+            dockingPanel1.HelpControl.CancelledChanged += HelpControl_CancelledChanged;
+            HelpPanel.Init();
         }
 
-		public void AutoCheckSyntaxBackground() {
+        public void AutoCheckSyntaxBackground() {
 			Thread t = new Thread(AutoCheckSyntax);
 			t.Start();
 		} 
-
-		private void AutoCheckSyntaxTimer_Tick(object sender, EventArgs e) {
-            AutoCheckSyntaxTimer.Stop();
-#if testThread
-			AutoCheckSyntaxBackground();
-#else
-			AutoCheckSyntax();
-#endif
-		}
 
 		// Fields
 		public  bool   Locked             = false;
@@ -121,6 +116,7 @@ namespace HMSEditorNS {
         private string CurrentValidTypes  = ""; // Sets in CreateAutocomplete() procedure
         private bool   IsFirstActivate    = true;
 
+        public IntPtr PtrScriptFrame = IntPtr.Zero;
         public IHmsScriptFrame HmsScriptFrame = null;
         private HmsScriptMode  HmsScriptMode  = HmsScriptMode.smUnknown;
 
@@ -136,7 +132,6 @@ namespace HMSEditorNS {
         public AutocompleteItems Variables = new AutocompleteItems();
         public AutocompleteItems Functions = new AutocompleteItems();
 
-        private System.Windows.Forms.Timer AutoCheckSyntaxTimer = new System.Windows.Forms.Timer();
         private System.Threading.Timer MouseTimer = new System.Threading.Timer(MouseTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
         public  Point       MouseLocation         = new Point();
         public  Style       InvisibleCharsStyle   = new InvisibleCharsRenderer(Pens.Gray);
@@ -197,6 +192,7 @@ namespace HMSEditorNS {
         const int DLGC_WANTARROWS  = 0x0001;
         const int DLGC_HASSETSEL   = 0x0008;
         protected override void WndProc(ref Message m) {
+            base.WndProc(ref m);
             if (m.Msg == WM_GETTEXTLENGTH) {
                 m.Result = new IntPtr(Text.Length);
                 return;
@@ -205,7 +201,6 @@ namespace HMSEditorNS {
                 int size = Marshal.SizeOf(typeof(char)) * Text.Length;
                 int bytesToCopy = Math.Min(m.WParam.ToInt32(), size);
                 Marshal.Copy(System.Text.Encoding.UTF8.GetBytes(Text), 0, m.LParam, bytesToCopy);
-                //m.LParam = Marshal.StringToHGlobalAuto(EditBox.Text.Substring(0, charsToCopy));
                 m.Result = new IntPtr(bytesToCopy);
                 return;
             }
@@ -214,13 +209,12 @@ namespace HMSEditorNS {
                 result = result | DLGC_WANTALLKEYS | DLGC_WANTTAB | DLGC_WANTARROWS | DLGC_HASSETSEL;
                 m.Result = (IntPtr)result;
             } else {
-                base.WndProc(ref m);
             }
         }
 
         public int TextLength { get { return Text.Length; } }
 
-#region Fuctions and procedures
+        #region Fuctions and procedures
         public bool ToLock() {
             int countout = 20; // Maximum - two sec
             while (Locked && (countout > 0)) { Thread.Sleep(100); countout--; } // Waiting if locked
@@ -569,6 +563,7 @@ namespace HMSEditorNS {
             btnVerticalLineText_Click(null, EventArgs.Empty);
             btnAutoIdent_Click       (null, EventArgs.Empty);
             btnMarkChangedLines_Click(null, EventArgs.Empty);
+            btnSprav_Click           (null, EventArgs.Empty);
 
             Editor.HotkeysMapping.InitDefault(); 
             string hotkeys = Settings.Get("Map", "AddonHotkeys", "");
@@ -578,7 +573,12 @@ namespace HMSEditorNS {
                     Editor.HotkeysMapping[pair.Key] = pair.Value;
             }
 
+            DockingControlsPersister.Deserialize(dockingPanel1, HMS.DockingsFile);
             Editor.Refresh();
+        }
+
+        private void HelpControl_CancelledChanged(Darwen.Windows.Forms.Controls.Docking.DockingControl control) {
+            btnSprav.Checked = !control.Cancelled;
         }
 
         private void FillThemes() {
@@ -642,6 +642,8 @@ namespace HMSEditorNS {
                 Settings.Set("Map", hotkeys, "AddonHotkeys");
 
                 Settings.Save();
+
+                DockingControlsPersister.Serialize(dockingPanel1, HMS.DockingsFile);
 
             } catch (Exception e) {
                 HMS.LogError(e.ToString());
@@ -870,8 +872,7 @@ namespace HMSEditorNS {
         private void Editor_TextChangedDelayed(object sender, TextChangedEventArgs e) {
             Locked = true;       // Say to other processes we is busy - don't tuch us!
             BuildFunctionList(); // Only when text changed - build the list of functions
-            if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxTimer.Start();
-			//if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxBackground();
+			if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxBackground();
 
 			Locked = false;
             if (IsFirstActivate) { 
@@ -881,14 +882,12 @@ namespace HMSEditorNS {
         }
 
         private void Editor_TextChanged(object sender, TextChangedEventArgs e) {
-            AutoCheckSyntaxTimer.Stop();
             NeedRecalcVars = true;
         }
 
         private void btnAutoCheckSyntax_Click(object sender, EventArgs e) {
             if (btnAutoCheckSyntax.Checked) {
-                AutoCheckSyntax();
-				//AutoCheckSyntaxBackground();
+				AutoCheckSyntaxBackground();
 			} else {
                 Editor.ClearErrorLines();
             }
@@ -1234,16 +1233,19 @@ namespace HMSEditorNS {
         private static string MatchRemoveLinebreaks(Match m) { return regexLineBreaks.Replace(m.Value, String.Empty); }
 
 		private void AutoCheckSyntax() {
-            if (HmsScriptFrame != null) {
-				try {
+            if (PtrScriptFrame != IntPtr.Zero) {
+                try {
 					object objScriptName   = ScriptLanguage;
 					object objScriptText   = Editor.Text;
 					object objErrorMessage = "";
 					int  nErrorLine = 0;
 					int  nErrorChar = 0;
-					int  nResult    = 0;
-					HmsScriptFrame.CompileScript(ref objScriptName, ref objScriptText, ref objErrorMessage, ref nErrorLine, ref nErrorChar, ref nResult);
-					if (nResult < 0) {
+					int  nResult    = -1;
+
+                    IHmsScriptFrame scriptFrame1 = (IHmsScriptFrame)System.Runtime.Remoting.Services.EnterpriseServicesHelper.WrapIUnknownWithComObject(PtrScriptFrame);
+                    scriptFrame1.CompileScript(ref objScriptName, ref objScriptText, ref objErrorMessage, ref nErrorLine, ref nErrorChar, ref nResult);
+
+                    if (nResult < 0) {
 						Editor.ClearErrorLines();
 					} else {
 						nErrorChar = Math.Max(0, nErrorChar - 1);
@@ -1753,7 +1755,7 @@ namespace HMSEditorNS {
 
         } // end AddTemplateItemsRecursive
 
-        private void InsertTemplate(string text) {
+        private void InsertTemplate(string text) { 
             int posSta = Editor.SelectionStart;
             int posEnd = posSta + text.Length;
             text = FormatCodeText(text);
@@ -1802,5 +1804,8 @@ namespace HMSEditorNS {
             HmsScriptFrame.AddWatch(ref text);
         }
 
+        private void btnSprav_Click(object sender, EventArgs e) {
+            dockingPanel1.HelpControl.Cancelled = !btnSprav.Checked;
+        }
     }
 }

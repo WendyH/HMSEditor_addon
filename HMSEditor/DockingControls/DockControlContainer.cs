@@ -19,7 +19,7 @@ namespace Darwen.Windows.Forms.Controls.Docking
         void LayoutControls();
     }
 
-    internal partial class DockControlContainer : UserControl, IDockingPanel
+    public partial class DockControlContainer : UserControl, IDockingPanel
     {
         private DockedControlCollection _dockingControls;
         private Dictionary<ToolStripButton, AutoResizeControl> _mapButtonToControl;

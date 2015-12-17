@@ -1,16 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using System.Drawing.Drawing2D;
-using System.Resources;
-using System.Reflection;
-
-using Darwen.Drawing.General;
 using Darwen.Windows.Forms.General;
 
 namespace Darwen.Windows.Forms.Controls.Docking
@@ -28,10 +19,10 @@ namespace Darwen.Windows.Forms.Controls.Docking
         string Title { get; set; }
     }
 
-    internal delegate void AutoHideChangedHandler(DockingControl control);
-    internal delegate void CancelledChangedHandler(DockingControl control);
+    public delegate void AutoHideChangedHandler(DockingControl control);
+    public delegate void CancelledChangedHandler(DockingControl control);
 
-    internal partial class DockingControl : UserControl, IDockingControl
+    public partial class DockingControl : UserControl, IDockingControl
     {
         private ControlRectangleDrag _dragger;
         private bool _autoHide;
@@ -41,13 +32,13 @@ namespace Darwen.Windows.Forms.Controls.Docking
         private const int DockingBarSize = 16;
         private DockControlContainer _container;
         private bool _cancelled;
-        
+
         public DockingControl()
         {
             InitializeComponent();
         }
 
-        public event AutoHideChangedHandler AutoHideChanged;
+        public event AutoHideChangedHandler  AutoHideChanged;
         public event CancelledChangedHandler CancelledChanged;
 
         public DockingControl(Control child, DockingManagerControl manager)
@@ -421,12 +412,12 @@ namespace Darwen.Windows.Forms.Controls.Docking
         {
             if (_autoHide)
             {
-                _autoHidetoolStripButton.Image = global::Darwen.Windows.Forms.General.Properties.Resources.AutoHideOn;
+                _autoHidetoolStripButton.Image = global::HMSEditorNS.Properties.Resources.AutoHideOn;
                 _tabsToolStripButton.Visible = false;
             }
             else
             {
-                _autoHidetoolStripButton.Image = global::Darwen.Windows.Forms.General.Properties.Resources.AutoHideOff;
+                _autoHidetoolStripButton.Image = global::HMSEditorNS.Properties.Resources.AutoHideOff;
                 _tabsToolStripButton.Visible = true;
             }
 

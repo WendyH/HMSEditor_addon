@@ -11,7 +11,7 @@ namespace Darwen.Windows.Forms.Controls.Docking
         int Count { get; }
     }
 
-    internal class DockedControlCollection : IDockedControlCollection
+    public class DockedControlCollection : IDockedControlCollection
     {
         private List<DockingControl> _dockedControls;
         private List<IDockingControl> _iDockedControls;
@@ -19,8 +19,8 @@ namespace Darwen.Windows.Forms.Controls.Docking
         private DockingManagerControl _manager;
         private DockControlContainer _container;
 
-        internal delegate void ControlAddedHandler(DockedControlCollection list, DockingControl control);
-        internal delegate void ControlRemoveHandler(DockedControlCollection list, IDockingControl control);        
+        public delegate void ControlAddedHandler(DockedControlCollection list, DockingControl control);
+        public delegate void ControlRemoveHandler(DockedControlCollection list, IDockingControl control);        
 
         public event ControlAddedHandler ControlAdded;
         public event ControlRemoveHandler ControlRemoved;

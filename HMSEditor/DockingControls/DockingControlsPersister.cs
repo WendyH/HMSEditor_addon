@@ -15,6 +15,15 @@ namespace Darwen.Windows.Forms.Controls.Docking.Serialization
     {
         private const string Filename = "DockingControls.xml";
 
+        static public string GetXml(DockingManagerControl manager) {
+            using (var stream = new MemoryStream()) {
+                using (var streamWriter = new StreamWriter(stream, Encoding.UTF8)) {
+                    DockingControlsPersister.Serialize(manager, streamWriter);
+                    return Encoding.UTF8.GetString(stream.GetBuffer());
+                }
+            }
+        }
+
         /// <summary>
         /// Saves to local directory of the exe
         /// </summary>
@@ -55,6 +64,7 @@ namespace Darwen.Windows.Forms.Controls.Docking.Serialization
 
         static public void Deserialize(DockingManagerControl manager, string filename)
         {
+            if (!File.Exists(filename)) return;
             string filePath = GetPathName(filename);
 
             using (StreamReader reader = new StreamReader(filename))
