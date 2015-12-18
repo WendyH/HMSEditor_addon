@@ -35,7 +35,7 @@ namespace Darwen.Windows.Forms.Controls.Docking
     {
         public DockingWindowListMenuItem()
         {
-            this.Text = "Toolbars";            
+            //Text = "Toolbars";            
         }
 
         public void Initialise(DockingManagerControl manager)

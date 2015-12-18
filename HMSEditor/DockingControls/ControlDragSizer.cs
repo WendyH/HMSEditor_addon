@@ -8,7 +8,7 @@ using Darwen.Drawing.General;
 
 namespace Darwen.Windows.Forms.General
 {
-    public class ControlDragSizer : DragHandler
+    public class ControlDragSizer : DragHandler, IDisposable
     {
         private SetCursor _setCursor;
         private RectangleDrag _rectangleDrag;
@@ -338,6 +338,30 @@ namespace Darwen.Windows.Forms.General
         private void Control_MouseLeave(object sender, EventArgs e)
         {
             SetCursor(null);
-        }        
+        }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    if (_setCursor != null) {
+                        _setCursor.Dispose();
+                        _setCursor = null;
+                    }
+                    if (_rectangleDrag != null) {
+                        _rectangleDrag.Dispose();
+                        _rectangleDrag = null;
+                    }
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(true);
+        }
+        #endregion
     }
 }

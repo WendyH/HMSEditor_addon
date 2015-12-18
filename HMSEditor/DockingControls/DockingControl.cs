@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Darwen.Windows.Forms.General;
 
@@ -19,8 +20,8 @@ namespace Darwen.Windows.Forms.Controls.Docking
         string Title { get; set; }
     }
 
-    public delegate void AutoHideChangedHandler(DockingControl control);
-    public delegate void CancelledChangedHandler(DockingControl control);
+    public delegate void AutoHideChangedHandler(object sender, EventArgs e);
+    public delegate void CancelledChangedHandler(object sender, EventArgs e);
 
     public partial class DockingControl : UserControl, IDockingControl
     {
@@ -55,6 +56,41 @@ namespace Darwen.Windows.Forms.Controls.Docking
             _manager.ToolStripRendererChanged += new ToolStripRendererChangedHandler(_manager_ToolStripRendererChanged);
 
             SetupControlEvents(this);
+        }
+
+        public string Config {
+            get {
+                string config = "";
+                config += "DockingType="     + this.DockingType    .ToString() + "|";
+                config += "Cancelled="       + this.Cancelled      .ToString() + "|";
+                if (DockingType == DockingType.Floating) {
+                    config += "FloatingBounds=" + this.FloatingBounds.ToString() + "|";
+                } else {
+                    config += "DockedDimension=" + DockControlHelpers.GetDockedDimension(_container, _container.Dock).ToString() + "|";
+                    config += "AutoHide="        + this.AutoHide.ToString() + "|";
+                }
+                return config;
+            }
+            set
+            {
+                Match m; DockingType type = DockingType.Right; Rectangle bounds = Bounds;
+                m = Regex.Match(value, @"DockingType=(\w+)");
+                if (m.Success) try { type = (DockingType)Enum.Parse(typeof(DockingType), m.Groups[1].Value); } catch { }
+                this.Cancelled = Regex.Match(value, @"Cancelled=True").Success;
+                if (type==DockingType.Floating) {
+                    m = Regex.Match(value, @"FloatingBounds=.*?X=(\d+).*?Y=(\d+).*?Width=(\d+).*?Height=(\d+)");
+                    if (m.Success) {
+                        bounds = new Rectangle(int.Parse(m.Groups[1].Value), int.Parse(m.Groups[2].Value), int.Parse(m.Groups[3].Value), int.Parse(m.Groups[4].Value));
+                    }
+                    FloatControl(bounds);
+                } else {
+                    DockControl(PanelIndex, DockIndex, type);
+                    m = Regex.Match(value, @"DockedDimension=(\d+)");
+                    if (m.Success) DockControlHelpers.SetDockedDimension(_container, int.Parse(m.Groups[1].Value));
+                    this.AutoHide  = Regex.Match(value, @"AutoHide=True").Success;
+                }
+
+            }
         }
 
         public string Title
@@ -163,17 +199,17 @@ namespace Darwen.Windows.Forms.Controls.Docking
                         case DockStyle.Bottom:
                             return DockingType.Bottom;
                         case DockStyle.Fill:
-                            throw new InvalidEnumArgumentException("Can't have a container with a dock style of fill");
+                            throw new NotSupportedException("Can't have a container with a dock style of fill");
                         case DockStyle.Left:
                             return DockingType.Left;
                         case DockStyle.None:
-                            throw new InvalidEnumArgumentException("Can't have a container with a dock style of none");
+                            throw new NotSupportedException("Can't have a container with a dock style of none");
                         case DockStyle.Right:
                             return DockingType.Right;
                         case DockStyle.Top:
                             return DockingType.Top;
                         default:
-                            throw new InvalidEnumArgumentException("Unknown dock style");
+                            throw new NotSupportedException("Unknown dock style");
                     }
 
                 }
@@ -315,6 +351,7 @@ namespace Darwen.Windows.Forms.Controls.Docking
                 if (_floatingForm == null || parentForm != _floatingForm)
                 {                    
                     _floatingForm = new FloatingForm(this, _manager);
+                    _floatingForm.TopMost = true;
                     _autoHidetoolStripButton.Visible = false;
                     _tabsToolStripButton.Visible = false;                    
                 }
@@ -423,7 +460,7 @@ namespace Darwen.Windows.Forms.Controls.Docking
 
             if (AutoHideChanged != null)
             {
-                AutoHideChanged(this);
+                AutoHideChanged(this, EventArgs.Empty);
             }
         }
 
@@ -431,7 +468,7 @@ namespace Darwen.Windows.Forms.Controls.Docking
         {
             if (CancelledChanged != null)
             {
-                CancelledChanged(this);
+                CancelledChanged(this, EventArgs.Empty);
             }
         }
 

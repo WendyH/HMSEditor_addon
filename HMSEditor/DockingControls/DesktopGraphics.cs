@@ -10,9 +10,11 @@ namespace Darwen.Windows.Forms.General
     public class DesktopGraphics : IDisposable
     {
         [DllImport("User32.dll")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
         static private extern IntPtr GetWindowDC(IntPtr hWnd);
 
         [DllImport("User32.dll")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
         static private extern IntPtr ReleaseDC(IntPtr hWnd, IntPtr hDC);
 
         private Graphics _graphics;
@@ -41,23 +43,35 @@ namespace Darwen.Windows.Forms.General
             return graphics.Graphics;
         }
 
-        #region IDisposable Members
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
 
-        void IDisposable.Dispose()
-        {
-            if (_graphics != null)
-            {
-                _graphics.Dispose();
-                _graphics = null;
-            }
-
-            if (_hDC != IntPtr.Zero)
-            {
-                ReleaseDC(IntPtr.Zero, _hDC);
-                _hDC = IntPtr.Zero;
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    if (_graphics != null) {
+                        _graphics.Dispose();
+                        _graphics = null;
+                    }
+                    if (_hDC != IntPtr.Zero) {
+                        ReleaseDC(IntPtr.Zero, _hDC);
+                        _hDC = IntPtr.Zero;
+                    }
+                }
+                disposedValue = true;
             }
         }
 
+        ~DesktopGraphics() {
+            Dispose(false);
+        }
+
+        // Этот код добавлен для правильной реализации шаблона высвобождаемого класса.
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
         #endregion
+
     }
 }

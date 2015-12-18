@@ -8,14 +8,15 @@ namespace Darwen.Windows.Forms.General
 {    
     public delegate void AutoHideHandler(AutoHideControlHandler sender);
 
-    public class AutoHideControlHandler
+    public class AutoHideControlHandler : IDisposable
     {
         private Control _control;
         private Timer _timer;
         private int _count;
         private const int HideCount = 3;
         private Control _focusedControl;
-        
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event AutoHideHandler Hide;
 
         public AutoHideControlHandler(Control control)
@@ -96,6 +97,23 @@ namespace Darwen.Windows.Forms.General
             {
                 _count = 0;
             }
-        }        
+        }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    _timer.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(true);
+        }
+        #endregion
     }
 }

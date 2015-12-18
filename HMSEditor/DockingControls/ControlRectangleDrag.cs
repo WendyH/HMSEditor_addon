@@ -130,17 +130,29 @@ namespace Darwen.Windows.Forms.General
             }
         }
 
-        #region IDisposable Members
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
 
-        public void Dispose()
-        {
-            if (_drag != null)
-            {
-                _drag.Dispose();
-                _drag = null;
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    if (_drag != null) {
+                        _drag.Dispose();
+                        _drag = null;
+                    }
+                    if (_setCursor != null) {
+                        _setCursor.Dispose();
+                        _setCursor = null;
+                    }
+                }
+                disposedValue = true;
             }
         }
 
+        public void Dispose() {
+            Dispose(true);
+        }
         #endregion
+
     }
 }

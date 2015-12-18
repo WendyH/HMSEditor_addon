@@ -21,10 +21,12 @@ namespace Darwen.Windows.Forms.Controls.TabbedDocuments
         private TabbedDocumentControlActiveFilesContextMenuHandler _activeFilesContextMenuHandler;
         private TabbedDocumentTitlesCollection _titles;
 
-        public delegate void DocumentHandler(TabbedDocumentControl documentControl, Control control);   
+        public delegate void DocumentHandler(TabbedDocumentControl sender, Control control);   
 
         public event EventHandler SelectedControlChanged;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event DocumentHandler DocumentAdded;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event DocumentHandler DocumentRemoved;
 
         public TabbedDocumentControl()

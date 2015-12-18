@@ -62,6 +62,12 @@ namespace HMSEditorNS {
         [DllImport("kernel32.dll")]
         static extern void GetSystemInfo(ref SYSTEM_INFO lpSystemInfo);
 
+        [DllImport("User32")]
+        public static extern IntPtr GetDC(IntPtr hwnd);
+
+        [DllImport("User32")]
+        public static extern void ReleaseDC(IntPtr hwnd, IntPtr dc);
+
         [StructLayout(LayoutKind.Sequential)]
         struct SYSTEM_INFO {
             public ushort wProcessorArchitecture;

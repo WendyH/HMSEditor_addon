@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Security.Permissions;
 using System.Windows.Forms;
 
 namespace Darwen.Windows.Forms.Controls
@@ -14,6 +12,7 @@ namespace Darwen.Windows.Forms.Controls
     /// </summary>
     public class ToolStrip : System.Windows.Forms.ToolStrip
     {
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         protected override void WndProc(ref Message m)
         {
             if (m.Msg == Darwen.Windows.Forms.General.NativeMethods.Constants.WM_MOUSEACTIVATE)

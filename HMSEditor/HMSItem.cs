@@ -14,6 +14,7 @@ namespace HMSEditorNS {
         public int PositionStart = 0;
         public int PositionEnd   = 0;
         public string  Filter    = "";
+        public string  Rtf       = "";
         public bool    Enabled   = true;
         public List<WordStyle> Words = new List<WordStyle>();
         public System.Drawing.Size ToolTipSize = new System.Drawing.Size();

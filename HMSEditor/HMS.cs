@@ -12,10 +12,38 @@ using System.Threading;
 using System.Windows.Forms;
 using Ionic.Zip;
 using System.Security.Permissions;
+using System.ComponentModel;
 
 namespace HMSEditorNS {
     
     public static class HMS {
+        static HMS() {
+            try {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+            } catch {; }
+
+            try {
+                // Для начала вставляем обработку события при неудачных зависимостях, а там загрузим внедрённые dll
+                AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
+
+                // Загружаем встроенные шрифты
+                AddFontFromResource("RobotoMono-Regular.ttf");
+                AddFontFromResource("Roboto-Regular.ttf");
+
+                // Заполняем базу знаний функций, классов, встроенных констант и переменных...
+                InitAndLoadHMSKnowledgeDatabase();
+
+                Worker.DoWork += Worker_DoWork;
+                Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+                Worker.RunWorkerAsync(BackgraundTask.PrepareFastDraw);
+
+            } catch (Exception e) {
+                LogError(e.ToString());
+
+            }
+        }
+
         public static string GitHubHMSEditor  = "WendyH/HMSEditor_addon";
         public static string GitHubTemplates  = "WendyH/HMSEditor-Templates";
         public static int    MaxLogSize       = 1024 * 1024 * 2; // 2 MB
@@ -27,16 +55,11 @@ namespace HMSEditorNS {
         public static string CurrentParamType = "";
 
         private static string ResourcePath = "HMSEditorNS.Resources.";
-        private static string _workingdir = "";
+        private static string _workingdir  = "";
         internal static string WorkingDir {
             get {
                 if (_workingdir.Length == 0) {
-                    InitialiseWinFormsSettings(); // firstest code in static class
-#if DEBUG
-                    _workingdir = @"D:\Projects\HMSEditor_addon\HMSEditor\bin\Debug\";
-#else
                     _workingdir = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + @"\HMSEditor\";
-#endif
                 }
                 return _workingdir;
             }
@@ -74,62 +97,40 @@ namespace HMSEditorNS {
 
         public  static Templates Templates    = new Templates();
         private static System.Threading.Timer DownloadTimer = new System.Threading.Timer(DownloadTemplateUpdates_Task, null, Timeout.Infinite, Timeout.Infinite);
-        private static bool initialized = false;
+        private static BackgroundWorker Worker = new BackgroundWorker();
 
-        private static void InitialiseWinFormsSettings() {
-            try {
-                Application.EnableVisualStyles();
-                Application.SetCompatibleTextRenderingDefault(false);
-            } catch {; }
-        }
-
-        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
-        public static void Init() {
-            if (initialized) return;
-            initialized = true;
-
-            // Всё норм, запускаемся. Для начала вставляем обработку события при неудачных зависимостях, а там загрузим внедрённые dll
-            AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(CurrentDomain_AssemblyResolve);
-
-            try {
-                Application.EnableVisualStyles();
-
-                // Загружаем встроенные шрифты
-                AddFontFromResource("RobotoMono-Regular.ttf");
-                AddFontFromResource("Roboto-Regular.ttf");
-
-                // Заполняем базу знаний функций, классов, встроенных констант и переменных...
-                InitAndLoadHMSKnowledgeDatabase();
-
-                Thread thread = new Thread(HMS.backgroundThread_DoWork);
-                thread.IsBackground = true;
-                thread.Start(BackgraundTask.PrepareFastDraw);
-
-            } catch (Exception e) {
-                LogError(e.ToString());
-
-            }
-        }
+        public static bool BaseInitialized = false;
 
         enum BackgraundTask { None = 0, PrepareFastDraw }
 
-        private static void backgroundThread_DoWork(object parameter) {
-            BackgraundTask taskType = (BackgraundTask)parameter;
+        private static void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            BackgraundTask taskType = BackgraundTask.None;
+            if (e.Result != null) taskType = (BackgraundTask)e.Result;
             if (taskType == BackgraundTask.PrepareFastDraw) {
-                if (HMSEditor.ActiveEditor != null) return;
-                Graphics g = null;
-                if (HMSEditor.ActiveEditor.InvokeRequired) {
-                    HMSEditor.ActiveEditor.Invoke((MethodInvoker)delegate { g = Graphics.FromHwnd(HMSEditor.ActiveEditor.Handle); });
-                } else {
-                    g = Graphics.FromHwnd(HMSEditor.ActiveEditor.Handle);
-                }
-
-                foreach (var item in HMS.ItemsFunction) HmsToolTip.PrepareFastDraw(item, g);
-                foreach (var item in HMS.ItemsVariable) HmsToolTip.PrepareFastDraw(item, g);
-                foreach (var item in HMS.ItemsConstant) HmsToolTip.PrepareFastDraw(item, g);
-                foreach (var item in HMS.ItemsClass   ) HmsToolTip.PrepareFastDraw(item, g);
-                HMSEditor.ActiveEditor.CreateAutocomplete();
+                BaseInitialized = true;
             }
+        }
+
+        private static void Worker_DoWork(object sender, DoWorkEventArgs e) {
+            BackgraundTask taskType = (BackgraundTask)e.Argument;
+            try {
+                if (taskType == BackgraundTask.PrepareFastDraw) {
+                    e.Result = taskType;
+                    IntPtr desktopPtr = NativeMethods.GetDC(IntPtr.Zero);
+                    Graphics g = Graphics.FromHdc(desktopPtr);
+                    foreach (var item in HMS.ItemsFunction) HmsToolTip.PrepareFastDraw(item, g);
+                    foreach (var item in HMS.ItemsVariable) HmsToolTip.PrepareFastDraw(item, g);
+                    foreach (var item in HMS.ItemsConstant) HmsToolTip.PrepareFastDraw(item, g);
+                    foreach (var item in HMS.ItemsClass   ) HmsToolTip.PrepareFastDraw(item, g);
+                    g.Dispose();
+                    NativeMethods.ReleaseDC(IntPtr.Zero, desktopPtr);
+                }
+            } catch (Exception ex) { 
+                HMS.LogError(ex.ToString());
+            }
+        }
+
+        private static void InitHelp() {
         }
 
         public static void DownloadTemplates(string lastUpdateDate) {
@@ -691,19 +692,20 @@ namespace HMSEditorNS {
         /// <param name="sender"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) {
+        static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args) { 
             // Загрузка внедрённых библиотек (dll) из ресурсов в память
             byte[] buffer;
-            string resource = "HMSEditorNS.Resources.Ionic.Zip.Reduced.dll"; // Мини-библиотека для работы с zip (ибо в .NET 2.0 нет поддержки zip файлов)
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            using (System.IO.Stream stm = assembly.GetManifestResourceStream(resource)) {
-                buffer = new byte[(int)stm.Length];
-                stm.Read(buffer, 0, (int)stm.Length);
-                return Assembly.Load(buffer);
+            if (args.Name.IndexOf("Ionic.Zip.Reduced") >=0) {
+                string resource = "HMSEditorNS.Resources.Ionic.Zip.Reduced.dll"; // Мини-библиотека для работы с zip (ибо в .NET 2.0 нет поддержки zip файлов)
+                Assembly assembly = Assembly.GetExecutingAssembly();
+                using (System.IO.Stream stm = assembly.GetManifestResourceStream(resource)) {
+                    buffer = new byte[(int)stm.Length];
+                    stm.Read(buffer, 0, (int)stm.Length);
+                    return Assembly.Load(buffer);
+                }
             }
+            return null;
         }
-
-
     }
 }
 

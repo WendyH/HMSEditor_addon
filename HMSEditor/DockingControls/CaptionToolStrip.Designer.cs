@@ -16,6 +16,10 @@ namespace Darwen.Windows.Forms.Controls.Docking
             if (disposing && (components != null))
             {
                 components.Dispose();
+                if (_setCursor != null) {
+                    _setCursor.Dispose();
+                    _setCursor = null;
+                }
             }
             base.Dispose(disposing);
         }

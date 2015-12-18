@@ -16,12 +16,10 @@ namespace Darwen.Windows.Forms.Controls.Docking.Serialization
         private const string Filename = "DockingControls.xml";
 
         static public string GetXml(DockingManagerControl manager) {
-            using (var stream = new MemoryStream()) {
-                using (var streamWriter = new StreamWriter(stream, Encoding.UTF8)) {
-                    DockingControlsPersister.Serialize(manager, streamWriter);
-                    return Encoding.UTF8.GetString(stream.GetBuffer());
-                }
-            }
+            var xmlSerializer = new XmlSerializer(manager.GetType());
+            var stringWriter  = new StringWriter();
+            xmlSerializer.Serialize(stringWriter, manager);
+            return stringWriter.ToString();
         }
 
         /// <summary>
@@ -32,7 +30,6 @@ namespace Darwen.Windows.Forms.Controls.Docking.Serialization
         static public void Serialize(DockingManagerControl manager, string filename)
         {
             string filePath = GetPathName(filename);
-
             using (StreamWriter writer = new StreamWriter(filePath, false))
             {
                 DockingControlsPersister.Serialize(manager, writer);
@@ -58,7 +55,7 @@ namespace Darwen.Windows.Forms.Controls.Docking.Serialization
 
             if (File.Exists(filepath))
             {
-                Deserialize(manager, filepath);
+                Deserialize(manager, filepath); 
             }
         }
 
@@ -66,7 +63,6 @@ namespace Darwen.Windows.Forms.Controls.Docking.Serialization
         {
             if (!File.Exists(filename)) return;
             string filePath = GetPathName(filename);
-
             using (StreamReader reader = new StreamReader(filename))
             {
                 DockingControlsPersister.Deserialize(manager, reader);
@@ -89,14 +85,14 @@ namespace Darwen.Windows.Forms.Controls.Docking.Serialization
 
             DeserializeControls(dataEnumerator, controlEnumerator);
 
-            DeseriailizeDockingControlData(manager.Panels[DockingType.Left], dockingManagerControlData.LeftDockingContainerControlData);
-            DeseriailizeDockingControlData(manager.Panels[DockingType.Right], dockingManagerControlData.RightDockingContainerControlData);
-            DeseriailizeDockingControlData(manager.Panels[DockingType.Top], dockingManagerControlData.TopDockingContainerControlData);
+            DeseriailizeDockingControlData(manager.Panels[DockingType.Left  ], dockingManagerControlData.LeftDockingContainerControlData  );
+            DeseriailizeDockingControlData(manager.Panels[DockingType.Right ], dockingManagerControlData.RightDockingContainerControlData );
+            DeseriailizeDockingControlData(manager.Panels[DockingType.Top   ], dockingManagerControlData.TopDockingContainerControlData   );
             DeseriailizeDockingControlData(manager.Panels[DockingType.Bottom], dockingManagerControlData.BottomDockingContainerControlData);
 
-            ClearEmptyPanels(manager.Panels[DockingType.Left]);
-            ClearEmptyPanels(manager.Panels[DockingType.Right]);
-            ClearEmptyPanels(manager.Panels[DockingType.Top]);
+            ClearEmptyPanels(manager.Panels[DockingType.Left  ]);
+            ClearEmptyPanels(manager.Panels[DockingType.Right ]);
+            ClearEmptyPanels(manager.Panels[DockingType.Top   ]);
             ClearEmptyPanels(manager.Panels[DockingType.Bottom]);
 
             SetDockedDimensions(dataEnumerator, controlEnumerator);
@@ -230,9 +226,9 @@ namespace Darwen.Windows.Forms.Controls.Docking.Serialization
 
         static private string GetPathName(string filename)
         {
-            string directory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            string directory    = Path.GetDirectoryName(Application.ExecutablePath);
             string filenamePath = Path.GetDirectoryName(filename);
-            string filePath = string.Empty;
+            string filePath     = string.Empty;
 
             if (filenamePath == string.Empty)
             {

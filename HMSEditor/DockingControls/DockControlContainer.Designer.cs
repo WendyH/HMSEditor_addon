@@ -16,6 +16,8 @@ namespace Darwen.Windows.Forms.Controls.Docking
             if (disposing && (components != null))
             {
                 components.Dispose();
+                _setDragCursor.Dispose();
+                _splitterDragHandler.Dispose();
             }
             base.Dispose(disposing);
         }

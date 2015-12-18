@@ -11,7 +11,7 @@ using Darwen.Windows.Forms.General;
 
 namespace Darwen.Windows.Forms.Controls.Docking
 {
-    internal class TabbedDockControlContainerHandler : IDockControlContainerHandler
+    internal class TabbedDockControlContainerHandler : IDockControlContainerHandler, IDisposable
     {
         private DockControlContainer _container;
         private TabControl _tabControl;
@@ -130,6 +130,23 @@ namespace Darwen.Windows.Forms.Controls.Docking
 
         public void LayoutControls()
         {
-        }        
+        }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    _tabControl.Dispose();
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(true);
+        }
+        #endregion
     }    
 }

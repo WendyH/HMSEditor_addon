@@ -29,6 +29,7 @@ namespace Darwen.Windows.Forms.General
         private int _offset;
         private const int RectangleSize = 3;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event SplitterDragEndHandler EndSplitterDrag;     
         
         public SplitterDragHandler(DragHandler dragHandler, SplitterDragHandlerDirection direction)
@@ -193,17 +194,29 @@ namespace Darwen.Windows.Forms.General
             }
         }
 
-        #region IDisposable Members
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
 
-        public void Dispose()
-        {
-            if (_bitmap != null)
-            {
-                _bitmap.Dispose();
-                _bitmap = null;
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    if (_bitmap != null) {
+                        _bitmap.Dispose();
+                        _bitmap = null;
+                    }
+                    if (_setDragCursor != null) {
+                        _setDragCursor.Dispose();
+                        _setDragCursor = null;
+                    }
+                }
+                disposedValue = true;
             }
         }
 
+        public void Dispose() {
+            Dispose(true);
+        }
         #endregion
+
     }
 }

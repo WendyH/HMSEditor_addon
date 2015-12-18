@@ -100,6 +100,25 @@ namespace FastColoredTextBoxNS {
 
         public static void PrepareFastDraw(HMSItem item, Graphics g) {
             if (item.Words.Count > 0) return;
+
+            // Prepare for rtf text for help panel
+            RichTextBox HelpTextBox = new RichTextBox();
+            if (item.Rtf == "") {
+                HelpTextBox.Text = "";
+                if (!string.IsNullOrEmpty(item.ToolTipTitle)) {
+                    string help = HmsToolTip.GetText(item);
+                    if (item.Params.Count > 0) {
+                        help += "\n-----------------\nПараметры:\n";
+                        foreach (var param in item.Params) {
+                            help += Regex.Replace(param, "^(\\w+)", "<p>$1</p>") + "\r\n";
+                        }
+                    }
+                    HmsToolTip.WriteWords(HelpTextBox, help.TrimEnd());
+                }
+                item.Rtf = HelpTextBox.Rtf;
+            }
+
+            // prepeare for tooltip
             float heightCorrection = 0;
             item.ToolTipTitle = CalcPhrasesBreaks(g, item.ToolTipTitle);
             string text  = GetText(item, out heightCorrection);

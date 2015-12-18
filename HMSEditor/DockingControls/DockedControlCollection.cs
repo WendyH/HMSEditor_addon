@@ -19,10 +19,12 @@ namespace Darwen.Windows.Forms.Controls.Docking
         private DockingManagerControl _manager;
         private DockControlContainer _container;
 
-        public delegate void ControlAddedHandler(DockedControlCollection list, DockingControl control);
-        public delegate void ControlRemoveHandler(DockedControlCollection list, IDockingControl control);        
+        public delegate void ControlAddedHandler(DockedControlCollection sender, DockingControl control);
+        public delegate void ControlRemoveHandler(DockedControlCollection sender, IDockingControl control);
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event ControlAddedHandler ControlAdded;
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event ControlRemoveHandler ControlRemoved;
 
         public DockedControlCollection(DockControlContainer container)

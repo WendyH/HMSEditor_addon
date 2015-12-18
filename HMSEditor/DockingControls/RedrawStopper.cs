@@ -42,35 +42,38 @@ namespace Darwen.Windows.Forms.General
             }            
         }
 
-        #region IDisposable Members
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
 
-        public void Dispose()
-        {
-            if (_control != null)
-            {
-                int count = _mapControlToCount[_control] - 1;
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    if (_control != null) {
+                        int count = _mapControlToCount[_control] - 1;
 
-                if (count == 0)
-                {
-                    if (_dispose)
-                    {
-                        NativeMethods.SendMessage(_control, NativeMethods.Constants.WM_SETREDRAW, -1, 0);
+                        if (count == 0) {
+                            if (_dispose) {
+                                NativeMethods.SendMessage(_control, NativeMethods.Constants.WM_SETREDRAW, -1, 0);
+                            }
+
+                            if (_invalidate) {
+                                _control.Invalidate(true);
+                            }
+
+                            _mapControlToCount.Remove(_control);
+                        } else {
+                            _mapControlToCount[_control] = count;
+                        }
                     }
-
-                    if (_invalidate)
-                    {
-                        _control.Invalidate(true);
-                    }            
-
-                    _mapControlToCount.Remove(_control);
                 }
-                else
-                {
-                    _mapControlToCount[_control] = count;
-                }
-            }            
+                disposedValue = true;
+            }
         }
 
+        public void Dispose() {
+            Dispose(true);
+        }
         #endregion
+
     }
 }

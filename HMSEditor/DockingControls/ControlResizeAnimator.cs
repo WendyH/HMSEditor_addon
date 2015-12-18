@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Darwen.Windows.Forms.General
 {
-    public class ControlResizeAnimator
+    public class ControlResizeAnimator: IDisposable
     {
         private Control _control;
         private Timer _timer;
@@ -169,5 +169,25 @@ namespace Darwen.Windows.Forms.General
                 }
             }
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
+
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    if (_timer!=null) {
+                        _timer.Dispose();
+                        _timer = null;
+                    }
+                }
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose() {
+            Dispose(true);
+        }
+        #endregion
     }
 }

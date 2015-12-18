@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Drawing;
+using System.Security.Permissions;
 
 namespace Darwen.Drawing.General
 {
@@ -10,6 +9,7 @@ namespace Darwen.Drawing.General
         private Graphics _graphics;
         private IntPtr _hDC;
 
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public GraphicsHdc(Graphics graphics)
         {
             _graphics = graphics;
@@ -29,17 +29,24 @@ namespace Darwen.Drawing.General
             return hdc.HDC;
         }
 
-        #region IDisposable Members
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
 
-        public void Dispose()
-        {
-            if (_hDC != IntPtr.Zero)
-            {
-                _graphics.ReleaseHdc(_hDC);
-                _hDC = IntPtr.Zero;
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    if (_hDC != IntPtr.Zero) {
+                        _graphics.ReleaseHdc(_hDC);
+                        _hDC = IntPtr.Zero;
+                    }
+                }
+                disposedValue = true;
             }
         }
-
+        public void Dispose() {
+            Dispose(true);
+        }
         #endregion
+
     }
 }

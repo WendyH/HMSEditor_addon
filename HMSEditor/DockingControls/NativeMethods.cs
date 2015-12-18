@@ -4,6 +4,7 @@ using System.Text;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Security.Permissions;
 
 namespace Darwen.Windows.Forms.General
 {
@@ -59,11 +60,13 @@ namespace Darwen.Windows.Forms.General
             SetWindowTextW(handle.Handle, title);            
         }
 
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         static public void DrawCaption(Control control, Graphics graphics, Rectangle bounds)
         {
             DrawCaption(control, graphics, bounds, Constants.DC_ACTIVE | Constants.DC_TEXT | Constants.DC_GRADIENT);
         }
 
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         static public void DrawCaption(Control control, Graphics graphics, Rectangle bounds, int flags)
         {
             HandleRef handle = new HandleRef(control, control.Handle);
@@ -79,6 +82,7 @@ namespace Darwen.Windows.Forms.General
             Marshal.FreeCoTaskMem(pRectCaption);
         }
 
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         static public void DrawCaption(Control control, Rectangle bounds)
         {
             using (Graphics graphics = control.CreateGraphics())
@@ -87,6 +91,7 @@ namespace Darwen.Windows.Forms.General
             }
         }
 
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         static public string GetWindowText(Control control)
         {
             HandleRef handle = new HandleRef(control, control.Handle);
@@ -108,6 +113,7 @@ namespace Darwen.Windows.Forms.General
             return title.ToString();
         }
 
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         static public MouseEventArgs GetMouseEventArgs(Message m)
         {
             System.Diagnostics.Debug.Assert(m.Msg == Constants.WM_LBUTTONUP ||

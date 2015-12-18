@@ -13,9 +13,24 @@ namespace Darwen.Windows.Forms.Controls.Docking
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
-            {
+            if (disposing && (components != null)) {
                 components.Dispose();
+                if (_dragHandler!=null) {
+                    _dragHandler.Dispose();
+                    _dragHandler = null;
+                }
+                if (_setDragCursor != null) {
+                    _setDragCursor.Dispose();
+                    _setDragCursor = null;
+                }
+                if (_animator != null) {
+                    _animator.Dispose();
+                    _animator = null;
+                }
+                if (_autoHideHandler != null) {
+                    _autoHideHandler.Dispose();
+                    _autoHideHandler = null;
+                }
             }
             base.Dispose(disposing);
         }

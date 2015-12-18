@@ -89,7 +89,6 @@ namespace HMSEditorNS {
                 HmsScriptFrame = (IHmsScriptFrame)System.Runtime.Remoting.Services.EnterpriseServicesHelper.WrapIUnknownWithComObject(PtrScriptFrame);
             }
             HmsScriptMode  = (HmsScriptMode)aScriptMode;
-            HMS.Init();                           // Create knowledge database of HMS and initializing
             InitializeComponent();
             Editor.CurrentLineColor = Color.FromArgb(100, 210, 210, 255);
             Editor.ChangedLineColor = Color.FromArgb(255, 152, 251, 152);
@@ -116,7 +115,7 @@ namespace HMSEditorNS {
         private string CurrentValidTypes  = ""; // Sets in CreateAutocomplete() procedure
         private bool   IsFirstActivate    = true;
 
-        public IntPtr PtrScriptFrame = IntPtr.Zero;
+        private IntPtr PtrScriptFrame = IntPtr.Zero;
         public IHmsScriptFrame HmsScriptFrame = null;
         private HmsScriptMode  HmsScriptMode  = HmsScriptMode.smUnknown;
 
@@ -499,7 +498,7 @@ namespace HMSEditorNS {
         /// </summary>
         public void LoadSettings() {
             try { Settings.Load(); } catch (Exception e) { HMS.LogError(e.ToString()); Console.WriteLine("Error loading config file '" + Settings.File + "'", e); return; }
-            DockingControlsPersister.Deserialize(dockingPanel1, HMS.DockingsFile);
+
             tsMain.Visible = false;
             string section = DialogClass, sVal;
             tsMain.Visible                   = Settings.Get("ToolStripVisible"    , section, tsMain.Visible);
@@ -526,8 +525,10 @@ namespace HMSEditorNS {
             btnSprav                .Checked = Settings.Get("ShowSprav"           , section, btnSprav                .Checked);
             btnStorePositions       .Checked = Settings.Get("StorePositions"      , section, btnStorePositions       .Checked);
 
+
             string distance = Settings.Get("HelpSplitter", section, dockingPanel1.HelpPanel.SplitterDistance.ToString());
             int ndistance; if (int.TryParse(distance, out ndistance)) dockingPanel1.HelpPanel.SplitterDistance = ndistance;
+            dockingPanel1.HelpControl.Config = Settings.Get("HelpPanelConfig", section, dockingPanel1.HelpControl.Config);
 
             btnUnderlinePascalKeywords.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywords.Checked);
             Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
@@ -585,7 +586,9 @@ namespace HMSEditorNS {
             Editor.Refresh();
         }
 
-        private void HelpControl_CancelledChanged(Darwen.Windows.Forms.Controls.Docking.DockingControl control) {
+        private void HelpControl_CancelledChanged(object sender, EventArgs e) {
+            Darwen.Windows.Forms.Controls.Docking.DockingControl control = sender as Darwen.Windows.Forms.Controls.Docking.DockingControl;
+            if (control == null) return;
             btnSprav.Checked = !control.Cancelled;
         }
 
@@ -637,6 +640,7 @@ namespace HMSEditorNS {
                 Settings.Set("StorePositions"      , btnStorePositions       .Checked, section);
                 Settings.Set("ShowSprav"           , btnSprav                .Checked, section);
                 Settings.Set("HelpSplitter", dockingPanel1.HelpPanel.SplitterDistance, section);
+                Settings.Set("HelpPanelConfig"     , dockingPanel1.HelpControl.Config, section); 
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -652,8 +656,6 @@ namespace HMSEditorNS {
                 Settings.Set("Map", hotkeys, "AddonHotkeys");
 
                 Settings.Save();
-
-                DockingControlsPersister.Serialize(dockingPanel1, HMS.DockingsFile);
 
             } catch (Exception e) {
                 HMS.LogError(e.ToString());

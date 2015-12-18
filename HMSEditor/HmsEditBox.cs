@@ -8,6 +8,7 @@ namespace HmsAddons {
         public string ScriptLanguage = "ThisLang";
 
         [DllImport("User32")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1060:MovePInvokesToNativeMethodsClass")]
         public static extern IntPtr SetParent(IntPtr hWndEditor, IntPtr hWndParent);
 
         // constructor

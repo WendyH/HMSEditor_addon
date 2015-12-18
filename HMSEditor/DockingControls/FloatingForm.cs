@@ -84,8 +84,10 @@ namespace Darwen.Windows.Forms.Controls.Docking
             base.OnClosed(e);
         }
 
-        private void Inner_CancelledChanged(DockingControl control)
+        private void Inner_CancelledChanged(object sender, EventArgs e)
         {
+            DockingControl control = sender as DockingControl;
+            if (control == null) return;
             if (control == _inner)
             {
                 if (_inner.Cancelled)

@@ -10,7 +10,7 @@ using Darwen.Windows.Forms.General;
 
 namespace Darwen.Windows.Forms.Controls.Docking
 {
-    public delegate void ToolStripRendererChangedHandler(DockingManagerControl control, ToolStripRenderer newRenderer);
+    public delegate void ToolStripRendererChangedHandler(DockingManagerControl sender, ToolStripRenderer newRenderer);
 
     public interface IDockingPanels
     {
@@ -28,6 +28,7 @@ namespace Darwen.Windows.Forms.Controls.Docking
         private DockControlContainerCollection _bottomDockControlContainers;
         private bool _initialised;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1009:DeclareEventHandlersCorrectly")]
         public event ToolStripRendererChangedHandler ToolStripRendererChanged;
 
         public DockingManagerControl()

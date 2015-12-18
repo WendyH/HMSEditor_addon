@@ -10,7 +10,7 @@ namespace HMSEditorNS {
             InitializeComponent();
 
             IDockingPanel rightPanel = this.Panels[DockingType.Right].InsertPanel(0);
-
+            rightPanel.Dimension = 400;
             HelpControl = (DockingControl)rightPanel.DockedControls.Add("Справочник", HelpPanel);
 
         }

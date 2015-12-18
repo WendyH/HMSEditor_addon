@@ -93,17 +93,25 @@ namespace Darwen.Drawing.General
             }
         }
 
-        #region IDisposable Members
+        #region IDisposable Support
+        private bool disposedValue = false; // Для определения избыточных вызовов
 
-        public void Dispose()
-        {
-            if (_lastBitmap != null)
-            {
-                _lastBitmap.Dispose();
-                _lastBitmap = null;
+        protected virtual void Dispose(bool disposing) {
+            if (!disposedValue) {
+                if (disposing) {
+                    if (_lastBitmap != null) {
+                        _lastBitmap.Dispose();
+                        _lastBitmap = null;
+                    }
+                }
+                disposedValue = true;
             }
         }
 
+        public void Dispose() {
+            Dispose(true);
+        }
         #endregion
+
     }
 }

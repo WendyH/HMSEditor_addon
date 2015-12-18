@@ -32,7 +32,7 @@ namespace Darwen.Windows.Forms.Controls.Docking
         private SplitterDragHandler _splitterDragHandler;
         private SetCursor _setDragCursor;
         private PaddingDrawHandler _paddingDrawHandler;
-        private const int MaxInitialDockSize = 200;
+        private const int MaxInitialDockSize = 500;
         public const int SplitterWidth = 5;
         private const int PaddingWidth = 5;
         
@@ -359,8 +359,10 @@ namespace Darwen.Windows.Forms.Controls.Docking
             Manager.PerformLayout();
         }        
 
-        private void AddControl(DockingControl control, int dockIndex, int dimension)
+        private void AddControl(object sender, int dockIndex, int dimension)
         {
+            DockingControl control = sender as DockingControl;
+            if (control == null) return;
             Manager.SuspendLayout();
 
             if (!_mapDockingControlToData.ContainsKey(control))
@@ -417,8 +419,9 @@ namespace Darwen.Windows.Forms.Controls.Docking
             _inExternalAddControl = false;
         }
 
-        private void DockingControl_AutoHideChanged(DockingControl control)
+        private void DockingControl_AutoHideChanged(object sender, EventArgs e)
         {
+            DockingControl control = sender as DockingControl;
             Manager.SuspendLayout();
                 
             if (control.AutoHide)
@@ -672,8 +675,10 @@ namespace Darwen.Windows.Forms.Controls.Docking
             
         }
 
-        private void DockingControl_CancelledChanged(DockingControl control)
+        private void DockingControl_CancelledChanged(object sender, EventArgs e)
         {
+            DockingControl control = sender as DockingControl;
+            if (control == null) return;
             using (RedrawStopper stopRedraws = new RedrawStopper(this.Parent, true))
             {
                 Manager.SuspendLayout();
