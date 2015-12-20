@@ -1291,7 +1291,7 @@ namespace FastColoredTextBoxNS {
         }
 
         // < By WendyH -----------------------------------------------------
-        public string GetVariableForEqual(string allowedSymbolsPattern) {
+        public bool GetVariableForEqual(string allowedSymbolsPattern, out string text) {
             Range r = new Range(tb, Start, Start); string ch; bool equalExists = false;
             //go left, check symbols
             while (r.GoLeftThroughFolded(true)) {
@@ -1299,17 +1299,17 @@ namespace FastColoredTextBoxNS {
                 if (ch == "=") equalExists = true;
                 if (!regexLookEqual.IsMatch(ch)) break;
             }
-            if (!equalExists) return "";
             Place oldStart = Start;
             Start = r.Start;
-            string text = GetFragment(allowedSymbolsPattern).Text;
+            text = GetFragment(allowedSymbolsPattern).Text;
             Start = oldStart;
-            return text;
+            return equalExists;
         }
 
         private static Regex regexLookEqual = new Regex(@"[:= ]"  , RegexOptions.Compiled);
         private static Regex regexLookLeft  = new Regex(@"[#\w\.]", RegexOptions.Compiled);
         private static Regex regexLookRight = new Regex(@"\w"     , RegexOptions.Compiled);
+
         /// <summary>
         /// Get fragment of text around Start place with looking to left
         /// </summary>

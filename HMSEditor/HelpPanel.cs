@@ -4,14 +4,16 @@ using System.Windows.Forms;
 using FastColoredTextBoxNS;
 using System.Text.RegularExpressions;
 using System.ComponentModel;
+using System.Collections.Generic;
 
 namespace HMSEditorNS {
 	public partial class HelpPanel: UserControl {
         public string Filter = "";
-        
+
         public int SplitterDistance { get { return splitContainer1.SplitterDistance; } set { splitContainer1.SplitterDistance = value; } }
 
-        protected AutocompleteItems visibleItems = new AutocompleteItems();
+        protected HMSItem[] visibleItems;
+        //protected TreeNode[] visibleNodes;
         private Timer    timer  = new Timer();
         BackgroundWorker worker = new BackgroundWorker();
 
@@ -20,23 +22,25 @@ namespace HMSEditorNS {
             timer.Tick += Timer_Tick;
             timer.Interval = 200;
             flatListBox1.FocussedItemIndexChanged += FlatListBox1_FocussedItemIndexChanged;
+            flatListBox1.BackColor    = panel1.BackColor;
             if (HMS.PFC.Families.Length > 0) { // By WendyH
                 HelpTextBox.Font = new Font(HMS.PFC.Families[0], 9.25f, FontStyle.Regular, GraphicsUnit.Point);
             } else {
                 HelpTextBox.Font = new Font("Consolas", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
             }
             flatListBox1.VerticalScroll.SmallChange = flatListBox1.ItemHeight;
+            flatListBox1.Dock = DockStyle.Fill;
+            DoubleBuffered = true;
             worker.DoWork += Worker_DoWork;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
         }
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
-            flatListBox1.SuspendLayout();
+            flatListBox1.BeginUpdate();
             flatListBox1.Items.Clear();
-            flatListBox1.AddAutocompleteItems(visibleItems);
-            flatListBox1.FocussedItemIndex = 0;
-            flatListBox1.ResumeLayout();
-            flatListBox1.Invalidate();
+            flatListBox1.Items.AddRange(visibleItems);
+            flatListBox1.SelectFirst();
+            flatListBox1.EndUpdate();
             ShowHelp();
         }
 
@@ -64,64 +68,46 @@ namespace HMSEditorNS {
             worker.RunWorkerAsync(word);
         }
 
+        private void AddNode(List<TreeNode> nodes, HMSItem item) {
+            TreeNode node = new TreeNode(item.ToString(), item.ImageIndex, item.ImageIndex);
+            node.Tag = item;
+            nodes.Add(node);
+        }
+
+        private void CheckItem(AutocompleteItems exactlyItems, AutocompleteItems notExacItems, HMSItem item, string word) {
+            if ((Filter.Length > 0) && (item.Filter.Length > 0) && (Filter.IndexOf(item.Filter) < 0)) return;
+            if (exactlyItems.ContainsName(item.MenuText) || notExacItems.ContainsName(item.MenuText)) return;
+
+            string itemtext = item.ToString();
+            if (itemtext.StartsWith(word, StringComparison.InvariantCultureIgnoreCase))
+                exactlyItems.Add(item);
+            else {
+                string text = HmsToolTip.GetTextWithHelp(item);
+                if (text.IndexOf(word, StringComparison.InvariantCultureIgnoreCase) > 0)
+                    notExacItems.Add(item);
+            }
+        }
+
         private void FillListBox(string word = "") {
             if (word == null) word = "";
             AutocompleteItems exactlyItems = new AutocompleteItems();
             AutocompleteItems notExacItems = new AutocompleteItems();
-            foreach (var item in HMS.ItemsClass) {
-                string itemtext = item.ToString();
-                if (itemtext.StartsWith(word, StringComparison.InvariantCultureIgnoreCase))
-                    exactlyItems.Add(item);
-                if (itemtext.IndexOf(word, StringComparison.InvariantCultureIgnoreCase)>0)
-                    notExacItems.Add(item);
-            }
-            foreach (var item in HMS.ItemsFunction) {
-                string itemtext = item.ToString();
-                if (itemtext.StartsWith(word, StringComparison.InvariantCultureIgnoreCase)) {
-                    exactlyItems.Add(item);
-                }
-                if (itemtext.IndexOf(word, StringComparison.InvariantCultureIgnoreCase) > 0)
-                    notExacItems.Add(item);
-            }
-            foreach (var item in HMS.ItemsVariable) {
-                if ((Filter.Length > 0) && (item.Filter.Length > 0) && (Filter.IndexOf(item.Filter) < 0)) continue;
-                if (exactlyItems.ContainsName(item.MenuText)|| notExacItems.ContainsName(item.MenuText)) continue;
-
-                string itemtext = item.ToString();
-                if (itemtext.StartsWith(word, StringComparison.InvariantCultureIgnoreCase))
-                    exactlyItems.Add(item);
-                if (itemtext.IndexOf(word, StringComparison.InvariantCultureIgnoreCase) > 0)
-                    notExacItems.Add(item);
-            }
-            foreach (var item in HMS.ItemsConstant) {
-                string itemtext = item.ToString();
-                if (itemtext.StartsWith(word, StringComparison.InvariantCultureIgnoreCase))
-                    exactlyItems.Add(item);
-                if (itemtext.IndexOf(word, StringComparison.InvariantCultureIgnoreCase) > 0)
-                    notExacItems.Add(item);
-            }
-            lock (this.visibleItems) {
-                visibleItems.Clear();
-                visibleItems.AddRange(exactlyItems);
-                visibleItems.AddRange(notExacItems);
-            }
+            foreach (var item in HMS.ItemsFunction) CheckItem(exactlyItems, notExacItems, item, word);
+            foreach (var item in HMS.ItemsVariable) CheckItem(exactlyItems, notExacItems, item, word);
+            foreach (var item in HMS.ItemsClass   ) CheckItem(exactlyItems, notExacItems, item, word);
+            foreach (var item in HMS.ItemsConstant) CheckItem(exactlyItems, notExacItems, item, word);
+            exactlyItems.AddRange(notExacItems);
+            visibleItems = exactlyItems.ToArray();
         }
 
         private void ShowHelp(HMSItem item = null) {
+            if (flatListBox1.Items.Count == 0) return;
             HelpTextBox.SuspendLayout();
-            if (item == null) item = flatListBox1.SelectedItem;
+            if (item == null) item = (HMSItem)flatListBox1.SelectedItem;
             if (item.Rtf == "") {
                 HelpTextBox.Text = "";
-                if (!string.IsNullOrEmpty(item.ToolTipTitle)) {
-                    string help = HmsToolTip.GetText(item);
-                    if (item.Params.Count > 0) {
-                        help += "\n-----------------\nПараметры:\n";
-                        foreach (var param in item.Params) {
-                            help += Regex.Replace(param, "^(\\w+)", "<p>$1</p>") + "\r\n";
-                        }
-                    }
-                    HmsToolTip.WriteWords(HelpTextBox, help.TrimEnd());
-                }
+                string help = HmsToolTip.GetTextWithHelp(item);
+                HmsToolTip.WriteWords(HelpTextBox, help);
                 item.Rtf = HelpTextBox.Rtf;
             } else {
                 HelpTextBox.Rtf = item.Rtf;
@@ -134,12 +120,13 @@ namespace HMSEditorNS {
             timer.Start();
         }
 
-        private void flatListBox1_MouseDoubleClick(object sender, MouseEventArgs e) {
-        }
 
         private void comboBox1_KeyDown(object sender, KeyEventArgs e) {
             if (e.Modifiers == Keys.None)
                 switch (e.KeyData) {
+                    case Keys.Enter:
+                        flatListBox1.DoDoubleClick();
+                        return;
                     case Keys.Down:
                         flatListBox1.SelectNext(+1);
                         return;
@@ -153,19 +140,12 @@ namespace HMSEditorNS {
                         flatListBox1.SelectNext(-10);
                         return;
                     case Keys.Home:
-                        flatListBox1.FocussedItemIndex = 0;
-                        flatListBox1.DoSelectedVisible();
-                        flatListBox1.Invalidate();
+                        flatListBox1.SelectFirst();
                         e.Handled = true;
                         return;
                     case Keys.End:
-                        flatListBox1.FocussedItemIndex = (flatListBox1.Items.Count > 0) ? flatListBox1.Items.Count - 1 : 0;
-                        flatListBox1.DoSelectedVisible();
-                        flatListBox1.Invalidate();
+                        flatListBox1.SelectLast();
                         e.Handled = true;
-                        return;
-                    case Keys.Enter:
-                        flatListBox1.OnSelecting();
                         return;
                 }
 

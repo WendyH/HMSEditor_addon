@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using FastColoredTextBoxNS;
 
 namespace HMSEditorNS {
@@ -16,7 +17,10 @@ namespace HMSEditorNS {
         public string  Filter    = "";
         public string  Rtf       = "";
         public bool    Enabled   = true;
-        public List<WordStyle> Words = new List<WordStyle>();
+        public bool    Expanded  = false;
+        public int     Level     = 0;
+        public HMSClassInfo ClassInfo = new HMSClassInfo();
+        public List<WordStyle>  Words = new List<WordStyle>();
         public System.Drawing.Size ToolTipSize = new System.Drawing.Size();
         // constructors
         public HMSItem() {
@@ -69,7 +73,6 @@ namespace HMSEditorNS {
         }
 
         public bool IsFuncOrProcedure { get { return ((Kind == DefKind.Function) || (Kind == DefKind.Procedure)); } }
-
     }
 
     public class HMSItemComparer: IComparer<HMSItem> {

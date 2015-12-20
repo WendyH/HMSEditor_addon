@@ -245,6 +245,12 @@
     <Compile Include="FlatListBox.Designer.cs">
       <DependentUpon>FlatListBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="FlatTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FlatTreeView.Designer.cs">
+      <DependentUpon>FlatTreeView.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormRename.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -386,6 +392,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FlatListBox.resx">
       <DependentUpon>FlatListBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FlatTreeView.resx">
+      <DependentUpon>FlatTreeView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormRename.resx">
       <DependentUpon>FormRename.cs</DependentUpon>

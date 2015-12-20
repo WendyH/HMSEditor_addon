@@ -523,13 +523,9 @@ namespace HMSEditorNS {
             btnVerticalLineText     .Checked = Settings.Get("VerticalLineText"    , section, btnVerticalLineText     .Checked);
             btnStorePositions       .Checked = Settings.Get("StorePositions"      , section, btnStorePositions       .Checked);
             btnSprav                .Checked = Settings.Get("ShowSprav"           , section, btnSprav                .Checked);
-            btnStorePositions       .Checked = Settings.Get("StorePositions"      , section, btnStorePositions       .Checked);
 
-
-            string distance = Settings.Get("HelpSplitter", section, dockingPanel1.HelpPanel.SplitterDistance.ToString());
-            int ndistance; if (int.TryParse(distance, out ndistance)) dockingPanel1.HelpPanel.SplitterDistance = ndistance;
             dockingPanel1.HelpControl.Config = Settings.Get("HelpPanelConfig", section, dockingPanel1.HelpControl.Config);
-
+             
             btnUnderlinePascalKeywords.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywords.Checked);
             Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
             Editor.SyntaxHighlighter.RedStringsHighlight        = btnRedStringsHighlight    .Checked;
@@ -542,7 +538,7 @@ namespace HMSEditorNS {
                 btnToolStripMenuItemFONT_Click(null, new EventArgs());
             }
 
-            sVal = Settings.Get("Zoom", section, "100");
+            sVal = Settings.Get("Zoom", section, "100"); 
             Editor.Zoom = Int32.Parse(sVal);
 
             PopupMenu.OnlyCtrlSpace        = btnHints4CtrlSpace      .Checked;
@@ -583,6 +579,8 @@ namespace HMSEditorNS {
                     Editor.HotkeysMapping[pair.Key] = pair.Value;
             }
 
+            //string distance = Settings.Get("HelpSplitter", section, dockingPanel1.HelpPanel.SplitterDistance.ToString());
+            //int ndistance; if (int.TryParse(distance, out ndistance)) dockingPanel1.HelpPanel.SplitterDistance = ndistance;
             Editor.Refresh();
         }
 
@@ -624,8 +622,6 @@ namespace HMSEditorNS {
                 Settings.Set("ShowFoldingIndicator", btnShowFoldingIndicator .Checked, section);
                 Settings.Set("EnableFoldings"      , btnEnableFolding        .Checked, section);
                 Settings.Set("AutoCheckSyntax"     , btnAutoCheckSyntax      .Checked, section);
-                Settings.Set("HighlightSameWords"  , btnHighlightSameWords   .Checked, section);
-                Settings.Set("IntelliSense"        , btnSetIntelliSense      .Checked, section);
                 Settings.Set("IntelliOnlyCtrlSpace", btnHints4CtrlSpace      .Checked, section);
                 Settings.Set("EnableFunctionHelp"  , btnIntelliSenseFunctions.Checked, section);
                 Settings.Set("EvaluateByMouse"     , btnEvaluateByMouse      .Checked, section);
@@ -639,8 +635,8 @@ namespace HMSEditorNS {
                 Settings.Set("VerticalLineText"    , btnVerticalLineText     .Checked, section);
                 Settings.Set("StorePositions"      , btnStorePositions       .Checked, section);
                 Settings.Set("ShowSprav"           , btnSprav                .Checked, section);
+                Settings.Set("HelpPanelConfig"     , dockingPanel1.HelpControl.Config, section);
                 Settings.Set("HelpSplitter", dockingPanel1.HelpPanel.SplitterDistance, section);
-                Settings.Set("HelpPanelConfig"     , dockingPanel1.HelpControl.Config, section); 
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -830,7 +826,8 @@ namespace HMSEditorNS {
             else if (e.KeyCode == Keys.F12   ) GotoDefinition();
             else if (e.KeyCode == Keys.F2    ) RenameVariable();
             else if (e.KeyCode == Keys.Escape) {
-                    HideAllToolTipsAndHints();
+                HideAllToolTipsAndHints();
+                PopupMenu.Enabled = false;
             }
             else if (e.Alt) {
                 if      (e.KeyCode == Keys.D1) Editor.SetBookmarkByName(Editor.Selection.Start.iLine, "1");
@@ -856,7 +853,13 @@ namespace HMSEditorNS {
                 if (!Editor.Selection.IsStringOrComment) WasCommaOrBracket = true;
             }
 
-                if      (e.KeyCode == Keys.F5) ToggleBreakpoint();
+            if (!PopupMenu.Enabled && btnIntelliSenseFunctions.Checked) {
+                if (e.KeyCode == Keys.Space || e.KeyCode == Keys.Tab || e.KeyCode == Keys.Enter || e.KeyCode == Keys.End || e.KeyCode == Keys.Home) {
+                    PopupMenu.Enabled = true;
+                }
+            }
+
+            if (e.KeyCode == Keys.F5) ToggleBreakpoint();
                 else if (e.KeyCode == Keys.F7) EvaluateDialog();
                 else if (e.KeyCode == Keys.F8) RunLine();
                 else if (e.KeyCode == Keys.F9) RunScript();
@@ -1133,6 +1136,11 @@ namespace HMSEditorNS {
             GotoDefinition();
         }
 
+        private void btnHelpPanelContextMenu_Click(object sender, EventArgs e) {
+            btnSprav.Checked = btnHelpPanelContextMenu.Checked;
+            btnSprav_Click(sender, e);
+        }
+
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
             ToolStripMenuItemZoom100         .Enabled = (Editor.Zoom != 100);
             ToolStripMenuItemUndo            .Enabled = Editor.UndoEnabled;
@@ -1145,6 +1153,7 @@ namespace HMSEditorNS {
             btnContextMenuToolBar.Checked = tsMain.Visible;
             btnContextMenuAutoIndent.Enabled = (Editor.SelectionLength > 0);
             btnAdd2Watch.Visible = DebugMode && (Editor.SelectionLength > 0);
+            btnHelpPanelContextMenu.Checked = btnSprav.Checked;
         }
 
         private void btnContextMenuAutoIndent_Click(object sender, EventArgs e) {
@@ -1703,7 +1712,7 @@ namespace HMSEditorNS {
         private void SetAutoCompleteMenu() {
             PopupMenu = new AutocompleteMenu(Editor, this);
             PopupMenu.ImageList         = imageList1;
-            PopupMenu.MinFragmentLength = 2; 
+            PopupMenu.MinFragmentLength = 1; 
             PopupMenu.Items.MaximumSize = new Size(200, 300);
             PopupMenu.Items.Width       = 200;
         }
@@ -1738,14 +1747,14 @@ namespace HMSEditorNS {
             lock (LockObject) {
                 var items = new AutocompleteItems();
 
-                foreach (var s in keywords.Split('|')) if (s.Length > 0) items.Add(new HMSItem(s, ImagesIndex.Keyword, s, s, "Ключевое слово"));
+                foreach (var s in keywords.Split('|')) if (s.Length > 0) items.Add(new HMSItem(s+" ", ImagesIndex.Keyword, s, s, "Ключевое слово"));
                 foreach (var s in snippets.Split('|')) if (s.Length > 0) items.Add(new SnippetHMSItem(s) { ImageIndex = ImagesIndex.Snippet });
 
                 foreach (var name in hmsTypes.Split('|')) {
                     Match m = Regex.Match(name, "{(.*?)}");
                     if (m.Success) hlp = m.Groups[1].Value;
                     key = Regex.Replace(name, "{.*?}", "");
-                    items.Add(new HMSItem(key, ImagesIndex.Keyword, key, key, hlp));
+                    items.Add(new HMSItem(key+ (ScriptLanguage != "PascalScript" ? " ":""), ImagesIndex.Keyword, key, key, hlp));
                 }
 
                 PopupMenu.Items.SetAutocompleteItems(items);

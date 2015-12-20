@@ -500,7 +500,8 @@ namespace FastColoredTextBoxNS
         private string writtentext = "";
         // > By WendyH ------------------------------------------ 
 
-
+        private static Regex regexIsPascalFunctionName = new Regex(@"\b(Procedure|Function)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static Regex regexSpaces = new Regex(@"[\s]", RegexOptions.Compiled);
         internal void DoAutocomplete(bool forced) {
             if (tb.IsDisposed) return;
             if (!Menu.Enabled || !this.Enabled) { Menu.Close(); return; }
@@ -516,6 +517,22 @@ namespace FastColoredTextBoxNS
 
             //Range fragment = tb.Selection.GetFragment(Menu.SearchPattern);
             Range fragment = tb.Selection.GetFragmentLookedLeft();
+            Range fragmentBefore = fragment.Clone();
+            string ch;
+            while (fragmentBefore.GoLeftThroughFolded()) {
+                ch = fragmentBefore.CharAfterStart.ToString();
+                if (!regexSpaces.IsMatch(ch)) break;
+            }
+            fragmentBefore = fragmentBefore.GetFragmentLookedLeft();
+            string wordBefore = fragmentBefore.Text;
+            if (tb.Language == Language.PascalScript && regexIsPascalFunctionName.IsMatch(wordBefore)) {
+                Menu.Enabled = false;
+                return;
+            } else if (tb.Language == Language.CPPScript && HmsToolTip.isKeyWord(wordBefore)) {
+                Menu.Enabled = false;
+                return;
+            }
+
             string text = fragment.Text;
             // < By WendyH ------------------------
             bool doNotGetFromSourceItems = false; bool showTypes = false;
@@ -529,11 +546,13 @@ namespace FastColoredTextBoxNS
                         Menu.Fragment = fragment;
                     }
                 } else {
-                    text = tb.Selection.GetVariableForEqual(Menu.SearchPattern);
-                    if (text.Length > 0) {
+                    if (tb.Selection.GetVariableForEqual(Menu.SearchPattern, out text)) {
                         doNotGetFromSourceItems = true;
                         forced = true;
                         showTypes = true;
+                    } else {
+                        text = "";
+                        return;
                     }
                 }
             }

@@ -98,6 +98,39 @@ namespace FastColoredTextBoxNS {
             PrepareFastDraw(item, g);
         }
 
+        public static string GetTextWithHelp(HMSItem item) {
+            string help = "";
+            if (!string.IsNullOrEmpty(item.ToolTipTitle)) {
+                help = GetText(item);
+                if (item.Params.Count > 0) {
+                    help += "\n-----------------\nПараметры:\n";
+                    foreach (var param in item.Params) {
+                        help += Regex.Replace(param, "^(\\w+)", "<p>$1</p>") + "\r\n";
+                    }
+                }
+                if (item.IsClass) {
+                    help += "\n";
+                    if (item.ClassInfo.StaticItems.Count > 0) {
+                        help += "<h>\nСтатические методы (конструктор):\n<t>";
+                        foreach (var subitem in item.ClassInfo.StaticItems) {
+                            string title = subitem.ToolTipTitle;
+                            title = Regex.Replace(title, @"\b(" + subitem.MenuText + @")\b", "<b>$1</b>");
+                            help += title + "\n";
+                        }
+                    }
+                    if (item.ClassInfo.MemberItems.Count > 0) {
+                        help += "<h>\nСвойства и методы:\n<t>";
+                        foreach (var subitem in item.ClassInfo.MemberItems) {
+                            string title = subitem.ToolTipTitle;
+                            title = Regex.Replace(title, @"\b("+ subitem.MenuText + @")\b", "<b>$1</b>");
+                            help += title + "\n";
+                        }
+                    }
+                }
+            }
+            return help.TrimEnd();
+        }
+
         public static void PrepareFastDraw(HMSItem item, Graphics g) {
             if (item.Words.Count > 0) return;
 
@@ -106,14 +139,8 @@ namespace FastColoredTextBoxNS {
             if (item.Rtf == "") {
                 HelpTextBox.Text = "";
                 if (!string.IsNullOrEmpty(item.ToolTipTitle)) {
-                    string help = HmsToolTip.GetText(item);
-                    if (item.Params.Count > 0) {
-                        help += "\n-----------------\nПараметры:\n";
-                        foreach (var param in item.Params) {
-                            help += Regex.Replace(param, "^(\\w+)", "<p>$1</p>") + "\r\n";
-                        }
-                    }
-                    HmsToolTip.WriteWords(HelpTextBox, help.TrimEnd());
+                    string help = GetTextWithHelp(item);
+                    HmsToolTip.WriteWords(HelpTextBox, help);
                 }
                 item.Rtf = HelpTextBox.Rtf;
             }
@@ -349,7 +376,7 @@ namespace FastColoredTextBoxNS {
                         point.Y += 4;
                         continue;
                     }
-                    if (!notShow) {
+                    if (!notShow) { 
                         notColored = (color == colorString) || (color == colorValue);
                         if      (!notColored && isKeyWord(word)) DrawText(g, word, font, point, colorKeyword, words);
                         else if (!notColored && isClass  (word)) DrawText(g, word, font, point, colorClass  , words);
@@ -382,11 +409,11 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        private static bool isKeyWord(string word) {
+        public static bool isKeyWord(string word) {
             return (HMS.HmsTypesString + HMS.KeywordsString).IndexOf("|" + word.ToLower() + "|") >= 0;
         }
 
-        private static bool isClass(string word) {
+        public static bool isClass(string word) {
             return HMS.ClassesString.IndexOf("|" + word.ToLower() + "|") >= 0;
         }
 

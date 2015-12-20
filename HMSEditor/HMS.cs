@@ -305,6 +305,7 @@ namespace HMSEditorNS {
                                 item.ImageIndex   = ImagesIndex.Class;
                                 item.ToolTipTitle = "Класс " + item.Text;
                                 item.IsClass      = true;
+                                item.ClassInfo    = hmsclass;
                                 ItemsClass.Add(item);
                                 ClassesString += hmsclass.Name.ToLower() + "|";
                             }
@@ -322,6 +323,7 @@ namespace HMSEditorNS {
                             if (name.Length < 1) name += " ";
                             item.Text         = name;
                             item.MenuText     = name;
+                            item.Level        = 1;
                             if (item.ImageIndex == ImagesIndex.Enum) item.Text = name + "[^]";
                             else if (item.ImageIndex == ImagesIndex.Method) {
                                 if (cmd.IndexOf('(')>0) item.Text = name + "(^)";

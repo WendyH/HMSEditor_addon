@@ -3956,8 +3956,11 @@ namespace FastColoredTextBoxNS {
         }
 
         public void SetErrorLines(int iChar, int iLine, string msg) {
+            if (iLine >= lines.Count || iChar >= Lines[iLine].Length) return;
             try {
+
                 Place placeStart = new Place(iChar, iLine);
+
                 Range fragment = Selection.GetFragmentLookedLeft(placeStart);
                 fragment.ShiftEnd(1);
                 msg = msg.Replace("Identifier redeclared", "Повторное определение идентификатора");

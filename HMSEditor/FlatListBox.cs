@@ -10,6 +10,11 @@ namespace HMSEditorNS {
         new FlatScrollbar VerticalScroll   = new FlatScrollbar(false);
         new FlatScrollbar HorizontalScroll = new FlatScrollbar(true );
 
+        public Color ArrowColor      = Color.DarkGray;
+        public Color ArrowHoverColor = Color.CornflowerBlue;
+        private bool _arrowDownIsHover = false;
+        private bool ArrowDownIsHover { get { return _arrowDownIsHover; } set { if (_arrowDownIsHover != value) { _arrowDownIsHover = value; Invalidate(); } } }
+
         public string Filter = "";
 
         new Size ClientSize {
@@ -81,7 +86,7 @@ namespace HMSEditorNS {
             InitializeComponent();
 
             this.Controls.Add(VerticalScroll);
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.Selectable, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
             if (HMS.PFC.Families.Length > 0) { // By WendyH
                 base.Font = new Font(HMS.PFC.Families[0], 9.25f, FontStyle.Regular, GraphicsUnit.Point);
             } else {
@@ -152,14 +157,26 @@ namespace HMSEditorNS {
             HorizontalScroll.Maximum = Math.Max(0, needWidth - Width);
         }
 
+        protected bool isUpdated = false;
+
+        public void BeginUpdate() {
+            isUpdated = true;
+        }
+
+        public void EndUpdate() {
+            isUpdated = false;
+            Invalidate();
+        }
+
         protected override void OnPaint(PaintEventArgs e) {
+            if (isUpdated) return;
             Recalc();
             Graphics g = e.Graphics;
             var itemHeight = ItemHeight;
 
             //int scrollValue = (int)(Math.Ceiling(1d * VerticalScroll.Value / itemHeight) * itemHeight);
             int scrollValue = VerticalScroll.Value;
-
+            int leftShift   = 0;
             int startI  = VerticalScroll.Value / itemHeight;
             int finishI = (VerticalScroll.Value + ClientSize.Height) / itemHeight;
             startI  = Math.Max(startI, 0);
@@ -171,28 +188,62 @@ namespace HMSEditorNS {
                 y = i * itemHeight - scrollValue;
 
                 var item = Items[i];
+
+                leftShift = item.Level * 16;
+
                 // draw item background
                 if (item.BackColor != Color.Transparent) {
                     using (var brush = new SolidBrush(item.BackColor)) {
-                        g.FillRectangle(brush, 0, y, ClientSize.Width, itemHeight);
+                        g.FillRectangle(brush, leftShift, y, ClientSize.Width, itemHeight);
                     }
                 }
                 // draw item image
                 if (ImageList != null && item.ImageIndex >= 0 && item.ImageIndex < ImageList.Images.Count) {
-                    g.DrawImage(ImageList.Images[item.ImageIndex], x+1, y);
+                    g.DrawImage(ImageList.Images[item.ImageIndex], x + 1 + leftShift, y);
                 }
+
+                if (item.IsClass) {
+                    //draw down arrow
+                    int x2 = x + leftPadding + leftShift;
+                    Point[] points2;
+                    if (item.Expanded) {
+                        points2 = new Point[] {
+                            new Point(x2+10, y+3),
+                            new Point(x2+10, y+14),
+                            new Point(x2, y+14)
+                        };
+                        using (Brush brush = new SolidBrush(ArrowHoverColor)) {
+                            g.FillPolygon(brush, points2);
+                        }
+                    } else {
+                        points2 = new Point[] {
+                            new Point(x2+5, y+13),
+                            new Point(x2+5, y+3),
+                            new Point(x2+4, y+2),
+                            new Point(x2+4, y+14),
+                            new Point(x2+10, y+8),
+                            new Point(x2+4, y+2)
+                        };
+                        using (Pen pen = new Pen(ArrowHoverColor)) {
+                            g.DrawPolygon(pen, points2);
+                        }
+                    }
+                    leftShift += 12;
+                }
+
+
                 // draw selected item
                 if (i == FocussedItemIndex) {
                     using (var selectedBrush = new SolidBrush(SelectedColor)) {
                         using (var pen = new Pen(SelectedColor)) {
-                            g.FillRectangle(selectedBrush, x+leftPadding, y-1, ClientSize.Width - 1 - leftPadding-x, itemHeight);
+                            g.FillRectangle(selectedBrush, x+leftPadding+ leftShift, y, ClientSize.Width - 1 - leftPadding-x, itemHeight+1);
                         }
                     }
                 }
                 // draw item text
                 g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
                 Color foreColor = item.ForeColor != Color.Transparent ? item.ForeColor : (i == FocussedItemIndex) ? Color.White : ForeColor;
-                TextRenderer.DrawText(g, item.ToString(), Font, new Point(x+leftPadding + 1, y), foreColor);
+                TextRenderer.DrawText(g, item.ToString(), Font, new Point(x+leftPadding + 1+ leftShift, y), foreColor);
                 //using (var brush = new SolidBrush(foreColor)) {
                 //g.DrawString(item.ToString(), Font, brush, leftPadding+2, y, StringFormat.GenericTypographic);
                 //}
@@ -218,13 +269,6 @@ namespace HMSEditorNS {
             }
         }
 
-        protected override void OnMouseDoubleClick(MouseEventArgs e) {
-            base.OnMouseDoubleClick(e);
-            FocussedItemIndex = PointToItemIndex(e.Location);
-            Invalidate();
-            OnSelecting();
-        }
-
         internal virtual void OnSelecting() {
             if (FocussedItemIndex < 0 || FocussedItemIndex >= Items.Count)
                 return;
@@ -237,10 +281,51 @@ namespace HMSEditorNS {
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        public void DoDoubleClick() {
+            OnDoubleClick(EventArgs.Empty);
+        }
+
+        protected override void OnDoubleClick(EventArgs e) {
+            var indx = FocussedItemIndex;
+            var item = SelectedItem;
+
+            if (item.IsClass) {
+                BeginUpdate();
+
+                if (!item.Expanded) {
+                    item.Expanded = true;
+                    AutocompleteItems insertedItems = new AutocompleteItems();
+                    insertedItems.AddRange(item.ClassInfo.StaticItems);
+                    insertedItems.AddRange(item.ClassInfo.MemberItems);
+                    Items.InsertRange(indx + 1, insertedItems);
+
+                } else {
+
+                    item.Expanded = false;
+                    if (indx < Count - 1) {
+                        int count = 0;
+                        for (int i = indx + 1; i < Count; i++) {
+                            if (Items[i].Level < 1) break;
+                            count++;
+                        }
+                        Items.RemoveRange(indx + 1, count);
+                    }
+                }
+                EndUpdate();
+            }
+            base.OnDoubleClick(e);
+        }
+
         private bool ProcessKey(Keys keyData, Keys keyModifiers) {
             int count = ClientSize.Height / ItemHeight;
             if (keyModifiers == Keys.None)
                 switch (keyData) {
+                    case Keys.Right:
+                        if (SelectedItem.IsClass && !SelectedItem.Expanded) OnDoubleClick(EventArgs.Empty);
+                        return true;
+                    case Keys.Left:
+                        if (SelectedItem.IsClass && SelectedItem.Expanded) OnDoubleClick(EventArgs.Empty);
+                        return true;
                     case Keys.Down:
                         SelectNext(+1);
                         return true;
@@ -254,14 +339,10 @@ namespace HMSEditorNS {
                         SelectNext(-count);
                         return true;
                     case Keys.Home:
-                        FocussedItemIndex = 0;
-                        DoSelectedVisible();
-                        Invalidate();
+                        SelectFirst();
                         return true;
                     case Keys.End:
-                        FocussedItemIndex = (Items.Count > 0) ? Items.Count - 1 : 0;
-                        DoSelectedVisible();
-                        Invalidate();
+                        SelectLast();
                         return true;
                     case Keys.Enter:
                         OnSelecting();
@@ -269,6 +350,22 @@ namespace HMSEditorNS {
                 }
 
             return false;
+        }
+
+        public void SelectFirst() {
+            if (Items.Count > 0) {
+                FocussedItemIndex = 0;
+                DoSelectedVisible();
+                Invalidate();
+            }
+        }
+
+        public void SelectLast() {
+            if (Items.Count > 0) {
+                FocussedItemIndex = Items.Count - 1;
+                DoSelectedVisible();
+                Invalidate();
+            }
         }
 
         public void SelectNext(int shift) {

@@ -54,6 +54,7 @@
             this.btnInsertTemplate = new System.Windows.Forms.ToolStripMenuItem();
             this.btnContextMenuToolBar = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAdd2Watch = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnHelpPanelContextMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.tsMain = new System.Windows.Forms.ToolStrip();
             this.btnNavigateBack = new System.Windows.Forms.ToolStripButton();
             this.btnNavigateForward = new System.Windows.Forms.ToolStripButton();
@@ -146,9 +147,10 @@
             this.ToolStripMenuItemZoom100,
             this.btnInsertTemplate,
             this.btnContextMenuToolBar,
+            this.btnHelpPanelContextMenu,
             this.btnAdd2Watch});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(245, 462);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(245, 506);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // btnContextMenuBack
@@ -330,6 +332,16 @@
             this.btnAdd2Watch.Size = new System.Drawing.Size(244, 22);
             this.btnAdd2Watch.Text = "Добавить в список выражений";
             this.btnAdd2Watch.Click += new System.EventHandler(this.btnAdd2Watch_Click);
+            // 
+            // btnHelpPanelContextMenu
+            // 
+            this.btnHelpPanelContextMenu.CheckOnClick = true;
+            this.btnHelpPanelContextMenu.Image = global::HMSEditorNS.Properties.Resources.RefactoringLog_12810;
+            this.btnHelpPanelContextMenu.Name = "btnHelpPanelContextMenu";
+            this.btnHelpPanelContextMenu.Size = new System.Drawing.Size(244, 22);
+            this.btnHelpPanelContextMenu.Text = "Панель справочника";
+            this.btnHelpPanelContextMenu.ToolTipText = "Отобразить/скрыть панель справочника";
+            this.btnHelpPanelContextMenu.Click += new System.EventHandler(this.btnHelpPanelContextMenu_Click);
             // 
             // tsMain
             // 
@@ -1116,5 +1128,6 @@
         private System.Windows.Forms.ToolStripMenuItem btnAdd2Watch;
         private System.Windows.Forms.ToolStripButton btnSprav;
         private DockingPanel dockingPanel1;
+        private System.Windows.Forms.ToolStripMenuItem btnHelpPanelContextMenu;
     }
 }
