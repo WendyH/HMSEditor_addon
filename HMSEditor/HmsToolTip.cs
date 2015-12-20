@@ -67,7 +67,7 @@ namespace FastColoredTextBoxNS {
             this.UseFading    = false;
             this.UseAnimation = false;
             this.ShowAlways   = false;
-            this.ReshowDelay  = 100000;
+            this.ReshowDelay  = 100000; 
             if (HMS.PFC.Families.Length > 0) {
                 FontTitle    = new Font(HMS.PFC.Families[0], 9.75f, FontStyle.Regular, GraphicsUnit.Point);
                 FontText     = new Font(HMS.PFC.Families[0], 9.75f, FontStyle.Regular, GraphicsUnit.Point);
@@ -133,7 +133,7 @@ namespace FastColoredTextBoxNS {
 
         public static void PrepareFastDraw(HMSItem item, Graphics g) {
             if (item.Words.Count > 0) return;
-
+            
             // Prepare for rtf text for help panel
             RichTextBox HelpTextBox = new RichTextBox();
             if (item.Rtf == "") {
@@ -144,7 +144,7 @@ namespace FastColoredTextBoxNS {
                 }
                 item.Rtf = HelpTextBox.Rtf;
             }
-
+            
             // prepeare for tooltip
             float heightCorrection = 0;
             item.ToolTipTitle = CalcPhrasesBreaks(g, item.ToolTipTitle);

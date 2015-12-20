@@ -23,7 +23,7 @@ namespace HMSEditorNS {
                 int h = base.ClientSize.Height - (HorizontalScroll.Visible ? HorizontalScroll.Height : 0);
                 return new Size(w, h);
             }
-        }
+        } 
 
         public HMSItem SelectedItem {
             get {
@@ -86,7 +86,7 @@ namespace HMSEditorNS {
             InitializeComponent();
 
             this.Controls.Add(VerticalScroll);
-            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
+            SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.Selectable, true);
             if (HMS.PFC.Families.Length > 0) { // By WendyH
                 base.Font = new Font(HMS.PFC.Families[0], 9.25f, FontStyle.Regular, GraphicsUnit.Point);
             } else {

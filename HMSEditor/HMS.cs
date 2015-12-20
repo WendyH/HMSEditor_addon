@@ -34,6 +34,8 @@ namespace HMSEditorNS {
                 // Заполняем базу знаний функций, классов, встроенных констант и переменных...
                 InitAndLoadHMSKnowledgeDatabase();
 
+                //PrepareFastDraw();
+                
                 Worker.DoWork += Worker_DoWork;
                 Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
                 Worker.RunWorkerAsync(BackgraundTask.PrepareFastDraw);
@@ -111,27 +113,27 @@ namespace HMSEditorNS {
             }
         }
 
-        private static void Worker_DoWork(object sender, DoWorkEventArgs e) {
-            BackgraundTask taskType = (BackgraundTask)e.Argument;
+        private static void PrepareFastDraw() {
             IntPtr desktopPtr = NativeMethods.GetDC(IntPtr.Zero);
             Graphics g = Graphics.FromHdc(desktopPtr);
             try {
-                if (taskType == BackgraundTask.PrepareFastDraw) {
-                    e.Result = taskType;
-                    foreach (var item in HMS.ItemsFunction) HmsToolTip.PrepareFastDraw(item, g);
-                    foreach (var item in HMS.ItemsVariable) HmsToolTip.PrepareFastDraw(item, g);
-                    foreach (var item in HMS.ItemsConstant) HmsToolTip.PrepareFastDraw(item, g);
-                    foreach (var item in HMS.ItemsClass   ) HmsToolTip.PrepareFastDraw(item, g);
-                }
-            } catch (Exception ex) { 
-                HMS.LogError(ex.ToString());
+                foreach (var item in HMS.ItemsFunction) HmsToolTip.PrepareFastDraw(item, g);
+                foreach (var item in HMS.ItemsVariable) HmsToolTip.PrepareFastDraw(item, g);
+                foreach (var item in HMS.ItemsConstant) HmsToolTip.PrepareFastDraw(item, g);
+                foreach (var item in HMS.ItemsClass   ) HmsToolTip.PrepareFastDraw(item, g);
             } finally {
                 g.Dispose();
                 NativeMethods.ReleaseDC(IntPtr.Zero, desktopPtr);
             }
         }
 
-        private static void InitHelp() {
+
+        private static void Worker_DoWork(object sender, DoWorkEventArgs e) {
+            BackgraundTask taskType = (BackgraundTask)e.Argument;
+            e.Result = taskType;
+            if (taskType == BackgraundTask.PrepareFastDraw) {
+                PrepareFastDraw();
+            }
         }
 
         public static void DownloadTemplates(string lastUpdateDate) {
