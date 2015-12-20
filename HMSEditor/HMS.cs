@@ -113,20 +113,21 @@ namespace HMSEditorNS {
 
         private static void Worker_DoWork(object sender, DoWorkEventArgs e) {
             BackgraundTask taskType = (BackgraundTask)e.Argument;
+            IntPtr desktopPtr = NativeMethods.GetDC(IntPtr.Zero);
+            Graphics g = Graphics.FromHdc(desktopPtr);
             try {
                 if (taskType == BackgraundTask.PrepareFastDraw) {
                     e.Result = taskType;
-                    IntPtr desktopPtr = NativeMethods.GetDC(IntPtr.Zero);
-                    Graphics g = Graphics.FromHdc(desktopPtr);
                     foreach (var item in HMS.ItemsFunction) HmsToolTip.PrepareFastDraw(item, g);
                     foreach (var item in HMS.ItemsVariable) HmsToolTip.PrepareFastDraw(item, g);
                     foreach (var item in HMS.ItemsConstant) HmsToolTip.PrepareFastDraw(item, g);
                     foreach (var item in HMS.ItemsClass   ) HmsToolTip.PrepareFastDraw(item, g);
-                    g.Dispose();
-                    NativeMethods.ReleaseDC(IntPtr.Zero, desktopPtr);
                 }
             } catch (Exception ex) { 
                 HMS.LogError(ex.ToString());
+            } finally {
+                g.Dispose();
+                NativeMethods.ReleaseDC(IntPtr.Zero, desktopPtr);
             }
         }
 
