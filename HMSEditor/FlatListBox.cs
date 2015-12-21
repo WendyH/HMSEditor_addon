@@ -418,26 +418,34 @@ namespace HMSEditorNS {
     }
 
     public class MyRichTextBox : RichTextBox {
-        protected bool isUpdated = false;
+        private const int WM_SETREDRAW    = 0x000B;
+        private const int WM_USER         = 0x0400;
+        private const int EM_GETEVENTMASK = (WM_USER + 59);
+        private const int EM_SETEVENTMASK = (WM_USER + 69);
+
+        private IntPtr eventMask;
 
         public void BeginUpdate() {
-            isUpdated = true;
+            // Stop redrawing:
+            NativeMethods.SendMessage(this.Handle, WM_SETREDRAW, (IntPtr)0, IntPtr.Zero);
+            // Stop sending of events:
+            eventMask = NativeMethods.SendMessage(this.Handle, EM_GETEVENTMASK, (IntPtr)0, IntPtr.Zero);
         }
 
         public void EndUpdate() {
-            isUpdated = false;
-            Invalidate();
-        }
-
-        protected override void OnPaint(PaintEventArgs e) {
-            if (isUpdated) return;
+            // turn on events
+            NativeMethods.SendMessage(this.Handle, EM_SETEVENTMASK, (IntPtr)0, eventMask);
+            // turn on redrawing
+            NativeMethods.SendMessage(this.Handle, WM_SETREDRAW, (IntPtr)1, IntPtr.Zero);
+            // this forces a repaint, which for some reason is necessary in some cases.
+            this.Invalidate();
         }
 
         public void AppendText(string text, Color color, Font font) {
-            SelectionStart = TextLength;
+            SelectionStart  = TextLength;
             SelectionLength = 0;
-            SelectionFont = font;
-            SelectionColor = color;
+            SelectionFont   = font;
+            SelectionColor  = color;
             AppendText(text);
         }
     }

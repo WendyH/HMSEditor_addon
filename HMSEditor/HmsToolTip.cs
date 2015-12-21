@@ -317,8 +317,10 @@ namespace FastColoredTextBoxNS {
             return newText;
         }
 
-        public static void WriteWords(MyRichTextBox tb, string text) {
+        public static string GetRtf(string text) {
+            MyRichTextBox tb = new MyRichTextBox();
             WriteWords(text, new Rectangle(), null, null, true, tb);
+            return tb.Rtf;
         }
 
         public static Size WriteWords(string text, Rectangle bounds, Graphics g, List<WordStyle> words = null, bool notShow = false, MyRichTextBox tb = null) {

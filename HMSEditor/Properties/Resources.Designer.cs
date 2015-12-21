@@ -113,26 +113,6 @@ namespace HMSEditorNS.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap AutoHideOff {
-            get {
-                object obj = ResourceManager.GetObject("AutoHideOff", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap AutoHideOn {
-            get {
-                object obj = ResourceManager.GetObject("AutoHideOn", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap Bookmark_5776 {
             get {
                 object obj = ResourceManager.GetObject("Bookmark_5776", resourceCulture);
@@ -406,16 +386,6 @@ namespace HMSEditorNS.Properties {
         internal static System.Drawing.Bitmap togglebookmark {
             get {
                 object obj = ResourceManager.GetObject("togglebookmark", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap ToggleTabs {
-            get {
-                object obj = ResourceManager.GetObject("ToggleTabs", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

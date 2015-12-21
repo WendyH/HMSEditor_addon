@@ -10,7 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
-using Darwen.Windows.Forms.Controls.Docking.Serialization;
 using FastColoredTextBoxNS;
 using HmsAddons;
 
@@ -79,7 +78,6 @@ namespace HMSEditorNS {
             }
         }
         #endregion Static
-        public HelpPanel HelpPanel { get { return dockingPanel1.HelpPanel; } }
         // Constructor
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public HMSEditor(IntPtr aScriptFrame, int aScriptMode) {
@@ -90,14 +88,12 @@ namespace HMSEditorNS {
             }
             HmsScriptMode  = (HmsScriptMode)aScriptMode;
             InitializeComponent();
+            splitContainer1.Panel2Collapsed = true;
             Editor.CurrentLineColor = Color.FromArgb(100, 210, 210, 255);
             Editor.ChangedLineColor = Color.FromArgb(255, 152, 251, 152);
             Editor.LostFocus += Editor_LostFocus; // for hiding all tooltipds when lost focus
             SetAutoCompleteMenu(); 
-            dockingPanel1.Controls.Add(Editor); 
-            Editor.Dock = DockStyle.Fill;
-            dockingPanel1.HelpControl.CancelledChanged += HelpControl_CancelledChanged;
-            HelpPanel.Init(imageList1, HmsScriptMode.ToString());
+            helpPanel1.Init(imageList1, HmsScriptMode.ToString());
         }
 
         public void AutoCheckSyntaxBackground() {
@@ -227,7 +223,7 @@ namespace HMSEditorNS {
         }
 
         private void Editor_LostFocus(object sender, EventArgs e) {
-            HideAllToolTipsAndHints();
+            //HideAllToolTipsAndHints();
         }
 
         private void HideAllToolTipsAndHints() {
@@ -524,12 +520,10 @@ namespace HMSEditorNS {
             btnStorePositions       .Checked = Settings.Get("StorePositions"      , section, btnStorePositions       .Checked);
             btnSprav                .Checked = Settings.Get("ShowSprav"           , section, btnSprav                .Checked);
 
-            dockingPanel1.HelpControl.Config = Settings.Get("HelpPanelConfig", section, dockingPanel1.HelpControl.Config);
-             
             btnUnderlinePascalKeywords.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywords.Checked);
             Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
             Editor.SyntaxHighlighter.RedStringsHighlight        = btnRedStringsHighlight    .Checked;
-
+             
             Editor.Font = new Font("Consolas", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
             if ((Editor.Font.Name.ToLower().IndexOf("consolas") < 0) && (HMS.PFC.Families.Length > 1)) {
                 btnToolStripMenuItemFONT.Visible = false;
@@ -550,7 +544,6 @@ namespace HMSEditorNS {
             EnableEvaluateByMouse          = btnEvaluateByMouse      .Checked;
             Editor.EnableFoldingIndicator  = btnShowFoldingIndicator .Checked;
             Editor.HighlightCurrentLine    = btnHighlightCurrentLine .Checked;
-            dockingPanel1.HelpControl.Cancelled = !btnSprav.Checked;
 
             Themes.Init();
 
@@ -578,16 +571,7 @@ namespace HMSEditorNS {
                 foreach(var pair in ourMap)
                     Editor.HotkeysMapping[pair.Key] = pair.Value;
             }
-
-            //string distance = Settings.Get("HelpSplitter", section, dockingPanel1.HelpPanel.SplitterDistance.ToString());
-            //int ndistance; if (int.TryParse(distance, out ndistance)) dockingPanel1.HelpPanel.SplitterDistance = ndistance;
             Editor.Refresh();
-        }
-
-        private void HelpControl_CancelledChanged(object sender, EventArgs e) {
-            Darwen.Windows.Forms.Controls.Docking.DockingControl control = sender as Darwen.Windows.Forms.Controls.Docking.DockingControl;
-            if (control == null) return;
-            btnSprav.Checked = !control.Cancelled;
         }
 
         private void FillThemes() {
@@ -635,8 +619,6 @@ namespace HMSEditorNS {
                 Settings.Set("VerticalLineText"    , btnVerticalLineText     .Checked, section);
                 Settings.Set("StorePositions"      , btnStorePositions       .Checked, section);
                 Settings.Set("ShowSprav"           , btnSprav                .Checked, section);
-                Settings.Set("HelpPanelConfig"     , dockingPanel1.HelpControl.Config, section);
-                Settings.Set("HelpSplitter", dockingPanel1.HelpPanel.SplitterDistance, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -653,9 +635,8 @@ namespace HMSEditorNS {
 
                 Settings.Save();
 
-            } catch (Exception e) {
+            } catch (Exception e) { 
                 HMS.LogError(e.ToString());
-                Console.WriteLine("Error saving settings to file '" + Settings.File + "'", e);
             }
         }
 
@@ -1257,7 +1238,7 @@ namespace HMSEditorNS {
         }
 
         private void btnSprav_Click(object sender, EventArgs e) {
-            dockingPanel1.HelpControl.Cancelled = !btnSprav.Checked;
+            splitContainer1.Panel2Collapsed = !btnSprav.Checked;
         }
 
         #endregion Control Events
@@ -1829,5 +1810,9 @@ namespace HMSEditorNS {
             return text;
         }
 
+        private void splitContainer1_DoubleClick(object sender, EventArgs e) {
+            btnSprav.Checked = !btnSprav.Checked;
+            btnSprav_Click(sender, e);
+        }
     }
 }

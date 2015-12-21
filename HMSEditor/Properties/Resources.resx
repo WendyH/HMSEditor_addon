@@ -121,9 +121,6 @@
   <data name="Clearallrequests_8816" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Clearallrequests_8816.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AutoHideOff" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\DockingControls\AutoHideOff.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Bookmark_5776" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Bookmark_5776.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -169,9 +166,6 @@
   <data name="clearallbreakpoints_6551" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\clearallbreakpoints_6551.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AutoHideOn" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\DockingControls\AutoHideOn.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Find_5650" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Find_5650.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -183,9 +177,6 @@
   </data>
   <data name="DialogID_6220_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DialogID_6220_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="ToggleTabs" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\DockingControls\ToggleTabs.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Save_6530" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Save_6530.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

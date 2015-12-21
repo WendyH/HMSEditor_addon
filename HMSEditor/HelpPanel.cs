@@ -88,30 +88,38 @@ namespace HMSEditorNS {
             }
         }
 
+        private string prevWord = "";
         private void FillListBox(string word = "") {
             if (word == null) word = "";
             AutocompleteItems exactlyItems = new AutocompleteItems();
             AutocompleteItems notExacItems = new AutocompleteItems();
-            foreach (var item in HMS.ItemsFunction) CheckItem(exactlyItems, notExacItems, item, word);
-            foreach (var item in HMS.ItemsVariable) CheckItem(exactlyItems, notExacItems, item, word);
-            foreach (var item in HMS.ItemsClass   ) CheckItem(exactlyItems, notExacItems, item, word);
-            foreach (var item in HMS.ItemsConstant) CheckItem(exactlyItems, notExacItems, item, word);
+            if (word == "") {
+                exactlyItems.AddRange(HMS.ItemsFunction);
+                exactlyItems.AddRange(HMS.ItemsVariable);
+                exactlyItems.AddRange(HMS.ItemsClass);
+                exactlyItems.AddRange(HMS.ItemsConstant);
+            } else if (word.StartsWith(prevWord)) {
+                foreach (var item in visibleItems) CheckItem(exactlyItems, notExacItems, item, word);
+            } else {
+                foreach (var item in HMS.ItemsFunction) CheckItem(exactlyItems, notExacItems, item, word);
+                foreach (var item in HMS.ItemsVariable) CheckItem(exactlyItems, notExacItems, item, word);
+                foreach (var item in HMS.ItemsClass   ) CheckItem(exactlyItems, notExacItems, item, word);
+                foreach (var item in HMS.ItemsConstant) CheckItem(exactlyItems, notExacItems, item, word);
+            }
             exactlyItems.AddRange(notExacItems);
             visibleItems = exactlyItems.ToArray();
+            prevWord = word;
         }
 
         private void ShowHelp(HMSItem item = null) {
-            if (flatListBox1.Items.Count == 0) return;
+            if (flatListBox1.Items.Count == 0) return; 
             HelpTextBox.BeginUpdate();
             if (item == null) item = (HMSItem)flatListBox1.SelectedItem;
-            if (item.Rtf == "") {
-                HelpTextBox.Text = "";
+            if (item.Rtf.Length == 0) {
                 string help = HmsToolTip.GetTextWithHelp(item);
-                HmsToolTip.WriteWords(HelpTextBox, help);
-                item.Rtf = HelpTextBox.Rtf;
-            } else {
-                HelpTextBox.Rtf = item.Rtf;
+                item.Rtf    = HmsToolTip.GetRtf(help);
             }
+            HelpTextBox.Rtf = item.Rtf;
             HelpTextBox.EndUpdate();
         }
 

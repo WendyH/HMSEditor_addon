@@ -139,92 +139,6 @@
     </Compile>
     <Compile Include="AuthenticodeTools.cs" />
     <Compile Include="Autocomplete.cs" />
-    <Compile Include="DockingControls\AutoHideControlHandler.cs" />
-    <Compile Include="DockingControls\AutoResizeControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DockingControls\AutoResizeControl.Designer.cs" />
-    <Compile Include="DockingControls\CaptionToolStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DockingControls\CaptionToolStrip.Designer.cs" />
-    <Compile Include="DockingControls\ControlDragSizer.cs" />
-    <Compile Include="DockingControls\ControlDrawHelpers.cs" />
-    <Compile Include="DockingControls\ControlHelpers.cs" />
-    <Compile Include="DockingControls\ControlRectangleDrag.cs" />
-    <Compile Include="DockingControls\ControlResizeAnimator.cs" />
-    <Compile Include="DockingControls\DesktopGraphics.cs" />
-    <Compile Include="DockingControls\Direction.cs" />
-    <Compile Include="DockingControls\DockControlContainer.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DockingControls\DockControlContainer.Designer.cs" />
-    <Compile Include="DockingControls\DockControlContainer.DockingControlData.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DockingControls\DockControlContainerCollection.cs" />
-    <Compile Include="DockingControls\DockControlContainerCollectionHelpers.cs" />
-    <Compile Include="DockingControls\DockControlHelpers.cs" />
-    <Compile Include="DockingControls\DockedControlCollection.cs" />
-    <Compile Include="DockingControls\DockingControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DockingControls\DockingControl.Designer.cs" />
-    <Compile Include="DockingControls\DockingControlData.cs" />
-    <Compile Include="DockingControls\DockingControlPersisterStructures.cs" />
-    <Compile Include="DockingControls\DockingControlsPersister.cs" />
-    <Compile Include="DockingControls\DockingManagerControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DockingControls\DockingManagerControl.Designer.cs" />
-    <Compile Include="DockingControls\DockingType.cs" />
-    <Compile Include="DockingControls\DockingWindowListMenuItem.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DockingControls\DoubleDictionary.cs" />
-    <Compile Include="DockingControls\DragHandler.cs" />
-    <Compile Include="DockingControls\DrawingNativeMethods.cs" />
-    <Compile Include="DockingControls\FloatingForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DockingControls\FloatingForm.Designer.cs" />
-    <Compile Include="DockingControls\GradientFillUserControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DockingControls\GradientFillUserControl.Designer.cs" />
-    <Compile Include="DockingControls\GraphicsHdc.cs" />
-    <Compile Include="DockingControls\IDockControlContainerHandler.cs" />
-    <Compile Include="DockingControls\MenuStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DockingControls\NativeMethods.cs" />
-    <Compile Include="DockingControls\PaddingDrawHelper.cs" />
-    <Compile Include="DockingControls\RectangleDrag.cs" />
-    <Compile Include="DockingControls\RectangleHelpers.cs" />
-    <Compile Include="DockingControls\RedrawStopper.cs" />
-    <Compile Include="DockingControls\SetCursor.cs" />
-    <Compile Include="DockingControls\SplitterDockControlContainerHandler.cs" />
-    <Compile Include="DockingControls\SplitterDragHandler.cs" />
-    <Compile Include="DockingControls\TabbedDockControlContainerHandler.cs" />
-    <Compile Include="DockingControls\TabbedDocumentCollection.cs" />
-    <Compile Include="DockingControls\TabbedDocumentControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DockingControls\TabbedDocumentControl.Designer.cs" />
-    <Compile Include="DockingControls\TabbedDocumentControlActiveFilesContextMenuHandler.cs" />
-    <Compile Include="DockingControls\TabbedDocumentControlHelper.cs" />
-    <Compile Include="DockingControls\TabbedDocumentControlRenderer.cs" />
-    <Compile Include="DockingControls\ToolStrip.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="DockingControls\ToolStripHelpers.cs" />
-    <Compile Include="DockingControls\ToolStripRendererDecorator.cs" />
-    <Compile Include="DockingPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DockingPanel.Designer.cs">
-      <DependentUpon>DockingPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="FCTB\AutocompleteItem.cs" />
     <Compile Include="FCTB\AutocompleteMenu.cs">
       <SubType>Component</SubType>
@@ -244,12 +158,6 @@
     </Compile>
     <Compile Include="FlatListBox.Designer.cs">
       <DependentUpon>FlatListBox.cs</DependentUpon>
-    </Compile>
-    <Compile Include="FlatTreeView.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="FlatTreeView.Designer.cs">
-      <DependentUpon>FlatTreeView.cs</DependentUpon>
     </Compile>
     <Compile Include="FormRename.cs">
       <SubType>Form</SubType>
@@ -361,15 +269,6 @@
     <EmbeddedResource Include="AboutDialog.resx">
       <DependentUpon>AboutDialog.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DockingControls\AutoResizeControl.resx" />
-    <EmbeddedResource Include="DockingControls\DockControlContainer.resx" />
-    <EmbeddedResource Include="DockingControls\DockingControl.resx" />
-    <EmbeddedResource Include="DockingControls\DockingManagerControl.resx" />
-    <EmbeddedResource Include="DockingControls\FloatingForm.resx" />
-    <EmbeddedResource Include="DockingControls\TabbedDocumentControl.resx" />
-    <EmbeddedResource Include="DockingPanel.resx">
-      <DependentUpon>DockingPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="FCTB\AutocompleteMenu.resx">
       <DependentUpon>AutocompleteMenu.cs</DependentUpon>
     </EmbeddedResource>
@@ -392,9 +291,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FlatListBox.resx">
       <DependentUpon>FlatListBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FlatTreeView.resx">
-      <DependentUpon>FlatTreeView.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormRename.resx">
       <DependentUpon>FormRename.cs</DependentUpon>

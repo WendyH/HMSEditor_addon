@@ -29,7 +29,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HMSEditor));
             FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
-            System.Windows.Forms.ToolStripProfessionalRenderer toolStripProfessionalRenderer1 = new System.Windows.Forms.ToolStripProfessionalRenderer();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.btnContextMenuBack = new System.Windows.Forms.ToolStripMenuItem();
             this.btnContextMenuForward = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,8 +52,8 @@
             this.ToolStripMenuItemZoom100 = new System.Windows.Forms.ToolStripMenuItem();
             this.btnInsertTemplate = new System.Windows.Forms.ToolStripMenuItem();
             this.btnContextMenuToolBar = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnAdd2Watch = new System.Windows.Forms.ToolStripMenuItem();
             this.btnHelpPanelContextMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnAdd2Watch = new System.Windows.Forms.ToolStripMenuItem();
             this.tsMain = new System.Windows.Forms.ToolStrip();
             this.btnNavigateBack = new System.Windows.Forms.ToolStripButton();
             this.btnNavigateForward = new System.Windows.Forms.ToolStripButton();
@@ -116,10 +115,14 @@
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.CheckPositionIsInParametersSequenceWorker = new System.ComponentModel.BackgroundWorker();
             this.Editor = new FastColoredTextBoxNS.FastColoredTextBox();
-            this.dockingPanel1 = new HMSEditorNS.DockingPanel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.helpPanel1 = new HMSEditorNS.HelpPanel();
             this.contextMenuStrip1.SuspendLayout();
             this.tsMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -150,7 +153,7 @@
             this.btnHelpPanelContextMenu,
             this.btnAdd2Watch});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(245, 506);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(245, 484);
             this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // btnContextMenuBack
@@ -326,13 +329,6 @@
             this.btnContextMenuToolBar.Text = "Панель инструментов";
             this.btnContextMenuToolBar.Click += new System.EventHandler(this.btnContextMenuToolBar_Click);
             // 
-            // btnAdd2Watch
-            // 
-            this.btnAdd2Watch.Name = "btnAdd2Watch";
-            this.btnAdd2Watch.Size = new System.Drawing.Size(244, 22);
-            this.btnAdd2Watch.Text = "Добавить в список выражений";
-            this.btnAdd2Watch.Click += new System.EventHandler(this.btnAdd2Watch_Click);
-            // 
             // btnHelpPanelContextMenu
             // 
             this.btnHelpPanelContextMenu.CheckOnClick = true;
@@ -342,6 +338,13 @@
             this.btnHelpPanelContextMenu.Text = "Панель справочника";
             this.btnHelpPanelContextMenu.ToolTipText = "Отобразить/скрыть панель справочника";
             this.btnHelpPanelContextMenu.Click += new System.EventHandler(this.btnHelpPanelContextMenu_Click);
+            // 
+            // btnAdd2Watch
+            // 
+            this.btnAdd2Watch.Name = "btnAdd2Watch";
+            this.btnAdd2Watch.Size = new System.Drawing.Size(244, 22);
+            this.btnAdd2Watch.Text = "Добавить в список выражений";
+            this.btnAdd2Watch.Click += new System.EventHandler(this.btnAdd2Watch_Click);
             // 
             // tsMain
             // 
@@ -980,6 +983,7 @@
             this.Editor.DelayedEventsInterval = 600;
             this.Editor.DelayedTextChangedInterval = 500;
             this.Editor.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.Editor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Editor.Font = new System.Drawing.Font("Consolas", 9.75F);
             this.Editor.HighlightingRangeType = FastColoredTextBoxNS.HighlightingRangeType.VisibleRange;
             this.Editor.Hotkeys = resources.GetString("Editor.Hotkeys");
@@ -987,7 +991,7 @@
             this.Editor.Language = FastColoredTextBoxNS.Language.PascalScript;
             this.Editor.LeftBracket = '(';
             this.Editor.LeftPadding = 2;
-            this.Editor.Location = new System.Drawing.Point(3, 28);
+            this.Editor.Location = new System.Drawing.Point(0, 0);
             this.Editor.Name = "Editor";
             this.Editor.Paddings = new System.Windows.Forms.Padding(0);
             this.Editor.RightBracket = ')';
@@ -1000,7 +1004,7 @@
             serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
             this.Editor.ServiceColors = serviceColors1;
             this.Editor.ShowScrollBars = false;
-            this.Editor.Size = new System.Drawing.Size(746, 499);
+            this.Editor.Size = new System.Drawing.Size(651, 505);
             this.Editor.TabIndex = 10;
             this.Editor.TabLength = 2;
             this.Editor.Zoom = 100;
@@ -1015,20 +1019,37 @@
             this.Editor.MouseLeave += new System.EventHandler(this.Editor_MouseLeave);
             this.Editor.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseMove);
             // 
-            // dockingPanel1
+            // splitContainer1
             // 
-            this.dockingPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dockingPanel1.Location = new System.Drawing.Point(0, 25);
-            this.dockingPanel1.Name = "dockingPanel1";
-            toolStripProfessionalRenderer1.RoundedEdges = true;
-            this.dockingPanel1.Renderer = toolStripProfessionalRenderer1;
-            this.dockingPanel1.Size = new System.Drawing.Size(948, 505);
-            this.dockingPanel1.TabIndex = 11;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 25);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.Editor);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.helpPanel1);
+            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(4);
+            this.splitContainer1.Size = new System.Drawing.Size(948, 505);
+            this.splitContainer1.SplitterDistance = 651;
+            this.splitContainer1.TabIndex = 11;
+            this.splitContainer1.DoubleClick += new System.EventHandler(this.splitContainer1_DoubleClick);
+            // 
+            // helpPanel1
+            // 
+            this.helpPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.helpPanel1.Location = new System.Drawing.Point(4, 4);
+            this.helpPanel1.Name = "helpPanel1";
+            this.helpPanel1.Size = new System.Drawing.Size(285, 497);
+            this.helpPanel1.SplitterDistance = 216;
+            this.helpPanel1.TabIndex = 0;
             // 
             // HMSEditor
             // 
-            this.Controls.Add(this.Editor);
-            this.Controls.Add(this.dockingPanel1);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.tsMain);
             this.DoubleBuffered = true;
             this.Name = "HMSEditor";
@@ -1037,6 +1058,9 @@
             this.tsMain.ResumeLayout(false);
             this.tsMain.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Editor)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1127,7 +1151,8 @@
         private System.Windows.Forms.ToolStripMenuItem btnContextMenuAutoIndent;
         private System.Windows.Forms.ToolStripMenuItem btnAdd2Watch;
         private System.Windows.Forms.ToolStripButton btnSprav;
-        private DockingPanel dockingPanel1;
         private System.Windows.Forms.ToolStripMenuItem btnHelpPanelContextMenu;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private HelpPanel helpPanel1;
     }
 }
