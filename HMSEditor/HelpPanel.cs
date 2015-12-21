@@ -102,7 +102,7 @@ namespace HMSEditorNS {
 
         private void ShowHelp(HMSItem item = null) {
             if (flatListBox1.Items.Count == 0) return;
-            HelpTextBox.SuspendLayout();
+            HelpTextBox.BeginUpdate();
             if (item == null) item = (HMSItem)flatListBox1.SelectedItem;
             if (item.Rtf == "") {
                 HelpTextBox.Text = "";
@@ -112,7 +112,7 @@ namespace HMSEditorNS {
             } else {
                 HelpTextBox.Rtf = item.Rtf;
             }
-            HelpTextBox.ResumeLayout();
+            HelpTextBox.EndUpdate();
         }
 
         private void comboBox1_TextChanged(object sender, EventArgs e) {

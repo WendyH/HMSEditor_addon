@@ -34,11 +34,12 @@ namespace HMSEditorNS {
                 // Заполняем базу знаний функций, классов, встроенных констант и переменных...
                 InitAndLoadHMSKnowledgeDatabase();
 
-                //PrepareFastDraw();
-                
+                PrepareFastDraw(); 
+                /*
                 Worker.DoWork += Worker_DoWork;
                 Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
                 Worker.RunWorkerAsync(BackgraundTask.PrepareFastDraw);
+                */
 
             } catch (Exception e) {
                 LogError(e.ToString());

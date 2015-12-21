@@ -28,7 +28,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.flatListBox1 = new HMSEditorNS.FlatListBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.HelpTextBox = new System.Windows.Forms.RichTextBox();
+            this.HelpTextBox = new MyRichTextBox();
             this.TopPanel = new System.Windows.Forms.Panel();
             this.valueToolTip1 = new HMSEditorNS.ValueToolTip();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -155,7 +155,7 @@
 
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.RichTextBox HelpTextBox;
+        private MyRichTextBox HelpTextBox;
         private System.Windows.Forms.Panel TopPanel;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;

@@ -416,4 +416,31 @@ namespace HMSEditorNS {
             RecalcWidth();
         }
     }
+
+    public class MyRichTextBox : RichTextBox {
+        protected bool isUpdated = false;
+
+        public void BeginUpdate() {
+            isUpdated = true;
+        }
+
+        public void EndUpdate() {
+            isUpdated = false;
+            Invalidate();
+        }
+
+        protected override void OnPaint(PaintEventArgs e) {
+            if (isUpdated) return;
+        }
+
+        public void AppendText(string text, Color color, Font font) {
+            SelectionStart = TextLength;
+            SelectionLength = 0;
+            SelectionFont = font;
+            SelectionColor = color;
+            AppendText(text);
+        }
+    }
+
+
 }

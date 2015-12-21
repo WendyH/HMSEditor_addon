@@ -857,20 +857,22 @@ namespace FastColoredTextBoxNS
             int iLine = fragment.Start.iLine;
             int iChar = fragment.Start.iChar;
             HMSItem hmsItem = item as HMSItem;
-            if ((hmsItem != null) && ((hmsItem.Kind == DefKind.Property) || (hmsItem.Kind == DefKind.Variable)) && !HMS.TypeIsClass(hmsItem.Type)) {
-                Range fwords = fragment.GetFragmentLookedLeft();
-                var f = new Range(tb, new Place(0, iLine), new Place(fwords.Start.iChar, iLine));
-                string line = f.Text.Trim();
-                if ((line.Length == 0) && (tb.Lines[iLine].IndexOf('=')<0)) newText += (tb.Language == Language.PascalScript) ? " := " : " = ";
+            if (hmsItem != null) {
+                if (((hmsItem.Kind == DefKind.Property) || (hmsItem.Kind == DefKind.Variable)) && !HMS.TypeIsClass(hmsItem.Type)) {
+                    Range fwords = fragment.GetFragmentLookedLeft();
+                    var f = new Range(tb, new Place(0, iLine), new Place(fwords.Start.iChar, iLine));
+                    string line = f.Text.Trim();
+                    if ((line.Length == 0) && (tb.Lines[iLine].IndexOf('=') < 0)) newText += (tb.Language == Language.PascalScript) ? " := " : " = ";
+                }
             }
 
             // > By WendyH ---------------------------
 
-            tb.BeginAutoUndo();
+            tb.BeginAutoUndo(); 
             tb.TextSource.Manager.ExecuteCommand(new SelectCommand(tb.TextSource));
             if (tb.Selection.ColumnSelectionMode)
             {
-                var start = tb.Selection.Start;
+                var start = tb.Selection.Start; 
                 var end   = tb.Selection.End;
                 start.iChar = fragment.Start.iChar;
                 end  .iChar = fragment.End  .iChar;
@@ -885,6 +887,9 @@ namespace FastColoredTextBoxNS
             tb.InsertText(newText);
             tb.TextSource.Manager.ExecuteCommand(new SelectCommand(tb.TextSource));
             tb.EndAutoUndo();
+            if ((hmsItem != null) && (hmsItem.Params.Count > 0)) {
+                if (HMSEditor.ActiveEditor != null) HMSEditor.ActiveEditor.WasCommaOrBracket = true;
+            }
             tb.Focus();
         }
 

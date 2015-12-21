@@ -133,7 +133,7 @@ namespace FastColoredTextBoxNS {
 
         public static void PrepareFastDraw(HMSItem item, Graphics g) {
             if (item.Words.Count > 0) return;
-            
+            /*
             // Prepare for rtf text for help panel
             RichTextBox HelpTextBox = new RichTextBox();
             if (item.Rtf == "") {
@@ -144,7 +144,7 @@ namespace FastColoredTextBoxNS {
                 }
                 item.Rtf = HelpTextBox.Rtf;
             }
-            
+            */
             // prepeare for tooltip
             float heightCorrection = 0;
             item.ToolTipTitle = CalcPhrasesBreaks(g, item.ToolTipTitle);
@@ -317,21 +317,11 @@ namespace FastColoredTextBoxNS {
             return newText;
         }
 
-        private static void AppendText(RichTextBox box, string text, Color color, Font font) {
-            box.SelectionStart  = box.TextLength;
-            box.SelectionLength = 0;
-            box.SelectionFont   = font;
-            box.SelectionColor  = color;
-            box.AppendText(text);
-            box.SelectionColor  = box.ForeColor;
-            box.SelectionFont   = box.Font;
-        }
-
-        public static void WriteWords(RichTextBox tb, string text) {
+        public static void WriteWords(MyRichTextBox tb, string text) {
             WriteWords(text, new Rectangle(), null, null, true, tb);
         }
 
-        public static Size WriteWords(string text, Rectangle bounds, Graphics g, List<WordStyle> words = null, bool notShow = false, RichTextBox tb = null) {
+        public static Size WriteWords(string text, Rectangle bounds, Graphics g, List<WordStyle> words = null, bool notShow = false, MyRichTextBox tb = null) {
             if (text.Length == 0) return new Size();
             Point  point      = new Point(Margin.Width, Margin.Height);
             Font   font       = FontText;
@@ -362,9 +352,9 @@ namespace FastColoredTextBoxNS {
                     if (word == "<id>") { point.Y += 3       ; continue; }
                     if (tb!=null) {
                         notColored = (color == colorString) || (color == colorValue);
-                        if      (!notColored && isKeyWord(word)) AppendText(tb, word, colorKeyword, font);
-                        else if (!notColored && isClass  (word)) AppendText(tb, word, colorClass  , font);
-                        else                                     AppendText(tb, word, color       , font);
+                        if      (!notColored && isKeyWord(word)) tb.AppendText(word, colorKeyword, font);
+                        else if (!notColored && isClass  (word)) tb.AppendText(word, colorClass  , font);
+                        else                                     tb.AppendText(word, color       , font);
                         continue;
                     }
                     wordSize = TextRenderer.MeasureText(g, word, font, MaxSize, tf);
@@ -386,7 +376,7 @@ namespace FastColoredTextBoxNS {
                     prevHeight = wordSize.Height;
                 }
                 point.Y += wordSize.Height; point.X = Margin.Width;
-                if (tb != null) {
+                if (tb != null && tb.IsHandleCreated && !tb.IsDisposed) {
                     tb.AppendText("\r\n");
                     if (iline == 0) tb.AppendText("\r\n");
                 }
