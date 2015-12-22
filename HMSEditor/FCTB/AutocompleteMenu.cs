@@ -21,6 +21,7 @@ namespace FastColoredTextBoxNS
         public  bool      OnlyCtrlSpace = false;
         public  bool      AfterComplete = false;
         public  string    Filter        = "";
+        public  bool      TempNotShow   = false;
         // > By WendyH -------------------------------
 
         private AutocompleteListView listView;
@@ -327,7 +328,7 @@ namespace FastColoredTextBoxNS
             visibleItems = new AutocompleteItems();
             VerticalScrollBar.SmallChange = ItemHeight;
             VerticalScrollBar.LargeChange = Height;
-            MaximumSize     = new Size(Size.Width, 180);
+            MaximumSize     = new Size(Size.Width, ItemHeight * 10);
             ToolTip.ShowAlways = false;
             AppearInterval  = 250;
             timer.Tick     += new EventHandler(timer_Tick);
@@ -381,7 +382,7 @@ namespace FastColoredTextBoxNS
 
         void timer_Tick(object sender, EventArgs e) {
             timer.Stop();
-            DoAutocomplete(false);
+            if (!Menu.TempNotShow) DoAutocomplete(false);
         }
 
         void ResetTimer(System.Windows.Forms.Timer timer) {
@@ -498,10 +499,14 @@ namespace FastColoredTextBoxNS
             return foundSelected;
         }
         private string writtentext = "";
-        // > By WendyH ------------------------------------------ 
-
         private static Regex regexIsPascalFunctionName = new Regex(@"\b(Procedure|Function)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         private static Regex regexSpaces = new Regex(@"[\s]", RegexOptions.Compiled);
+
+        public static bool isType(string word) {
+            return (HMS.HmsTypesString).IndexOf("|" + word.ToLower() + "|") >= 0;
+        }
+        // > By WendyH ------------------------------------------ 
+
         internal void DoAutocomplete(bool forced) {
             if (tb.IsDisposed) return;
             if (!Menu.Enabled || !this.Enabled) { Menu.Close(); return; }
@@ -526,10 +531,10 @@ namespace FastColoredTextBoxNS
             fragmentBefore = fragmentBefore.GetFragmentLookedLeft();
             string wordBefore = fragmentBefore.Text;
             if (tb.Language == Language.PascalScript && regexIsPascalFunctionName.IsMatch(wordBefore)) {
-                Menu.Enabled = false;
+                Menu.TempNotShow = true;
                 return;
-            } else if (tb.Language == Language.CPPScript && HmsToolTip.isKeyWord(wordBefore)) {
-                Menu.Enabled = false;
+            } else if (tb.Language == Language.CPPScript && isType(wordBefore)) {
+                Menu.TempNotShow = true;
                 return;
             }
 
@@ -626,6 +631,22 @@ namespace FastColoredTextBoxNS
             //show popup menu
             if (Count > 0)
             {
+                // < By WendyH -------------------------------
+                // Recalc position
+                int h = MaximumSize.Height;
+                int w = MaximumSize.Width;
+                int ih = ItemHeight;
+                if (visibleItems.Count < 18) {
+                    h = visibleItems.Count * ih + 4;
+                }
+                Point ps = tb.PointToScreen(point);
+                if (ps.Y + h > SystemInformation.VirtualScreen.Bottom) {
+                    point.Y -= (h + tb.CharHeight);
+                }
+                if (Menu.Visible) {
+                    Menu.Top  = tb.PointToScreen(point).Y;
+                }
+                // > By WendyH -------------------------------
                 if (!Menu.Visible)
                 {
                     CancelEventArgs args = new CancelEventArgs();
@@ -690,7 +711,7 @@ namespace FastColoredTextBoxNS
             {
                 if (tb.HotkeysMapping.ContainsKey(e.KeyData) && tb.HotkeysMapping[e.KeyData] == FCTBAction.AutocompleteMenu)
                 {
-                    DoAutocomplete();
+                    DoAutocomplete(true);
                     e.Handled = true;
                 }
                 else

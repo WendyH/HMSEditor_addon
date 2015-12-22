@@ -401,11 +401,11 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        public static bool isKeyWord(string word) {
+        private static bool isKeyWord(string word) {
             return (HMS.HmsTypesString + HMS.KeywordsString).IndexOf("|" + word.ToLower() + "|") >= 0;
         }
 
-        public static bool isClass(string word) {
+        private static bool isClass(string word) {
             return HMS.ClassesString.IndexOf("|" + word.ToLower() + "|") >= 0;
         }
 

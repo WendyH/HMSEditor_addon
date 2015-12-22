@@ -808,7 +808,7 @@ namespace HMSEditorNS {
             else if (e.KeyCode == Keys.F2    ) RenameVariable();
             else if (e.KeyCode == Keys.Escape) {
                 HideAllToolTipsAndHints();
-                PopupMenu.Enabled = false;
+                PopupMenu.TempNotShow = true;
             }
             else if (e.Alt) {
                 if      (e.KeyCode == Keys.D1) Editor.SetBookmarkByName(Editor.Selection.Start.iLine, "1");
@@ -820,6 +820,9 @@ namespace HMSEditorNS {
                 else if (e.KeyCode == Keys.D7) Editor.SetBookmarkByName(Editor.Selection.Start.iLine, "7");
                 else if (e.KeyCode == Keys.D8) Editor.SetBookmarkByName(Editor.Selection.Start.iLine, "8");
                 else if (e.KeyCode == Keys.D9) Editor.SetBookmarkByName(Editor.Selection.Start.iLine, "9");
+                else if (e.KeyCode == Keys.Space) {
+
+                }
             } else if (e.Control) {
                 if      (e.KeyCode == Keys.D1) Editor.GotoBookmarkByName("1");
                 else if (e.KeyCode == Keys.D2) Editor.GotoBookmarkByName("2");
@@ -834,9 +837,9 @@ namespace HMSEditorNS {
                 if (!Editor.Selection.IsStringOrComment) WasCommaOrBracket = true;
             }
 
-            if (!PopupMenu.Enabled && btnIntelliSenseFunctions.Checked) {
+            if (PopupMenu.TempNotShow) {
                 if (e.KeyCode == Keys.Space || e.KeyCode == Keys.Tab || e.KeyCode == Keys.Enter || e.KeyCode == Keys.End || e.KeyCode == Keys.Home) {
-                    PopupMenu.Enabled = true;
+                    PopupMenu.TempNotShow = false;
                 }
             }
 
@@ -1708,19 +1711,19 @@ namespace HMSEditorNS {
                 case "C++Script":
                     CurrentValidTypes += "int|long|void|bool|float|";
                     hmsTypes = hmsTypes.Replace("Integer|", "int|long|").Replace("Extended|", "Extended|float|").Replace("Boolean|", "bool|") + "|{Тип функции: процедура (отсутствие возвращаемого значения)}void|";
-                    keywords = "#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|";
+                    keywords = "#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|nil|null|true|false|";
                     snippets = "if (^) {\n}|if (^) {\n}\nelse {\n}|for (^;;) {\n}|while (^) {\n}|do {\n^}while ();";
                     break;
                 case "PascalScript":
-                    keywords = "Program|Uses|Const|Var|Not|In|Is|OR|XOR|DIV|MOD|AND|SHL|SHR|Break|Continue|Exit|Begin|End|If|Then|Else|Case|Of|Repeat|Until|While|Do|For|To|DownTo|Try|Finally|Except|With|Function|Procedure";
+                    keywords = "Program|Uses|Const|Var|Not|In|Is|OR|XOR|DIV|MOD|AND|SHL|SHR|Break|Continue|Exit|Begin|End|If|Then|Else|Case|Of|Repeat|Until|While|Do|For|To|DownTo|Try|Finally|Except|With|Function|Procedure|Nil|Null|True|False";
                     snippets = "If ^ Then |If (^) Then Begin\nEnd else Begin\nEnd;";
                     break;
                 case "BasicScript":
-                    keywords = "EOL|IMPORTS|DIM|AS|NOT|IN|IS|OR|XOR|MOD|AND|ADDRESSOF|BREAK|CONTINUE|EXIT|DELETE|SET|RETURN|IF|THEN|END|ELSEIF|ELSE|SELECT|CASE|DO|LOOP|UNTIL|WHILE|WEND|FOR|TO|STEP|NEXT|TRY|FINALLY|CATCH|WITH|SUB|FUNCTION|BYREF|BYVAL";
+                    keywords = "EOL|IMPORTS|DIM|AS|NOT|IN|IS|OR|XOR|MOD|AND|ADDRESSOF|BREAK|CONTINUE|EXIT|DELETE|SET|RETURN|IF|THEN|END|ELSEIF|ELSE|SELECT|CASE|DO|LOOP|UNTIL|WHILE|WEND|FOR|TO|STEP|NEXT|TRY|FINALLY|CATCH|WITH|SUB|FUNCTION|BYREF|BYVAL|NIL|NULL|TRUE|FALSE";
                     break;
                 case "JScript":
                     hmsTypes = "var";
-                    keywords = "import|new|in|is|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|function|with";
+                    keywords = "import|new|in|is|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|function|with|Nil|Null|True|False";
                     break;
             }
             HMS.KeywordsString = keywords.ToLower();

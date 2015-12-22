@@ -34,7 +34,7 @@ namespace HMSEditorNS {
                 // Заполняем базу знаний функций, классов, встроенных констант и переменных...
                 InitAndLoadHMSKnowledgeDatabase();
 
-                PrepareFastDraw(); 
+                //PrepareFastDraw(); 
                 /*
                 Worker.DoWork += Worker_DoWork;
                 Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
@@ -50,7 +50,7 @@ namespace HMSEditorNS {
         public static string GitHubHMSEditor  = "WendyH/HMSEditor_addon";
         public static string GitHubTemplates  = "WendyH/HMSEditor-Templates";
         public static int    MaxLogSize       = 1024 * 1024 * 2; // 2 MB
-        public static string HmsTypesStringWithHelp = "|{Тип данных: целочисленное}Byte|Word|Integer|Longint|Cardinal|TColor|TColor32|{Тип данных: логический}Boolean|{Тип данных:  расширенный (с плавающей запятой)}Real|Single|Double|Extended|Currency|TDate|TTime|TDateTime|{Тип данных: символьный}Char|{Тип данных: строковый}String|{Тип данных: Variant (вариантный тип)}Pointer|Variant|{Тип данных: массив}Array|{}Nil|Null|True|False|";
+        public static string HmsTypesStringWithHelp = "|{Тип данных: целочисленное}Byte|Word|Integer|Longint|Cardinal|TColor|TColor32|{Тип данных: логический}Boolean|{Тип данных:  расширенный (с плавающей запятой)}Real|Single|Double|Extended|Currency|TDate|TTime|TDateTime|{Тип данных: символьный}Char|{Тип данных: строковый}String|{Тип данных: Variant (вариантный тип)}Pointer|Variant|{Тип данных: массив}Array|";
         public static string HmsTypesString   = "";
         public static string KeywordsString   = "|#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|";
         public static string ClassesString    = "";
