@@ -640,9 +640,11 @@ namespace FastColoredTextBoxNS
                     h = visibleItems.Count * ih + 4;
                 }
                 Point ps = tb.PointToScreen(point);
-                if (ps.Y + h > SystemInformation.VirtualScreen.Bottom) {
+                if (ps.Y + h > Screen.PrimaryScreen.WorkingArea.Size.Height) {
                     point.Y -= (h + tb.CharHeight);
                 }
+                Size = new Size(Size.Width, h);
+                Menu.CalcSize();
                 if (Menu.Visible) {
                     Menu.Top  = tb.PointToScreen(point).Y;
                 }
@@ -650,14 +652,6 @@ namespace FastColoredTextBoxNS
                 if (!Menu.Visible)
                 {
                     CancelEventArgs args = new CancelEventArgs();
-                    //// By WendyH
-                    //Point ps = tb.PointToScreen(point);
-                    //if (ps.Y + Menu.Height + (tb.CharHeight * 3) > SystemInformation.VirtualScreen.Bottom) {
-                    //    int size = Math.Min(MaximumSize.Height, ItemHeight * visibleItems.Count) + 5;
-                    //    point.Y -= (size + tb.CharHeight);
-                    //    Rectangle b = tb.ToolTip4Function.Bounds;
-                    //    if (tb.ToolTip4Function.Active) point.Y -= (b.Height + 4);
-                    //}
                     Menu.OnOpening(args);
                     if(!args.Cancel)
                         Menu.Show(tb, point);

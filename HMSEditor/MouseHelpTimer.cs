@@ -8,7 +8,7 @@ namespace HMSEditorNS {
     /// Класс для работы и отображения всплывающей подсказки при наведении курсора мыши на часть слова редакторе
     /// </summary>
     class MouseHelpTimer {
-        const int MaxValueLength = 2000;
+        const int MaxValueLength = 119000;
         internal static Regex regexRemoveParams = new Regex(@"\(([^\)])*\)|\[([^\]])*\]|(//.*|\/\*[\s\S]*?\*\/)", RegexOptions.Compiled);
         internal static Regex regexNoNewLines   = new Regex(@"[^\n]", RegexOptions.Compiled);
 

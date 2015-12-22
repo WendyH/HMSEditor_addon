@@ -519,6 +519,7 @@ namespace HMSEditorNS {
             btnVerticalLineText     .Checked = Settings.Get("VerticalLineText"    , section, btnVerticalLineText     .Checked);
             btnStorePositions       .Checked = Settings.Get("StorePositions"      , section, btnStorePositions       .Checked);
             btnSprav                .Checked = Settings.Get("ShowSprav"           , section, btnSprav                .Checked);
+            btnBoldCaret            .Checked = Settings.Get("BoldCaret"           , section, btnBoldCaret            .Checked);
 
             btnUnderlinePascalKeywords.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywords.Checked);
             Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
@@ -563,6 +564,7 @@ namespace HMSEditorNS {
             btnAutoIdent_Click       (null, EventArgs.Empty);
             btnMarkChangedLines_Click(null, EventArgs.Empty);
             btnSprav_Click           (null, EventArgs.Empty);
+            btnBoldCaret_Click       (null, EventArgs.Empty);
 
             Editor.HotkeysMapping.InitDefault(); 
             string hotkeys = Settings.Get("Map", "AddonHotkeys", "");
@@ -619,6 +621,7 @@ namespace HMSEditorNS {
                 Settings.Set("VerticalLineText"    , btnVerticalLineText     .Checked, section);
                 Settings.Set("StorePositions"      , btnStorePositions       .Checked, section);
                 Settings.Set("ShowSprav"           , btnSprav                .Checked, section);
+                Settings.Set("BoldCaret"           , btnBoldCaret            .Checked, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -1231,6 +1234,10 @@ namespace HMSEditorNS {
             aboutDialog.ShowDialog();
         }
 
+        private void btnBoldCaret_Click(object sender, EventArgs e) {
+            Editor.BoldCaret = btnBoldCaret.Checked;
+        }
+
         private void btnStorePositions_Click(object sender, EventArgs e) {
 
         }
@@ -1817,5 +1824,6 @@ namespace HMSEditorNS {
             btnSprav.Checked = !btnSprav.Checked;
             btnSprav_Click(sender, e);
         }
+
     }
 }

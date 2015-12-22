@@ -87,6 +87,7 @@
             this.btnInvisibleChars = new System.Windows.Forms.ToolStripMenuItem();
             this.btnVerticalLineText = new System.Windows.Forms.ToolStripMenuItem();
             this.btnMarkChangedLines = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnBoldCaret = new System.Windows.Forms.ToolStripMenuItem();
             this.btnStorePositions = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.btnHighlightSameWords = new System.Windows.Forms.ToolStripMenuItem();
@@ -611,6 +612,7 @@
             this.btnInvisibleChars,
             this.btnVerticalLineText,
             this.btnMarkChangedLines,
+            this.btnBoldCaret,
             this.btnStorePositions,
             this.toolStripSeparator12,
             this.btnHighlightSameWords,
@@ -683,6 +685,15 @@
             this.btnMarkChangedLines.ToolTipText = "Потметки изменённых строк видны только при \r\nотображении номеров строк, закладок " +
     "или точек останова.";
             this.btnMarkChangedLines.Click += new System.EventHandler(this.btnMarkChangedLines_Click);
+            // 
+            // btnBoldCaret
+            // 
+            this.btnBoldCaret.CheckOnClick = true;
+            this.btnBoldCaret.Name = "btnBoldCaret";
+            this.btnBoldCaret.Size = new System.Drawing.Size(313, 22);
+            this.btnBoldCaret.Text = "Жирная каретка редактора";
+            this.btnBoldCaret.ToolTipText = "Сделать каретку более жирной";
+            this.btnBoldCaret.Click += new System.EventHandler(this.btnBoldCaret_Click);
             // 
             // btnStorePositions
             // 
@@ -971,6 +982,7 @@
     "range>:)\\s*(?<range>[^;]+);";
             this.Editor.AutoScrollMinSize = new System.Drawing.Size(25, 15);
             this.Editor.BackBrush = null;
+            this.Editor.BoldCaret = false;
             this.Editor.BookmarkIcon = global::HMSEditorNS.Properties.Resources.togglebookmark;
             this.Editor.BreakpointIcon = global::HMSEditorNS.Properties.Resources.breakpoint_x16;
             this.Editor.BreakpointLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
@@ -1154,5 +1166,6 @@
         private System.Windows.Forms.ToolStripMenuItem btnHelpPanelContextMenu;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private HelpPanel helpPanel1;
+        private System.Windows.Forms.ToolStripMenuItem btnBoldCaret;
     }
 }

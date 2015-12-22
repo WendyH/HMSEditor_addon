@@ -86,6 +86,8 @@ namespace FastColoredTextBoxNS {
         private readonly List<VisualMarker> visibleMarkers = new List<VisualMarker>();
         public int  TextHeight;
         public bool AllowInsertRemoveLines = true;
+        private bool _boldCaret = false;
+        public bool BoldCaret { get { return _boldCaret; } set { _boldCaret = value; caretCreated = false; Invalidate(); } }
         private Brush backBrush;
         private Bookmarks bookmarks;
         private Bookmarks breakpoints; // By WendyH
@@ -3953,6 +3955,7 @@ namespace FastColoredTextBoxNS {
         public void ClearErrorLines() {
             Range.ClearStyle(ErrorStyle);
             VerticalScroll.ErrorLine = 0;
+            VerticalScroll.Invalidate();
         }
 
         public void SetErrorLines(int iChar, int iLine, string msg) {
@@ -4970,7 +4973,8 @@ namespace FastColoredTextBoxNS {
             car.Offset(0, lineInterval / 2);
 
             if ((Focused || IsDragDrop) && car.X >= LeftIndent && CaretVisible) {
-                int carWidth = (IsReplaceMode || WideCaret) ? CharWidth : CharWidth / 4;
+                int carWidth = (IsReplaceMode || WideCaret) ? CharWidth : (CharWidth / 4);
+                if (_boldCaret) carWidth++;
                 if (!CaretBlinking) {
                     if (WideCaret) {
                         using (var brush = new SolidBrush(CaretColor))
@@ -4984,11 +4988,13 @@ namespace FastColoredTextBoxNS {
 
                 var caretRect = new Rectangle(HorizontalScroll.Value + car.X, VerticalScroll.Value + car.Y, carWidth, caretHeight + 1);
 
-                if (CaretBlinking)
+                if (CaretBlinking) 
                     if (prevCaretRect != caretRect || !ShowScrollBars) {
                         if (!caretCreated) {
                             caretCreated = true;
                             NativeMethods.CreateCaret(Handle, 0, carWidth, caretHeight + 1);
+                            NativeMethods.ShowCaret(Handle);
+                        } else if (DebugMode) {
                             NativeMethods.ShowCaret(Handle);
                         }
                         NativeMethods.SetCaretPos(car.X, car.Y);
