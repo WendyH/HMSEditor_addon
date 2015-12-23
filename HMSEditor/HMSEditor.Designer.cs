@@ -14,8 +14,14 @@
                 components.Dispose();
                 MouseTimer.Dispose();
                 if (InvisibleCharsStyle != null) InvisibleCharsStyle.Dispose();
-                if (SameWordsStyle != null) SameWordsStyle.Dispose();
+                if (SameWordsStyle      != null) SameWordsStyle.Dispose();
+                if (PopupMenu           != null && !PopupMenu.IsDisposed) PopupMenu.Dispose();
+                if (MouseTimer          != null) MouseTimer.Dispose();
             }
+            InvisibleCharsStyle = null;
+            SameWordsStyle = null;
+            PopupMenu      = null;
+            MouseTimer     = null;
             base.Dispose(disposing);
         }
 
@@ -115,15 +121,15 @@
             this.btnSprav = new System.Windows.Forms.ToolStripButton();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.CheckPositionIsInParametersSequenceWorker = new System.ComponentModel.BackgroundWorker();
-            this.Editor = new FastColoredTextBoxNS.FastColoredTextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.Editor = new FastColoredTextBoxNS.FastColoredTextBox();
             this.helpPanel1 = new HMSEditorNS.HelpPanel();
             this.contextMenuStrip1.SuspendLayout();
             this.tsMain.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -150,8 +156,8 @@
             this.ToolStripMenuItemClearBreakpoints,
             this.ToolStripMenuItemZoom100,
             this.btnInsertTemplate,
-            this.btnContextMenuToolBar,
             this.btnHelpPanelContextMenu,
+            this.btnContextMenuToolBar,
             this.btnAdd2Watch});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
             this.contextMenuStrip1.Size = new System.Drawing.Size(245, 484);
@@ -645,9 +651,7 @@
             // 
             // btnShowLineNumbers
             // 
-            this.btnShowLineNumbers.Checked = true;
             this.btnShowLineNumbers.CheckOnClick = true;
-            this.btnShowLineNumbers.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnShowLineNumbers.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnShowLineNumbers.Name = "btnShowLineNumbers";
             this.btnShowLineNumbers.Size = new System.Drawing.Size(313, 22);
@@ -962,6 +966,25 @@
             // 
             this.CheckPositionIsInParametersSequenceWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.CheckPositionIsInParametersSequence_DoWork);
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 25);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.Editor);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.helpPanel1);
+            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(4);
+            this.splitContainer1.Size = new System.Drawing.Size(948, 505);
+            this.splitContainer1.SplitterDistance = 651;
+            this.splitContainer1.TabIndex = 11;
+            this.splitContainer1.DoubleClick += new System.EventHandler(this.splitContainer1_DoubleClick);
+            // 
             // Editor
             // 
             this.Editor.AllowDrop = false;
@@ -1031,25 +1054,6 @@
             this.Editor.MouseLeave += new System.EventHandler(this.Editor_MouseLeave);
             this.Editor.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseMove);
             // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 25);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.Editor);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.helpPanel1);
-            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(4);
-            this.splitContainer1.Size = new System.Drawing.Size(948, 505);
-            this.splitContainer1.SplitterDistance = 651;
-            this.splitContainer1.TabIndex = 11;
-            this.splitContainer1.DoubleClick += new System.EventHandler(this.splitContainer1_DoubleClick);
-            // 
             // helpPanel1
             // 
             this.helpPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1069,10 +1073,10 @@
             this.contextMenuStrip1.ResumeLayout(false);
             this.tsMain.ResumeLayout(false);
             this.tsMain.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Editor)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.Editor)).EndInit();
             this.ResumeLayout(false);
 
         }

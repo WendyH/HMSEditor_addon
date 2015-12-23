@@ -641,12 +641,12 @@ namespace FastColoredTextBoxNS
                 }
                 Point ps = tb.PointToScreen(point);
                 if (ps.Y + h > Screen.PrimaryScreen.WorkingArea.Size.Height) {
-                    point.Y -= (h + tb.CharHeight);
+                    point.Y -= (h + tb.CharHeight + 4);
                 }
                 Size = new Size(Size.Width, h);
                 Menu.CalcSize();
                 if (Menu.Visible) {
-                    Menu.Top  = tb.PointToScreen(point).Y;
+                    Menu.Top = tb.PointToScreen(point).Y;
                 }
                 // > By WendyH -------------------------------
                 if (!Menu.Visible)
@@ -693,6 +693,7 @@ namespace FastColoredTextBoxNS
             
         }
 
+        private static Keys[] keysBreaksTempNotShow = new Keys[] { Keys.Space, Keys.Tab, Keys.Enter, Keys.End, Keys.Home, Keys.Oemcomma, Keys.OemCloseBrackets, Keys.OemOpenBrackets, Keys.OemSemicolon, Keys.OemPeriod, Keys.Decimal };
         void tb_KeyDown(object sender, KeyEventArgs e)
         {
             var tb = sender as FastColoredTextBox;
@@ -700,6 +701,12 @@ namespace FastColoredTextBoxNS
             if (Menu.Visible)
                 if (ProcessKey(e.KeyCode, e.Modifiers))
                     e.Handled = true;
+
+            if (Menu.TempNotShow) {
+                if (Array.IndexOf(keysBreaksTempNotShow, e.KeyCode)>=0) {
+                    Menu.TempNotShow = false;
+                }
+            }
 
             if (!Menu.Visible)
             {

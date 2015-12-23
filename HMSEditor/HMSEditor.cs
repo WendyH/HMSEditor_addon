@@ -223,14 +223,15 @@ namespace HMSEditorNS {
         }
 
         private void Editor_LostFocus(object sender, EventArgs e) {
-            //HideAllToolTipsAndHints();
+            if (!PopupMenu.Focused)
+                HideAllToolTipsAndHints();
         }
 
         private void HideAllToolTipsAndHints() {
-            if (!PopupMenu.Visible) HideToolTip4Function(true);
+            HideToolTip4Function(true);
             if (Editor.ToolTip != null) Editor.ToolTip.RemoveAll();
             PopupMenu.ToolTip.RemoveAll();
-            if (PopupMenu.Visible) PopupMenu.Hide();
+            PopupMenu.Close();
         }
 
         private void HideToolTip4Function(bool noCheckLine = false) {
@@ -805,6 +806,7 @@ namespace HMSEditorNS {
 #endregion Function and procedures
 
 #region Control Events
+
         private void Editor_KeyDown(object sender, KeyEventArgs e) {
             if      (e.KeyCode == Keys.F11   ) tsMain.Visible = !tsMain.Visible;
             else if (e.KeyCode == Keys.F12   ) GotoDefinition();
@@ -838,12 +840,6 @@ namespace HMSEditorNS {
                 else if (e.KeyCode == Keys.D9) Editor.GotoBookmarkByName("9");
             } else if (e.KeyCode == Keys.Oemcomma || (e.Shift && e.KeyCode == Keys.D9)) {
                 if (!Editor.Selection.IsStringOrComment) WasCommaOrBracket = true;
-            }
-
-            if (PopupMenu.TempNotShow) {
-                if (e.KeyCode == Keys.Space || e.KeyCode == Keys.Tab || e.KeyCode == Keys.Enter || e.KeyCode == Keys.End || e.KeyCode == Keys.Home) {
-                    PopupMenu.TempNotShow = false;
-                }
             }
 
             if (e.KeyCode == Keys.F5) ToggleBreakpoint();
@@ -1170,7 +1166,7 @@ namespace HMSEditorNS {
         }
 
         private void Editor_Scroll(object sender, ScrollEventArgs e) {
-            HideToolTip4Function(true);
+            HideAllToolTipsAndHints();
         }
 
         private void btnToolStripMenuItemFONT_Click(object sender, EventArgs e) {
