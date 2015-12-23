@@ -88,6 +88,7 @@ namespace HMSEditorNS {
             }
             HmsScriptMode  = (HmsScriptMode)aScriptMode;
             InitializeComponent();
+            labelVersion.Text = HMSEditor.Title;
             splitContainer1.Panel2Collapsed = true;
             Editor.CurrentLineColor = Color.FromArgb(100, 210, 210, 255);
             Editor.ChangedLineColor = Color.FromArgb(255, 152, 251, 152);

@@ -57,8 +57,8 @@
             this.ToolStripMenuItemClearBreakpoints = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItemZoom100 = new System.Windows.Forms.ToolStripMenuItem();
             this.btnInsertTemplate = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnContextMenuToolBar = new System.Windows.Forms.ToolStripMenuItem();
             this.btnHelpPanelContextMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnContextMenuToolBar = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAdd2Watch = new System.Windows.Forms.ToolStripMenuItem();
             this.tsMain = new System.Windows.Forms.ToolStrip();
             this.btnNavigateBack = new System.Windows.Forms.ToolStripButton();
@@ -119,6 +119,7 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.btnSprav = new System.Windows.Forms.ToolStripButton();
+            this.labelVersion = new System.Windows.Forms.ToolStripLabel();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.CheckPositionIsInParametersSequenceWorker = new System.ComponentModel.BackgroundWorker();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -326,16 +327,6 @@
             this.btnInsertTemplate.Size = new System.Drawing.Size(244, 22);
             this.btnInsertTemplate.Text = "Вставить шаблон";
             // 
-            // btnContextMenuToolBar
-            // 
-            this.btnContextMenuToolBar.CheckOnClick = true;
-            this.btnContextMenuToolBar.Image = global::HMSEditorNS.Properties.Resources.toggle_16xLG;
-            this.btnContextMenuToolBar.Name = "btnContextMenuToolBar";
-            this.btnContextMenuToolBar.ShortcutKeys = System.Windows.Forms.Keys.F11;
-            this.btnContextMenuToolBar.Size = new System.Drawing.Size(244, 22);
-            this.btnContextMenuToolBar.Text = "Панель инструментов";
-            this.btnContextMenuToolBar.Click += new System.EventHandler(this.btnContextMenuToolBar_Click);
-            // 
             // btnHelpPanelContextMenu
             // 
             this.btnHelpPanelContextMenu.CheckOnClick = true;
@@ -345,6 +336,16 @@
             this.btnHelpPanelContextMenu.Text = "Панель справочника";
             this.btnHelpPanelContextMenu.ToolTipText = "Отобразить/скрыть панель справочника";
             this.btnHelpPanelContextMenu.Click += new System.EventHandler(this.btnHelpPanelContextMenu_Click);
+            // 
+            // btnContextMenuToolBar
+            // 
+            this.btnContextMenuToolBar.CheckOnClick = true;
+            this.btnContextMenuToolBar.Image = global::HMSEditorNS.Properties.Resources.toggle_16xLG;
+            this.btnContextMenuToolBar.Name = "btnContextMenuToolBar";
+            this.btnContextMenuToolBar.ShortcutKeys = System.Windows.Forms.Keys.F11;
+            this.btnContextMenuToolBar.Size = new System.Drawing.Size(244, 22);
+            this.btnContextMenuToolBar.Text = "Панель инструментов";
+            this.btnContextMenuToolBar.Click += new System.EventHandler(this.btnContextMenuToolBar_Click);
             // 
             // btnAdd2Watch
             // 
@@ -384,7 +385,8 @@
             this.btnGoTo,
             this.toolStripSeparator7,
             this.toolStripDropDownButtonSettings,
-            this.btnSprav});
+            this.btnSprav,
+            this.labelVersion});
             this.tsMain.Location = new System.Drawing.Point(0, 0);
             this.tsMain.Name = "tsMain";
             this.tsMain.Size = new System.Drawing.Size(948, 25);
@@ -944,6 +946,14 @@
             this.btnSprav.Text = "Справочник";
             this.btnSprav.Click += new System.EventHandler(this.btnSprav_Click);
             // 
+            // labelVersion
+            // 
+            this.labelVersion.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.labelVersion.ForeColor = System.Drawing.Color.DarkGray;
+            this.labelVersion.Name = "labelVersion";
+            this.labelVersion.Size = new System.Drawing.Size(145, 22);
+            this.labelVersion.Text = "HMSEditor Addon v1.0.0.5";
+            // 
             // imageList1
             // 
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
@@ -1171,5 +1181,6 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private HelpPanel helpPanel1;
         private System.Windows.Forms.ToolStripMenuItem btnBoldCaret;
+        private System.Windows.Forms.ToolStripLabel labelVersion;
     }
 }
