@@ -1754,12 +1754,11 @@ namespace HMSEditorNS {
             string keywords = "", snippets = "";
             string hlp = "", key = "";
             CurrentValidTypes    = HMS.HmsTypesString;
-            CurrentValidTypesReg = Regex.Replace(HMS.HmsTypesStringWithHelp, "{.*?}", "");
             switch (ScriptLanguage) {
                 case "C++Script":
                     CurrentValidTypes    += "int|long|void|bool|float|";
                     CurrentValidTypesReg += "int|long|void|bool|float|";
-                    hmsTypes = hmsTypes.Replace("Integer|", "int|long|").Replace("Extended|", "extended|float|").Replace("Boolean|", "bool|") + "|{Тип функции: процедура (отсутствие возвращаемого значения)}void|".Replace("String", "string");
+                    hmsTypes = hmsTypes.Replace("Integer|", "int|long|").Replace("Extended|", "extended|float|").Replace("Boolean|", "bool|").Replace("String", "string") + "|{Тип функции: процедура (отсутствие возвращаемого значения)}void|";
                     keywords = "#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|nil|null|true|false|";
                     snippets = "if (^) {\n}|if (^) {\n}\nelse {\n}|for (^;;) {\n}|while (^) {\n}|do {\n^}while ();";
                     break;
@@ -1775,6 +1774,7 @@ namespace HMSEditorNS {
                     keywords = "import|new|in|is|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|function|with|Nil|Null|True|False";
                     break;
             }
+            CurrentValidTypesReg = Regex.Replace(hmsTypes, "{.*?}", "");
             HMS.Keywords = keywords;
             HMS.KeywordsString = keywords.ToLower();
             snippets += "|ShowMessage(\"^\");|HmsLogMessage(1, \"^\");";

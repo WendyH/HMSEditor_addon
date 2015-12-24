@@ -713,10 +713,9 @@
             this.btnStorePositions.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnStorePositions.Name = "btnStorePositions";
             this.btnStorePositions.Size = new System.Drawing.Size(360, 22);
-            this.btnStorePositions.Text = "Запоминать последнюю позицию";
+            this.btnStorePositions.Text = "Восстанавливать последнюю позицию в скрипте";
             this.btnStorePositions.ToolTipText = "При закрытии и потворном открытии того же скрипта будет восстановлена последняя п" +
     "озиция каретки";
-            this.btnStorePositions.Visible = false;
             this.btnStorePositions.Click += new System.EventHandler(this.btnStorePositions_Click);
             // 
             // btnCheckNewVersionOnLoad
