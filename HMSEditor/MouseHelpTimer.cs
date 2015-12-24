@@ -59,6 +59,7 @@ namespace HMSEditorNS {
                 if (line.Length <= place.iChar) return;
                 string value  = "";
                 bool evalSelection = false;
+                HMSItem item = null; string text = "";
                 if (Editor.DebugMode && (Editor.SelectedText.Length > 2)) {
                     int posStart = Editor.PlaceToPosition(Editor.Selection.Start);
                     int posEnd   = Editor.PlaceToPosition(Editor.Selection.End  );
@@ -70,9 +71,19 @@ namespace HMSEditorNS {
                         evalSelection = ((posCur >= posEnd  ) && (posCur <= posStart));
                     }
                 }
-                HMSItem item = null; string text = "";
-                Range r = new Range(Editor, place, place);
+                if (evalSelection) {
+                    text = Editor.SelectedText.Trim();
+                    if (text.Length == 0) return;
+                    // Внедряемся в поток - показываем вплывающее окно со значением
+                    Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
+                        value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
+                        if (value.Length > MaxValueLength) value = value.Substring(0, MaxValueLength) + "...";
+                        ActiveHMSEditor.ValueHint.ShowValue(Editor, value, point);
+                    });
+                    return;
 
+                }
+                Range r = new Range(Editor, place, place);
                 if (r.IsErrorPlace) {
                     // Показываем инофрмацию об ошибке через ToolTip
                     Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
@@ -85,28 +96,24 @@ namespace HMSEditorNS {
                 }
                 if (r.IsStringOrComment) return;
                 Range fragment = r.GetFragmentLookedLeft();
-                text = fragment.Text.Replace("#", "");
+                text = fragment.Text.Replace("#", "").Trim();
+
                 if (text.Length == 0) return;
                 item = ActiveHMSEditor.GetHMSItemByText(text); // Поиск известного элемента HMSItem по части текста
-
                 if (item != null && !string.IsNullOrEmpty(item.Text)) {
                     point.Offset(0, Editor.CharHeight-4);
                     // Если идёт отладка - проверяем, мы навели на переменную или свойство объекта?
-                    if (Editor.DebugMode && (evalSelection || OK4Evaluate(item)) ) {
-                        if (evalSelection) {
-                            text = Editor.SelectedText;
-                        } else {
-                            // проверяем, если это index свойство - то нудно вычислять значение с переданным индексом, поэтому дополняем значением [...]
-                            if (item.ImageIndex == ImagesIndex.Enum) {
-                                Match m = Regex.Match(line, text + @"\[.*?\]");
-                                if (m.Success) text = m.Value;
-                            } else if (item.ImageIndex == ImagesIndex.Function) {
-                                Match m = Regex.Match(line, text + @"\(.*?\)");
-                                if (m.Success) text = m.Value;
-                            }
-                            // Проверяем тип объекта класса, может быть удобней представить в виде текста? (TStrings или TJsonObject)
-                            text = CheckTypeForToStringRules(item.Type, text);
+                    if (Editor.DebugMode && OK4Evaluate(item)) {
+                        // проверяем, если это index свойство - то нудно вычислять значение с переданным индексом, поэтому дополняем значением [...]
+                        if (item.ImageIndex == ImagesIndex.Enum) {
+                            Match m = Regex.Match(line, text + @"\[.*?\]");
+                            if (m.Success) text = m.Value;
+                        } else if (item.ImageIndex == ImagesIndex.Function) {
+                            Match m = Regex.Match(line, text + @"\(.*?\)");
+                            if (m.Success) text = m.Value;
                         }
+                        // Проверяем тип объекта класса, может быть удобней представить в виде текста? (TStrings или TJsonObject)
+                        text = CheckTypeForToStringRules(item.Type, text);
                         // Внедряемся в поток - показываем вплывающее окно со значением
                         Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
                             value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения

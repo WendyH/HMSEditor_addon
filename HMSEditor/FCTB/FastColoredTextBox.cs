@@ -69,6 +69,7 @@ namespace FastColoredTextBoxNS {
         public TextStyle   StringStyle      = null;
         public TextStyle   CommentStyle     = null;
         private Brush      debugColor       = new SolidBrush(Color.FromArgb(100, 250, 11, 11));
+        public bool   CheckKeywordsRegister = false;
 
         internal const int minLeftIndent              = 8;
         private  const int maxBracketSearchIterations = 1000;
@@ -3952,6 +3953,18 @@ namespace FastColoredTextBoxNS {
             Invalidate();
         }
 
+        public void SetVerticalScrollValue(int value) {
+            VerticalScroll.Value = value;
+        }
+
+        public int GetMaximumScrollValue() {
+            return VerticalScroll.Maximum;
+        }
+
+        public int GetVerticalScrollValue() {
+            return VerticalScroll.Value;
+        }
+
         public void ClearErrorLines() {
             Range.ClearStyle(ErrorStyle);
             VerticalScroll.ErrorLine = 0;
@@ -4169,10 +4182,25 @@ namespace FastColoredTextBoxNS {
             /*  !!!!
             if (c == ' ')
                 return true;*/
-            
-            if (c == '\b' && wasAutocompleteBracketsInsertion == selection.CharAfterStart) {
+
+            if (CheckKeywordsRegister && c == ' ') {
+                Range r = selection.GetFragmentLookedLeft();
+                if (!r.IsStringOrComment) {
+                    string word = r.Text;
+                    if (HMS.CheckKeywordRegister(ref word)) {
+                        lines.Manager.ExecuteCommand(new ReplaceTextCommand(TextSource, new List<Range>() { r }, word, true));
+                    }
+                }
+            }
+
+            char charAfterStart = selection.CharAfterStart;
+            if (c == '\b' && wasAutocompleteBracketsInsertion == charAfterStart) {
                 Selection.ShiftStart(-1);
                 Selection.ShiftEnd(1);
+            } else if (c == wasAutocompleteBracketsInsertion && c == charAfterStart) {
+                Selection.ShiftStart(1);
+                Selection.ShiftEnd(1);
+                return true;
             }
             wasAutocompleteBracketsInsertion = '\x0';
             //backspace
@@ -4958,7 +4986,8 @@ namespace FastColoredTextBoxNS {
                                             ? LineInfos[endFoldingLine].startY +
                                                 (LineInfos[endFoldingLine].WordWrapStringsCount - 1) * CharHeight
                                             : TextHeight + CharHeight) - VerticalScroll.Value + CharHeight;
-
+                    startFoldingY += CharHeight / 2;
+                    endFoldingY   -= CharHeight / 2;
                     using (var indicatorPen = new Pen(Color.FromArgb(100, FoldingIndicatorColor), 4))
                         e.Graphics.DrawLine(indicatorPen, LeftIndent - 5, startFoldingY, LeftIndent - 5, endFoldingY);
                 }

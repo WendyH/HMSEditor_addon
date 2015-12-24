@@ -95,6 +95,7 @@
             this.btnMarkChangedLines = new System.Windows.Forms.ToolStripMenuItem();
             this.btnBoldCaret = new System.Windows.Forms.ToolStripMenuItem();
             this.btnStorePositions = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnCheckNewVersionOnLoad = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.btnHighlightSameWords = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSubMenuIntelliSense = new System.Windows.Forms.ToolStripMenuItem();
@@ -109,6 +110,7 @@
             this.btnIntelliSenseFunctions = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAutoCompleteBrackets = new System.Windows.Forms.ToolStripMenuItem();
             this.btnEvaluateByMouse = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnCheckKeywordsRegister = new System.Windows.Forms.ToolStripMenuItem();
             this.btnHints4CtrlSpace = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.btnUnderlinePascalKeywords = new System.Windows.Forms.ToolStripMenuItem();
@@ -120,6 +122,7 @@
             this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.btnSprav = new System.Windows.Forms.ToolStripButton();
             this.labelVersion = new System.Windows.Forms.ToolStripLabel();
+            this.labelNewVersion = new System.Windows.Forms.ToolStripLabel();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.CheckPositionIsInParametersSequenceWorker = new System.ComponentModel.BackgroundWorker();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -386,10 +389,11 @@
             this.toolStripSeparator7,
             this.toolStripDropDownButtonSettings,
             this.btnSprav,
-            this.labelVersion});
+            this.labelVersion,
+            this.labelNewVersion});
             this.tsMain.Location = new System.Drawing.Point(0, 0);
             this.tsMain.Name = "tsMain";
-            this.tsMain.Size = new System.Drawing.Size(948, 25);
+            this.tsMain.Size = new System.Drawing.Size(979, 25);
             this.tsMain.TabIndex = 1;
             // 
             // btnNavigateBack
@@ -622,6 +626,7 @@
             this.btnMarkChangedLines,
             this.btnBoldCaret,
             this.btnStorePositions,
+            this.btnCheckNewVersionOnLoad,
             this.toolStripSeparator12,
             this.btnHighlightSameWords,
             this.toolStripSubMenuIntelliSense,
@@ -646,7 +651,7 @@
             this.btnHighlightCurrentLine.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnHighlightCurrentLine.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnHighlightCurrentLine.Name = "btnHighlightCurrentLine";
-            this.btnHighlightCurrentLine.Size = new System.Drawing.Size(313, 22);
+            this.btnHighlightCurrentLine.Size = new System.Drawing.Size(360, 22);
             this.btnHighlightCurrentLine.Text = "Подсветка текущей строки";
             this.btnHighlightCurrentLine.ToolTipText = "Подсвечичать всю строку, на которой находится каретка";
             this.btnHighlightCurrentLine.Click += new System.EventHandler(this.btnHighlightCurrentLine_Click);
@@ -656,7 +661,7 @@
             this.btnShowLineNumbers.CheckOnClick = true;
             this.btnShowLineNumbers.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnShowLineNumbers.Name = "btnShowLineNumbers";
-            this.btnShowLineNumbers.Size = new System.Drawing.Size(313, 22);
+            this.btnShowLineNumbers.Size = new System.Drawing.Size(360, 22);
             this.btnShowLineNumbers.Text = "Показывать номера строк";
             this.btnShowLineNumbers.ToolTipText = "Показывать слева номера строк";
             this.btnShowLineNumbers.Click += new System.EventHandler(this.btnShowLineNumbers_Click);
@@ -666,7 +671,7 @@
             this.btnInvisibleChars.CheckOnClick = true;
             this.btnInvisibleChars.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnInvisibleChars.Name = "btnInvisibleChars";
-            this.btnInvisibleChars.Size = new System.Drawing.Size(313, 22);
+            this.btnInvisibleChars.Size = new System.Drawing.Size(360, 22);
             this.btnInvisibleChars.Text = "¶ Показывать непечатные символы";
             this.btnInvisibleChars.ToolTipText = "Отображать символы пробелов и переносов строк специальными символами";
             this.btnInvisibleChars.Click += new System.EventHandler(this.btnInvisibleChars_Click);
@@ -677,7 +682,7 @@
             this.btnVerticalLineText.CheckOnClick = true;
             this.btnVerticalLineText.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnVerticalLineText.Name = "btnVerticalLineText";
-            this.btnVerticalLineText.Size = new System.Drawing.Size(313, 22);
+            this.btnVerticalLineText.Size = new System.Drawing.Size(360, 22);
             this.btnVerticalLineText.Text = "Вертикальная линия границы текста";
             this.btnVerticalLineText.ToolTipText = "Отображать тонкую линию границы ширины в 80 символов";
             this.btnVerticalLineText.Click += new System.EventHandler(this.btnVerticalLineText_Click);
@@ -686,7 +691,7 @@
             // 
             this.btnMarkChangedLines.CheckOnClick = true;
             this.btnMarkChangedLines.Name = "btnMarkChangedLines";
-            this.btnMarkChangedLines.Size = new System.Drawing.Size(313, 22);
+            this.btnMarkChangedLines.Size = new System.Drawing.Size(360, 22);
             this.btnMarkChangedLines.Text = "Помечать изменённые строки";
             this.btnMarkChangedLines.ToolTipText = "Потметки изменённых строк видны только при \r\nотображении номеров строк, закладок " +
     "или точек останова.";
@@ -696,7 +701,7 @@
             // 
             this.btnBoldCaret.CheckOnClick = true;
             this.btnBoldCaret.Name = "btnBoldCaret";
-            this.btnBoldCaret.Size = new System.Drawing.Size(313, 22);
+            this.btnBoldCaret.Size = new System.Drawing.Size(360, 22);
             this.btnBoldCaret.Text = "Жирная каретка редактора";
             this.btnBoldCaret.ToolTipText = "Сделать каретку более жирной";
             this.btnBoldCaret.Click += new System.EventHandler(this.btnBoldCaret_Click);
@@ -707,17 +712,26 @@
             this.btnStorePositions.CheckOnClick = true;
             this.btnStorePositions.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnStorePositions.Name = "btnStorePositions";
-            this.btnStorePositions.Size = new System.Drawing.Size(313, 22);
+            this.btnStorePositions.Size = new System.Drawing.Size(360, 22);
             this.btnStorePositions.Text = "Запоминать последнюю позицию";
             this.btnStorePositions.ToolTipText = "При закрытии и потворном открытии того же скрипта будет восстановлена последняя п" +
     "озиция каретки";
             this.btnStorePositions.Visible = false;
             this.btnStorePositions.Click += new System.EventHandler(this.btnStorePositions_Click);
             // 
+            // btnCheckNewVersionOnLoad
+            // 
+            this.btnCheckNewVersionOnLoad.CheckOnClick = true;
+            this.btnCheckNewVersionOnLoad.Name = "btnCheckNewVersionOnLoad";
+            this.btnCheckNewVersionOnLoad.Size = new System.Drawing.Size(360, 22);
+            this.btnCheckNewVersionOnLoad.Text = "Проверять новую версию при загрузке дополнения";
+            this.btnCheckNewVersionOnLoad.ToolTipText = "Проверять наличие новой версии и отображать надпись на панели инструментов";
+            this.btnCheckNewVersionOnLoad.Click += new System.EventHandler(this.btnCheckNewVersionOnLoad_Click);
+            // 
             // toolStripSeparator12
             // 
             this.toolStripSeparator12.Name = "toolStripSeparator12";
-            this.toolStripSeparator12.Size = new System.Drawing.Size(310, 6);
+            this.toolStripSeparator12.Size = new System.Drawing.Size(357, 6);
             // 
             // btnHighlightSameWords
             // 
@@ -725,7 +739,7 @@
             this.btnHighlightSameWords.CheckOnClick = true;
             this.btnHighlightSameWords.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnHighlightSameWords.Name = "btnHighlightSameWords";
-            this.btnHighlightSameWords.Size = new System.Drawing.Size(313, 22);
+            this.btnHighlightSameWords.Size = new System.Drawing.Size(360, 22);
             this.btnHighlightSameWords.Text = "Подсветка одинаковых слов";
             this.btnHighlightSameWords.ToolTipText = "Подсвечивать слова в тексте, которые совпадают с текущим словом";
             this.btnHighlightSameWords.Click += new System.EventHandler(this.btnHighlightSameWords_Click);
@@ -744,9 +758,10 @@
             this.btnIntelliSenseFunctions,
             this.btnAutoCompleteBrackets,
             this.btnEvaluateByMouse,
+            this.btnCheckKeywordsRegister,
             this.btnHints4CtrlSpace});
             this.toolStripSubMenuIntelliSense.Name = "toolStripSubMenuIntelliSense";
-            this.toolStripSubMenuIntelliSense.Size = new System.Drawing.Size(313, 22);
+            this.toolStripSubMenuIntelliSense.Size = new System.Drawing.Size(360, 22);
             this.toolStripSubMenuIntelliSense.Text = "IntelliSense";
             // 
             // btnSetIntelliSense
@@ -868,6 +883,14 @@
     "ии мыши";
             this.btnEvaluateByMouse.Click += new System.EventHandler(this.btnEvaluateByMouse_Click);
             // 
+            // btnCheckKeywordsRegister
+            // 
+            this.btnCheckKeywordsRegister.CheckOnClick = true;
+            this.btnCheckKeywordsRegister.Name = "btnCheckKeywordsRegister";
+            this.btnCheckKeywordsRegister.Size = new System.Drawing.Size(463, 22);
+            this.btnCheckKeywordsRegister.Text = "Автоматическое приведение регистра ключевых слов";
+            this.btnCheckKeywordsRegister.Click += new System.EventHandler(this.btnCheckKeywordsRegister_Click);
+            // 
             // btnHints4CtrlSpace
             // 
             this.btnHints4CtrlSpace.CheckOnClick = true;
@@ -880,7 +903,7 @@
             // toolStripSeparator11
             // 
             this.toolStripSeparator11.Name = "toolStripSeparator11";
-            this.toolStripSeparator11.Size = new System.Drawing.Size(310, 6);
+            this.toolStripSeparator11.Size = new System.Drawing.Size(357, 6);
             // 
             // btnUnderlinePascalKeywords
             // 
@@ -888,7 +911,7 @@
             this.btnUnderlinePascalKeywords.CheckOnClick = true;
             this.btnUnderlinePascalKeywords.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnUnderlinePascalKeywords.Name = "btnUnderlinePascalKeywords";
-            this.btnUnderlinePascalKeywords.Size = new System.Drawing.Size(313, 22);
+            this.btnUnderlinePascalKeywords.Size = new System.Drawing.Size(360, 22);
             this.btnUnderlinePascalKeywords.Text = "Подчеркивать ключевые слова PascalScript";
             this.btnUnderlinePascalKeywords.Click += new System.EventHandler(this.ToolStripMenuItemAltPascalScriptHighlight_Click);
             // 
@@ -896,7 +919,7 @@
             // 
             this.btnRedStringsHighlight.CheckOnClick = true;
             this.btnRedStringsHighlight.Name = "btnRedStringsHighlight";
-            this.btnRedStringsHighlight.Size = new System.Drawing.Size(313, 22);
+            this.btnRedStringsHighlight.Size = new System.Drawing.Size(360, 22);
             this.btnRedStringsHighlight.Text = "Яркая подсветка строк";
             this.btnRedStringsHighlight.ToolTipText = "Сделать строки ярко красным цветом в независимости от выбранного стиля";
             this.btnRedStringsHighlight.Click += new System.EventHandler(this.btnRedStringsHighlight_Click);
@@ -905,7 +928,7 @@
             // 
             this.btnToolStripMenuItemFONT.CheckOnClick = true;
             this.btnToolStripMenuItemFONT.Name = "btnToolStripMenuItemFONT";
-            this.btnToolStripMenuItemFONT.Size = new System.Drawing.Size(313, 22);
+            this.btnToolStripMenuItemFONT.Size = new System.Drawing.Size(360, 22);
             this.btnToolStripMenuItemFONT.Text = "Альтернативный шрифт RobotoMono";
             this.btnToolStripMenuItemFONT.Click += new System.EventHandler(this.btnToolStripMenuItemFONT_Click);
             // 
@@ -913,25 +936,25 @@
             // 
             this.toolStripButtonHotKeys.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButtonHotKeys.Name = "toolStripButtonHotKeys";
-            this.toolStripButtonHotKeys.Size = new System.Drawing.Size(313, 22);
+            this.toolStripButtonHotKeys.Size = new System.Drawing.Size(360, 22);
             this.toolStripButtonHotKeys.Text = "Горячие клавиши ...";
             this.toolStripButtonHotKeys.Click += new System.EventHandler(this.toolStripButtonHotKeys_Click);
             // 
             // btnThemes
             // 
             this.btnThemes.Name = "btnThemes";
-            this.btnThemes.Size = new System.Drawing.Size(313, 22);
+            this.btnThemes.Size = new System.Drawing.Size(360, 22);
             this.btnThemes.Text = "Цветовые темы";
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(310, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(357, 6);
             // 
             // btnAbout
             // 
             this.btnAbout.Name = "btnAbout";
-            this.btnAbout.Size = new System.Drawing.Size(313, 22);
+            this.btnAbout.Size = new System.Drawing.Size(360, 22);
             this.btnAbout.Text = "О программе";
             this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
@@ -953,6 +976,15 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(145, 22);
             this.labelVersion.Text = "HMSEditor Addon v1.0.0.5";
+            // 
+            // labelNewVersion
+            // 
+            this.labelNewVersion.IsLink = true;
+            this.labelNewVersion.Name = "labelNewVersion";
+            this.labelNewVersion.Size = new System.Drawing.Size(109, 22);
+            this.labelNewVersion.Text = "Есть новая версия!";
+            this.labelNewVersion.Visible = false;
+            this.labelNewVersion.Click += new System.EventHandler(this.labelNewVersion_Click);
             // 
             // imageList1
             // 
@@ -990,8 +1022,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.helpPanel1);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(4);
-            this.splitContainer1.Size = new System.Drawing.Size(948, 505);
-            this.splitContainer1.SplitterDistance = 651;
+            this.splitContainer1.Size = new System.Drawing.Size(979, 506);
+            this.splitContainer1.SplitterDistance = 672;
             this.splitContainer1.TabIndex = 11;
             this.splitContainer1.DoubleClick += new System.EventHandler(this.splitContainer1_DoubleClick);
             // 
@@ -1049,7 +1081,7 @@
             serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
             this.Editor.ServiceColors = serviceColors1;
             this.Editor.ShowScrollBars = false;
-            this.Editor.Size = new System.Drawing.Size(651, 505);
+            this.Editor.Size = new System.Drawing.Size(672, 506);
             this.Editor.TabIndex = 10;
             this.Editor.TabLength = 2;
             this.Editor.Zoom = 100;
@@ -1069,8 +1101,8 @@
             this.helpPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.helpPanel1.Location = new System.Drawing.Point(4, 4);
             this.helpPanel1.Name = "helpPanel1";
-            this.helpPanel1.Size = new System.Drawing.Size(285, 497);
-            this.helpPanel1.SplitterDistance = 216;
+            this.helpPanel1.Size = new System.Drawing.Size(295, 498);
+            this.helpPanel1.SplitterDistance = 217;
             this.helpPanel1.TabIndex = 0;
             // 
             // HMSEditor
@@ -1079,7 +1111,7 @@
             this.Controls.Add(this.tsMain);
             this.DoubleBuffered = true;
             this.Name = "HMSEditor";
-            this.Size = new System.Drawing.Size(948, 530);
+            this.Size = new System.Drawing.Size(979, 531);
             this.contextMenuStrip1.ResumeLayout(false);
             this.tsMain.ResumeLayout(false);
             this.tsMain.PerformLayout();
@@ -1182,5 +1214,8 @@
         private HelpPanel helpPanel1;
         private System.Windows.Forms.ToolStripMenuItem btnBoldCaret;
         private System.Windows.Forms.ToolStripLabel labelVersion;
+        private System.Windows.Forms.ToolStripMenuItem btnCheckKeywordsRegister;
+        private System.Windows.Forms.ToolStripLabel labelNewVersion;
+        private System.Windows.Forms.ToolStripMenuItem btnCheckNewVersionOnLoad;
     }
 }

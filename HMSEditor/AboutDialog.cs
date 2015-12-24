@@ -14,9 +14,7 @@ namespace HMSEditorNS {
         private static ProgressBar progress   = null;
         private static string tmpFileRelease  = "";
         private static string tmpFileTemplate = "";
-        private bool   ExistUpdate   = false;
         private System.Threading.Timer UpdateTimer = new System.Threading.Timer(UpdateTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
-        private string UpdateInfo    = "";
         private string TemplatesInfo = "";
         private string TemplatesDate = "";
         private int ProgressProcent  = 0;
@@ -105,7 +103,6 @@ namespace HMSEditorNS {
 
         private void CheckUpdate(string lastVersion, string templateVersion) {
             TemplatesDate = templateVersion;
-            ExistUpdate   = false;
             string tmpltsLastUpdateStored = HMSEditor.Settings.Get("TemplateLastUpdate", "Common", "");
             if (tmpltsLastUpdateStored != templateVersion) {
                 string datetime = templateVersion.Replace("T", " ").Replace("Z", "").Replace("-", ".");
@@ -120,9 +117,10 @@ namespace HMSEditorNS {
                 labelNewVersion.Text = "У вас последняя версия";
             } else if (resultCompares > 0) {
                 labelNewVersion.Text = "Есть новая версия " + lastVersion;
-                ExistUpdate = true;
-                btnUpdateProgram.Visible = ExistUpdate;
+                HMS.NewVersionExist      = true;
+                btnUpdateProgram.Visible = true;
             }
+            HMS.NewVersionChecked   = true;
             labelNewVersion.Visible = true;
             if (TemplatesInfo.Length > 0) labelNewTemplates.Visible = true;
         }
@@ -136,7 +134,7 @@ namespace HMSEditorNS {
                 DeniedClose = true;
                 try {
                     ThisDialog.Invoke((MethodInvoker)delegate {
-                        ThisDialog.UpdateInfo    = updatesInfo;
+                        HMS.UpdateInfo           = updatesInfo;
                         ThisDialog.TemplatesInfo = templatesInfo;
                         ThisDialog.CheckUpdate(lastVersion, templateVersion);
                     });
@@ -313,10 +311,10 @@ namespace HMSEditorNS {
         }
 
         private void labelNewVersion_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            if (UpdateInfo.Length == 0) return;
+            if (HMS.UpdateInfo.Length == 0) return;
             frmUpdateInfoDialog form = new frmUpdateInfoDialog();
             string html = HMS.ReadTextFromResource("Markdown.html");
-            form.SetText(html.Replace("<MarkdownText>", UpdateInfo));
+            form.SetText(html.Replace("<MarkdownText>", HMS.UpdateInfo));
             form.ShowDialog();
         }
 

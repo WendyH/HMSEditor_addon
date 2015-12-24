@@ -50,13 +50,17 @@ namespace HMSEditorNS {
         public static string GitHubHMSEditor  = "WendyH/HMSEditor_addon";
         public static string GitHubTemplates  = "WendyH/HMSEditor-Templates";
         public static int    MaxLogSize       = 1024 * 1024 * 2; // 2 MB
+        public static bool   NewVersionChecked= false;
+        public static bool   NewVersionExist  = false;
         public static string HmsTypesStringWithHelp = "|{Тип данных: целочисленное}Byte|Word|Integer|Longint|Cardinal|TColor|TColor32|{Тип данных: логический}Boolean|{Тип данных:  расширенный (с плавающей запятой)}Real|Single|Double|Extended|Currency|TDate|TTime|TDateTime|{Тип данных: символьный}Char|{Тип данных: строковый}String|{Тип данных: Variant (вариантный тип)}Pointer|Variant|{Тип данных: массив}Array|";
         public static string HmsTypesString   = "";
         public static string KeywordsString   = "|#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|";
+        public static string Keywords         = "";
         public static string ClassesString    = "";
         public static string NotFoundedType   = "|TFloat|TSizeConstraints|THelpType|TMargins|TBasicAction|TBiDiMode|TDragKind|TDragMode|HDC|TFixed|TAutoComplete|TBevelEdges|TBevelKind|TBorderStyle|TImeMode|TScrollBarStyle|TPixelAccessMode|TArrayOfArrayOfFixedPoint|TArrayOfFixedPoint|TArrayOfArrayOfFloatPoint|TArrayOfFloatPoint|TFormBorderStyle|TDefaultMonitor|TIcon|TPadding|TPopupMode|TPrintScale|TEllipsisPosition|THotTrackStyles|TListItems|TMenuAutoFlag|TMenuItemAutoFlag|TMenuBreak|TOpenOptionsEx|TVerticalAlignment|TPopupAlignment|TMenuAnimation|TTrackButton|TArrayOfArrayOfArrayOfFixedPoint|TTBDrawingStyle|TEdgeBorders|TEdgeStyle|TGradientDirection|TTBGradientDrawingOptions|TPositionToolTip|TMultiSelectStyle|";
         public static string CurrentParamType = "";
-
+        public static string UpdateInfo       = "";
+        
         private static string ResourcePath = "HMSEditorNS.Resources.";
         private static string _workingdir  = "";
         internal static string WorkingDir {
@@ -72,6 +76,8 @@ namespace HMSEditorNS {
         internal static string DownloadDir {
             get { if (_downloaddir.Length == 0) _downloaddir = Path.GetTempPath(); return _downloaddir; }
         }
+
+        public static string AssemblyVersion { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
 
         public static string TemplatesDir { get { return WorkingDir + "Templates"    ; } }
         public static string ThemesDir    { get { return WorkingDir + "Themes"       ; } }
@@ -268,6 +274,18 @@ namespace HMSEditorNS {
             }
         }
 
+        public static void CheckNewVersion() {
+            if (NewVersionChecked) return;
+            string updatesInfo;
+            string lastVersion = GitHub.GetLatestReleaseVersion(HMS.GitHubHMSEditor, out updatesInfo);
+            int resultCompares = GitHub.CompareVersions(lastVersion, AssemblyVersion);
+            if (lastVersion.Length > 0) {
+                NewVersionExist = true;
+                UpdateInfo = updatesInfo;
+            }
+            NewVersionChecked = true;
+        }
+
         public static void InitAndLoadHMSKnowledgeDatabase() {
 
             CreateIfNotExistDirectory(WorkingDir, true);
@@ -275,7 +293,7 @@ namespace HMSEditorNS {
             CreateIfNotExistDirectory(ThemesDir);
 
             // Загружаем базу данных знаний о HMS (классы, типы, функции и т.п.) из ресурсов
-            HmsTypesString    = Regex.Replace(HmsTypesStringWithHelp, "{.*?}", "").ToLower();
+            HmsTypesString = Regex.Replace(HmsTypesStringWithHelp, "{.*?}", "").ToLower();
             Assembly assembly = Assembly.GetExecutingAssembly();
             HMSItem  item     = null;
             bool     isStatic = false;
@@ -578,7 +596,35 @@ namespace HMSEditorNS {
 
         public static bool TypeIsClass(string type) { return (ClassesString.IndexOf("|" + type.Trim().ToLower() + "|") >= 0); }
 
-#region Работа с шаблонами
+        public static bool WordIsKeyword(string word) { return (KeywordsString.IndexOf("|" + word.Trim().ToLower() + "|") >= 0); }
+
+        public static bool CheckKeywordRegister(ref string word) {
+            if (word.Length < 2) return false;
+            if (KeywordsString.Length != Keywords.Length) return false;
+            string wordlower = word.ToLower();
+            int i = KeywordsString.IndexOf("|" + wordlower + "|");
+            if (i >= 0) {
+                string keyw = Keywords.Substring(i + 1, wordlower.Length);
+                if (keyw != word) {
+                    word = keyw;
+                    return true;
+                }
+            }
+            if (HMSEditor.ActiveEditor!=null) {
+                string types = HMSEditor.ActiveEditor.CurrentValidTypesReg;
+                i = types.ToLower().IndexOf("|" + wordlower + "|");
+                if (i >= 0) {
+                    string keyw = types.Substring(i + 1, wordlower.Length);
+                    if (keyw != word) {
+                        word = keyw;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        #region Работа с шаблонами
         public static bool TemplatesIsLoading = false;
         public static void LoadTemplates() {
             // Если уже кто-то загружает шаблоны (другой поток) - ждём максимум 4 секунды

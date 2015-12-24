@@ -18,6 +18,7 @@ namespace HMSEditorNS {
         #region Static
         public  static string    Title           = "HMS Editor addon v" + AboutDialog.AssemblyVersion;
         public  static string    Description     = "Альтернативный редактор скриптов c поддержкой IntelliSence";
+        public  static string    SettingsSection = "AddonMain";
         public  static HMSEditor ActiveEditor    = null;
         public  static bool      NeedRestart     = false;
         public  static string    NeedCopyNewFile = "";
@@ -109,7 +110,8 @@ namespace HMSEditorNS {
         public  int    LastPtocedureIndex = -1;
         public  bool   WasCommaOrBracket  = false;
         private bool   NeedRecalcVars     = false;
-        private string CurrentValidTypes  = ""; // Sets in CreateAutocomplete() procedure
+        public  string CurrentValidTypes    = ""; // Sets in CreateAutocomplete() procedure
+        public  string CurrentValidTypesReg = ""; // Sets in CreateAutocomplete() procedure
         private bool   IsFirstActivate    = true;
 
         private IntPtr PtrScriptFrame = IntPtr.Zero;
@@ -121,7 +123,6 @@ namespace HMSEditorNS {
         public ImageList  IconList { get { return imageList1; } }
         public string SelectedText { get { return Editor.Selection.Text; } set { Editor.InsertText(value); } }
 
-        public string       DialogClass = "AddonMain";
         public ValueToolTip ValueHint   = new ValueToolTip();
 
         public AutocompleteItems LocalVars = new AutocompleteItems();
@@ -361,7 +362,13 @@ namespace HMSEditorNS {
 
         public void ToggleBreakpoint(int iLine = -1) {
             if (iLine == -1) iLine = Editor.Selection.Start.iLine;
-            if (Editor.Breakpoints.Contains(iLine)) {
+            int  isBreakpoint = 0;
+            bool lineIsBreakpointed = Editor.Breakpoints.Contains(iLine);
+            if (HmsScriptFrame != null) {
+                HmsScriptFrame.IsBreakpointLine(iLine + 1, ref isBreakpoint);
+                lineIsBreakpointed = (isBreakpoint < 0);
+            }
+            if (lineIsBreakpointed) {
                 Editor.UnbreakpointLine(iLine);
             } else {
                 string name = regexPartOfLine.Match(Editor.Lines[iLine]).Value;
@@ -479,14 +486,16 @@ namespace HMSEditorNS {
             if (btnStorePositions.Checked) {
                 uint thisHash = (uint)Text.GetHashCode();
                 string hash   = thisHash.ToString();
-                string hashes = Settings.Get("LastHash", DialogClass, "");
+                string hashes = Settings.Get("LastHash" + HmsScriptMode.ToString(), SettingsSection, "");
                 if (hashes == "") return;
-                Match match   = Regex.Match(hashes, hash + ":(\\d+)");
+                Match match   = Regex.Match(hashes, hash + ":(\\d+):(\\d+)");
                 if (match.Success) {
                     uint pos = 0;
                     uint.TryParse(match.Groups[1].Value, out pos);
-                    Editor.SelectionStart = (int)pos;
-                    Editor.DoCaretVisible();
+                    if (pos < Editor.Text.Length) Editor.SelectionStart = (int)pos;
+                    uint.TryParse(match.Groups[2].Value, out pos);
+                    if (pos <= Editor.GetMaximumScrollValue()) Editor.SetVerticalScrollValue((int)pos);
+                    Editor.Invalidate();
                 }
             }
         }
@@ -498,7 +507,7 @@ namespace HMSEditorNS {
             try { Settings.Load(); } catch (Exception e) { HMS.LogError(e.ToString()); Console.WriteLine("Error loading config file '" + Settings.File + "'", e); return; }
 
             tsMain.Visible = false;
-            string section = DialogClass, sVal;
+            string section = SettingsSection, sVal;
             tsMain.Visible                   = Settings.Get("ToolStripVisible"    , section, tsMain.Visible);
             btnHighlightCurrentLine .Checked = Settings.Get("HighlightCurrentLine", section, btnHighlightCurrentLine .Checked);
             btnShowLineNumbers      .Checked = Settings.Get("ShowLineNumbers"     , section, btnShowLineNumbers      .Checked);
@@ -522,6 +531,8 @@ namespace HMSEditorNS {
             btnStorePositions       .Checked = Settings.Get("StorePositions"      , section, btnStorePositions       .Checked);
             btnSprav                .Checked = Settings.Get("ShowSprav"           , section, btnSprav                .Checked);
             btnBoldCaret            .Checked = Settings.Get("BoldCaret"           , section, btnBoldCaret            .Checked);
+            btnCheckKeywordsRegister.Checked = Settings.Get("CheckKeywordsRegister",section, btnCheckKeywordsRegister.Checked);
+            btnCheckNewVersionOnLoad.Checked = Settings.Get("CheckNewVersionOnLoad",section, btnCheckNewVersionOnLoad.Checked);
 
             btnUnderlinePascalKeywords.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywords.Checked);
             Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
@@ -567,6 +578,8 @@ namespace HMSEditorNS {
             btnMarkChangedLines_Click(null, EventArgs.Empty);
             btnSprav_Click           (null, EventArgs.Empty);
             btnBoldCaret_Click       (null, EventArgs.Empty);
+            btnCheckKeywordsRegister_Click(null, EventArgs.Empty);
+            btnCheckNewVersionOnLoad_Click(null, EventArgs.Empty);
 
             Editor.HotkeysMapping.InitDefault(); 
             string hotkeys = Settings.Get("Map", "AddonHotkeys", "");
@@ -600,7 +613,7 @@ namespace HMSEditorNS {
         /// </summary>
         public void SaveSettings() {
             try {
-                string section = DialogClass;
+                string section = SettingsSection;
                 Settings.Set("ToolStripVisible"    , tsMain.Visible                  , section);
                 Settings.Set("HighlightCurrentLine", btnHighlightCurrentLine .Checked, section);
                 Settings.Set("ShowLineNumbers"     , btnShowLineNumbers      .Checked, section);
@@ -624,17 +637,21 @@ namespace HMSEditorNS {
                 Settings.Set("StorePositions"      , btnStorePositions       .Checked, section);
                 Settings.Set("ShowSprav"           , btnSprav                .Checked, section);
                 Settings.Set("BoldCaret"           , btnBoldCaret            .Checked, section);
-
+                Settings.Set("CheckKeywordsRegister",btnCheckKeywordsRegister.Checked, section);
+                Settings.Set("CheckNewVersionOnLoad",btnCheckNewVersionOnLoad.Checked, section);
+                
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
                 Settings.Set("Language"            , ScriptLanguage                  , section);
                 Settings.Set("Zoom"                , Editor.Zoom                     , section);
 
                 Settings.Set("UnderlinePascalKeywords", btnUnderlinePascalKeywords.Checked, section);
+
                 if (btnStorePositions.Checked) {
                     uint lastHash = (uint)Text.GetHashCode();
-                    Settings.Set("LastHash", lastHash.ToString()+":"+Editor.SelectionStart.ToString(), section);
+                    Settings.Set("LastHash" + HmsScriptMode.ToString(), lastHash.ToString() + ":" + Editor.SelectionStart + ":" + Editor.GetVerticalScrollValue(), section);
                 }
+
                 string hotkeys = GetHotKeysMapping();
                 Settings.Set("Map", hotkeys, "AddonHotkeys");
 
@@ -643,6 +660,11 @@ namespace HMSEditorNS {
             } catch (Exception e) { 
                 HMS.LogError(e.ToString());
             }
+        }
+
+        private void GetLastPositionsArray() {
+
+
         }
 
         private string GetHotKeysMapping() {
@@ -1123,6 +1145,27 @@ namespace HMSEditorNS {
         private void btnHelpPanelContextMenu_Click(object sender, EventArgs e) {
             btnSprav.Checked = btnHelpPanelContextMenu.Checked;
             btnSprav_Click(sender, e);
+        }
+
+        private void btnCheckKeywordsRegister_Click(object sender, EventArgs e) {
+            Editor.CheckKeywordsRegister = btnCheckKeywordsRegister.Checked;
+        }
+
+        private void btnCheckNewVersionOnLoad_Click(object sender, EventArgs e) {
+            if (!HMS.NewVersionChecked && btnCheckNewVersionOnLoad.Checked) {
+                BackgroundWorker w = new BackgroundWorker();
+                w.DoWork += W_DoWork;
+                w.RunWorkerCompleted += W_RunWorkerCompleted;
+                w.RunWorkerAsync();
+            }
+        }
+
+        private void W_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            labelNewVersion.Visible = HMS.NewVersionExist;
+        }
+
+        private void W_DoWork(object sender, DoWorkEventArgs e) {
+            HMS.CheckNewVersion();
         }
 
         private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
@@ -1710,11 +1753,13 @@ namespace HMSEditorNS {
             string hmsTypes = HMS.HmsTypesStringWithHelp;
             string keywords = "", snippets = "";
             string hlp = "", key = "";
-            CurrentValidTypes = HMS.HmsTypesString;
+            CurrentValidTypes    = HMS.HmsTypesString;
+            CurrentValidTypesReg = Regex.Replace(HMS.HmsTypesStringWithHelp, "{.*?}", "");
             switch (ScriptLanguage) {
                 case "C++Script":
-                    CurrentValidTypes += "int|long|void|bool|float|";
-                    hmsTypes = hmsTypes.Replace("Integer|", "int|long|").Replace("Extended|", "Extended|float|").Replace("Boolean|", "bool|") + "|{Тип функции: процедура (отсутствие возвращаемого значения)}void|";
+                    CurrentValidTypes    += "int|long|void|bool|float|";
+                    CurrentValidTypesReg += "int|long|void|bool|float|";
+                    hmsTypes = hmsTypes.Replace("Integer|", "int|long|").Replace("Extended|", "extended|float|").Replace("Boolean|", "bool|") + "|{Тип функции: процедура (отсутствие возвращаемого значения)}void|".Replace("String", "string");
                     keywords = "#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|nil|null|true|false|";
                     snippets = "if (^) {\n}|if (^) {\n}\nelse {\n}|for (^;;) {\n}|while (^) {\n}|do {\n^}while ();";
                     break;
@@ -1730,19 +1775,20 @@ namespace HMSEditorNS {
                     keywords = "import|new|in|is|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|function|with|Nil|Null|True|False";
                     break;
             }
+            HMS.Keywords = keywords;
             HMS.KeywordsString = keywords.ToLower();
             snippets += "|ShowMessage(\"^\");|HmsLogMessage(1, \"^\");";
             lock (LockObject) {
                 var items = new AutocompleteItems();
 
-                foreach (var s in keywords.Split('|')) if (s.Length > 0) items.Add(new HMSItem(s+" ", ImagesIndex.Keyword, s, s, "Ключевое слово"));
+                foreach (var s in keywords.Split('|')) if (s.Length > 0) items.Add(new HMSItem(s, ImagesIndex.Keyword, s, s, "Ключевое слово"));
                 foreach (var s in snippets.Split('|')) if (s.Length > 0) items.Add(new SnippetHMSItem(s) { ImageIndex = ImagesIndex.Snippet });
 
                 foreach (var name in hmsTypes.Split('|')) {
                     Match m = Regex.Match(name, "{(.*?)}");
                     if (m.Success) hlp = m.Groups[1].Value;
                     key = Regex.Replace(name, "{.*?}", "");
-                    items.Add(new HMSItem(key+ (ScriptLanguage != "PascalScript" ? " ":""), ImagesIndex.Keyword, key, key, hlp));
+                    items.Add(new HMSItem(key, ImagesIndex.Keyword, key, key, hlp));
                 }
 
                 PopupMenu.Items.SetAutocompleteItems(items);
@@ -1820,6 +1866,14 @@ namespace HMSEditorNS {
         private void splitContainer1_DoubleClick(object sender, EventArgs e) {
             btnSprav.Checked = !btnSprav.Checked;
             btnSprav_Click(sender, e);
+        }
+
+        private void labelNewVersion_Click(object sender, EventArgs e) {
+            if (HMS.UpdateInfo.Length == 0) return;
+            frmUpdateInfoDialog form = new frmUpdateInfoDialog();
+            string html = HMS.ReadTextFromResource("Markdown.html");
+            form.SetText(html.Replace("<MarkdownText>", HMS.UpdateInfo));
+            form.ShowDialog();
         }
 
     }
