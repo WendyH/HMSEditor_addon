@@ -904,7 +904,7 @@ HmsGetStreamParam(aStreamType: Char; aStreamNo: Integer; aStreamParamType: TStre
   aStreamExtInfo - дополнительная информация дорожки. Необязательный параметр. (?)
 HmsGetTickCount: Variant|Получает количество миллисекунд, прошедших с момента старта системы
 HmsGetVideoSettings(aType: Integer): String|Возвращает выбранное значение настройки показа фильма
-  aType - тип значения (?)
+  aType - тип значения запрашиваемого значения.\nМогут использоваться константы, начинающиеся на vst: vstSubtitle, vstTranscodingProfile, vstDeinterlace...
 HmsIsFormatSupported(const aFormatType: String; const aVideoCodec: String = 'copy'; const aAudioCodec: String = 'copy'): Boolean|Проверка поддержки формата
   aFormatType - проверяемый тип формата
   aVideoCodec - видео-кодек. Необязательный параметр.

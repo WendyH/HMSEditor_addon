@@ -96,7 +96,7 @@ namespace HMSEditorNS {
             Size = new Size(textSize.Width+6, textSize.Height +6+ n);
             Show(control, point);
             timer.Start();
-            ctl.Focus();
+            control.Focus();
         } 
 
         public void Initialize() {

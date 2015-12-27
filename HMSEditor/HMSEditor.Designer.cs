@@ -781,7 +781,7 @@
             this.btnMouseHelp.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnMouseHelp.Name = "btnMouseHelp";
             this.btnMouseHelp.Size = new System.Drawing.Size(463, 22);
-            this.btnMouseHelp.Text = "Описания функций и переменных при наведении курсора мыши";
+            this.btnMouseHelp.Text = "Подсказки при наведении курсора мыши";
             this.btnMouseHelp.ToolTipText = "Отображать подсказки по словам, на которых наведён курсор";
             this.btnMouseHelp.Click += new System.EventHandler(this.btnMouseHelp_Click);
             // 

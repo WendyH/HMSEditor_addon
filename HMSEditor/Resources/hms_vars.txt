@@ -263,25 +263,25 @@ cfgTranscodingPhotoSupportFileTypes: String
 cfgTranscodingRadioMimeType: String
 cfgTranscodingResizeMode: Integer
 cfgTranscodingScreenFormat: String
-cfgTranscodingScreenHeight: Integer
-cfgTranscodingScreenWidth: Integer
-cfgTranscodingSubTitlesActive: Boolean
+cfgTranscodingScreenHeight: Integer|Высота кадра при транскодировании
+cfgTranscodingScreenWidth: Integer|Ширина кадра при транскодировании
+cfgTranscodingSubTitlesActive: Boolean|Определяет, включены ли показ субтитров, если они есть
 cfgTranscodingSubTitlesBackground: Integer
-cfgTranscodingSubTitlesBackgroundBlend: Integer
-cfgTranscodingSubTitlesBackgroundColor: Integer
-cfgTranscodingSubTitlesBorderColor: Integer
-cfgTranscodingSubTitlesBorderWidth: Integer
-cfgTranscodingSubTitlesBottomMargin: Integer
-cfgTranscodingSubTitlesCharSpacing: Integer
+cfgTranscodingSubTitlesBackgroundBlend: Integer|Прозрачность фона субтитров
+cfgTranscodingSubTitlesBackgroundColor: Integer|Цвет фона субтитров
+cfgTranscodingSubTitlesBorderColor: Integer|Цвет обводки букв субтитров
+cfgTranscodingSubTitlesBorderWidth: Integer|Толщина обводки букв субтитров
+cfgTranscodingSubTitlesBottomMargin: Integer|Отступ от низа субтитров
+cfgTranscodingSubTitlesCharSpacing: Integer| Межбуквенный интервал субтитров
 cfgTranscodingSubTitlesFontCharset: Integer
-cfgTranscodingSubTitlesFontColor: Integer
-cfgTranscodingSubTitlesFontName: String
-cfgTranscodingSubTitlesFontSize: Integer
-cfgTranscodingSubTitlesFontStyle: Integer
-cfgTranscodingSubTitlesFontUnit: Integer
-cfgTranscodingSubTitlesLibAss: Boolean
-cfgTranscodingSubtitles3DOffsetX: Integer
-cfgTranscodingThreadCount: Integer
+cfgTranscodingSubTitlesFontColor: Integer| Цвет субтитров
+cfgTranscodingSubTitlesFontName: String|Имя шрифта субтитров
+cfgTranscodingSubTitlesFontSize: Integer|Размер шрифта субтитров
+cfgTranscodingSubTitlesFontStyle: Integer|Стиль шрифта субтитров
+cfgTranscodingSubTitlesFontUnit: Integer|Размеры параметров для субтитров указаны: 0 - в точках, 1 - в процентах
+cfgTranscodingSubTitlesLibAss: Boolean|Флаг использования внешнего модуля ssa, ass
+cfgTranscodingSubtitles3DOffsetX: Integer|3D-смещение субтитров
+cfgTranscodingThreadCount: Integer|Количество потоков при транскодировании
 cfgTranscodingTvsetMimeType: String
 cfgTranscodingVideoBitrate: Integer
 cfgTranscodingVideoCodec: String
@@ -293,7 +293,7 @@ cfgUpnpIconWidth: Integer
 cfgVideoPlaylistMimeType: Variant
 cfgVideoPlaylistType: Variant
 cfgWebThumbnailHeight: Integer
-cfgWebThumbnailWidth: Integer\s
+cfgWebThumbnailWidth: Integer
 cfgWebThumbnails: Boolean
 
 * [Системные]

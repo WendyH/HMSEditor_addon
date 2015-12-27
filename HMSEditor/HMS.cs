@@ -35,11 +35,14 @@ namespace HMSEditorNS {
                 InitAndLoadHMSKnowledgeDatabase();
 
                 //PrepareFastDraw(); 
-                /*
-                Worker.DoWork += Worker_DoWork;
-                Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
-                Worker.RunWorkerAsync(BackgraundTask.PrepareFastDraw);
-                */
+
+                bool prepareFastDraw = true;
+
+                if (prepareFastDraw) {
+                    Worker.DoWork += Worker_DoWork;
+                    Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+                    Worker.RunWorkerAsync(BackgraundTask.PrepareFastDraw);
+                }
 
             } catch (Exception e) {
                 LogError(e.ToString());

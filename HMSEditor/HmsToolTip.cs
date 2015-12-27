@@ -34,7 +34,7 @@ namespace FastColoredTextBoxNS {
         private static Color colorHelp    = Color.FromArgb(0x247256);
         private static Color colorString  = Color.FromArgb(0xAA5C36);
         private static Color colorValue   = Color.FromArgb(0xAA5C36);
-        private static Size  MaxSize      = new Size(650, 600);
+        private static Size  MaxSize      = new Size(590, 500);
         private static TextFormatFlags tf = TextFormatFlags.NoPadding | TextFormatFlags.PreserveGraphicsClipping;
         private static int MaxValueLenght = 100;
         public static Color ColorBackgrnd = Color.FromArgb(0xE4E5F0);
@@ -149,7 +149,10 @@ namespace FastColoredTextBoxNS {
             float heightCorrection = 0;
             item.ToolTipTitle = CalcPhrasesBreaks(g, item.ToolTipTitle);
             string text  = GetText(item, out heightCorrection);
-            Size   size  = TextRenderer.MeasureText(text, FontText, MaxSize, TextFormatFlags.WordBreak);
+            //if (text.IndexOf("HmsRegExMatch3") > 0) {
+            //    heightCorrection = 1;
+            //}
+            Size size  = TextRenderer.MeasureText(text, FontText, MaxSize, TextFormatFlags.WordBreak);
             size.Width  += Margin.Width  * 2;
             size.Height += Margin.Height * 2 + (int)heightCorrection;
             item.ToolTipSize = WriteWords(text, new Rectangle(0, 0, size.Width, size.Height), g, item.Words);

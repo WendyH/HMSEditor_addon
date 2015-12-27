@@ -96,11 +96,46 @@ namespace HMSEditorNS {
             Editor.LostFocus += Editor_LostFocus; // for hiding all tooltipds when lost focus
             SetAutoCompleteMenu(); 
             helpPanel1.Init(imageList1, HmsScriptMode.ToString());
+            WorkerCheckSyntax.DoWork += WorkerCheckSyntax_DoWork;
+            WorkerCheckSyntax.RunWorkerCompleted += WorkerCheckSyntax_RunWorkerCompleted;
+        }
+
+        private void WorkerCheckSyntax_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            if (ErrorMessage.Length > 0) {
+                Editor.SetErrorLines(ErrorChar, ErrorLine, ErrorMessage);
+            } else {
+                Editor.ClearErrorLines();
+            }
+        }
+
+        private void WorkerCheckSyntax_DoWork(object sender, DoWorkEventArgs e) {
+            ErrorLine = 0;
+            ErrorChar = 0;
+            ErrorMessage = "";
+            if (PtrScriptFrame != IntPtr.Zero) {
+                try {
+                    object objScriptName = ScriptLanguage;
+                    object objScriptText = Editor.Text;
+                    object objErrorMessage = "";
+                    int nErrorLine = 0;
+                    int nErrorChar = 0;
+                    int nResult    = -1;
+                    IHmsScriptFrame scriptFrame1 = (IHmsScriptFrame)System.Runtime.Remoting.Services.EnterpriseServicesHelper.WrapIUnknownWithComObject(PtrScriptFrame);
+                    scriptFrame1.CompileScript(ref objScriptName, ref objScriptText, ref objErrorMessage, ref nErrorLine, ref nErrorChar, ref nResult);
+                    if (nResult == 0) {
+                        ErrorChar = Math.Max(0, nErrorChar - 1);
+                        ErrorLine = Math.Max(0, nErrorLine - 1);
+                        ErrorMessage = objErrorMessage.ToString();
+                    }
+                } catch { ; }
+            } else {
+                Editor.SetErrorLines(8, 50, "Проверка!");
+            }
         }
 
         public void AutoCheckSyntaxBackground() {
-			Thread t = new Thread(AutoCheckSyntax);
-			t.Start();
+            if (WorkerCheckSyntax.IsBusy) return;
+            WorkerCheckSyntax.RunWorkerAsync();
 		} 
 
 		// Fields
@@ -117,6 +152,7 @@ namespace HMSEditorNS {
         private IntPtr PtrScriptFrame = IntPtr.Zero;
         public IHmsScriptFrame HmsScriptFrame = null;
         private HmsScriptMode  HmsScriptMode  = HmsScriptMode.smUnknown;
+        private BackgroundWorker WorkerCheckSyntax = new BackgroundWorker();
 
         public bool Modified       { get { return Editor.IsChanged     ; } set { Editor.IsChanged      = value; } }
         public int  SelectionStart { get { return Editor.SelectionStart; } set { Editor.SelectionStart = value; } }
@@ -137,8 +173,12 @@ namespace HMSEditorNS {
 
         private MatchEvaluator evaluatorSameLines = new MatchEvaluator(MatchReturnEmptyLines);
         public  AutocompleteMenu PopupMenu;
+        public static int MaxPopupItems = 18;
 
         private bool TextBoxFindChanged = false;
+        private int    ErrorLine = 0;
+        private int    ErrorChar = 0;
+        private string ErrorMessage = "";
 
         public string Filter { get { return PopupMenu.Filter; } set { PopupMenu.Filter = value; } } // Фильтр для видимости переменных по заголовку окна
         public int  tsHeight { get { return tsMain.Height; } }
@@ -1297,33 +1337,6 @@ namespace HMSEditorNS {
         private static string MatchReturnEmptyLines(Match m) { return regexNotNewLine.Replace(m.Value, CensChar.ToString()); }
         private static string MatchRemoveLinebreaks(Match m) { return regexLineBreaks.Replace(m.Value, String.Empty); }
 
-		private void AutoCheckSyntax() {
-            if (PtrScriptFrame != IntPtr.Zero) {
-                try {
-					object objScriptName   = ScriptLanguage;
-					object objScriptText   = Editor.Text;
-					object objErrorMessage = "";
-					int  nErrorLine = 0;
-					int  nErrorChar = 0;
-					int  nResult    = -1;
-
-                    IHmsScriptFrame scriptFrame1 = (IHmsScriptFrame)System.Runtime.Remoting.Services.EnterpriseServicesHelper.WrapIUnknownWithComObject(PtrScriptFrame);
-                    scriptFrame1.CompileScript(ref objScriptName, ref objScriptText, ref objErrorMessage, ref nErrorLine, ref nErrorChar, ref nResult);
-
-                    if (nResult < 0) {
-						Editor.ClearErrorLines();
-					} else {
-						nErrorChar = Math.Max(0, nErrorChar - 1);
-						nErrorLine = Math.Max(0, nErrorLine - 1);
-						Editor.SetErrorLines(nErrorChar, nErrorLine, objErrorMessage.ToString());
-					}
-				} catch (Exception e) { MessageBox.Show(e.ToString()); }
-            } else {
-                Editor.SetErrorLines(8, 50, "Проверка!");
-            }
-
-        }
-
         public string EvalVariableValue(string varName) {
             object varname = varName;
             object result  = "";
@@ -1744,8 +1757,8 @@ namespace HMSEditorNS {
             PopupMenu = new AutocompleteMenu(Editor, this);
             PopupMenu.ImageList         = imageList1;
             PopupMenu.MinFragmentLength = 1; 
-            PopupMenu.Items.MaximumSize = new Size(200, 300);
-            PopupMenu.Items.Width       = 200;
+            PopupMenu.Items.MaximumSize = new Size(210, PopupMenu.Items.ItemHeight * MaxPopupItems);
+            PopupMenu.Items.Width       = 210;
         }
 
         public void CreateAutocomplete() {

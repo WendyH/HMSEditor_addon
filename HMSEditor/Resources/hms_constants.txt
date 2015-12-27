@@ -246,16 +246,16 @@ mtiWarning: Integer = 2|Иконка "Внимание" для отображе�
 taCenter: Integer = 2
 taLeftJustify: Integer = 0
 taRightJustify: Integer = 1
-vstAudioDelay: Integer = 5
-vstAudioOriginal: Integer = 4
-vstAudioStream: Integer = 0
-vstDeinterlace: Integer = 9
-vstFrameRate: Integer = 8
-vstSubtitle: Integer = 1
-vstSubtitleBMargin: Integer = 7
-vstSubtitlesInfo: Integer = 3
-vstTranscodingProfile: Integer = 2
-vstVideoOriginal: Integer = 6
+vstAudioDelay: Integer = 5|Значение для функции HmsGetVideoSettings: задержка звука.
+vstAudioOriginal: Integer = 4|Значение для функции HmsGetVideoSettings: оригинальная звуковая-дорожка
+vstAudioStream: Integer = 0|Значение для функции HmsGetVideoSettings: выбранная звуковая-дорожка
+vstDeinterlace: Integer = 9|Значение для функции HmsGetVideoSettings: использование сглаживания (деинтерлейса)
+vstFrameRate: Integer = 8|Значение для функции HmsGetVideoSettings: частота кадров
+vstSubtitle: Integer = 1|Значение для функции HmsGetVideoSettings: выбранные субтитры
+vstSubtitleBMargin: Integer = 7|Значение для функции HmsGetVideoSettings: отсуп для субтитров
+vstSubtitlesInfo: Integer = 3|Значение для функции HmsGetVideoSettings: информация о субтитрах
+vstTranscodingProfile: Integer = 2|Значение для функции HmsGetVideoSettings: оригинальная видео-дорожка
+vstVideoOriginal: Integer = 6|Значение для функции HmsGetVideoSettings: оригинальная видео-дорожка
 
 * [Идентификаторы кодеков]
 CODEC_ID_012V: Integer = 808530518
