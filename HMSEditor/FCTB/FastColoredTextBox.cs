@@ -58,10 +58,12 @@ namespace FastColoredTextBoxNS {
         }
         public bool HighlightCurrentLine = false;
         public bool HighlightChangedLine = false;
-
-        private Timer HighlightTimer = new Timer();      // By WendyH
+        // By WendyH
+        private Timer HighlightTimer = new Timer();      
         public Regex RegexStringAndComments = null;
-        public HmsToolTip ToolTip4Function = new HmsToolTip(); // By WendyH
+        public HmsToolTip ToolTip4Function = new HmsToolTip();
+        public SelectionStyle YellowSelectionStyle = new SelectionStyle(new SolidBrush(Themes.ToColor("#E4FC5B")), Brushes.Black);
+        public bool YellowSelection = false;
         public bool DebugMode = false;
         public int HmsDebugLine = -1;
         public int HmsDebugChar = -1;
@@ -224,8 +226,8 @@ namespace FastColoredTextBoxNS {
             AllowDrop = true;
             FindEndOfFoldingBlockStrategy = FindEndOfFoldingBlockStrategy.Strategy1;
             VirtualSpace = false;
-            bookmarks = new Bookmarks(this);
-            breakpoints = new Bookmarks(this); // By WendyH
+            bookmarks = new Bookmarks(this, false);
+            breakpoints = new Bookmarks(this, true); // By WendyH
             BookmarkColor = Color.PowderBlue;
             ToolTip = new HmsToolTip();
             timer3.Interval = 500;
@@ -896,11 +898,21 @@ namespace FastColoredTextBoxNS {
             set { lines.DefaultStyle = value; }
         }
 
+        private SelectionStyle _selectionStyle;
+
         /// <summary>
         /// Style for rendering Selection area
         /// </summary>
         [Browsable(false)]
-        public SelectionStyle SelectionStyle { get; set; }
+        public SelectionStyle SelectionStyle {
+            get {
+                if (YellowSelection) return YellowSelectionStyle;
+                else return _selectionStyle;
+            }
+            set {
+                _selectionStyle = value;
+            }
+        }
 
         /// <summary>
         /// Style for folded block rendering
@@ -5243,8 +5255,7 @@ namespace FastColoredTextBoxNS {
                 var textRange = new Range(this, from + firstChar, iLine, from + lastChar + 1, iLine);
                 textRange = Selection.GetIntersectionWith(textRange);
                 if (textRange != null && SelectionStyle != null) {
-                    SelectionStyle.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y),
-                                        textRange);
+                    SelectionStyle.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange);
                 }
             }
         }

@@ -11,7 +11,6 @@ using FastColoredTextBoxNS;
 using System.Threading;
 using System.Windows.Forms;
 using Ionic.Zip;
-using System.Security.Permissions;
 using System.ComponentModel;
 
 namespace HMSEditorNS {

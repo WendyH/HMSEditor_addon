@@ -8,7 +8,7 @@ namespace HMSEditorNS {
     /// Класс для работы и отображения всплывающей подсказки при наведении курсора мыши на часть слова редакторе
     /// </summary>
     class MouseHelpTimer {
-        const int MaxValueLength = 119000;
+        const int MaxValueLength = 80000;
         internal static Regex regexRemoveParams = new Regex(@"\(([^\)])*\)|\[([^\]])*\]|(//.*|\/\*[\s\S]*?\*\/)", RegexOptions.Compiled);
         internal static Regex regexNoNewLines   = new Regex(@"[^\n]", RegexOptions.Compiled);
 
@@ -74,11 +74,16 @@ namespace HMSEditorNS {
                 if (evalSelection) {
                     text = Editor.SelectedText.Trim();
                     if (text.Length == 0) return;
+                    System.Windows.Forms.MessageBox.Show(text);
                     // Внедряемся в поток - показываем вплывающее окно со значением
                     Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
                         value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
-                        if (value.Length > MaxValueLength) value = value.Substring(0, MaxValueLength) + "...";
-                        ActiveHMSEditor.ValueHint.ShowValue(Editor, value, point);
+                        if (value.Length > MaxValueLength) {
+                            //value = value.Substring(0, MaxValueLength) + "...";
+                            HMSEditor.ActiveEditor.ValueForm.Show(Editor, text, value, point);
+                        } else {
+                            ActiveHMSEditor.ValueHint.ShowValue(Editor, text, value, point);
+                        }
                     });
                     return;
 
@@ -117,8 +122,12 @@ namespace HMSEditorNS {
                         // Внедряемся в поток - показываем вплывающее окно со значением
                         Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
                             value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
-                            if (value.Length > MaxValueLength) value = value.Substring(0, MaxValueLength) +"...";
-                            ActiveHMSEditor.ValueHint.ShowValue(Editor, value, point);
+                            if (value.Length > MaxValueLength) {
+                                //value = value.Substring(0, MaxValueLength) + "...";
+                                HMSEditor.ActiveEditor.ValueForm.Show(Editor, text, value, point);
+                            } else {
+                                ActiveHMSEditor.ValueHint.ShowValue(Editor, text, value, point);
+                            }
                         });
                         return;
                     }
@@ -129,6 +138,7 @@ namespace HMSEditorNS {
                         tip.Help         = item.Help;
                         tip.Value        = value;
                         tip.Show(item.ToolTipText + " ", Editor, point, 10000);
+                        //ActiveHMSEditor.ValueHint.ShowValue(Editor, item.ToolTipTitle, item.Help + " ", point);
                     });
                 }
             } catch (Exception e) {

@@ -4,6 +4,11 @@ using System.Runtime.InteropServices;
 
 namespace HMSEditorNS {
     internal static class NativeMethods {
+        public const uint WM_NEXTDLGCTL = 0x28;
+        public const uint WM_SETFOCUS   = 0x0007;
+        public const uint WM_SYSCOMMAND = 274;
+        public const uint SC_MINIMIZE   = 0xF020;
+        public const uint WM_KEYDOWN    = 0x0100;
 
         public const uint COINIT_MULTITHREADED     = 0x0; //Initializes the thread for multi-threaded object concurrency.
         public const uint COINIT_APARTMENTTHREADED = 0x2; //Initializes the thread for apartment-threaded object concurrency
@@ -22,9 +27,21 @@ namespace HMSEditorNS {
         [DllImport("Wintrust.dll", PreserveSig = true, SetLastError = false)]
         public static extern uint WinVerifyTrust(IntPtr hWnd, IntPtr pgActionID, IntPtr pWinTrustData); // 4 class AuthenticodeTools
 
+        [DllImport("User32", CharSet = CharSet.Unicode)]
+        public static extern bool SendNotifyMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImportAttribute("User32")]
+        public static extern bool ReleaseCapture();
+
         #region methods FastColoredTextBox used
         [DllImport("User32", CharSet = CharSet.Unicode)]
+        public static extern IntPtr PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("User32", CharSet = CharSet.Unicode)]
         public static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("User32")]
+        public static extern bool SetForegroundWindow(IntPtr hWnd);
 
         [DllImport("User32")]
         public static extern bool CreateCaret(IntPtr hWnd, int hBitmap, int nWidth, int nHeight);
@@ -116,5 +133,10 @@ namespace HMSEditorNS {
 
         public const uint WM_SETREDRAW = 0x0B;
         #endregion
+
+        public static void SendNotifyKey(IntPtr hwnd, int key) {
+            NativeMethods.SendNotifyMessage(hwnd, NativeMethods.WM_KEYDOWN, (IntPtr)key, IntPtr.Zero);
+        }
+
     }
 }

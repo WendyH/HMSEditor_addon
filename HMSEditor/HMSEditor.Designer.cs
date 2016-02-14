@@ -1081,7 +1081,7 @@
             this.Editor.ServiceColors = serviceColors1;
             this.Editor.ShowScrollBars = false;
             this.Editor.Size = new System.Drawing.Size(672, 506);
-            this.Editor.TabIndex = 10;
+            this.Editor.TabIndex = 0;
             this.Editor.TabLength = 2;
             this.Editor.Zoom = 100;
             this.Editor.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.Editor_TextChanged);

@@ -985,14 +985,14 @@ namespace FastColoredTextBoxNS {
 
             //clear folding markers
             range.ClearFoldingMarkers();
-            //set folding markers
-            range.SetFoldingMarkers("<head"  , "</head>"  , RegexOptions.IgnoreCase);
-            range.SetFoldingMarkers("<body"  , "</body>"  , RegexOptions.IgnoreCase);
-            range.SetFoldingMarkers("<table" , "</table>" , RegexOptions.IgnoreCase);
-            range.SetFoldingMarkers("<form"  , "</form>"  , RegexOptions.IgnoreCase);
-            range.SetFoldingMarkers("<div"   , "</div>"   , RegexOptions.IgnoreCase);
-            range.SetFoldingMarkers("<script", "</script>", RegexOptions.IgnoreCase);
-            range.SetFoldingMarkers("<tr"    , "</tr>"    , RegexOptions.IgnoreCase);
+            ////set folding markers
+            //range.SetFoldingMarkers("<head"  , "</head>"  , RegexOptions.IgnoreCase);
+            //range.SetFoldingMarkers("<body"  , "</body>"  , RegexOptions.IgnoreCase);
+            //range.SetFoldingMarkers("<table" , "</table>" , RegexOptions.IgnoreCase);
+            //range.SetFoldingMarkers("<form"  , "</form>"  , RegexOptions.IgnoreCase);
+            //range.SetFoldingMarkers("<div"   , "</div>"   , RegexOptions.IgnoreCase);
+            //range.SetFoldingMarkers("<script", "</script>", RegexOptions.IgnoreCase);
+            //range.SetFoldingMarkers("<tr"    , "</tr>"    , RegexOptions.IgnoreCase);
         }
 
         private void InitXMLRegex() {
@@ -1522,6 +1522,23 @@ namespace FastColoredTextBoxNS {
             //range.SetFoldingMarkers(@"^\s*(?<range>Do)\b", @"^\s*(?<range>Loop)\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
         }
 
+        public Language DetectLang(string txt) {
+            Language lang = Language.CSharp;
+            Dictionary<Language, string> langPatterns = new Dictionary<Language, string>();
+            langPatterns[Language.XML   ] = @"^<\?xml";
+            langPatterns[Language.PHP   ] = @"(^<\?php|\$\w+\s*?[=\[\)])";
+            langPatterns[Language.HTML  ] = @"<[^?]\w+.*?>";
+            langPatterns[Language.PascalScript] = @"(\w+\s*?:=\s*?[\d'""\w]|ifthen|end;|end\.)";
+            langPatterns[Language.JS          ] = @"{\s*?[\w-]+:\s*?[\d\w\s#\.]+;";
+            langPatterns[Language.BasicScript ] = @"If[\S\s]+Then[\S\s]+End\sIf|Sub[\S\s]+End\sSub|^\s*?Dim\s\w+\s*?(,|$)";
+            foreach (var item in langPatterns) {
+                string pattern = item.Value;
+                if (Regex.IsMatch(txt, pattern, RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.IgnoreCase)) {
+                    return item.Key;
+                }
+            }
+            return lang;
+        }
         // By WendyH > ----------------------------------------------------------------------------
 
         #region Styles

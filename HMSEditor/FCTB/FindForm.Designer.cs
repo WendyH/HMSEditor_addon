@@ -74,8 +74,8 @@
             this.cbRegex.Size = new System.Drawing.Size(57, 17);
             this.cbRegex.TabIndex = 3;
             this.cbRegex.Text = "Regex";
-            this.cbRegex.UseVisualStyleBackColor = true;
             this.cbRegex.CheckedChanged += new System.EventHandler(this.cbMatchCase_CheckedChanged);
+            this.cbRegex.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cbRegex_KeyPress);
             // 
             // cbMatchCase
             // 
@@ -85,8 +85,8 @@
             this.cbMatchCase.Size = new System.Drawing.Size(131, 17);
             this.cbMatchCase.TabIndex = 1;
             this.cbMatchCase.Text = "Регистрозависимый";
-            this.cbMatchCase.UseVisualStyleBackColor = true;
             this.cbMatchCase.CheckedChanged += new System.EventHandler(this.cbMatchCase_CheckedChanged);
+            this.cbMatchCase.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cbMatchCase_KeyPress);
             // 
             // label1
             // 
@@ -105,8 +105,8 @@
             this.cbWholeWord.Size = new System.Drawing.Size(134, 17);
             this.cbWholeWord.TabIndex = 2;
             this.cbWholeWord.Text = "Как отдельное слово";
-            this.cbWholeWord.UseVisualStyleBackColor = true;
             this.cbWholeWord.CheckedChanged += new System.EventHandler(this.cbMatchCase_CheckedChanged);
+            this.cbWholeWord.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cbWholeWord_KeyPress);
             // 
             // FindForm
             // 
@@ -121,13 +121,14 @@
             this.Controls.Add(this.btFindNext);
             this.Controls.Add(this.btClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.KeyPreview = true;
             this.Name = "FindForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
             this.Text = "Поиск";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FindForm_FormClosing);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FindForm_FormClosed);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FindForm_KeyPress);
             this.ResumeLayout(false);
             this.PerformLayout();
 

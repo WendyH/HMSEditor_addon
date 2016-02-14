@@ -171,6 +171,12 @@
     <Compile Include="FormUpdateInfo.Designer.cs">
       <DependentUpon>FormUpdateInfo.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormValue.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormValue.Designer.cs">
+      <DependentUpon>FormValue.cs</DependentUpon>
+    </Compile>
     <Compile Include="GitHub.cs" />
     <Compile Include="HelpPanel.cs">
       <SubType>UserControl</SubType>
@@ -297,6 +303,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormUpdateInfo.resx">
       <DependentUpon>FormUpdateInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormValue.resx">
+      <DependentUpon>FormValue.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HelpPanel.resx">
       <DependentUpon>HelpPanel.cs</DependentUpon>

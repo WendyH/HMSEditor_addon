@@ -3,7 +3,8 @@ using HmsAddons;
 
 namespace test {
     class HmsScriptFrame: IHmsScriptFrame {
-        public System.Windows.Forms.RichTextBox LogTextBox;
+        #pragma warning disable 0649
+        public System.Windows.Forms.RichTextBox LogTextBox; 
         public void Log(string msg) {
             if (LogTextBox!=null) {
                 LogTextBox.SelectionStart = LogTextBox.TextLength;

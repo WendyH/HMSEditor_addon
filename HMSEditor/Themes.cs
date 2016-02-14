@@ -321,7 +321,7 @@ namespace HMSEditorNS {
             return s;
         }
 
-        private static Color ToColor(string val) {
+        public static Color ToColor(string val) {
             if (string.IsNullOrEmpty(val)) return Color.Transparent;
 
             if (val.Length == 9) {

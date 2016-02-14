@@ -3,6 +3,8 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Security.Permissions;
+using System.Drawing;
+using HMSEditorNS;
 
 namespace FastColoredTextBoxNS
 {
@@ -35,6 +37,7 @@ namespace FastColoredTextBoxNS
 
         private void btClose_Click(object sender, EventArgs e)
         {
+            SetFocusToEditor();
             Close();
         }
 
@@ -52,13 +55,15 @@ namespace FastColoredTextBoxNS
 
         public List<Range> FindAll(string pattern)
         {
+            tb.YellowSelection = true;
             var opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
             if (!cbRegex.Checked)
                 pattern = Regex.Escape(pattern);
             if (cbWholeWord.Checked)
                 pattern = "\\b" + pattern + "\\b";
             //
-            var range = tb.Selection.IsEmpty? tb.Range.Clone() : tb.Selection.Clone();
+            //var range = tb.Selection.IsEmpty? tb.Range.Clone() : tb.Selection.Clone();
+            var range = tb.Range.Clone();
             //
             var list = new List<Range>();
             foreach (var r in range.GetRangesByLines(pattern, opt))
@@ -69,6 +74,7 @@ namespace FastColoredTextBoxNS
 
         public bool Find(string pattern)
         {
+            tb.YellowSelection = true;
             RegexOptions opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
             if (!cbRegex.Checked)
                 pattern = Regex.Escape(pattern);
@@ -100,8 +106,13 @@ namespace FastColoredTextBoxNS
             }
             if (range.Start >= startPlace && startPlace > Place.Empty)
             {
+                Place oldPlace = tb.Selection.Start;
                 tb.Selection.Start = new Place(0, 0);
-                return Find(pattern);
+                bool found = Find(pattern);
+                if (!found) {
+                    tb.Selection.Start = oldPlace;
+                }
+                return found;
             }
             return false;
         }
@@ -110,8 +121,10 @@ namespace FastColoredTextBoxNS
         {
             if (e.KeyChar == '\r')
                 btFindNext_Click(sender, null);
-            if (e.KeyChar == '\x1b')
+            if (e.KeyChar == '\x1b') {
                 Hide();
+                SetFocusToEditor();
+            }
         }
 
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
@@ -120,6 +133,7 @@ namespace FastColoredTextBoxNS
             if (keyData == Keys.Escape)
             {
                 this.Close();
+                SetFocusToEditor();
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -132,7 +146,7 @@ namespace FastColoredTextBoxNS
                 e.Cancel = true;
                 Hide();
             }
-            this.tb.Focus();
+            SetFocusToEditor();
         }
 
         private void btReplace_Click(object sender, EventArgs e)
@@ -223,7 +237,21 @@ namespace FastColoredTextBoxNS
         }
 
         private void ReplaceForm_FormClosed(object sender, FormClosedEventArgs e) {
+            SetFocusToEditor();
+        }
+
+        private void ReplaceForm_KeyPress(object sender, KeyPressEventArgs e) {
+            if (e.KeyChar == '\t') {
+                SelectNextControl(ActiveControl, true, false, false, true);
+                e.Handled = true;
+                return;
+            }
+        }
+
+        private void SetFocusToEditor() {
+            tb.YellowSelection = false;
             tb.Focus();
         }
+
     }
 }

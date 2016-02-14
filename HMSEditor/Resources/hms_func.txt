@@ -173,11 +173,11 @@ HmsBase64Decode(const aText: String): String|Возвращает декодир
   aText - текст, который будет декодирован из формата Base64
 HmsBase64Encode(const aText: String): String|Возвращает кодированный текст в формат Base64
   aText - текст, который будет кодирован в формат Base64
-HmsCreateInternetRadioStream(const aUrl: String; var aStreamPipeName, aStreamType, aStreamHeader: String; const aHeaders: String=''): Boolean|Создание потока инетрнет-радио, направленного в существующий именованный PIPE канал
+HmsCreateInternetRadioStream(const aUrl: String; var aStreamPipeName, aStreamType, aStreamHeader: String; const aHeaders: String=''): Boolean|Создание именованного PIPE канала для потока инетрнет-радио с возвращением MIME-типа и заголовками ответа от сервера.
   aUrl - URL адрес потока интернет-радио
-  aStreamPipeName - имя PIPE соединения
-  aStreamType - тип PIPE соединения
-  aStreamHeader - заголовки PIPE соединения
+  aStreamPipeName - переменная, в которую будет занесено имя созданного PIPE канала
+  aStreamType - переменная, в которую будет занесено MIME-тип аудио потока
+  aStreamHeader - переменная, в которую будут занесены HTTP заголовки ответов от сервера (Answer HTTP headers)
   aHeaders - заголовки для HTTP запроса. Необязательный параметр.
 HmsCreateRSSItems(const aFolderItem: THmsScriptMediaItem; const aURL: String; aRetrieveProperties: Boolean = False)|Создание ссылок на медиа-ресурсы по ссылке на RSS канал
   aFolderItem - папка базы данных программы, где будут созданы ссылки на медиа-ресурсы

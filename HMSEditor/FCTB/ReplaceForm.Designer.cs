@@ -170,6 +170,7 @@
             this.Controls.Add(this.btFindNext);
             this.Controls.Add(this.btClose);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.KeyPreview = true;
             this.Name = "ReplaceForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
@@ -178,6 +179,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ReplaceForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ReplaceForm_FormClosed);
             this.Load += new System.EventHandler(this.ReplaceForm_Load);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ReplaceForm_KeyPress);
             this.ResumeLayout(false);
             this.PerformLayout();
 

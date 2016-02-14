@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Text;
 
 namespace FastColoredTextBoxNS
 {
@@ -56,11 +55,13 @@ namespace FastColoredTextBoxNS
         protected FastColoredTextBox tb;
         protected List<Bookmark> items = new List<Bookmark>();
 
-        public Bookmarks(FastColoredTextBox tb)
+        public Bookmarks(FastColoredTextBox tb, bool noShift)
         {
             this.tb = tb;
-            tb.LineInserted += tb_LineInserted;
-            tb.LineRemoved  += tb_LineRemoved;
+            if (!noShift) {
+                tb.LineInserted += tb_LineInserted;
+                tb.LineRemoved += tb_LineRemoved;
+            }
         }
 
         protected virtual void tb_LineRemoved(object sender, LineRemovedEventArgs e)

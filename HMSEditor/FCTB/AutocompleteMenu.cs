@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 using System.ComponentModel;
-using System.Drawing.Drawing2D;
 using System.Text.RegularExpressions;
 using System.Security.Permissions;
 using HMSEditorNS;
@@ -89,6 +88,23 @@ namespace FastColoredTextBoxNS
             g.DrawRectangle(new Pen(c, 1), new Rectangle(0, 0, Width-1, Height-1));
             //base.OnPaint(e);
         }
+        private const int grab = 12;
+
+        protected override void WndProc(ref Message m) {
+            base.WndProc(ref m);
+            if (m.Msg == 0x84) {  // Trap WM_NCHITTEST
+                var pos = this.PointToClient(new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16));
+                if (pos.X >= this.ClientSize.Width - grab && pos.Y >= this.ClientSize.Height - grab)
+                    m.Result = new IntPtr(17);  // HT_BOTTOMRIGHT
+            }
+        }
+
+        const int WS_BORDER  = 0x800000;
+        const int WS_SIZEBOX = 0x040000;
+        protected override CreateParams CreateParams {
+            get { var cp = base.CreateParams; cp.Style |= WS_BORDER; return cp; }
+        }
+
         public AutocompleteMenu(FastColoredTextBox tb, HMSEditor ed)
         {
             // create a new popup and add the list view to it 
@@ -108,8 +124,19 @@ namespace FastColoredTextBoxNS
             listView.Parent   = this;
             SearchPattern     = @"[\{\#\w\.]";
             MinFragmentLength = 2;
+            InitSize = new Size(240, listView.ItemHeight * 15);
+            ResizeRedraw = false;
             //listView.VerticalScrollBar.ThumbHoverColor = Color.FromArgb(255, Color.SkyBlue);
+        }
 
+        public Size InitSize;
+        protected override void OnResize(EventArgs e) {
+            //base.OnResize(e);
+            if (listView!=null) {
+                Size newSize = new Size(Size.Width - 4, Size.Height - 4);
+                listView.Size        = newSize;
+                listView.MaximumSize = newSize;
+            }
         }
 
         public new Font Font
@@ -122,6 +149,11 @@ namespace FastColoredTextBoxNS
         {
             if (Opening != null)
                 Opening(this, args);
+        }
+
+        public void InitDefaultSize() {
+            Items.MaximumSize = new Size(InitSize.Width, InitSize.Height);
+            Items.Width = InitSize.Width;
         }
 
         public new void Close()
@@ -180,6 +212,7 @@ namespace FastColoredTextBoxNS
         /// <param name="forced">If True - MinFragmentLength will be ignored</param>
         public void Show(bool forced)
         {
+            InitDefaultSize();
             Items.DoAutocomplete(forced);
         }
 
@@ -265,6 +298,8 @@ namespace FastColoredTextBoxNS
 
         Timer timer = new System.Windows.Forms.Timer();
 
+
+
         // < By WendyH -----------------------------------
         protected override void Dispose(bool disposing) {
             if (disposing) {
@@ -286,6 +321,7 @@ namespace FastColoredTextBoxNS
             timer   = null;
             VerticalScrollBar = null;
             base.Dispose(disposing);
+            this.ResizeRedraw = true;
         }
         // > By WendyH -----------------------------------
 
@@ -363,6 +399,7 @@ namespace FastColoredTextBoxNS
             this.HScroll = false;
             VerticalScrollBar.ValueChanged += VerticalScrollBar_Scroll;
             DoubleBuffered = true;
+
         }
 
         void tb_KeyPressed(object sender, KeyPressEventArgs e) {
@@ -644,6 +681,7 @@ namespace FastColoredTextBoxNS
             {
                 // < By WendyH -------------------------------
                 // Recalc position
+                Menu.InitDefaultSize();
                 int h = MaximumSize.Height;
                 int w = MaximumSize.Width;
                 int ih = ItemHeight;
@@ -797,7 +835,7 @@ namespace FastColoredTextBoxNS
                 if (i == FocussedItemIndex) {
                     using (var selectedBrush = new SolidBrush(SelectedColor)) {
                         using (var pen = new Pen(SelectedColor)) {
-                            g.FillRectangle(selectedBrush, leftPadding, y, ClientSize.Width - 1 - leftPadding, itemHeight);
+                            g.FillRectangle(selectedBrush, leftPadding, y, ClientSize.Width, itemHeight);
                         }
                     }
                 }

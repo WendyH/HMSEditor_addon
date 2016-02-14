@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Security.Permissions;
+using HMSEditorNS;
 using System.Drawing;
 
 namespace FastColoredTextBoxNS
@@ -45,8 +46,8 @@ namespace FastColoredTextBoxNS
 
         public virtual void FindNext(string pattern)
         {
-            try
-            {
+            tb.YellowSelection = true;
+            try {
                 RegexOptions opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
                 if (!cbRegex.Checked)
                     pattern = Regex.Escape(pattern);
@@ -102,6 +103,7 @@ namespace FastColoredTextBoxNS
             {
                 Hide();
                 e.Handled = true;
+                SetFocusToEditor();
                 return;
             }
         }
@@ -113,13 +115,14 @@ namespace FastColoredTextBoxNS
                 e.Cancel = true;
                 Hide();
             }
-            this.tb.Focus();
+            SetFocusToEditor();
         }
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             if (keyData == Keys.Escape)
             {
+                SetFocusToEditor();
                 this.Close();
                 return true;
             }
@@ -142,8 +145,26 @@ namespace FastColoredTextBoxNS
             ResetSerach();
         }
 
-        private void FindForm_FormClosed(object sender, FormClosedEventArgs e) {
+        private void SetFocusToEditor() {
+            tb.YellowSelection = false;
             tb.Focus();
+        }
+
+        private void cbMatchCase_KeyPress(object sender, KeyPressEventArgs e) {
+        }
+
+        private void cbWholeWord_KeyPress(object sender, KeyPressEventArgs e) {
+        }
+
+        private void cbRegex_KeyPress(object sender, KeyPressEventArgs e) {
+        }
+
+        private void FindForm_KeyPress(object sender, KeyPressEventArgs e) {
+            if (e.KeyChar == '\t') {
+                SelectNextControl(ActiveControl, true, false, false, true);
+                e.Handled = true;
+                return;
+            }
         }
     }
 }

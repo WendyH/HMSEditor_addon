@@ -147,9 +147,10 @@ namespace HMSEditorNS {
         private bool   NeedRecalcVars     = false;
         public  string CurrentValidTypes    = ""; // Sets in CreateAutocomplete() procedure
         public  string CurrentValidTypesReg = ""; // Sets in CreateAutocomplete() procedure
-        private bool   IsFirstActivate    = true;
+        public  bool   IsFirstActivate    = true;
 
-        private IntPtr PtrScriptFrame = IntPtr.Zero;
+        public IntPtr HwndParent     = IntPtr.Zero;
+        public IntPtr PtrScriptFrame = IntPtr.Zero;
         public IHmsScriptFrame HmsScriptFrame = null;
         private HmsScriptMode  HmsScriptMode  = HmsScriptMode.smUnknown;
         private BackgroundWorker WorkerCheckSyntax = new BackgroundWorker();
@@ -159,7 +160,8 @@ namespace HMSEditorNS {
         public ImageList  IconList { get { return imageList1; } }
         public string SelectedText { get { return Editor.Selection.Text; } set { Editor.InsertText(value); } }
 
-        public ValueToolTip ValueHint   = new ValueToolTip();
+        public ValueToolTip ValueHint = new ValueToolTip();
+        public FormValue    ValueForm = new FormValue();
 
         public AutocompleteItems LocalVars = new AutocompleteItems();
         public AutocompleteItems Variables = new AutocompleteItems();
@@ -262,11 +264,13 @@ namespace HMSEditorNS {
 
         public void OnRunningStateChange(bool running) {
             DebugMode = running;
+            RunLineRised = false;
         }
 
         private void Editor_LostFocus(object sender, EventArgs e) {
             if (!PopupMenu.Focused)
                 HideAllToolTipsAndHints();
+            //if (ValueHint.IsShowing ) Editor.Focus();
         }
 
         private void HideAllToolTipsAndHints() {
@@ -294,10 +298,12 @@ namespace HMSEditorNS {
             if (iLine > 0) iLine -= 1;
             if (iChar > 0) iChar -= 1;
             Editor.Selection.Start = new Place(iChar, iLine);
-            int iFirstLine = Editor.YtoLineIndex();
-            int iLastLine  = Editor.YtoLineIndex(Editor.VerticalScroll.Value+ Editor.Height) + iFirstLine;
-            if ((iLine < iFirstLine) || (iLine > iLastLine)) Editor.DoCaretVisible();
+            RunLineRised = false;
             if (DebugMode) CheckDebugState(); // 4 getting debug line
+
+            int iFirstLine = Editor.YtoLineIndex() + 2;
+            int iLastLine  = Editor.YtoLineIndex(Editor.VerticalScroll.Value + Editor.Height) + iFirstLine-4;
+            if ((iLine < iFirstLine) || (iLine > iLastLine)) Editor.DoCaretVisible();
             Editor.Focus();
         }
 
@@ -530,9 +536,9 @@ namespace HMSEditorNS {
                 if (hashes == "") return;
                 Match match   = Regex.Match(hashes, hash + ":(\\d+):(\\d+)");
                 if (match.Success) {
-                    uint pos = 0;
-                    uint.TryParse(match.Groups[1].Value, out pos);
-                    if (pos < Editor.Text.Length) Editor.SelectionStart = (int)pos;
+                    uint sel = 0, pos = 0;
+                    uint.TryParse(match.Groups[1].Value, out sel);
+                    if (sel < Editor.Text.Length) Editor.SelectionStart = (int)sel;
                     uint.TryParse(match.Groups[2].Value, out pos);
                     if (pos <= Editor.GetMaximumScrollValue()) Editor.SetVerticalScrollValue((int)pos);
                     Editor.Invalidate();
@@ -737,7 +743,10 @@ namespace HMSEditorNS {
                 HmsScriptFrame.ProcessCommand(Constatns.ecRunScript);
         }
 
+        bool RunLineRised = false;
         private void RunLine() {
+            if (RunLineRised) return; 
+            RunLineRised = true; // resets in SetCaretPos() and OnRunningStateChange()
             if (HmsScriptFrame != null)
                 HmsScriptFrame.ProcessCommand(Constatns.ecRunLine);
         }
@@ -1757,8 +1766,8 @@ namespace HMSEditorNS {
             PopupMenu = new AutocompleteMenu(Editor, this);
             PopupMenu.ImageList         = imageList1;
             PopupMenu.MinFragmentLength = 1; 
-            PopupMenu.Items.MaximumSize = new Size(210, PopupMenu.Items.ItemHeight * MaxPopupItems);
-            PopupMenu.Items.Width       = 210;
+            PopupMenu.InitSize = new Size(210, PopupMenu.Items.ItemHeight * MaxPopupItems);
+            PopupMenu.InitDefaultSize();
         }
 
         public void CreateAutocomplete() {
