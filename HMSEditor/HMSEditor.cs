@@ -101,6 +101,10 @@ namespace HMSEditorNS {
         }
 
         private void WorkerCheckSyntax_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            if (needCheckSyntaxAgain) {
+                needCheckSyntaxAgain = false;
+                WorkerCheckSyntax.RunWorkerAsync();
+            }
             if (ErrorMessage.Length > 0) {
                 Editor.SetErrorLines(ErrorChar, ErrorLine, ErrorMessage);
             } else {
@@ -133,8 +137,12 @@ namespace HMSEditorNS {
             }
         }
 
+        bool needCheckSyntaxAgain = false;
         public void AutoCheckSyntaxBackground() {
-            if (WorkerCheckSyntax.IsBusy) return;
+            if (WorkerCheckSyntax.IsBusy) {
+                needCheckSyntaxAgain = true;
+                return;
+            }
             WorkerCheckSyntax.RunWorkerAsync();
 		} 
 
