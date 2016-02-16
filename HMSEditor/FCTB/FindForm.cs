@@ -67,7 +67,9 @@ namespace FastColoredTextBoxNS
 
         public virtual void FindNext(string pattern)
         {
-            tb.YellowSelection = true;
+            tb.YellowSelection    = true;
+            tb.SelectionAfterFind = true;
+
             try {
                 RegexOptions opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
                 if (!cbRegex.Checked)

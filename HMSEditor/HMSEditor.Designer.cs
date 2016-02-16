@@ -527,6 +527,7 @@
             this.tbFind.AcceptsReturn = true;
             this.tbFind.Name = "tbFind";
             this.tbFind.Size = new System.Drawing.Size(100, 25);
+            this.tbFind.Leave += new System.EventHandler(this.tbFind_Leave);
             this.tbFind.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbFind_KeyPress);
             // 
             // btnFindPrev

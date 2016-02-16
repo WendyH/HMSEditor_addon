@@ -73,7 +73,8 @@ namespace FastColoredTextBoxNS {
         public TextStyle StringStyle = null;
         public TextStyle CommentStyle = null;
         private Brush debugColor = new SolidBrush(Color.FromArgb(100, 250, 11, 11));
-        public bool CheckKeywordsRegister = false;
+        public  bool CheckKeywordsRegister = false;
+        public  bool SelectionAfterFind    = false;
         private bool freez = false;
 
         internal const int minLeftIndent = 8;
@@ -2328,7 +2329,7 @@ namespace FastColoredTextBoxNS {
                 findForm = new FindForm(this);
             }
             int vsw = VerticalScroll.Visible ? VerticalScroll.Width : 0;
-            findForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - findForm.Width - 2 - vsw), Parent.PointToScreen(Location).Y + 1);
+            findForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - findForm.Width - 0 - vsw), Parent.PointToScreen(Location).Y + 0);
 
             if (findText != null)
                 findForm.tbFind.Text = findText;
@@ -2357,7 +2358,7 @@ namespace FastColoredTextBoxNS {
                 replaceForm = new ReplaceForm(this);
             }
             int vsw = VerticalScroll.Visible ? VerticalScroll.Width : 0;
-            replaceForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - replaceForm.Width - 2 - vsw), Parent.PointToScreen(Location).Y + 1);
+            replaceForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - replaceForm.Width - 0 - vsw), Parent.PointToScreen(Location).Y + 0);
             if (findText != null) {
                 replaceForm.tbFind.Text = findText;
 

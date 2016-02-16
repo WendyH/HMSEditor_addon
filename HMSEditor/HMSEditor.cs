@@ -388,7 +388,13 @@ namespace HMSEditorNS {
                 TextBoxFindChanged = true;
         }
 
+        private void tbFind_Leave(object sender, EventArgs e) {
+            Editor.YellowSelection = false;
+        }
+
         public void FindText(string text, bool forward = true) {
+            Editor.YellowSelection    = true;
+            Editor.SelectionAfterFind = true;
             TextBoxFindChanged = false;
             Range r = TextBoxFindChanged ? Editor.Range.Clone() : Editor.Selection.Clone();
             if (forward) {
@@ -400,7 +406,7 @@ namespace HMSEditorNS {
             var   pattern = Regex.Escape(text);
             bool  founded = false;
             Range foundRange = null;
-            foreach (var found in r.GetRanges(pattern)) {
+            foreach (var found in r.GetRanges(pattern, RegexOptions.IgnoreCase)) {
                 founded    = true;
                 foundRange = found;
                 if (forward) break;
@@ -411,7 +417,9 @@ namespace HMSEditorNS {
                 Editor.DoSelectionVisible();
             } else {
                 MessageBox.Show("\"" + text + "\"" + " не найдено.", Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                Editor.SelectionStart = 0;
             }
+
         }
 
         public void ToggleBreakpoint(int iLine = -1) {
@@ -939,6 +947,11 @@ namespace HMSEditorNS {
         }
 
         private void Editor_SelectionChanged(object sender, EventArgs e) {
+            if (Editor.SelectionAfterFind) {
+                Editor.SelectionAfterFind = false;
+                return;
+            }
+            Editor.YellowSelection = false;
             if (EnableFunctionToolTip && WasCommaOrBracket || Editor.ToolTip4Function.Visible)
                 if (!CheckPositionIsInParametersSequenceWorker.IsBusy)
                     CheckPositionIsInParametersSequenceWorker.RunWorkerAsync();
