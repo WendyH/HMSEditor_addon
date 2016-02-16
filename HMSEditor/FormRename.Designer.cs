@@ -41,7 +41,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(458, 212);
+            this.btnCancel.Location = new System.Drawing.Point(571, 334);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(88, 28);
             this.btnCancel.TabIndex = 0;
@@ -51,7 +51,7 @@
             // btnOK
             // 
             this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOK.Location = new System.Drawing.Point(364, 212);
+            this.btnOK.Location = new System.Drawing.Point(477, 334);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(88, 28);
             this.btnOK.TabIndex = 1;
@@ -74,7 +74,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxName.Location = new System.Drawing.Point(13, 27);
             this.textBoxName.Name = "textBoxName";
-            this.textBoxName.Size = new System.Drawing.Size(533, 20);
+            this.textBoxName.Size = new System.Drawing.Size(646, 20);
             this.textBoxName.TabIndex = 0;
             this.textBoxName.TextChanged += new System.EventHandler(this.textBoxName_TextChanged);
             this.textBoxName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxName_KeyPress);
@@ -84,7 +84,7 @@
             this.labelFounded.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelFounded.AutoSize = true;
             this.labelFounded.ForeColor = System.Drawing.Color.DodgerBlue;
-            this.labelFounded.Location = new System.Drawing.Point(9, 212);
+            this.labelFounded.Location = new System.Drawing.Point(9, 334);
             this.labelFounded.Name = "labelFounded";
             this.labelFounded.Size = new System.Drawing.Size(123, 13);
             this.labelFounded.TabIndex = 4;
@@ -95,7 +95,7 @@
             this.labelContext.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelContext.AutoSize = true;
             this.labelContext.ForeColor = System.Drawing.Color.Gray;
-            this.labelContext.Location = new System.Drawing.Point(424, 9);
+            this.labelContext.Location = new System.Drawing.Point(537, 9);
             this.labelContext.Margin = new System.Windows.Forms.Padding(0);
             this.labelContext.Name = "labelContext";
             this.labelContext.Size = new System.Drawing.Size(122, 13);
@@ -112,7 +112,7 @@
             // panel2
             // 
             this.panel2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.panel2.Location = new System.Drawing.Point(361, 210);
+            this.panel2.Location = new System.Drawing.Point(474, 332);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(198, 32);
             this.panel2.TabIndex = 7;
@@ -136,6 +136,7 @@
             this.fastColoredTextBox1.AutoIndentCharsPatterns = "";
             this.fastColoredTextBox1.AutoScrollMinSize = new System.Drawing.Size(158, 15);
             this.fastColoredTextBox1.BackBrush = null;
+            this.fastColoredTextBox1.BoldCaret = false;
             this.fastColoredTextBox1.BookmarkIcon = null;
             this.fastColoredTextBox1.BreakpointIcon = null;
             this.fastColoredTextBox1.BreakpointLineColor = System.Drawing.Color.Empty;
@@ -162,7 +163,7 @@
             serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
             this.fastColoredTextBox1.ServiceColors = serviceColors1;
             this.fastColoredTextBox1.ShowScrollBars = false;
-            this.fastColoredTextBox1.Size = new System.Drawing.Size(534, 151);
+            this.fastColoredTextBox1.Size = new System.Drawing.Size(647, 273);
             this.fastColoredTextBox1.TabIndex = 3;
             this.fastColoredTextBox1.TabLength = 2;
             this.fastColoredTextBox1.TabStop = false;
@@ -177,7 +178,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(558, 246);
+            this.ClientSize = new System.Drawing.Size(671, 368);
             this.Controls.Add(this.btnOK);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.panel2);

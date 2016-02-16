@@ -2154,11 +2154,13 @@ namespace FastColoredTextBoxNS {
             DateTime min = DateTime.Now;
             int iLine = -1;
             for (int i = 0; i < LinesCount; i++)
-                if (lines.IsLineLoaded(i))
+                if (lines.IsLineLoaded(i)) {
                     if (lines[i].LastVisit > lastNavigatedDateTime && lines[i].LastVisit < min) {
                         min = lines[i].LastVisit;
                         iLine = i;
                     }
+                }
+
             if (iLine >= 0) {
                 if (!dontNavigate) Navigate(iLine);
                 return true;
@@ -2173,11 +2175,13 @@ namespace FastColoredTextBoxNS {
             var max = new DateTime();
             int iLine = -1;
             for (int i = 0; i < LinesCount; i++)
-                if (lines.IsLineLoaded(i))
+                if (lines.IsLineLoaded(i)) {
                     if (lines[i].LastVisit < lastNavigatedDateTime && lines[i].LastVisit > max) {
                         max = lines[i].LastVisit;
                         iLine = i;
                     }
+                }
+
             if (iLine >= 0) {
                 if (!dontNavigate) Navigate(iLine);
                 return true;
@@ -2193,10 +2197,15 @@ namespace FastColoredTextBoxNS {
             // By WendyH < -----------------
             if ((iChar == 0) && (lines[iLine].LastVisitChar < lines[iLine].Count))
                 iChar = lines[iLine].LastVisitChar;
+            if (lines[iLine].LastVisit == new DateTime()) {
+                lines[iLine].LastVisit = DateTime.Now;
+                lines[iLine].LastVisitChar = iChar;
+            }
             // By WendyH > -----------------
             lastNavigatedDateTime = lines[iLine].LastVisit;
             Selection.Start = new Place(iChar, iLine);
             DoSelectionVisible();
+            Focus();
         }
 
         protected override void OnLoad(EventArgs e) {
@@ -2240,7 +2249,22 @@ namespace FastColoredTextBoxNS {
                 TextChangedDelayed(this, new TextChangedEventArgs(changedRange));
         }
 
+        public void CheckEnableNavigates() {
+            if (HMSEditor.ActiveEditor != null) {
+                int stepsF = 0, stepsB = 0;
+                for (int i = 0; i < LinesCount; i++) {
+                    if (!lines.IsLineLoaded(i)) continue;
+                    if (lines[i].LastVisit > lastNavigatedDateTime) stepsF++;
+                    if (lines[i].LastVisit < lastNavigatedDateTime) stepsB++;
+                    if (stepsF > 0 && stepsB > 0) break;
+                }
+                HMSEditor.ActiveEditor.NavigateForwardEnable  = (stepsF > 0);
+                HMSEditor.ActiveEditor.NavigateBackwardEnable = (stepsB > 0);
+            }
+        }
+
         public void OnSelectionChangedDelayed() {
+            //CheckEnableNavigates();
             RecalcScrollByOneLine(Selection.Start.iLine);
             //highlight brackets
             ClearBracketsPositions();

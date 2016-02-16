@@ -29,7 +29,6 @@ namespace HMSEditorNS {
 
         private void FormRename_Load(object sender, EventArgs e) {
             TextBox.Text = TextLines;
-            TextBox.ClearUndo();
             labelFounded.Text = "";
             NewVarName = OldVarName;
             labelContext.Left = textBoxName.Left + textBoxName.Width - labelContext.Width;
@@ -47,28 +46,32 @@ namespace HMSEditorNS {
             }
         }
 
+        private bool wasChanges = false;
         private void textBoxName_TextChanged(object sender, EventArgs e) {
             Place oldCaret = TextBox.Selection.Start;
-            //TextBox.Text = TextLines;
-            TextBox.Undo();
+            if (wasChanges) TextBox.Undo();
             TextBox.Selection.BeginUpdate();
             TextBox.BeginUpdate();
-
-            List<Range> ranges = new List<Range>();
-            int iLine;
-            foreach (Range range in OrigRanges) {
-                iLine = range.StoredLineNo;
-                Line line = TextBox.GetRealLine(iLine);
-                line.LineNo = range.Start.iLine + 1;
-                Range r = new Range(TextBox, range.Start.iChar, iLine, range.End.iChar, iLine);
-                ranges.Add(r);
+            TextBox.BeginAutoUndo();
+            try {
+                List<Range> ranges = new List<Range>();
+                int iLine;
+                foreach (Range range in OrigRanges) {
+                    iLine = range.StoredLineNo;
+                    Line line = TextBox.GetRealLine(iLine);
+                    line.LineNo = range.Start.iLine + 1;
+                    Range r = new Range(TextBox, range.Start.iChar, iLine, range.End.iChar, iLine);
+                    ranges.Add(r);
+                }
+                TextBox.TextSource.Manager.ExecuteCommand(new ReplaceTextCommand(TextBox.TextSource, ranges, NewVarName));
+                HighlightWord(NewVarName);
+                TextBox.Selection.Start = oldCaret;
+                wasChanges = true;
+            } finally {
+                TextBox.Selection.EndUpdate();
+                TextBox.EndUpdate();
+                TextBox.EndAutoUndo();
             }
-            TextBox.TextSource.Manager.ExecuteCommand(new ReplaceTextCommand(TextBox.TextSource, ranges, NewVarName));
-            HighlightWord(NewVarName);
-            TextBox.Selection.Start = oldCaret;
-            TextBox.Selection.EndUpdate();
-            TextBox.EndUpdate();
-
             int count = OrigRanges.Count;
             if (NewVarName != OldVarName)
                 labelFounded.Text = getNumText(count, new[] { "Произведена", "Произведено", "Произведено" }) + " " + count.ToString() + " " + getNumText(count, new[] { "замена", "замены", "замен" });

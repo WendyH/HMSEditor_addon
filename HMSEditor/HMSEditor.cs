@@ -167,6 +167,9 @@ namespace HMSEditorNS {
         public ImageList  IconList { get { return imageList1; } }
         public string SelectedText { get { return Editor.Selection.Text; } set { Editor.InsertText(value); } }
 
+        public bool NavigateBackwardEnable { get { return btnNavigateBack   .Enabled; } set { btnNavigateBack   .Enabled = value; } }
+        public bool NavigateForwardEnable  { get { return btnNavigateForward.Enabled; } set { btnNavigateForward.Enabled = value; } }
+
         //public ValueHintControl ValueHint = new ValueHintControl();
         public ValueToolTip ValueHint = new ValueToolTip();
         public FormValue    ValueForm = new FormValue();
@@ -344,41 +347,11 @@ namespace HMSEditorNS {
         }
 
         public bool NavigateBackward() {
-            DateTime max = new DateTime();
-            int iLine = -1;
-            for (int i = 0; i < Editor.LinesCount; i++)
-                if (Editor[i].LastVisit < LastNavigatedDateTime && Editor[i].LastVisit > max) {
-                    max = Editor[i].LastVisit;
-                    iLine = i;
-                }
-
-            if (iLine >= 0) {
-                Editor.Navigate(iLine);
-                LastNavigatedDateTime = Editor[iLine].LastVisit;
-                Editor.Focus();
-                Editor.Invalidate();
-                return true;
-            }
-            return false;
+            return Editor.NavigateBackward(); ;
         }
 
         public bool NavigateForward() {
-            DateTime min = DateTime.Now;
-            int iLine = -1;
-            for (int i = 0; i < Editor.LinesCount; i++)
-                if (Editor[i].LastVisit > LastNavigatedDateTime && Editor[i].LastVisit < min) {
-                    min = Editor[i].LastVisit;
-                    iLine = i;
-                }
-
-            if (iLine >= 0) {
-                Editor.Navigate(iLine);
-                LastNavigatedDateTime = Editor[iLine].LastVisit;
-                Editor.Focus();
-                Editor.Invalidate();
-                return true;
-            }
-            return false;
+            return Editor.NavigateForward(); ;
         }
 
         public void FindKeyPressed(KeyPressEventArgs e, string text) {
@@ -958,13 +931,6 @@ namespace HMSEditorNS {
         }
 
         private void Editor_SelectionChangedDelayed(object sender, EventArgs e) {
-            // Remember last visit time of the line in the textbox
-            if (Editor.Selection.IsEmpty && Editor.Selection.Start.iLine < Editor.LinesCount) {
-                if (LastNavigatedDateTime != Editor[Editor.Selection.Start.iLine].LastVisit) {
-                    Editor[Editor.Selection.Start.iLine].LastVisit = DateTime.Now;
-                    LastNavigatedDateTime = Editor[Editor.Selection.Start.iLine].LastVisit;
-                }
-            }
             if (btnHighlightSameWords.Checked) HighlightSameWords();
             if (btnSetIntelliSense   .Checked) UpdateCurrentVisibleVariables();
         }
