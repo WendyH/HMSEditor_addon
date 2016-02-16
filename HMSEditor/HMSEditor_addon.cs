@@ -119,7 +119,6 @@ namespace HmsAddons {
         public uint CreateEditor(IntPtr aParent, IntPtr aScriptFrame, int aScriptMode, ref IntPtr aEditor) {
             try {
                 EditBox = new HMSEditor(aScriptFrame, aScriptMode);
-                EditBox.HwndParent = aParent;
                 NativeMethods.SetParent(EditBox.Handle, aParent);
 
                 LoadSettings();

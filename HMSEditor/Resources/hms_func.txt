@@ -377,7 +377,15 @@ HmsAnsiToByteArray(const aText: String): Variant|Преобразует ANSI с�
 HmsAnsiToWideString(const aText: String; aCodePage: Integer): String|Преобразование ANSI строки в другую кодовую страницу
   aText - преобразуемый текст
   aCodePage - кодовая страница. Например: 866 - DOS, 1251 - Windows Cyrilic, 65001 - UTF8.
-HmsAudioVisualization(const aAudioFileName, aCopyAudioFileName: String; const aVisualizationModule, aVisualizationPreset, aVideoFileName: String; aVideoWidth, aVideoHeight: Integer; aVideoFrameRate: Extended): Boolean|
+HmsAudioVisualization(const aAudioFileName, aCopyAudioFileName: String; const aVisualizationModule, aVisualizationPreset, aVideoFileName: String; aVideoWidth, aVideoHeight: Integer; aVideoFrameRate: Extended): Boolean|(Описание не точное) Запуск создания видио файла аудио-визуализации (?)
+  aAudioFileName - Имя звукового файла для создания визуализации
+  aCopyAudioFileName - (?) Имя копии звукового файла для создания визуализации
+  aVisualizationModule - Модуль визуализации ("Алхимия" или др.)
+  aVisualizationPreset - Предустановка (Preset) в модуле визуализации
+  aVideoFileName - Имя видео файла с результатом визуализации
+  aVideoWidth - Ширина кадра создаваемого видео
+  aVideoHeight - Ширина кадра создаваемого видео
+  aVideoFrameRate - Частота кадров создаваемого видео
 HmsCancelPressed: Boolean|Возвращает True, если в форме прогресса выполнения нажата кнопка отмены
 HmsCreateFileTags(const aProviderName, aFileName: String): THmsScriptFileTags|Получение информации о медиа-файле в объект хранения тегов с типом THmsScriptFileTags по указанному провайдеру тегов (tpExif, tpFFmpeg, tpMediaInfo, tpShell, tpWms, tpXmp).
   aProviderName - имя провайдера тегов (константы: tpExif, tpFFmpeg, tpMediaInfo, tpShell, tpWms, tpXmp)

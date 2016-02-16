@@ -62,7 +62,9 @@ namespace FastColoredTextBoxNS {
         private Timer HighlightTimer = new Timer();      
         public Regex RegexStringAndComments = null;
         public HmsToolTip ToolTip4Function = new HmsToolTip();
-        public SelectionStyle YellowSelectionStyle = new SelectionStyle(new SolidBrush(Themes.ToColor("#E4FC5B")), Brushes.Black);
+        public SelectionStyle YellowSelectionStyle = new SelectionStyle(new SolidBrush(Themes.ToColor("#E4FC5BF0")), Brushes.Black);
+        public TextStyle GreenSelectionStyle  = new TextStyle(Brushes.Black, new SolidBrush(Themes.ToColor("#D2EEB0")), FontStyle.Regular);
+        public TextStyle BlueSelectionStyle   = new TextStyle(Brushes.Black, new SolidBrush(Themes.ToColor("#c6e3ff")), FontStyle.Regular);
         public bool YellowSelection = false;
         public bool DebugMode = false;
         public int HmsDebugLine = -1;
@@ -72,6 +74,7 @@ namespace FastColoredTextBoxNS {
         public TextStyle CommentStyle = null;
         private Brush debugColor = new SolidBrush(Color.FromArgb(100, 250, 11, 11));
         public bool CheckKeywordsRegister = false;
+        private bool freez = false;
 
         internal const int minLeftIndent = 8;
         private const int maxBracketSearchIterations = 1000;
@@ -276,6 +279,15 @@ namespace FastColoredTextBoxNS {
         }
 
         // By WendyH
+        public void Freez() {
+            freez = true;
+        }
+
+        public void UnFreez() {
+            freez = false;
+            Invalidate();
+        }
+
         private void HighlightTimer_Tick(object sender, EventArgs e) {
             HighlightTimer.Stop();
             Timer timer = sender as Timer;
@@ -2314,9 +2326,9 @@ namespace FastColoredTextBoxNS {
         public void ShowFindDialog(string findText) {
             if (findForm == null) {
                 findForm = new FindForm(this);
-                findForm.StartPosition = FormStartPosition.Manual; // By WendyH
-                findForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - findForm.Width) / 2, Parent.PointToScreen(Location).Y + (Parent.Height - findForm.Height) / 2);
             }
+            int vsw = VerticalScroll.Visible ? VerticalScroll.Width : 0;
+            findForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - findForm.Width - 2 - vsw), Parent.PointToScreen(Location).Y + 1);
 
             if (findText != null)
                 findForm.tbFind.Text = findText;
@@ -2343,10 +2355,9 @@ namespace FastColoredTextBoxNS {
 
             if (replaceForm == null) {
                 replaceForm = new ReplaceForm(this);
-                replaceForm.StartPosition = FormStartPosition.Manual; // By WendyH
-                replaceForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - replaceForm.Width) / 2, Parent.PointToScreen(Location).Y + (Parent.Height - replaceForm.Height) / 2);
             }
-
+            int vsw = VerticalScroll.Visible ? VerticalScroll.Width : 0;
+            replaceForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - replaceForm.Width - 2 - vsw), Parent.PointToScreen(Location).Y + 1);
             if (findText != null) {
                 replaceForm.tbFind.Text = findText;
 
@@ -4789,6 +4800,7 @@ namespace FastColoredTextBoxNS {
         /// Draw control
         /// </summary>
         protected override void OnPaint(PaintEventArgs e) {
+            if (freez) return;
             if (ServiceColors == null) ServiceColors = new ServiceColors(); // By WendyH - WTF?? ServiceColors == null after contructor?
             if (needRecalc)
                 Recalc();
@@ -4952,6 +4964,7 @@ namespace FastColoredTextBoxNS {
                 //draw wordwrap strings of line
                 for (int iWordWrapLine = 0; iWordWrapLine < lineInfo.WordWrapStringsCount; iWordWrapLine++) {
                     y = lineInfo.startY + iWordWrapLine * CharHeight - VerticalScroll.Value;
+                    if (y > VerticalScroll.Value + ClientSize.Height) break;
                     //indent
                     var indent = iWordWrapLine == 0 ? 0 : lineInfo.wordWrapIndent * CharWidth;
                     //draw chars
@@ -5213,6 +5226,7 @@ namespace FastColoredTextBoxNS {
                                                 y2 < ClientSize.Height ? y2 : ClientSize.Height);
                     }
         }
+
         private void DrawLineChars(Graphics gr, int firstChar, int lastChar, int iLine, int iWordWrapLine, int startX,
                                    int y) {
             Line     line     = lines[iLine];
@@ -7142,6 +7156,9 @@ window.status = ""#print"";
                 hints .Dispose();
                 timer .Dispose();
                 timer2.Dispose();
+                YellowSelectionStyle.Dispose();
+                GreenSelectionStyle.Dispose();
+                BlueSelectionStyle.Dispose();
                 ToolTip4Function.Dispose();
                 debugColor.Dispose();
                 middleClickScrollingTimer.Dispose();

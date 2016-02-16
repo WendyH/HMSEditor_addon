@@ -752,6 +752,11 @@ namespace FastColoredTextBoxNS {
         }
 
         // By WendyH < -------------------------------------
+        public void SetStyleOwerwrite(Style style) {
+            int code = tb.GetOrSetStyleLayerIndex(style);
+            SetStyleOwerwrite(ToStyleIndex(code));
+        }
+
         /// <summary>
         /// Apply style to chars of range
         /// </summary>

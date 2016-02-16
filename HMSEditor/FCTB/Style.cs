@@ -325,7 +325,7 @@ namespace FastColoredTextBoxNS
                 {
                     //draw text
                     gr.SmoothingMode = SmoothingMode.AntiAlias;
-
+                    gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
                     var r = new Range(range.tb, range.Start.iChar, range.Start.iLine,
                                       Math.Min(range.tb[range.End.iLine].Count, range.End.iChar), range.End.iLine);
                     using (var style = new TextStyle(ForegroundBrush, null, FontStyle.Regular))

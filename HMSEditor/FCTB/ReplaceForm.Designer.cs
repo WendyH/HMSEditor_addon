@@ -16,6 +16,7 @@
             if (disposing && (components != null))
             {
                 components.Dispose();
+                timer.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -28,7 +29,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.btClose = new System.Windows.Forms.Button();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ReplaceForm));
             this.btFindNext = new System.Windows.Forms.Button();
             this.tbFind = new System.Windows.Forms.TextBox();
             this.cbRegex = new System.Windows.Forms.CheckBox();
@@ -39,22 +40,13 @@
             this.btReplaceAll = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.tbReplace = new System.Windows.Forms.TextBox();
+            this.lblFound = new System.Windows.Forms.Label();
             this.SuspendLayout();
-            // 
-            // btClose
-            // 
-            this.btClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btClose.Location = new System.Drawing.Point(351, 120);
-            this.btClose.Name = "btClose";
-            this.btClose.Size = new System.Drawing.Size(90, 25);
-            this.btClose.TabIndex = 8;
-            this.btClose.Text = "Закрыть";
-            this.btClose.UseVisualStyleBackColor = true;
-            this.btClose.Click += new System.EventHandler(this.btClose_Click);
             // 
             // btFindNext
             // 
-            this.btFindNext.Location = new System.Drawing.Point(129, 90);
+            this.btFindNext.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btFindNext.Location = new System.Drawing.Point(109, 89);
             this.btFindNext.Name = "btFindNext";
             this.btFindNext.Size = new System.Drawing.Size(120, 25);
             this.btFindNext.TabIndex = 5;
@@ -66,7 +58,7 @@
             // 
             this.tbFind.Location = new System.Drawing.Point(87, 12);
             this.tbFind.Name = "tbFind";
-            this.tbFind.Size = new System.Drawing.Size(354, 20);
+            this.tbFind.Size = new System.Drawing.Size(334, 20);
             this.tbFind.TabIndex = 0;
             this.tbFind.TextChanged += new System.EventHandler(this.cbMatchCase_CheckedChanged);
             this.tbFind.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbFind_KeyPress);
@@ -115,7 +107,8 @@
             // 
             // btReplace
             // 
-            this.btReplace.Location = new System.Drawing.Point(255, 90);
+            this.btReplace.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btReplace.Location = new System.Drawing.Point(235, 89);
             this.btReplace.Name = "btReplace";
             this.btReplace.Size = new System.Drawing.Size(90, 25);
             this.btReplace.TabIndex = 6;
@@ -125,7 +118,8 @@
             // 
             // btReplaceAll
             // 
-            this.btReplaceAll.Location = new System.Drawing.Point(351, 90);
+            this.btReplaceAll.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btReplaceAll.Location = new System.Drawing.Point(331, 89);
             this.btReplaceAll.Name = "btReplaceAll";
             this.btReplaceAll.Size = new System.Drawing.Size(90, 25);
             this.btReplaceAll.TabIndex = 7;
@@ -146,18 +140,30 @@
             // 
             this.tbReplace.Location = new System.Drawing.Point(87, 61);
             this.tbReplace.Name = "tbReplace";
-            this.tbReplace.Size = new System.Drawing.Size(354, 20);
+            this.tbReplace.Size = new System.Drawing.Size(334, 20);
             this.tbReplace.TabIndex = 0;
             this.tbReplace.TextChanged += new System.EventHandler(this.cbMatchCase_CheckedChanged);
             this.tbReplace.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbFind_KeyPress);
+            // 
+            // lblFound
+            // 
+            this.lblFound.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblFound.BackColor = System.Drawing.Color.Transparent;
+            this.lblFound.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.lblFound.Location = new System.Drawing.Point(387, 14);
+            this.lblFound.Name = "lblFound";
+            this.lblFound.Size = new System.Drawing.Size(32, 16);
+            this.lblFound.TabIndex = 10;
+            this.lblFound.Text = "0";
+            this.lblFound.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // ReplaceForm
             // 
             this.AcceptButton = this.btFindNext;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.btClose;
-            this.ClientSize = new System.Drawing.Size(449, 151);
+            this.ClientSize = new System.Drawing.Size(432, 123);
+            this.Controls.Add(this.lblFound);
             this.Controls.Add(this.tbFind);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tbReplace);
@@ -168,26 +174,26 @@
             this.Controls.Add(this.cbMatchCase);
             this.Controls.Add(this.cbRegex);
             this.Controls.Add(this.btFindNext);
-            this.Controls.Add(this.btClose);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Name = "ReplaceForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Поиск и замена текста";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ReplaceForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ReplaceForm_FormClosed);
             this.Load += new System.EventHandler(this.ReplaceForm_Load);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ReplaceForm_KeyPress);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ReplaceForm_MouseDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Button btClose;
         private System.Windows.Forms.Button btFindNext;
         private System.Windows.Forms.CheckBox cbRegex;
         private System.Windows.Forms.CheckBox cbMatchCase;
@@ -198,5 +204,6 @@
         private System.Windows.Forms.Label label2;
         public System.Windows.Forms.TextBox tbFind;
         public System.Windows.Forms.TextBox tbReplace;
+        private System.Windows.Forms.Label lblFound;
     }
 }

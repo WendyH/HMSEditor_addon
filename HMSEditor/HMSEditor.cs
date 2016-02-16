@@ -157,8 +157,7 @@ namespace HMSEditorNS {
         public  string CurrentValidTypesReg = ""; // Sets in CreateAutocomplete() procedure
         public  bool   IsFirstActivate    = true;
 
-        public IntPtr HwndParent     = IntPtr.Zero;
-        public IntPtr PtrScriptFrame = IntPtr.Zero;
+        private IntPtr PtrScriptFrame = IntPtr.Zero;
         public IHmsScriptFrame HmsScriptFrame = null;
         private HmsScriptMode  HmsScriptMode  = HmsScriptMode.smUnknown;
         private BackgroundWorker WorkerCheckSyntax = new BackgroundWorker();
@@ -168,6 +167,7 @@ namespace HMSEditorNS {
         public ImageList  IconList { get { return imageList1; } }
         public string SelectedText { get { return Editor.Selection.Text; } set { Editor.InsertText(value); } }
 
+        //public ValueHintControl ValueHint = new ValueHintControl();
         public ValueToolTip ValueHint = new ValueToolTip();
         public FormValue    ValueForm = new FormValue();
 
@@ -753,10 +753,17 @@ namespace HMSEditorNS {
 
         bool RunLineRised = false;
         private void RunLine() {
-            if (RunLineRised) return; 
-            RunLineRised = true; // resets in SetCaretPos() and OnRunningStateChange()
-            if (HmsScriptFrame != null)
+            if (HmsScriptFrame != null) {
+                if (RunLineRised) return;
+                RunLineRised = true; // resets in SetCaretPos() and OnRunningStateChange()
+                string line = Editor.Lines[Editor.Selection.Start.iLine];
                 HmsScriptFrame.ProcessCommand(Constatns.ecRunLine);
+                if (ValueForm.Visible) {
+                    if (line.IndexOf(ValueForm.RealExpression) >= 0) ValueForm.Value = EvalVariableValue(ValueForm.Expression);
+                } else if (ValueHint.IsShowing) {
+                    if (line.IndexOf(ValueHint.RealExpression) >= 0) ValueHint.Value = EvalVariableValue(ValueHint.Expression);
+                }
+            }
         }
 
         private void EvaluateDialog() {
@@ -892,6 +899,8 @@ namespace HMSEditorNS {
             else if (e.KeyCode == Keys.F12   ) GotoDefinition();
             else if (e.KeyCode == Keys.F2    ) RenameVariable();
             else if (e.KeyCode == Keys.Escape) {
+                if (Editor.findForm    != null) Editor.findForm   .Hide();
+                if (Editor.replaceForm != null) Editor.replaceForm.Hide();
                 HideAllToolTipsAndHints();
                 PopupMenu.TempNotShow = true;
             }

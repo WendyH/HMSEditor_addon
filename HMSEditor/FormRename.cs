@@ -28,6 +28,8 @@ namespace HMSEditorNS {
         }
 
         private void FormRename_Load(object sender, EventArgs e) {
+            TextBox.Text = TextLines;
+            TextBox.ClearUndo();
             labelFounded.Text = "";
             NewVarName = OldVarName;
             labelContext.Left = textBoxName.Left + textBoxName.Width - labelContext.Width;
@@ -47,10 +49,11 @@ namespace HMSEditorNS {
 
         private void textBoxName_TextChanged(object sender, EventArgs e) {
             Place oldCaret = TextBox.Selection.Start;
-            TextBox.Range.ClearStyle(TextBox.SelectionStyle);
-            TextBox.Text = TextLines;
+            //TextBox.Text = TextLines;
+            TextBox.Undo();
             TextBox.Selection.BeginUpdate();
             TextBox.BeginUpdate();
+
             List<Range> ranges = new List<Range>();
             int iLine;
             foreach (Range range in OrigRanges) {
@@ -63,8 +66,6 @@ namespace HMSEditorNS {
             TextBox.TextSource.Manager.ExecuteCommand(new ReplaceTextCommand(TextBox.TextSource, ranges, NewVarName));
             HighlightWord(NewVarName);
             TextBox.Selection.Start = oldCaret;
-            TextBox.NeedRecalc(true);
-            TextBox.Invalidate();
             TextBox.Selection.EndUpdate();
             TextBox.EndUpdate();
 
@@ -77,12 +78,13 @@ namespace HMSEditorNS {
         }
 
         private void HighlightWord(string word) {
-            TextBox.Range.ClearStyle(TextBox.SelectionStyle);
+            TextBox.AllowSeveralTextStyleDrawing = true;
+            TextBox.Range.ClearStyle(TextBox.BlueSelectionStyle);
             if (word == "") return;
             var range = TextBox.Range.Clone();
             foreach (var r in range.GetRangesByLines("\\b" + word + "\\b", RegexOptions.IgnoreCase)) {
                 if (r.IsStringOrComment) continue;
-                r.SetStyle(TextBox.SelectionStyle);
+                r.SetStyleOwerwrite(TextBox.BlueSelectionStyle);
             }
         }
 

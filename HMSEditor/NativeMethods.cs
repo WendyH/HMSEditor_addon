@@ -9,6 +9,8 @@ namespace HMSEditorNS {
         public const uint WM_SYSCOMMAND = 274;
         public const uint SC_MINIMIZE   = 0xF020;
         public const uint WM_KEYDOWN    = 0x0100;
+        public const uint WM_NCLBUTTONDOWN = 0xA1;
+        public const uint HT_CAPTION       = 0x2;
 
         public const uint COINIT_MULTITHREADED     = 0x0; //Initializes the thread for multi-threaded object concurrency.
         public const uint COINIT_APARTMENTTHREADED = 0x2; //Initializes the thread for apartment-threaded object concurrency

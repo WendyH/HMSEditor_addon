@@ -16,11 +16,14 @@ namespace FastColoredTextBoxNS
         ToolTip tooltip2 = new ToolTip();
         ToolTip tooltip3 = new ToolTip();
         string MBCaption = "HMS Editor - Поиск";
+        Timer timer = new Timer();
 
         public FindForm(FastColoredTextBox tb)
         {
             InitializeComponent();
             this.tb = tb;
+            timer.Interval = 500;
+            timer.Tick += Timer_Tick;
             tooltip1.ToolTipIcon = ToolTipIcon.Info;
             tooltip1.ToolTipTitle = "Регистрозависимый поиск";
             tooltip1.SetToolTip(cbMatchCase, "Поиск будет осуществляться согласно указанному регистру символов");
@@ -34,14 +37,32 @@ namespace FastColoredTextBoxNS
             tooltip3.SetToolTip(cbRegex, "Поиск по указанному регулярному вырежению.\nНапример: MyVar\\s*?=");
         }
 
-        private void btClose_Click(object sender, EventArgs e)
-        {
-            Close();
+        private void Timer_Tick(object sender, EventArgs e) {
+            timer.Stop();
+            CheckCount();
         }
 
-        private void btFindNext_Click(object sender, EventArgs e)
-        {
-            FindNext(tbFind.Text);
+        private void CheckCount() {
+            int n = 0;
+            try {
+                string pattern = tbFind.Text;
+                if (pattern!="") {
+                    RegexOptions opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
+                    if (!cbRegex.Checked) pattern = Regex.Escape(pattern);
+                    if (cbWholeWord.Checked) pattern = "\\b" + pattern + "\\b";
+
+                    Regex regex = new Regex(pattern, opt);
+                    n = regex.Matches(tb.Text).Count;
+                }
+            } catch {
+
+            }
+            lblFound.Text = n.ToString();
+        }
+
+        protected override void OnPaint(PaintEventArgs e) {
+            base.OnPaint(e);
+            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
         }
 
         public virtual void FindNext(string pattern)
@@ -95,7 +116,7 @@ namespace FastColoredTextBoxNS
         {
             if (e.KeyChar == '\r')
             {
-                btFindNext.PerformClick();
+                FindNext(tbFind.Text);
                 e.Handled = true;
                 return;
             }
@@ -132,17 +153,19 @@ namespace FastColoredTextBoxNS
         protected override void OnActivated(EventArgs e)
         {
             tbFind.Focus();
-            ResetSerach();
+            ResetSearch();
         }
 
-        void ResetSerach()
+        void ResetSearch()
         {
+            timer.Stop();
+            timer.Start();
             firstSearch = true;
         }
 
         private void cbMatchCase_CheckedChanged(object sender, EventArgs e)
         {
-            ResetSerach();
+            ResetSearch();
         }
 
         private void SetFocusToEditor() {
@@ -164,6 +187,13 @@ namespace FastColoredTextBoxNS
                 SelectNextControl(ActiveControl, true, false, false, true);
                 e.Handled = true;
                 return;
+            }
+        }
+
+        private void FindForm_MouseDown(object sender, MouseEventArgs e) {
+            if (e.Button == MouseButtons.Left) {
+                NativeMethods.ReleaseCapture();
+                NativeMethods.SendMessage(Handle, NativeMethods.WM_NCLBUTTONDOWN, (IntPtr)NativeMethods.HT_CAPTION, (IntPtr)0);
             }
         }
     }

@@ -9,8 +9,6 @@ using System.IO;
 namespace test {
 
     public partial class Form1: Form {
-        [DllImport("User32")]
-        private static extern IntPtr SetWindowPos(IntPtr hWnd, int hWndInsertAfter, int x, int Y, int cx, int cy, int wFlags);
 
         Guid clsid = new Guid();
         Guid iidAddonList    = new Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A"); // guid by IHmsAddonList
@@ -124,7 +122,7 @@ namespace test {
                 int top  = 0;
                 int w = panel1.ClientSize.Width;
                 int h = panel1.ClientSize.Height;
-                SetWindowPos(EditorHandle, 0, left, top, w, h, 0);
+                NativeMethods.SetWindowPos(EditorHandle, 0, left, top, w, h, 0);
             }
         }
 

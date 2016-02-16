@@ -17,11 +17,14 @@ namespace FastColoredTextBoxNS
         ToolTip tooltip2 = new ToolTip();
         ToolTip tooltip3 = new ToolTip();
         string MBCaption = "HMS Editor - Поиск и замена";
+        Timer timer = new Timer();
 
         public ReplaceForm(FastColoredTextBox tb)
         {
             InitializeComponent();
             this.tb = tb;
+            timer.Interval = 500;
+            timer.Tick += Timer_Tick;
             tooltip1.ToolTipIcon = ToolTipIcon.Info;
             tooltip1.ToolTipTitle = "Регистрозависимый поиск";
             tooltip1.SetToolTip(cbMatchCase, "Поиск будет осуществляться согласно указанному регистру символов");
@@ -35,10 +38,41 @@ namespace FastColoredTextBoxNS
             tooltip3.SetToolTip(cbRegex    , "Поиск по указанному регулярному вырежению.\nНапример: MyVar\\s*?=");
         }
 
-        private void btClose_Click(object sender, EventArgs e)
-        {
-            SetFocusToEditor();
-            Close();
+        private void Timer_Tick(object sender, EventArgs e) {
+            timer.Stop();
+            CheckCount();
+        }
+
+        private void CheckCount() {
+            int n = 0;
+            try {
+                string pattern = tbFind.Text;
+                if (pattern != "") {
+                    RegexOptions opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
+                    if (!cbRegex.Checked) pattern = Regex.Escape(pattern);
+                    if (cbWholeWord.Checked) pattern = "\\b" + pattern + "\\b";
+
+                    Regex regex = new Regex(pattern, opt);
+                    n = regex.Matches(tb.Text).Count;
+                }
+            } catch {
+
+            }
+            lblFound.Text = n.ToString();
+        }
+
+        protected override void OnMouseDown(MouseEventArgs mea) {
+            base.OnMouseDown(mea);
+            //ctrl-leftclick anywhere on the control to drag the form to a new location 
+            if (mea.Button == MouseButtons.Left && Control.ModifierKeys == Keys.Control) {
+                NativeMethods.ReleaseCapture();
+                NativeMethods.SendMessage(Handle, NativeMethods.WM_NCLBUTTONDOWN, (IntPtr)NativeMethods.HT_CAPTION, (IntPtr)0);
+            }
+        }
+
+        protected override void OnPaint(PaintEventArgs e) {
+            base.OnPaint(e);
+            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
         }
 
         private void btFindNext_Click(object sender, EventArgs e)
@@ -61,6 +95,9 @@ namespace FastColoredTextBoxNS
                 pattern = Regex.Escape(pattern);
             if (cbWholeWord.Checked)
                 pattern = "\\b" + pattern + "\\b";
+
+            Regex regex = new Regex(pattern, opt);
+            lblFound.Text = regex.Matches(tb.Text).Count.ToString();
             //
             //var range = tb.Selection.IsEmpty? tb.Range.Clone() : tb.Selection.Clone();
             var range = tb.Range.Clone();
@@ -80,6 +117,10 @@ namespace FastColoredTextBoxNS
                 pattern = Regex.Escape(pattern);
             if (cbWholeWord.Checked)
                 pattern = "\\b" + pattern + "\\b";
+
+            Regex regex = new Regex(pattern, opt);
+            lblFound.Text = regex.Matches(tb.Text).Count.ToString();
+
             //
             Range range = tb.Selection.Clone();
             range.Normalize();
@@ -122,7 +163,6 @@ namespace FastColoredTextBoxNS
             if (e.KeyChar == '\r')
                 btFindNext_Click(sender, null);
             if (e.KeyChar == '\x1b') {
-                Hide();
                 SetFocusToEditor();
             }
         }
@@ -132,7 +172,6 @@ namespace FastColoredTextBoxNS
         {
             if (keyData == Keys.Escape)
             {
-                this.Close();
                 SetFocusToEditor();
                 return true;
             }
@@ -144,7 +183,6 @@ namespace FastColoredTextBoxNS
             if (e.CloseReason == CloseReason.UserClosing)
             {
                 e.Cancel = true;
-                Hide();
             }
             SetFocusToEditor();
         }
@@ -201,17 +239,19 @@ namespace FastColoredTextBoxNS
         protected override void OnActivated(EventArgs e)
         {
             tbFind.Focus();
-            ResetSerach();
+            ResetSearch();
         }
 
-        void ResetSerach()
+        void ResetSearch()
         {
+            timer.Stop();
+            timer.Start();
             firstSearch = true;
         }
 
         private void cbMatchCase_CheckedChanged(object sender, EventArgs e)
         {
-            ResetSerach();
+            ResetSearch();
         }
 
         private void ReplaceForm_Load(object sender, EventArgs e) {
@@ -249,9 +289,16 @@ namespace FastColoredTextBoxNS
         }
 
         private void SetFocusToEditor() {
+            Hide();
             tb.YellowSelection = false;
             tb.Focus();
         }
 
+        private void ReplaceForm_MouseDown(object sender, MouseEventArgs e) {
+            if (e.Button == MouseButtons.Left) {
+                NativeMethods.ReleaseCapture();
+                NativeMethods.SendMessage(Handle, NativeMethods.WM_NCLBUTTONDOWN, (IntPtr)NativeMethods.HT_CAPTION, (IntPtr)0);
+            }
+        }
     }
 }

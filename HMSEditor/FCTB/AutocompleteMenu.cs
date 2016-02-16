@@ -81,15 +81,12 @@ namespace FastColoredTextBoxNS
             using (SolidBrush brush = new SolidBrush(Color.White)) {
                 g.FillRectangle(brush, new Rectangle(0, 0, Width, Height));
             }
-            int R = SelectedColor.R - 30; R = Math.Max(0, R);
-            int G = SelectedColor.G - 30; G = Math.Max(0, G);
-            int B = SelectedColor.B - 30; B = Math.Max(0, B);
-            Color c = Color.FromArgb(255, R, G, B);
-            g.DrawRectangle(new Pen(c, 1), new Rectangle(0, 0, Width-1, Height-1));
+            g.DrawRectangle(new Pen(HMS.BordersColor, 1), new Rectangle(0, 0, Width-1, Height-1));
             //base.OnPaint(e);
         }
         private const int grab = 12;
 
+        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         protected override void WndProc(ref Message m) {
             base.WndProc(ref m);
             if (m.Msg == 0x84) {  // Trap WM_NCHITTEST
@@ -99,11 +96,12 @@ namespace FastColoredTextBoxNS
             }
         }
 
-        const int WS_BORDER  = 0x800000;
-        const int WS_SIZEBOX = 0x040000;
-        protected override CreateParams CreateParams {
-            get { var cp = base.CreateParams; cp.Style |= WS_BORDER; return cp; }
-        }
+        //const int WS_BORDER  = 0x800000;
+        //const int WS_SIZEBOX = 0x040000;
+        //protected override CreateParams CreateParams {
+        //    [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
+        //    get { var cp = base.CreateParams; cp.Style |= WS_BORDER; return cp; }
+        //}
 
         public AutocompleteMenu(FastColoredTextBox tb, HMSEditor ed)
         {

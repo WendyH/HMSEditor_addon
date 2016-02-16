@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
+using HMSEditorNS;
 
 namespace FastColoredTextBoxNS
 {
@@ -15,6 +16,10 @@ namespace FastColoredTextBoxNS
             InitializeComponent();
         }
 
+        protected override void OnPaint(PaintEventArgs e) {
+            base.OnPaint(e);
+            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
+        }
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -60,6 +65,13 @@ namespace FastColoredTextBoxNS
         }
 
         private void GoToForm_FormClosed(object sender, FormClosedEventArgs e) {
+        }
+
+        private void GoToForm_MouseDown(object sender, MouseEventArgs e) {
+            if (e.Button == MouseButtons.Left) {
+                NativeMethods.ReleaseCapture();
+                NativeMethods.SendMessage(Handle, NativeMethods.WM_NCLBUTTONDOWN, (IntPtr)NativeMethods.HT_CAPTION, (IntPtr)0);
+            }
         }
     }
 }

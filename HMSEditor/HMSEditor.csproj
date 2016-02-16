@@ -264,8 +264,15 @@
     <Compile Include="Templates.cs" />
     <Compile Include="testpanel.cs" />
     <Compile Include="Themes.cs" />
+    <Compile Include="Utils\HtmlRemoval.cs" />
     <Compile Include="Utils\Plist.cs" />
     <Compile Include="Utils\YamlParser.cs" />
+    <Compile Include="ValueHintControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ValueHintControl.Designer.cs">
+      <DependentUpon>ValueHintControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ValueToolTip.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -324,6 +331,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="ValueHintControl.resx">
+      <DependentUpon>ValueHintControl.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
