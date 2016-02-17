@@ -395,9 +395,37 @@ namespace HMSEditorNS {
 
         }
 
+        public void OffBreakpointInHms(int iLine = -1) {
+            if (HmsScriptFrame != null) {
+                if (HmsScriptFrame != null) {
+                    int isBreakpoint = 0;
+                    HmsScriptFrame.IsBreakpointLine(iLine + 1, ref isBreakpoint);
+                    bool lineIsBreakpointed = (isBreakpoint < 0);
+                    if (lineIsBreakpointed)
+                        HmsScriptFrame.ToggleBreakpoint(iLine + 1);
+                }
+            }
+        }
+
+        public void SetBreakpointInHms(int iLine = -1) {
+            if (HmsScriptFrame != null) {
+                if (HmsScriptFrame != null) {
+                    int isBreakpoint = 0;
+                    HmsScriptFrame.IsBreakpointLine(iLine + 1, ref isBreakpoint);
+                    bool lineIsBreakpointed = (isBreakpoint < 0);
+                    if (!lineIsBreakpointed)
+                        HmsScriptFrame.ToggleBreakpoint(iLine + 1);
+                }
+            }
+        }
+
         public void ToggleBreakpoint(int iLine = -1) {
             if (iLine == -1) iLine = Editor.Selection.Start.iLine;
             int  isBreakpoint = 0;
+
+            string line = Editor.WithoutStringAndComments(Editor.Lines[iLine]).Trim();
+            if (line.Length == 0) return;
+
             bool lineIsBreakpointed = Editor.Breakpoints.Contains(iLine);
             if (HmsScriptFrame != null) {
                 HmsScriptFrame.IsBreakpointLine(iLine + 1, ref isBreakpoint);
@@ -728,6 +756,7 @@ namespace HMSEditorNS {
         }
 
         private void RunScript() {
+            Editor.HmsDebugLine = -1;
             if (HmsScriptFrame!=null)
                 HmsScriptFrame.ProcessCommand(Constatns.ecRunScript);
         }
@@ -912,10 +941,10 @@ namespace HMSEditorNS {
                 if (!Editor.Selection.IsStringOrComment) WasCommaOrBracket = true;
             }
 
-            if (e.KeyCode == Keys.F5) ToggleBreakpoint();
-                else if (e.KeyCode == Keys.F7) EvaluateDialog();
-                else if (e.KeyCode == Keys.F8) RunLine();
-                else if (e.KeyCode == Keys.F9) RunScript();
+            if      (e.KeyCode == Keys.F5) ToggleBreakpoint();
+            else if (e.KeyCode == Keys.F7) EvaluateDialog();
+            else if (e.KeyCode == Keys.F8) RunLine();
+            else if (e.KeyCode == Keys.F9) RunScript();
 
         }
 

@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Windows.Forms;
 using FastColoredTextBoxNS;
 
@@ -89,20 +90,50 @@ namespace HMSEditorNS {
             label1.ForeColor = CreateRegex() ? Color.Black : Color.Red;
         }
 
+        public MatchCollection MatchesWithTimeout(Regex regex, string input, int duration) {
+            var reset = new AutoResetEvent(false);
+            Exception ex = null;
+            MatchCollection r = null;
+            
+            var t = new Thread(() => {
+                try {
+                    r = regex.Matches(input);
+                } catch (Exception e) {
+                    ex = e;
+                }
+                reset.Set();
+            });
+
+            t.Start();
+
+            if (!reset.WaitOne(duration)) {
+                t.Abort();
+                //throw new TimeoutException();
+            }
+            return r; // if error - return null
+        }
+
         private void SearchRegexPattern() {
-            if (tt == null) return;
-            MatchCollection mc = tt.Matches(Value);
+            if (tt == null || string.IsNullOrEmpty(Value)) return;
+
+            string text;
+            List<Place> charIndexToPlace;
+            var range = fastColoredTB.Range;
+            range.GetText(out text, out charIndexToPlace);
+
+            MatchCollection mc = MatchesWithTimeout(tt, text, 5000);
+            if (mc == null) {
+                tbResult.Text = "Операция прервана по таймауту.";
+                return;
+            }
+
             tbRegexCount.Text = mc.Count.ToString();
             int pos = fastColoredTB.SelectionStart;
             bool waspos = false;
-            var range = fastColoredTB.Range;
             range.ClearStyle(fastColoredTB.GreenSelectionStyle, fastColoredTB.BlueSelectionStyle);
             fastColoredTB.SyntaxHighlighter.HighlightSyntax(fastColoredTB.Language, range);
             string result = "";
-            string text;
-            List<Place> charIndexToPlace;
-            range.GetText(out text, out charIndexToPlace);
-            foreach (Match m in tt.Matches(text)) {
+            foreach (Match m in mc) {
                 Group group = m.Groups[0];
                 Range r = new Range(range.tb);
                 r.Start = charIndexToPlace[group.Index];

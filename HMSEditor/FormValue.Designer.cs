@@ -26,6 +26,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormValue));
             FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.chkOnTop = new System.Windows.Forms.CheckBox();
             this.chkWordWrap = new System.Windows.Forms.CheckBox();
             this.btnClose = new System.Windows.Forms.Button();
             this.panelTop = new System.Windows.Forms.Panel();
@@ -44,7 +45,6 @@
             this.chkUseRegex = new System.Windows.Forms.CheckBox();
             this.tbExpression = new System.Windows.Forms.TextBox();
             this.lblExpression = new System.Windows.Forms.Label();
-            this.chkOnTop = new System.Windows.Forms.CheckBox();
             this.fastColoredTB = new FastColoredTextBoxNS.FastColoredTextBox();
             this.panel1.SuspendLayout();
             this.panelTop.SuspendLayout();
@@ -63,6 +63,19 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(692, 42);
             this.panel1.TabIndex = 1;
+            // 
+            // chkOnTop
+            // 
+            this.chkOnTop.AutoSize = true;
+            this.chkOnTop.Checked = true;
+            this.chkOnTop.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkOnTop.Location = new System.Drawing.Point(161, 15);
+            this.chkOnTop.Name = "chkOnTop";
+            this.chkOnTop.Size = new System.Drawing.Size(120, 17);
+            this.chkOnTop.TabIndex = 2;
+            this.chkOnTop.Text = "Поверх всех форм";
+            this.chkOnTop.UseVisualStyleBackColor = true;
+            this.chkOnTop.CheckedChanged += new System.EventHandler(this.chkOnTop_CheckedChanged);
             // 
             // chkWordWrap
             // 
@@ -270,19 +283,6 @@
             this.lblExpression.TabIndex = 0;
             this.lblExpression.Text = "Выражение:";
             // 
-            // chkOnTop
-            // 
-            this.chkOnTop.AutoSize = true;
-            this.chkOnTop.Checked = true;
-            this.chkOnTop.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkOnTop.Location = new System.Drawing.Point(161, 15);
-            this.chkOnTop.Name = "chkOnTop";
-            this.chkOnTop.Size = new System.Drawing.Size(120, 17);
-            this.chkOnTop.TabIndex = 2;
-            this.chkOnTop.Text = "Поверх всех форм";
-            this.chkOnTop.UseVisualStyleBackColor = true;
-            this.chkOnTop.CheckedChanged += new System.EventHandler(this.chkOnTop_CheckedChanged);
-            // 
             // fastColoredTB
             // 
             this.fastColoredTB.AcceptsReturn = false;
@@ -353,7 +353,6 @@
             this.DoubleBuffered = true;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(392, 151);
             this.Name = "FormValue";
             this.ShowIcon = false;

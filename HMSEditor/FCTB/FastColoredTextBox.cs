@@ -230,7 +230,7 @@ namespace FastColoredTextBoxNS {
             AllowDrop = true;
             FindEndOfFoldingBlockStrategy = FindEndOfFoldingBlockStrategy.Strategy1;
             VirtualSpace = false;
-            bookmarks = new Bookmarks(this, false);
+            bookmarks   = new Bookmarks(this, false);
             breakpoints = new Bookmarks(this, true); // By WendyH
             BookmarkColor = Color.PowderBlue;
             ToolTip = new HmsToolTip();
@@ -2970,8 +2970,9 @@ namespace FastColoredTextBoxNS {
 
                 // By WendyH < ------------------------------------------------
                 if ((Bookmarks.Count > 0) || (Breakpoints.Count > 0) || HmsDebugLine >= 0) {
-                    LeftIndent += (BookmarkIcon != null) ? (BookmarkIcon.Width - 2) : (CharHeight - 3);
-                    if (!ShowLineNumbers) LeftIndent += 12;
+                    //LeftIndent += (BookmarkIcon != null) ? (BookmarkIcon.Width - 2) : (CharHeight - 3);
+                    LeftIndent += CharWidth * 2 + 2;
+                    //if (!ShowLineNumbers) LeftIndent += 12;
                 }
                 // By WendyH > ------------------------------------------------
 
@@ -4969,7 +4970,9 @@ namespace FastColoredTextBoxNS {
                 if (DebugMode && iLine == HmsDebugLine) {
                     Rectangle r = new Rectangle(LeftIndent + (CharWidth * HmsDebugChar), y, textAreaRect.Width, CharHeight);
                     e.Graphics.FillRectangle(debugColor, r);
-                    if (DebugCurrentLineIcon != null) e.Graphics.DrawImage(DebugCurrentLineIcon, 0, y, CharHeight, CharHeight);
+                    if (DebugCurrentLineIcon != null) e.Graphics.DrawImage(DebugCurrentLineIcon, 0, y, CharWidth * 2 + 2, CharWidth * 2 + 2);
+                    //if (DebugCurrentLineIcon != null) e.Graphics.DrawString((CharWidth * 2).ToString(), Font, Brushes.Red, 0, y);  
+
                 }
                 //OnPaintLine event
                 if (lineInfo.VisibleState == VisibleState.Visible)

@@ -55,13 +55,17 @@ namespace FastColoredTextBoxNS
         protected FastColoredTextBox tb;
         protected List<Bookmark> items = new List<Bookmark>();
 
-        public Bookmarks(FastColoredTextBox tb, bool noShift)
+        public Bookmarks(FastColoredTextBox tb, bool isBreakPoints)
         {
             this.tb = tb;
-            if (!noShift) {
+            if (isBreakPoints) {
+                tb.LineInserted += tb_LineInserted4Breakpoints;
+                tb.LineRemoved  += tb_LineRemoved4Breakpoints;
+            } else {
                 tb.LineInserted += tb_LineInserted;
-                tb.LineRemoved += tb_LineRemoved;
+                tb.LineRemoved  += tb_LineRemoved;
             }
+            
         }
 
         protected virtual void tb_LineRemoved(object sender, LineRemovedEventArgs e)
@@ -100,16 +104,77 @@ namespace FastColoredTextBoxNS
 
         protected virtual void tb_LineInserted(object sender, LineInsertedEventArgs e)
         {
-            for (int i = 0; i < Count; i++)
-                if (items[i].LineIndex >= e.Index)
-                {
+            for (int i = 0; i < Count; i++) {
+                int oldIndex = items[i].LineIndex;
+                
+                if (items[i].LineIndex >= e.Index) {
                     items[i].LineIndex = items[i].LineIndex + e.Count;
-                }else
-                if (items[i].LineIndex == e.Index - 1 && e.Count == 1)
-                {
-                    if(tb[e.Index - 1].StartSpacesCount == tb[e.Index - 1].Count)
+
+                } else if (items[i].LineIndex == e.Index - 1 && e.Count == 1) {
+                    if (tb[e.Index - 1].StartSpacesCount == tb[e.Index - 1].Count)
                         items[i].LineIndex = items[i].LineIndex + e.Count;
                 }
+            }
+        }
+
+        protected virtual void tb_LineRemoved4Breakpoints(object sender, LineRemovedEventArgs e) {
+            var ActiveEditor = HMSEditorNS.HMSEditor.ActiveEditor;
+            for (int i = 0; i < Count; i++) {
+                int oldIndex = items[i].LineIndex;
+                bool needMoveBreakpointInHms = false;
+                bool was = false;
+                if (items[i].LineIndex >= e.Index) {
+                    if (items[i].LineIndex >= e.Index + e.Count) {
+                        items[i].LineIndex = items[i].LineIndex - e.Count;
+                        needMoveBreakpointInHms = true;
+
+                    } else {
+
+                        was = e.Index <= 0;
+                        foreach (var b in items) {
+                            if (b.LineIndex == e.Index - 1) { was = true; break; }
+                        }
+                        if (was) {
+                            items.RemoveAt(i);
+                            i--;
+                        } else {
+                            items[i].LineIndex = e.Index - 1;
+                            needMoveBreakpointInHms = true;
+                        }
+
+                    }
+
+                }
+
+                if (needMoveBreakpointInHms && ActiveEditor != null) {
+                    ActiveEditor.OffBreakpointInHms(oldIndex);
+                    if (!was) ActiveEditor.SetBreakpointInHms(items[i].LineIndex);
+                }
+
+            }
+        }
+
+        protected virtual void tb_LineInserted4Breakpoints(object sender, LineInsertedEventArgs e) {
+            var ActiveEditor = HMSEditorNS.HMSEditor.ActiveEditor;
+            for (int i = 0; i < Count; i++) {
+                int oldIndex = items[i].LineIndex;
+                bool needMoveBreakpointInHms = false;
+
+                if (items[i].LineIndex >= e.Index) {
+                    items[i].LineIndex = items[i].LineIndex + e.Count;
+                    needMoveBreakpointInHms = true;
+
+                } else if (items[i].LineIndex == e.Index - 1 && e.Count == 1) {
+                    if (tb[e.Index - 1].StartSpacesCount == tb[e.Index - 1].Count) {
+                        items[i].LineIndex = items[i].LineIndex + e.Count;
+                        needMoveBreakpointInHms = true;
+                    }
+                }
+                if (needMoveBreakpointInHms && ActiveEditor != null) {
+                    ActiveEditor.OffBreakpointInHms(oldIndex);
+                    ActiveEditor.SetBreakpointInHms(items[i].LineIndex);
+                }
+            }
         }
 
         protected override void Dispose(bool disposible)

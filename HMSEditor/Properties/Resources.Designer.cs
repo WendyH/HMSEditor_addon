@@ -263,6 +263,16 @@ namespace HMSEditorNS.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap HistoricalInstructionPointer_16x {
+            get {
+                object obj = ResourceManager.GetObject("HistoricalInstructionPointer_16x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap logo {
             get {
                 object obj = ResourceManager.GetObject("logo", resourceCulture);
@@ -353,6 +363,36 @@ namespace HMSEditorNS.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap RunningLine16 {
+            get {
+                object obj = ResourceManager.GetObject("RunningLine16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RunningLine161 {
+            get {
+                object obj = ResourceManager.GetObject("RunningLine161", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RunningLine162 {
+            get {
+                object obj = ResourceManager.GetObject("RunningLine162", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Save_6530 {
             get {
                 object obj = ResourceManager.GetObject("Save_6530", resourceCulture);
@@ -386,6 +426,16 @@ namespace HMSEditorNS.Properties {
         internal static System.Drawing.Bitmap togglebookmark {
             get {
                 object obj = ResourceManager.GetObject("togglebookmark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap VSO_Run_16x {
+            get {
+                object obj = ResourceManager.GetObject("VSO_Run_16x", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -1056,7 +1056,7 @@
             this.Editor.CharWidth = 7;
             this.Editor.ContextMenuStrip = this.contextMenuStrip1;
             this.Editor.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.Editor.DebugCurrentLineIcon = global::HMSEditorNS.Properties.Resources.arrow_run_16xMD;
+            this.Editor.DebugCurrentLineIcon = global::HMSEditorNS.Properties.Resources.RunningLine162;
             this.Editor.DelayedEventsInterval = 600;
             this.Editor.DelayedTextChangedInterval = 500;
             this.Editor.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));

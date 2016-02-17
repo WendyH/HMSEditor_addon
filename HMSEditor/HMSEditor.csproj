@@ -346,6 +346,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <None Include="Resources\RunningLine162.png" />
+    <None Include="Resources\RunningLine161.png" />
+    <None Include="Resources\RunningLine16.png" />
+    <None Include="Resources\HistoricalInstructionPointer_16x.png" />
+    <None Include="Resources\VSO_Run_16x.png" />
     <None Include="Resources\RefactoringLog_12810.png" />
     <None Include="Resources\Bullets_11690.png" />
     <None Include="Resources\DialogID_6220_16x.png" />
