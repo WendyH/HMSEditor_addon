@@ -2152,15 +2152,19 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         public bool NavigateForward(bool dontNavigate = false) {
             DateTime min = DateTime.Now;
-            int iLine = -1;
+            int iLine = -1; int count = 0;
             for (int i = 0; i < LinesCount; i++)
                 if (lines.IsLineLoaded(i)) {
                     if (lines[i].LastVisit > lastNavigatedDateTime && lines[i].LastVisit < min) {
                         min = lines[i].LastVisit;
                         iLine = i;
                     }
+                    if (lines[i].LastVisit > lastNavigatedDateTime) count++;
                 }
-
+            if (HMSEditor.ActiveEditor != null) {
+                HMSEditor.ActiveEditor.NavigateForwardEnable  = (count > 1);
+                if (iLine >= 0) HMSEditor.ActiveEditor.NavigateBackwardEnable = true;
+            }
             if (iLine >= 0) {
                 if (!dontNavigate) Navigate(iLine);
                 return true;
@@ -2172,16 +2176,22 @@ namespace FastColoredTextBoxNS {
         /// Navigates backward (by Line.LastVisit property)
         /// </summary>
         public bool NavigateBackward(bool dontNavigate = false) {
-            var max = new DateTime();
-            int iLine = -1;
+            var max = new DateTime(); var emptyDate = new DateTime();
+            int iLine = -1; int count = 0;
             for (int i = 0; i < LinesCount; i++)
                 if (lines.IsLineLoaded(i)) {
-                    if (lines[i].LastVisit < lastNavigatedDateTime && lines[i].LastVisit > max) {
-                        max = lines[i].LastVisit;
+                    var lastVisit = lines[i].LastVisit;
+                    if (lastVisit < lastNavigatedDateTime && lastVisit > max) {
+                        max = lastVisit;
                         iLine = i;
                     }
+                    if (lastVisit < lastNavigatedDateTime && lastVisit != emptyDate) count++;
                 }
 
+            if (HMSEditor.ActiveEditor != null) {
+                HMSEditor.ActiveEditor.NavigateBackwardEnable = (count > 1);
+                if (iLine >= 0) HMSEditor.ActiveEditor.NavigateForwardEnable = true;
+            }
             if (iLine >= 0) {
                 if (!dontNavigate) Navigate(iLine);
                 return true;
@@ -2280,6 +2290,10 @@ namespace FastColoredTextBoxNS {
                     lines[Selection.Start.iLine].LastVisit = DateTime.Now;
                     lines[Selection.Start.iLine].LastVisitChar = Selection.Start.iChar; // By WendyH
                     lastNavigatedDateTime = lines[Selection.Start.iLine].LastVisit;
+                    if (HMSEditor.ActiveEditor != null) {
+                        HMSEditor.ActiveEditor.NavigateBackwardEnable = true;
+                        HMSEditor.ActiveEditor.NavigateForwardEnable  = false;
+                    }
                 }
             }
 
