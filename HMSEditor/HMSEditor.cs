@@ -148,14 +148,15 @@ namespace HMSEditorNS {
 
 		// Fields
 		public  bool   Locked             = false;
-        private string ThemeName          = "";
         public  string Filename           = HMS.TemplatesDir; // last opened or saved file 
         public  int    LastPtocedureIndex = -1;
         public  bool   WasCommaOrBracket  = false;
-        private bool   NeedRecalcVars     = false;
         public  string CurrentValidTypes    = ""; // Sets in CreateAutocomplete() procedure
         public  string CurrentValidTypesReg = ""; // Sets in CreateAutocomplete() procedure
         public  bool   IsFirstActivate    = true;
+        private bool   NeedRecalcVars     = false;
+        private string ThemeName          = "";
+        private uint   OldTextHash        = 0;
 
         private IntPtr PtrScriptFrame = IntPtr.Zero;
         public IHmsScriptFrame HmsScriptFrame = null;
@@ -568,6 +569,7 @@ namespace HMSEditorNS {
         /// </summary>
         public void LoadSettings() {
             try { Settings.Load(); } catch (Exception e) { HMS.LogError(e.ToString()); Console.WriteLine("Error loading config file '" + Settings.File + "'", e); return; }
+            OldTextHash = (uint)Text.GetHashCode();
 
             tsMain.Visible = false;
             string section = SettingsSection, sVal;
@@ -676,6 +678,7 @@ namespace HMSEditorNS {
         /// </summary>
         public void SaveSettings() {
             try {
+                Settings.Load(); // reload settings before saving for update LastHashe values
                 string section = SettingsSection;
                 Settings.Set("ToolStripVisible"    , tsMain.Visible                  , section);
                 Settings.Set("HighlightCurrentLine", btnHighlightCurrentLine .Checked, section);
@@ -711,8 +714,25 @@ namespace HMSEditorNS {
                 Settings.Set("UnderlinePascalKeywords", btnUnderlinePascalKeywords.Checked, section);
 
                 if (btnStorePositions.Checked) {
+                    string oldHash   = OldTextHash.ToString();
+                    string hashParam = "LastHash" + HmsScriptMode.ToString();
+                    string hashes = Settings.Get(hashParam, SettingsSection, "");
+                    Dictionary<string, string> hashesDict = new Dictionary<string, string>();
+                    string firstKey = "";
+                    foreach (string hashval in hashes.Split('|')) {
+                        Match m = Regex.Match(hashval, "(.*?):(.*)");
+                        if (!m.Success) continue;
+                        if (firstKey=="") firstKey = m.Groups[1].Value;
+                        hashesDict[m.Groups[1].Value] = m.Groups[2].Value;
+                    }
+                    if (hashesDict.ContainsKey(oldHash)) hashesDict.Remove(oldHash);
+                    if (hashesDict.Count>=20) hashesDict.Remove(firstKey);
+
                     uint lastHash = (uint)Text.GetHashCode();
-                    Settings.Set("LastHash" + HmsScriptMode.ToString(), lastHash.ToString() + ":" + Editor.SelectionStart + ":" + Editor.GetVerticalScrollValue(), section);
+                    hashesDict[lastHash.ToString()] = Editor.SelectionStart.ToString() + ":" + Editor.GetVerticalScrollValue().ToString();
+                    hashes = ""; foreach (var keyVal in hashesDict) hashes += "|" + keyVal.Key + ":" + keyVal.Value;
+                    if (hashes.Length > 0) hashes = hashes.Substring(1);
+                    Settings.Set(hashParam, hashes, section);
                 }
 
                 string hotkeys = GetHotKeysMapping();
