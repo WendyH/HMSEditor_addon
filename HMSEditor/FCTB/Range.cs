@@ -1421,12 +1421,22 @@ namespace FastColoredTextBoxNS {
                 range.GoLeft(shift);
             }
             bool wasIdentifier = false;
-            while (IsIdentifierChar(range.CharBeforeStart)) {
-                wasIdentifier = true;
-                range.GoLeft(shift);
+            bool nextIdentifier = IsIdentifierChar(range.CharBeforeStart);
+            if (nextIdentifier) {
+                while (IsIdentifierChar(range.CharBeforeStart)) {
+                    wasIdentifier = true;
+                    range.GoLeft(shift);
+                }
+                if (!wasIdentifier && (!wasSpace || range.CharBeforeStart != '\n'))
+                    range.GoLeft(shift);
+
+            } else {
+                while (!IsIdentifierChar(range.CharBeforeStart) && (range.CharBeforeStart != '\n')) {
+                    range.GoLeft(shift);
+                }
             }
-            if (!wasIdentifier && (!wasSpace || range.CharBeforeStart != '\n'))
-                range.GoLeft(shift);
+
+
             this.Start = range.Start;
             this.End = range.End;
 
@@ -1460,18 +1470,28 @@ namespace FastColoredTextBoxNS {
 
             if (!((wasSpace || wasNewLine) && goToStartOfNextWord)) {
 
-                bool wasIdentifier = false;
-                while (IsIdentifierChar(range.CharAfterStart)) {
-                    wasIdentifier = true;
-                    range.GoRight(shift);
+                bool wasIdentifier  = false;
+                bool nextIdentifier = IsIdentifierChar(range.CharAfterStart);
+                if (nextIdentifier) {
+                    while (IsIdentifierChar(range.CharAfterStart)) {
+                        wasIdentifier = true;
+                        range.GoRight(shift);
+                    }
+
+                    if (!wasIdentifier)
+                        range.GoRight(shift);
+
+                    if (goToStartOfNextWord && !wasSpace)
+                        while (IsSpaceChar(range.CharAfterStart))
+                            range.GoRight(shift);
+
+                } else {
+                    while (!IsIdentifierChar(range.CharAfterStart) && (range.CharAfterStart != '\n')) {
+                        range.GoRight(shift);
+                    }
                 }
 
-                if (!wasIdentifier)
-                    range.GoRight(shift);
 
-                if (goToStartOfNextWord && !wasSpace)
-                    while (IsSpaceChar(range.CharAfterStart))
-                        range.GoRight(shift);
             }
 
             this.Start = range.Start;
