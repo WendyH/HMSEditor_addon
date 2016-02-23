@@ -65,9 +65,8 @@ namespace FastColoredTextBoxNS
             ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
         }
 
-        public virtual void FindNext(string pattern)
-        {
-            tb.YellowSelection    = true;
+        public virtual void FindNext(string pattern, bool toBack = false) {
+            tb.YellowSelection = true;
             tb.SelectionAfterFind = true;
 
             try {
@@ -80,8 +79,7 @@ namespace FastColoredTextBoxNS
                 Range range = tb.Selection.Clone();
                 range.Normalize();
                 //
-                if (firstSearch)
-                {
+                if (firstSearch) {
                     startPlace = range.Start;
                     firstSearch = false;
                 }
@@ -92,24 +90,47 @@ namespace FastColoredTextBoxNS
                 else
                     range.End = startPlace;
                 //
-                foreach (var r in range.GetRangesByLines(pattern, opt))
-                {
+                foreach (var r in range.GetRangesByLines(pattern, opt)) {
                     tb.Selection = r;
                     tb.DoSelectionVisible();
                     tb.Invalidate();
                     return;
                 }
                 //
-                if (range.Start >= startPlace && startPlace > Place.Empty)
-                {
+                if (range.Start >= startPlace && startPlace > Place.Empty) {
                     tb.Selection.Start = new Place(0, 0);
                     FindNext(pattern);
                     return;
                 }
                 MessageBox.Show("Совпадений не найдено", MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } catch (Exception ex) {
+                MessageBox.Show(ex.Message, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            catch (Exception ex)
-            {
+        }
+
+        public virtual void FindPrev(string pattern) {
+
+            try {
+                RegexOptions opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
+                if (!cbRegex.Checked)
+                    pattern = Regex.Escape(pattern);
+                if (cbWholeWord.Checked)
+                    pattern = "\\b" + pattern + "\\b";
+                Range range = tb.Range.Clone();
+                range.End = tb.Selection.Start;
+                bool found = false;
+                foreach (var r in range.GetRangesByLines(pattern, opt)) {
+                    tb.Selection = r;
+                    found = true;
+                }
+                if (found) {
+                    tb.YellowSelection = true;
+                    tb.SelectionAfterFind = true;
+                    tb.DoSelectionVisible();
+                    tb.Invalidate();
+                }
+
+            } catch (Exception ex) {
                 MessageBox.Show(ex.Message, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -197,6 +218,14 @@ namespace FastColoredTextBoxNS
                 NativeMethods.ReleaseCapture();
                 NativeMethods.SendMessage(Handle, NativeMethods.WM_NCLBUTTONDOWN, (IntPtr)NativeMethods.HT_CAPTION, (IntPtr)0);
             }
+        }
+
+        private void btnForw_Click(object sender, EventArgs e) {
+            FindNext(tbFind.Text);
+        }
+
+        private void btnBack_Click(object sender, EventArgs e) {
+            FindPrev(tbFind.Text);
         }
     }
 }

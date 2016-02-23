@@ -147,6 +147,9 @@
     <Compile Include="FCTB\Char.cs" />
     <Compile Include="FCTB\CommandManager.cs" />
     <Compile Include="FCTB\Commands.cs" />
+    <Compile Include="FlatButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="FlatScrollbar.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -346,6 +349,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <None Include="Resources\Down.png" />
+    <None Include="Resources\Up.png" />
     <None Include="Resources\RunningLine162.png" />
     <None Include="Resources\RunningLine161.png" />
     <None Include="Resources\RunningLine16.png" />

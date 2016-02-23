@@ -290,6 +290,7 @@ namespace HMSEditorNS {
             if (Editor.ToolTip != null) Editor.ToolTip.RemoveAll();
             PopupMenu.ToolTip.RemoveAll();
             PopupMenu.Close();
+            ValueForm.Hide();
         }
 
         private void HideToolTip4Function(bool noCheckLine = false) {

@@ -1431,7 +1431,7 @@ namespace FastColoredTextBoxNS {
                     range.GoLeft(shift);
 
             } else {
-                while (!IsIdentifierChar(range.CharBeforeStart) && (range.CharBeforeStart != '\n')) {
+                while (!IsIdentifierChar(range.CharBeforeStart) && (range.CharBeforeStart != '\n') && (range.CharBeforeStart != ' ')) {
                     range.GoLeft(shift);
                 }
             }
@@ -1486,7 +1486,7 @@ namespace FastColoredTextBoxNS {
                             range.GoRight(shift);
 
                 } else {
-                    while (!IsIdentifierChar(range.CharAfterStart) && (range.CharAfterStart != '\n')) {
+                    while (!IsIdentifierChar(range.CharAfterStart) && (range.CharAfterStart != '\n') && (range.CharAfterStart != ' ')) {
                         range.GoRight(shift);
                     }
                 }

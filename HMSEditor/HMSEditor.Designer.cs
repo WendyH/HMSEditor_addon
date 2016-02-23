@@ -17,11 +17,13 @@
                 if (SameWordsStyle      != null) SameWordsStyle.Dispose();
                 if (PopupMenu           != null && !PopupMenu.IsDisposed) PopupMenu.Dispose();
                 if (MouseTimer          != null) MouseTimer.Dispose();
+                if (ValueForm           != null && !ValueForm.IsDisposed) ValueForm.Close();
             }
             InvisibleCharsStyle = null;
             SameWordsStyle = null;
             PopupMenu      = null;
             MouseTimer     = null;
+            ValueForm      = null;
             base.Dispose(disposing);
         }
 

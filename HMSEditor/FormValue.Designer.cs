@@ -356,7 +356,6 @@
             this.MinimumSize = new System.Drawing.Size(392, 151);
             this.Name = "FormValue";
             this.ShowIcon = false;
-            this.ShowInTaskbar = false;
             this.Text = "Просмотр значения";
             this.TopMost = true;
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormValue_KeyDown);

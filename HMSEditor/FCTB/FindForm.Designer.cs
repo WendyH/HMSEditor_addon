@@ -36,6 +36,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cbWholeWord = new System.Windows.Forms.CheckBox();
             this.lblFound = new System.Windows.Forms.Label();
+            this.btnForw = new HMSEditorNS.FlatButton();
+            this.btnBack = new HMSEditorNS.FlatButton();
             this.SuspendLayout();
             // 
             // tbFind
@@ -101,11 +103,37 @@
             this.lblFound.Text = "0";
             this.lblFound.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // btnForw
+            // 
+            this.btnForw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnForw.Image = global::HMSEditorNS.Properties.Resources.Down;
+            this.btnForw.Location = new System.Drawing.Point(292, 20);
+            this.btnForw.Name = "btnForw";
+            this.btnForw.Size = new System.Drawing.Size(19, 16);
+            this.btnForw.TabIndex = 8;
+            this.btnForw.TabStop = false;
+            this.btnForw.UseVisualStyleBackColor = true;
+            this.btnForw.Click += new System.EventHandler(this.btnForw_Click);
+            // 
+            // btnBack
+            // 
+            this.btnBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBack.Image = global::HMSEditorNS.Properties.Resources.Up;
+            this.btnBack.Location = new System.Drawing.Point(273, 20);
+            this.btnBack.Name = "btnBack";
+            this.btnBack.Size = new System.Drawing.Size(19, 16);
+            this.btnBack.TabIndex = 7;
+            this.btnBack.TabStop = false;
+            this.btnBack.UseVisualStyleBackColor = true;
+            this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
+            // 
             // FindForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(354, 71);
+            this.Controls.Add(this.btnForw);
+            this.Controls.Add(this.btnBack);
             this.Controls.Add(this.lblFound);
             this.Controls.Add(this.cbWholeWord);
             this.Controls.Add(this.label1);
@@ -136,5 +164,7 @@
         private System.Windows.Forms.CheckBox cbWholeWord;
         public System.Windows.Forms.TextBox tbFind;
         private System.Windows.Forms.Label lblFound;
+        private HMSEditorNS.FlatButton btnBack;
+        private HMSEditorNS.FlatButton btnForw;
     }
 }
