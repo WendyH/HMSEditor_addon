@@ -6,6 +6,7 @@ using System.Windows.Forms;
 namespace FastColoredTextBoxNS {
     public partial class FlatScrollbar: Control {
 
+        public List<int> FoundLines  = new List<int>();
         public List<int> Bookmarks   = new List<int>();
         public List<int> Breakpoints = new List<int>();
         public int       ErrorLine   = 0;
@@ -17,6 +18,7 @@ namespace FastColoredTextBoxNS {
         public Color ThumbHoverColor = Color.Gray;
         public Color ArrowColor      = Color.DarkGray;
         public Color ArrowHoverColor = Color.CornflowerBlue;
+        public Color FoundColor      = HMSEditorNS.Themes.ToColor("#E5C63BFF");
         public int   ThumbSize     = 0;
         public int   TrackSize     = 0;
 
@@ -228,7 +230,7 @@ namespace FastColoredTextBoxNS {
             if (ErrorLine   > 0) DrawRectByLine(g, ErrorLine  , Color.OrangeRed     , 9, 5, 5);
             foreach (int iLine in Bookmarks  ) DrawRectByLine(g, iLine, Color.LightSkyBlue, 4, 7, 4);
             foreach (int iLine in Breakpoints) DrawRectByLine(g, iLine, Color.IndianRed, 0, 7, 4);
-
+            foreach (int iLine in FoundLines ) DrawRectByLine(g, iLine, FoundColor    , 2, 12, 3);
         }
 
         private void DrawRectByLine(Graphics g, int iLine, Color color, int x, int width, int height) {

@@ -433,7 +433,6 @@ namespace HMSEditorNS {
 
             // Load a built-in Functions and Procedures items
             BuildAutocompleteItemsFromResourse(ResourcePath + "hms_func.txt", ImagesIndex.Procedure, "", ItemsFunction, DefKind.Function);
-            foreach(var itemFunc in ItemsFunction) { if (itemFunc.Type.Length > 0) itemFunc.ImageIndex = ImagesIndex.Function; }
 
             // Load a built-in Variables
             BuildAutocompleteItemsFromResourse(ResourcePath + "hms_vars.txt"     , ImagesIndex.Field, "Встроенная переменная", ItemsVariable, DefKind.Variable);
@@ -527,7 +526,7 @@ namespace HMSEditorNS {
             }
         }
 
-        private static HMSItem GetHmsItemFromLine(string line) {
+        public static HMSItem GetHmsItemFromLine(string line) {
             HMSItem item = new HMSItem();
             item.Text         = regexGetFromLineName.Match(line).Groups[1].Value.Trim();
             item.Type         = regexGetFromLineType.Match(line).Groups[1].Value.Trim(); // All ok, if not success - value is empty string

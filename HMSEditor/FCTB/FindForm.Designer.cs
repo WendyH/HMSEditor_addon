@@ -36,6 +36,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.cbWholeWord = new System.Windows.Forms.CheckBox();
             this.lblFound = new System.Windows.Forms.Label();
+            this.btnClose = new System.Windows.Forms.Button();
             this.btnForw = new HMSEditorNS.FlatButton();
             this.btnBack = new HMSEditorNS.FlatButton();
             this.SuspendLayout();
@@ -103,6 +104,21 @@
             this.lblFound.Text = "0";
             this.lblFound.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // btnClose
+            // 
+            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnClose.FlatAppearance.BorderSize = 0;
+            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClose.Image = global::HMSEditorNS.Properties.Resources.Close_12x;
+            this.btnClose.Location = new System.Drawing.Point(338, 2);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(13, 12);
+            this.btnClose.TabIndex = 9;
+            this.btnClose.TabStop = false;
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
             // btnForw
             // 
             this.btnForw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -131,7 +147,9 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(354, 71);
+            this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnForw);
             this.Controls.Add(this.btnBack);
             this.Controls.Add(this.lblFound);
@@ -150,6 +168,7 @@
             this.Text = "Поиск";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FindForm_FormClosing);
+            this.VisibleChanged += new System.EventHandler(this.FindForm_VisibleChanged);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FindForm_KeyPress);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FindForm_MouseDown);
             this.ResumeLayout(false);
@@ -166,5 +185,6 @@
         private System.Windows.Forms.Label lblFound;
         private HMSEditorNS.FlatButton btnBack;
         private HMSEditorNS.FlatButton btnForw;
+        private System.Windows.Forms.Button btnClose;
     }
 }

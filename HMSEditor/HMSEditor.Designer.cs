@@ -1104,7 +1104,7 @@
             this.helpPanel1.Location = new System.Drawing.Point(4, 4);
             this.helpPanel1.Name = "helpPanel1";
             this.helpPanel1.Size = new System.Drawing.Size(295, 498);
-            this.helpPanel1.SplitterDistance = 217;
+            this.helpPanel1.SplitterDistance = 263;
             this.helpPanel1.TabIndex = 0;
             // 
             // HMSEditor
@@ -1213,11 +1213,11 @@
         private System.Windows.Forms.ToolStripButton btnSprav;
         private System.Windows.Forms.ToolStripMenuItem btnHelpPanelContextMenu;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private HelpPanel helpPanel1;
         private System.Windows.Forms.ToolStripMenuItem btnBoldCaret;
         private System.Windows.Forms.ToolStripLabel labelVersion;
         private System.Windows.Forms.ToolStripMenuItem btnCheckKeywordsRegister;
         private System.Windows.Forms.ToolStripLabel labelNewVersion;
         private System.Windows.Forms.ToolStripMenuItem btnCheckNewVersionOnLoad;
+        private HelpPanel helpPanel1;
     }
 }

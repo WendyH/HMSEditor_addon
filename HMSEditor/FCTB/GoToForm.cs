@@ -73,5 +73,10 @@ namespace FastColoredTextBoxNS
                 NativeMethods.SendMessage(Handle, NativeMethods.WM_NCLBUTTONDOWN, (IntPtr)NativeMethods.HT_CAPTION, (IntPtr)0);
             }
         }
+
+        private void btnClose_Click(object sender, EventArgs e) {
+            Close();
+        }
+
     }
 }

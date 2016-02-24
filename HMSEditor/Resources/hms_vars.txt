@@ -279,7 +279,8 @@ cfgTranscodingSubTitlesFontName: String|Имя шрифта субтитров
 cfgTranscodingSubTitlesFontSize: Integer|Размер шрифта субтитров
 cfgTranscodingSubTitlesFontStyle: Integer|Стиль шрифта субтитров
 cfgTranscodingSubTitlesFontUnit: Integer|Размеры параметров для субтитров указаны: 0 - в точках, 1 - в процентах
-cfgTranscodingSubTitlesLibAss: Boolean|Флаг использования внешнего модуля ssa, ass
+cfgTranscodingSubTitlesLibAss: Boolean|Флаг использования внешнего модуля субтитров (ssa, ass)
+cfgTranscodingSubTitlesLineSpacing: Integer|Дополнительное расстояние между строками субтитров
 cfgTranscodingSubtitles3DOffsetX: Integer|3D-смещение субтитров
 cfgTranscodingThreadCount: Integer|Количество потоков при транскодировании
 cfgTranscodingTvsetMimeType: String

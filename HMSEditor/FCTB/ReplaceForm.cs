@@ -44,6 +44,7 @@ namespace FastColoredTextBoxNS
         }
 
         private void CheckCount() {
+            if (!Visible) return;
             int n = 0;
             try {
                 string pattern = tbFind.Text;
@@ -52,12 +53,13 @@ namespace FastColoredTextBoxNS
                     if (!cbRegex.Checked) pattern = Regex.Escape(pattern);
                     if (cbWholeWord.Checked) pattern = "\\b" + pattern + "\\b";
 
-                    Regex regex = new Regex(pattern, opt);
-                    n = regex.Matches(tb.Text).Count;
+                    n = tb.LightYellowSelect(pattern, opt);
                 }
             } catch {
 
             }
+            btnReplace   .Enabled = (n > 0);
+            btnReplaceAll.Enabled = (n > 0);
             lblFound.Text = n.ToString();
         }
 
@@ -89,7 +91,8 @@ namespace FastColoredTextBoxNS
 
         public List<Range> FindAll(string pattern)
         {
-            tb.YellowSelection = true;
+            tb.YellowSelection    = true;
+            tb.SelectionAfterFind = true;
             var opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
             if (!cbRegex.Checked)
                 pattern = Regex.Escape(pattern);
@@ -111,15 +114,13 @@ namespace FastColoredTextBoxNS
 
         public bool Find(string pattern)
         {
-            tb.YellowSelection = true;
+            tb.YellowSelection    = true;
+            tb.SelectionAfterFind = true;
             RegexOptions opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
             if (!cbRegex.Checked)
                 pattern = Regex.Escape(pattern);
             if (cbWholeWord.Checked)
                 pattern = "\\b" + pattern + "\\b";
-
-            Regex regex = new Regex(pattern, opt);
-            lblFound.Text = regex.Matches(tb.Text).Count.ToString();
 
             //
             Range range = tb.Selection.Clone();
@@ -163,7 +164,7 @@ namespace FastColoredTextBoxNS
             if (e.KeyChar == '\r')
                 btFindNext_Click(sender, null);
             if (e.KeyChar == '\x1b') {
-                SetFocusToEditor();
+                Hide();
             }
         }
 
@@ -173,6 +174,7 @@ namespace FastColoredTextBoxNS
             if (keyData == Keys.Escape)
             {
                 SetFocusToEditor();
+                Hide();
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -184,6 +186,7 @@ namespace FastColoredTextBoxNS
             {
                 e.Cancel = true;
             }
+            Hide();
             SetFocusToEditor();
         }
 
@@ -276,10 +279,6 @@ namespace FastColoredTextBoxNS
                 }
         }
 
-        private void ReplaceForm_FormClosed(object sender, FormClosedEventArgs e) {
-            SetFocusToEditor();
-        }
-
         private void ReplaceForm_KeyPress(object sender, KeyPressEventArgs e) {
             if (e.KeyChar == '\t') {
                 SelectNextControl(ActiveControl, true, false, false, true);
@@ -289,8 +288,7 @@ namespace FastColoredTextBoxNS
         }
 
         private void SetFocusToEditor() {
-            Hide();
-            tb.YellowSelection = false;
+            tb.LightYellowOff();
             tb.Focus();
         }
 
@@ -299,6 +297,16 @@ namespace FastColoredTextBoxNS
                 NativeMethods.ReleaseCapture();
                 NativeMethods.SendMessage(Handle, NativeMethods.WM_NCLBUTTONDOWN, (IntPtr)NativeMethods.HT_CAPTION, (IntPtr)0);
             }
+        }
+
+        private void btnClose_Click(object sender, EventArgs e) {
+            Hide();
+            SetFocusToEditor();
+        }
+
+        private void ReplaceForm_VisibleChanged(object sender, EventArgs e) {
+            if (!Visible)
+                SetFocusToEditor();
         }
     }
 }

@@ -28,9 +28,10 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.flatListBox1 = new HMSEditorNS.FlatListBox();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.HelpTextBox = new MyRichTextBox();
+            this.HelpTextBox = new HMSEditorNS.MyRichTextBox();
             this.TopPanel = new System.Windows.Forms.Panel();
             this.valueToolTip1 = new HMSEditorNS.ValueToolTip();
+            this.btnClose = new System.Windows.Forms.Button();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -41,13 +42,14 @@
             // 
             // comboBox1
             // 
+            this.comboBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.comboBox1.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
-            this.comboBox1.Dock = System.Windows.Forms.DockStyle.Top;
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.Simple;
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Location = new System.Drawing.Point(0, 0);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(352, 21);
+            this.comboBox1.Size = new System.Drawing.Size(334, 21);
             this.comboBox1.TabIndex = 1;
             this.comboBox1.TabStop = false;
             this.comboBox1.TextChanged += new System.EventHandler(this.comboBox1_TextChanged);
@@ -68,7 +70,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.panel2);
             this.splitContainer1.Size = new System.Drawing.Size(352, 573);
-            this.splitContainer1.SplitterDistance = 261;
+            this.splitContainer1.SplitterDistance = 317;
             this.splitContainer1.TabIndex = 1;
             // 
             // panel1
@@ -79,7 +81,7 @@
             this.panel1.Margin = new System.Windows.Forms.Padding(0, 4, 0, 0);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(0, 4, 0, 0);
-            this.panel1.Size = new System.Drawing.Size(352, 261);
+            this.panel1.Size = new System.Drawing.Size(352, 317);
             this.panel1.TabIndex = 1;
             // 
             // flatListBox1
@@ -93,7 +95,7 @@
             this.flatListBox1.Location = new System.Drawing.Point(0, 4);
             this.flatListBox1.Name = "flatListBox1";
             this.flatListBox1.SelectedColor = System.Drawing.Color.CornflowerBlue;
-            this.flatListBox1.Size = new System.Drawing.Size(352, 257);
+            this.flatListBox1.Size = new System.Drawing.Size(352, 313);
             this.flatListBox1.TabIndex = 0;
             // 
             // panel2
@@ -102,7 +104,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(352, 308);
+            this.panel2.Size = new System.Drawing.Size(352, 252);
             this.panel2.TabIndex = 1;
             // 
             // HelpTextBox
@@ -112,12 +114,13 @@
             this.HelpTextBox.Location = new System.Drawing.Point(0, 0);
             this.HelpTextBox.Name = "HelpTextBox";
             this.HelpTextBox.ReadOnly = true;
-            this.HelpTextBox.Size = new System.Drawing.Size(352, 308);
+            this.HelpTextBox.Size = new System.Drawing.Size(352, 252);
             this.HelpTextBox.TabIndex = 0;
             this.HelpTextBox.Text = "";
             // 
             // TopPanel
             // 
+            this.TopPanel.Controls.Add(this.btnClose);
             this.TopPanel.Controls.Add(this.comboBox1);
             this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.TopPanel.Location = new System.Drawing.Point(0, 0);
@@ -128,10 +131,28 @@
             // valueToolTip1
             // 
             this.valueToolTip1.AutoSize = false;
+            this.valueToolTip1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(232)))), ((int)(((byte)(236)))));
             this.valueToolTip1.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.Flow;
+            this.valueToolTip1.MaximumSize = new System.Drawing.Size(520, 420);
             this.valueToolTip1.Name = "valueToolTip1";
             this.valueToolTip1.Padding = new System.Windows.Forms.Padding(0);
             this.valueToolTip1.Size = new System.Drawing.Size(100, 20);
+            this.valueToolTip1.Value = "";
+            // 
+            // btnClose
+            // 
+            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnClose.FlatAppearance.BorderSize = 0;
+            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClose.Image = global::HMSEditorNS.Properties.Resources.Close_12x;
+            this.btnClose.Location = new System.Drawing.Point(336, 3);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(13, 12);
+            this.btnClose.TabIndex = 10;
+            this.btnClose.TabStop = false;
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
             // HelpPanel
             // 
@@ -161,5 +182,6 @@
         private System.Windows.Forms.Panel panel2;
         private ValueToolTip valueToolTip1;
         private FlatListBox flatListBox1;
+        private System.Windows.Forms.Button btnClose;
     }
 }

@@ -349,6 +349,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <None Include="Resources\Close_12x.png" />
     <None Include="Resources\Down.png" />
     <None Include="Resources\Up.png" />
     <None Include="Resources\RunningLine162.png" />

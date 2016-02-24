@@ -1,4 +1,11 @@
-* Дата/время  
+* Дата/время
+Date: TDateTime|Возвращает текущую дату
+DateDiff(dDate1, dDate2: TDateTime; var nDays, nMonths, nYears: Word)|Определяет разницу между dDate1 и dDate2 в днях nDays, месяцах nMonths, годах nYears.
+  dDate1 - первая дата, которая будет сравниваться со второй
+  dDate2 - вторая дата, которая сравнивается с первой
+  nDays - переменная, в которую будет занесено количество дней раницы
+  nMonths - переменная, в которую будет занесено количество месяцев раницы
+  nYears - переменная, в которую будет занесено количество годов раницы
 DateTimeToTimeStamp1970(aDateTime: TDateTime; aMilliSeconds: Boolean): Variant|Перевод даты в UNIX TimeStamp
   aDateTime - дата, которая будет переведена
   aMilliSeconds - флаг использования миллисекунд, вместо секунд в UNIX TimeStamp
@@ -1065,7 +1072,8 @@ HmsDirectShowProperties(const aFilterName: String): Integer|Показ свой�
 HmsDirectShowRemoveFilter(const aFilterName: String): Integer|Удаление фильтра из графа
 HmsDirectShowRenderPin(const aFilterName, aPinName: String): Integer|
 HmsDirectShowSaveGraph(const aFileName: String): Integer|Сохранить граф в файле (фильтр-дампер не сохраняется)
-HmsDirectShowSelectAudioFormat(const aFilterName: String; aChannels, aSampleRate: Integer): Integer|Выбор текущей дорожки
+HmsDirectShowSelectAudioFormat(const aFilterName: String; aChannels, aSampleRate: Integer): Integer|
+HmsDirectShowSelectStream(const aFilterName: string; aStreamNo: Integer; const aStreamType: string = ''; aStreamID: Integer = 0): Integer|Выбор текущей дорожки
 HmsDirectShowSetFileName(const aFilterName, aFileName: String): Integer|Установить имя файла для указанного фильтра
 HmsDirectShowSetPosition(const aFilterName: String; const aTimeFormat: String; var aPosition: Variant): Integer|Установить текущую позицию фильтра
 HmsDirectShowSetProperty(const aFilterName, aPropertyInterface: String; const aPropertyID: Variant; const aPropertyValue: Variant): Integer|

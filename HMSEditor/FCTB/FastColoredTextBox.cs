@@ -62,9 +62,11 @@ namespace FastColoredTextBoxNS {
         private Timer HighlightTimer = new Timer();      
         public Regex RegexStringAndComments = null;
         public HmsToolTip ToolTip4Function = new HmsToolTip();
-        public SelectionStyle YellowSelectionStyle = new SelectionStyle(new SolidBrush(Themes.ToColor("#E4FC5BF0")), Brushes.Black);
+        public SelectionStyle YellowSelectionStyle = new SelectionStyle(new SolidBrush(Themes.ToColor("#E5C63BFF")), Brushes.Black);
+        public TextStyle LightYellowSelectionStyle = new TextStyle(Brushes.Black, new SolidBrush(Themes.ToColor("#FDFBACFF")), FontStyle.Regular);
         public TextStyle GreenSelectionStyle  = new TextStyle(Brushes.Black, new SolidBrush(Themes.ToColor("#D2EEB0")), FontStyle.Regular);
         public TextStyle BlueSelectionStyle   = new TextStyle(Brushes.Black, new SolidBrush(Themes.ToColor("#c6e3ff")), FontStyle.Regular);
+        private int[] FoundLines;
         public bool YellowSelection = false;
         public bool DebugMode = false;
         public int HmsDebugLine = -1;
@@ -280,8 +282,23 @@ namespace FastColoredTextBoxNS {
         }
 
         // By WendyH
-        public void Freez() {
-            freez = true;
+        public int LightYellowSelect(string pattern, RegexOptions opt) {
+            int n = 0; Range.ClearStyle(LightYellowSelectionStyle);
+            List<int> lines = new List<int>();
+            foreach (var r in Range.GetRanges(pattern, opt)) {
+                r.SetStyle(LightYellowSelectionStyle); n++;
+                lines.Add(r.FromLine+1);
+            }
+            FoundLines = lines.ToArray();
+            UpdateScrollMarkers();
+            return n;
+        }
+
+        public void LightYellowOff() {
+            Range.ClearStyle(LightYellowSelectionStyle);
+            YellowSelection = false;
+            FoundLines = new int[0];
+            UpdateScrollMarkers();
         }
 
         public void UnFreez() {
@@ -2375,7 +2392,8 @@ namespace FastColoredTextBoxNS {
                 findForm.tbFind.Text = Selection.Text;
 
             findForm.tbFind.SelectAll();
-            findForm.Show(this);
+            if (!findForm.Visible)
+                findForm.Show(this);
             findForm.Focus();
         }
 
@@ -2406,7 +2424,8 @@ namespace FastColoredTextBoxNS {
             }
 
             replaceForm.tbFind.SelectAll();
-            replaceForm.Show(this);
+            if (!replaceForm.Visible)
+                replaceForm.Show(this);
             replaceForm.Focus();
         }
 
@@ -3951,6 +3970,8 @@ namespace FastColoredTextBoxNS {
             foreach (var b in Bookmarks) VerticalScroll.Bookmarks.Add(b.LineIndex + 1);
             VerticalScroll.Breakpoints.Clear();
             foreach (var b in Breakpoints) VerticalScroll.Breakpoints.Add(b.LineIndex + 1);
+            VerticalScroll.FoundLines.Clear();
+            VerticalScroll.FoundLines.AddRange(FoundLines);
             VerticalScroll.Invalidate();
         }
 
@@ -7199,6 +7220,7 @@ window.status = ""#print"";
                 timer .Dispose();
                 timer2.Dispose();
                 YellowSelectionStyle.Dispose();
+                LightYellowSelectionStyle.Dispose();
                 GreenSelectionStyle.Dispose();
                 BlueSelectionStyle.Dispose();
                 ToolTip4Function.Dispose();
@@ -7405,6 +7427,7 @@ window.status = ""#print"";
                 Place p = PositionToPlace(form.GotoPosition);
                 Navigate(p.iLine, p.iChar);
             }
+            Focus();
         }
 
 

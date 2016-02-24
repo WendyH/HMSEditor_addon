@@ -17,6 +17,8 @@ namespace HMSEditorNS {
         private Timer    timer  = new Timer();
         BackgroundWorker worker = new BackgroundWorker();
 
+        public event EventHandler PanelClose;
+
         public HelpPanel() {
 			InitializeComponent();
             timer.Tick += Timer_Tick;
@@ -124,7 +126,7 @@ namespace HMSEditorNS {
         }
 
         private void comboBox1_TextChanged(object sender, EventArgs e) {
-            timer.Stop();
+            timer.Stop(); 
             timer.Start();
         }
 
@@ -157,6 +159,10 @@ namespace HMSEditorNS {
                         return;
                 }
 
+        }
+
+        private void btnClose_Click(object sender, EventArgs e) {
+            if (PanelClose != null) PanelClose(this, new EventArgs());
         }
     }
 

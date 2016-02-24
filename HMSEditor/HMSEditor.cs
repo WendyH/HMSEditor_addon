@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using FastColoredTextBoxNS;
+using System.Diagnostics;
 using HmsAddons;
 
 namespace HMSEditorNS {
@@ -94,10 +95,17 @@ namespace HMSEditorNS {
             Editor.CurrentLineColor = Color.FromArgb(100, 210, 210, 255);
             Editor.ChangedLineColor = Color.FromArgb(255, 152, 251, 152);
             Editor.LostFocus += Editor_LostFocus; // for hiding all tooltipds when lost focus
+            helpPanel1.PanelClose += HelpPanel1_PanelClose;
             SetAutoCompleteMenu(); 
             helpPanel1.Init(imageList1, HmsScriptMode.ToString());
             WorkerCheckSyntax.DoWork += WorkerCheckSyntax_DoWork;
             WorkerCheckSyntax.RunWorkerCompleted += WorkerCheckSyntax_RunWorkerCompleted;
+            CreateAutocompleteItemsByScriptDescrition();
+        }
+
+        private void HelpPanel1_PanelClose(object sender, EventArgs e) {
+            splitContainer1.Panel2Collapsed = true;
+            btnSprav.Checked = false;
         }
 
         private void WorkerCheckSyntax_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
@@ -110,6 +118,7 @@ namespace HMSEditorNS {
             } else {
                 Editor.ClearErrorLines();
             }
+            Editor.Focus();
         }
 
         private void WorkerCheckSyntax_DoWork(object sender, DoWorkEventArgs e) {
@@ -1865,7 +1874,74 @@ namespace HMSEditorNS {
                 PopupMenu.Items.AddFilteredItems    (HMS.ItemsVariable);
                 PopupMenu.Items.AddAutocompleteItems(HMS.ItemsConstant);
                 PopupMenu.Items.AddAutocompleteItems(HMS.ItemsClass   );
+                PopupMenu.Items.AddAutocompleteItems(ScriptAutocompleteItems);
+
             }
+        }
+
+        AutocompleteItems ScriptAutocompleteItems = new AutocompleteItems();
+        private static Regex regexCutFunctions = new Regex("<Functions>(.*?)</Functions>", RegexOptions.Compiled);
+        private static Regex regexCutClasses   = new Regex("<Classes>(.*?)</Classes>"    , RegexOptions.Compiled);
+        private static Regex regexCutTypes     = new Regex("<Types>(.*?)</Types>"        , RegexOptions.Compiled);
+        private static Regex regexCutVariables = new Regex("<Variables>(.*?)</Variables>", RegexOptions.Compiled);
+        private static Regex regexCutConstants = new Regex("<Constants>(.*?)</Constants>", RegexOptions.Compiled);
+        private static Regex regexCutItem      = new Regex("<item[^>]+/>"                , RegexOptions.Compiled);
+        private static Regex regexCutText      = new Regex("text=\"([^\"]+)"             , RegexOptions.Compiled);
+        private static Regex regexCutTextF     = new Regex("text=\"\\w+ ([^\"]+)"        , RegexOptions.Compiled);
+        private static Regex regexCutDesc      = new Regex("description=\"([^\"]+)"      , RegexOptions.Compiled);
+        private static Regex regexExcludeConst = new Regex("^(True|False|nil|Null)"      , RegexOptions.Compiled);
+
+        private void SearchAutocompleteItemsInScriptDescrition(Regex reBlock, ref string xml, int imageIndex, string toolTipText, DefKind kind, AutocompleteItems Items) {
+            string xmlBlock = reBlock.Match(xml).Value;
+            string text, descr; HMSItem item, foundItem;
+            MatchCollection mc = regexCutItem.Matches(xmlBlock);
+            foreach (Match matchItem in mc) {
+                if (kind == DefKind.Function)
+                    text = regexCutTextF.Match(matchItem.Value).Groups[1].Value;
+                else
+                    text = regexCutText.Match(matchItem.Value).Groups[1].Value;
+                descr = regexCutDesc.Match(matchItem.Value).Groups[1].Value;
+                if (text.Length==0) continue;
+                item = HMS.GetHmsItemFromLine(text);
+                item.ImageIndex  = imageIndex;
+                item.ToolTipText = toolTipText;
+                item.Kind        = kind;
+                item.Help        = descr;
+                if (kind == DefKind.Function) item.Kind = (item.Type.Length > 0) ? DefKind.Function : DefKind.Procedure;
+                if (regexExcludeConst.IsMatch(item.MenuText)) continue;
+                foundItem = Items.GetItemOrNull(item.MenuText);
+                if (foundItem!=null) {
+                    if (foundItem.Help.Length == 0) foundItem.Help = descr;
+                } else {
+                    ScriptAutocompleteItems.Add(item);
+                    Console.WriteLine(kind.ToString() + " MenuText: " + item.MenuText);
+                }
+            }
+        }
+
+        private void CreateAutocompleteItemsByScriptDescrition() {
+            ScriptAutocompleteItems.Clear();
+            string xml = "";
+#if DEBUG
+            var sw = Stopwatch.StartNew();
+
+            if ((HmsScriptFrame == null) && (File.Exists(@"D:\descr.txt")))
+                xml = File.ReadAllText(@"D:\descr.txt");
+#endif
+            if (HmsScriptFrame != null)
+                xml = GetScriptDescriptions();
+                
+            if (!string.IsNullOrEmpty(xml)) {
+                SearchAutocompleteItemsInScriptDescrition(regexCutFunctions, ref xml, ImagesIndex.Procedure, ""                     , DefKind.Function, HMS.ItemsFunction);
+                SearchAutocompleteItemsInScriptDescrition(regexCutVariables, ref xml, ImagesIndex.Field    , "Встроенная переменная", DefKind.Variable, HMS.ItemsVariable);
+                SearchAutocompleteItemsInScriptDescrition(regexCutConstants, ref xml, ImagesIndex.Enum     , "Встроенная константа" , DefKind.Constant, HMS.ItemsConstant);
+            }
+
+#if DEBUG
+            sw.Stop();
+            Console.WriteLine("CreateAutocompleteItemsByScriptDescrition ElapsedMilliseconds: " + sw.ElapsedMilliseconds);
+            Console.WriteLine("ScriptAutocompleteItems.Count: " + ScriptAutocompleteItems.Count);
+#endif
         }
 
         public void CreateInsertTemplateItems() {

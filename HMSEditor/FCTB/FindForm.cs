@@ -43,6 +43,7 @@ namespace FastColoredTextBoxNS
         }
 
         private void CheckCount() {
+            if (!Visible) return;
             int n = 0;
             try {
                 string pattern = tbFind.Text;
@@ -51,8 +52,7 @@ namespace FastColoredTextBoxNS
                     if (!cbRegex.Checked) pattern = Regex.Escape(pattern);
                     if (cbWholeWord.Checked) pattern = "\\b" + pattern + "\\b";
 
-                    Regex regex = new Regex(pattern, opt);
-                    n = regex.Matches(tb.Text).Count;
+                    n = tb.LightYellowSelect(pattern, opt);
                 }
             } catch {
 
@@ -192,7 +192,7 @@ namespace FastColoredTextBoxNS
         }
 
         private void SetFocusToEditor() {
-            tb.YellowSelection = false;
+            tb.LightYellowOff();
             tb.Focus();
         }
 
@@ -226,6 +226,16 @@ namespace FastColoredTextBoxNS
 
         private void btnBack_Click(object sender, EventArgs e) {
             FindPrev(tbFind.Text);
+        }
+
+        private void btnClose_Click(object sender, EventArgs e) {
+            Hide();
+            SetFocusToEditor();
+        }
+
+        private void FindForm_VisibleChanged(object sender, EventArgs e) {
+            if (!Visible)
+                SetFocusToEditor();
         }
     }
 }

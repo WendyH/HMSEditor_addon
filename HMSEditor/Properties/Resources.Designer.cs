@@ -193,6 +193,16 @@ namespace HMSEditorNS.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Close_12x {
+            get {
+                object obj = ResourceManager.GetObject("Close_12x", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Comment_11698 {
             get {
                 object obj = ResourceManager.GetObject("Comment_11698", resourceCulture);

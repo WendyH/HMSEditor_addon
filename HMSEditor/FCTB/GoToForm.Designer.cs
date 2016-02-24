@@ -35,6 +35,7 @@
             this.btnCancel = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnGoto = new System.Windows.Forms.ToolStripDropDownButton();
+            this.btnClose = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,6 +106,21 @@
             this.btnGoto.Text = "Или перейти к ...";
             this.btnGoto.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.btnGoto_DropDownItemClicked);
             // 
+            // btnClose
+            // 
+            this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnClose.FlatAppearance.BorderSize = 0;
+            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClose.Image = global::HMSEditorNS.Properties.Resources.Close_12x;
+            this.btnClose.Location = new System.Drawing.Point(303, 3);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(13, 12);
+            this.btnClose.TabIndex = 10;
+            this.btnClose.TabStop = false;
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
             // GoToForm
             // 
             this.AcceptButton = this.btnOk;
@@ -112,6 +128,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(320, 83);
+            this.Controls.Add(this.btnClose);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnOk);
@@ -145,5 +162,6 @@
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton btnGoto;
+        private System.Windows.Forms.Button btnClose;
     }
 }
