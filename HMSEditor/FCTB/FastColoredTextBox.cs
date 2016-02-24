@@ -3971,7 +3971,8 @@ namespace FastColoredTextBoxNS {
             VerticalScroll.Breakpoints.Clear();
             foreach (var b in Breakpoints) VerticalScroll.Breakpoints.Add(b.LineIndex + 1);
             VerticalScroll.FoundLines.Clear();
-            VerticalScroll.FoundLines.AddRange(FoundLines);
+            if (FoundLines!=null && FoundLines.Length>0)
+                VerticalScroll.FoundLines.AddRange(FoundLines);
             VerticalScroll.Invalidate();
         }
 
