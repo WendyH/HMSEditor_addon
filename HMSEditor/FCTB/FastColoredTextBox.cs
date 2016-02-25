@@ -2610,8 +2610,7 @@ namespace FastColoredTextBoxNS {
                     SelectionStart  = st;
                     SelectionLength = text.Length;
                     DoAutoIndent();
-                    SelectionStart  = st;
-                    SelectionLength = 0;
+                    Selection.Start = Selection.End;
                 }
                 EndUpdate();
             }
