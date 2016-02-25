@@ -36,7 +36,7 @@
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HMSEditor));
-            FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
+            FastColoredTextBoxNS.ServiceColors serviceColors2 = new FastColoredTextBoxNS.ServiceColors();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.btnContextMenuBack = new System.Windows.Forms.ToolStripMenuItem();
             this.btnContextMenuForward = new System.Windows.Forms.ToolStripMenuItem();
@@ -107,6 +107,7 @@
             this.btnAutoIdent = new System.Windows.Forms.ToolStripMenuItem();
             this.btnAutoIdentLines = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowFoldingIndicator = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnFormatCodeWhenPaste = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowFoldingLines = new System.Windows.Forms.ToolStripMenuItem();
             this.btnEnableFolding = new System.Windows.Forms.ToolStripMenuItem();
             this.btnIntelliSenseFunctions = new System.Windows.Forms.ToolStripMenuItem();
@@ -755,6 +756,7 @@
             this.btnAutoIdent,
             this.btnAutoIdentLines,
             this.btnShowFoldingIndicator,
+            this.btnFormatCodeWhenPaste,
             this.btnShowFoldingLines,
             this.btnEnableFolding,
             this.btnIntelliSenseFunctions,
@@ -831,6 +833,18 @@
             this.btnShowFoldingIndicator.Text = "Зелёный индикатор действия текущего блока";
             this.btnShowFoldingIndicator.ToolTipText = "Отображать слева линию максимального действия блока кода";
             this.btnShowFoldingIndicator.Click += new System.EventHandler(this.btnEnableFoldingIndicator_Click);
+            // 
+            // btnFormatCodeWhenPaste
+            // 
+            this.btnFormatCodeWhenPaste.Checked = true;
+            this.btnFormatCodeWhenPaste.CheckOnClick = true;
+            this.btnFormatCodeWhenPaste.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnFormatCodeWhenPaste.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnFormatCodeWhenPaste.Name = "btnFormatCodeWhenPaste";
+            this.btnFormatCodeWhenPaste.Size = new System.Drawing.Size(463, 22);
+            this.btnFormatCodeWhenPaste.Text = "Форматировать код при вставке";
+            this.btnFormatCodeWhenPaste.ToolTipText = "При вставке текста, автоматически применять форматирование отступов";
+            this.btnFormatCodeWhenPaste.Click += new System.EventHandler(this.btnFormatCodeWhenPaste_Click);
             // 
             // btnShowFoldingLines
             // 
@@ -978,6 +992,7 @@
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(145, 22);
             this.labelVersion.Text = "HMSEditor Addon v1.0.0.5";
+            this.labelVersion.DoubleClick += new System.EventHandler(this.labelVersion_DoubleClick);
             // 
             // labelNewVersion
             // 
@@ -1075,13 +1090,13 @@
             this.Editor.Paddings = new System.Windows.Forms.Padding(0);
             this.Editor.RightBracket = ')';
             this.Editor.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
-            serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
-            serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
-            serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
-            serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
-            this.Editor.ServiceColors = serviceColors1;
+            serviceColors2.CollapseMarkerBackColor = System.Drawing.Color.White;
+            serviceColors2.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors2.CollapseMarkerForeColor = System.Drawing.Color.Silver;
+            serviceColors2.ExpandMarkerBackColor = System.Drawing.Color.White;
+            serviceColors2.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors2.ExpandMarkerForeColor = System.Drawing.Color.Red;
+            this.Editor.ServiceColors = serviceColors2;
             this.Editor.ShowScrollBars = false;
             this.Editor.Size = new System.Drawing.Size(672, 506);
             this.Editor.TabIndex = 0;
@@ -1219,5 +1234,6 @@
         private System.Windows.Forms.ToolStripLabel labelNewVersion;
         private System.Windows.Forms.ToolStripMenuItem btnCheckNewVersionOnLoad;
         private HelpPanel helpPanel1;
+        private System.Windows.Forms.ToolStripMenuItem btnFormatCodeWhenPaste;
     }
 }

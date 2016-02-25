@@ -69,6 +69,7 @@ namespace FastColoredTextBoxNS {
         private int[] FoundLines;
         public bool YellowSelection = false;
         public bool DebugMode = false;
+        public bool FormatCodeWhenPaste = false;
         public int HmsDebugLine = -1;
         public int HmsDebugChar = -1;
         public ErrorStyle ErrorStyle = new ErrorStyle();
@@ -2599,8 +2600,21 @@ namespace FastColoredTextBoxNS {
                     text = args.InsertingText;
             }
 
-            if (!string.IsNullOrEmpty(text))
+            if (!string.IsNullOrEmpty(text)) {
+                BeginUpdate();
+                Range r = Selection.Clone();
+                r.Normalize();
+                int st = PlaceToPosition(r.Start);
                 InsertText(text);
+                if (FormatCodeWhenPaste) {
+                    SelectionStart  = st;
+                    SelectionLength = text.Length;
+                    DoAutoIndent();
+                    SelectionStart  = st;
+                    SelectionLength = 0;
+                }
+                EndUpdate();
+            }
         }
 
         /// <summary>

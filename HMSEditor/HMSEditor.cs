@@ -608,6 +608,7 @@ namespace HMSEditorNS {
             btnBoldCaret            .Checked = Settings.Get("BoldCaret"           , section, btnBoldCaret            .Checked);
             btnCheckKeywordsRegister.Checked = Settings.Get("CheckKeywordsRegister",section, btnCheckKeywordsRegister.Checked);
             btnCheckNewVersionOnLoad.Checked = Settings.Get("CheckNewVersionOnLoad",section, btnCheckNewVersionOnLoad.Checked);
+            btnFormatCodeWhenPaste  .Checked = Settings.Get("FormatCodeWhenPaste" , section, btnFormatCodeWhenPaste  .Checked);
 
             btnUnderlinePascalKeywords.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywords.Checked);
             Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
@@ -655,6 +656,7 @@ namespace HMSEditorNS {
             btnBoldCaret_Click       (null, EventArgs.Empty);
             btnCheckKeywordsRegister_Click(null, EventArgs.Empty);
             btnCheckNewVersionOnLoad_Click(null, EventArgs.Empty);
+            btnFormatCodeWhenPaste_Click  (null, EventArgs.Empty);
 
             Editor.HotkeysMapping.InitDefault(); 
             string hotkeys = Settings.Get("Map", "AddonHotkeys", "");
@@ -715,7 +717,8 @@ namespace HMSEditorNS {
                 Settings.Set("BoldCaret"           , btnBoldCaret            .Checked, section);
                 Settings.Set("CheckKeywordsRegister",btnCheckKeywordsRegister.Checked, section);
                 Settings.Set("CheckNewVersionOnLoad",btnCheckNewVersionOnLoad.Checked, section);
-                
+                Settings.Set("FormatCodeWhenPaste" , btnFormatCodeWhenPaste  .Checked, section);
+
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
                 Settings.Set("Language"            , ScriptLanguage                  , section);
@@ -932,7 +935,7 @@ namespace HMSEditorNS {
         }
 #endregion Function and procedures
 
-#region Control Events
+        #region Control Events
 
         private void Editor_KeyDown(object sender, KeyEventArgs e) {
             if      (e.KeyCode == Keys.F11   ) tsMain.Visible = !tsMain.Visible;
@@ -1103,7 +1106,7 @@ namespace HMSEditorNS {
             string txt = "";
             foreach (var b in Editor.Bookmarks) txt += b.Name + "\n";
 
-            if (MessageBox.Show("Удалить все вкладки?\n"+ txt, Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question)== DialogResult.Yes)
+            if (MessageBox.Show("Удалить все закладки?\n"+ txt, Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question)== DialogResult.Yes)
                 BookmarkClear();
         }
 
@@ -1395,6 +1398,26 @@ namespace HMSEditorNS {
             splitContainer1.Panel2Collapsed = !btnSprav.Checked;
         }
 
+        private void splitContainer1_DoubleClick(object sender, EventArgs e) {
+            btnSprav.Checked = !btnSprav.Checked;
+            btnSprav_Click(sender, e);
+        }
+
+        private void labelNewVersion_Click(object sender, EventArgs e) {
+            if (HMS.UpdateInfo.Length == 0) return;
+            frmUpdateInfoDialog form = new frmUpdateInfoDialog();
+            string html = HMS.ReadTextFromResource("Markdown.html");
+            form.SetText(html.Replace("<MarkdownText>", HMS.UpdateInfo));
+            form.ShowDialog();
+        }
+
+        private void labelVersion_DoubleClick(object sender, EventArgs e) {
+            btnAbout_Click(sender, e);
+        }
+
+        private void btnFormatCodeWhenPaste_Click(object sender, EventArgs e) {
+            Editor.FormatCodeWhenPaste = btnFormatCodeWhenPaste.Checked;
+        }
         #endregion Control Events
 
         #region Smart IDE functions
@@ -1815,7 +1838,47 @@ namespace HMSEditorNS {
             }
         }
 
-#endregion
+        private void InsertTemplate(string text) {
+            int posSta = Editor.SelectionStart;
+            int posEnd = posSta + text.Length;
+            text = FormatCodeText(text);
+            Editor.InsertText(text);
+        }
+
+        private string FormatCodeText(string text) {
+            // Поиск минимального отступа в коде вставляемого текста
+            int codeIndent = 200;
+            foreach (string line in text.Split('\n')) {
+                int indent = line.Length - line.TrimStart().Length;
+                codeIndent = Math.Min(indent, codeIndent);
+                if (codeIndent == 0) break;
+            }
+            // Поиск текущего отступа для кода в редакторе по текущей позиции
+            int iLine = Editor.Selection.Start.iLine;
+            int needIndent = Editor.GetRealLine(iLine).AutoIndentSpacesNeededCount;
+            for (int i = iLine; i >= 0; i--) {
+                string line = Editor.Lines[i];
+                needIndent = line.Length - line.TrimStart().Length;
+                if (line.Trim().Length > 0) break;
+            }
+            bool firstLine = true;
+            Range fragmentLine = new Range(Editor, new Place(0, Editor.Selection.Start.iLine), Editor.Selection.Start);
+            bool currentLineWithText = (fragmentLine.Text.Trim().Length > 0);
+            StringBuilder sb = new StringBuilder();
+            foreach (string line in text.Split('\n')) {
+                string newLine = line.Substring(codeIndent).TrimEnd();
+                if (firstLine && currentLineWithText) {
+                } else {
+                    newLine = newLine.PadLeft(newLine.Length + needIndent);
+                }
+                sb.AppendLine(newLine);
+                firstLine = false;
+            }
+            text = sb.ToString();
+            return text;
+        }
+
+        #endregion
 
         private void SetAutoCompleteMenu() {
             PopupMenu = new AutocompleteMenu(Editor, this);
@@ -1966,59 +2029,6 @@ namespace HMSEditorNS {
             } // foreach
 
         } // end AddTemplateItemsRecursive
-
-        private void InsertTemplate(string text) { 
-            int posSta = Editor.SelectionStart;
-            int posEnd = posSta + text.Length;
-            text = FormatCodeText(text);
-            Editor.InsertText(text);
-        }
-
-        private string FormatCodeText(string text) {
-            // Поиск минимального отступа в коде вставляемого текста
-            int codeIndent = 200;
-            foreach (string line in text.Split('\n')) {
-                int indent = line.Length - line.TrimStart().Length;
-                codeIndent = Math.Min(indent, codeIndent);
-                if (codeIndent == 0) break;
-            }
-            // Поиск текущего отступа для кода в редакторе по текущей позиции
-            int iLine = Editor.Selection.Start.iLine;
-            int needIndent = Editor.GetRealLine(iLine).AutoIndentSpacesNeededCount;
-            for (int i=iLine; i>=0; i--) {
-                string line = Editor.Lines[i];
-                needIndent = line.Length - line.TrimStart().Length;
-                if (line.Trim().Length > 0) break;
-            }
-            bool firstLine = true; 
-            Range fragmentLine = new Range(Editor, new Place(0, Editor.Selection.Start.iLine), Editor.Selection.Start);
-            bool currentLineWithText = (fragmentLine.Text.Trim().Length > 0);
-            StringBuilder sb = new StringBuilder();
-            foreach (string line in text.Split('\n')) {
-                string newLine = line.Substring(codeIndent).TrimEnd();
-                if (firstLine && currentLineWithText) {
-                } else {
-                    newLine = newLine.PadLeft(newLine.Length + needIndent);
-                }
-                sb.AppendLine(newLine);
-                firstLine = false;
-            }
-            text = sb.ToString();
-            return text;
-        }
-
-        private void splitContainer1_DoubleClick(object sender, EventArgs e) {
-            btnSprav.Checked = !btnSprav.Checked;
-            btnSprav_Click(sender, e);
-        }
-
-        private void labelNewVersion_Click(object sender, EventArgs e) {
-            if (HMS.UpdateInfo.Length == 0) return;
-            frmUpdateInfoDialog form = new frmUpdateInfoDialog();
-            string html = HMS.ReadTextFromResource("Markdown.html");
-            form.SetText(html.Replace("<MarkdownText>", HMS.UpdateInfo));
-            form.ShowDialog();
-        }
 
     }
 }
