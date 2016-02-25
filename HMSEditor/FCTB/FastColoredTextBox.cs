@@ -2980,7 +2980,7 @@ namespace FastColoredTextBoxNS {
 #if debug
             var sw = Stopwatch.StartNew();
 #endif
-
+             
             needRecalc = false;
             //calc min left indent
             LeftIndent = LeftPadding;
@@ -2995,17 +2995,14 @@ namespace FastColoredTextBoxNS {
 
             if (Created) {
                 if (ShowLineNumbers)
-                    LeftIndent = charsForLineNumber * CharWidth + minLeftIndent + 1;
+                    LeftIndent = charsForLineNumber * CharWidth + minLeftIndent;
                 else if (ShowFoldingMarkers)
-                    LeftIndent = minLeftIndent + 2;
-                else if (EnableFoldingIndicator)
-                    LeftIndent = minLeftIndent - 2;
+                    LeftIndent = minLeftIndent + 4; 
 
                 // By WendyH < ------------------------------------------------
                 if ((Bookmarks.Count > 0) || (Breakpoints.Count > 0) || HmsDebugLine >= 0) {
-                    //LeftIndent += (BookmarkIcon != null) ? (BookmarkIcon.Width - 2) : (CharHeight - 3);
-                    LeftIndent += CharWidth * 2 + 2;
-                    //if (!ShowLineNumbers) LeftIndent += 12;
+                    if (LeftIndent < minLeftIndent) LeftIndent = minLeftIndent;
+                    LeftIndent += CharWidth * 2;
                 }
                 // By WendyH > ------------------------------------------------
 
