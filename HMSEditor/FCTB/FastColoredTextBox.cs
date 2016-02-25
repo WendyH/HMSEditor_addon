@@ -46,12 +46,12 @@ namespace FastColoredTextBoxNS {
     /// Fast colored textbox
     /// </summary>
     public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
-        new FlatScrollbar VerticalScroll = new FlatScrollbar(false);
-        new FlatScrollbar HorizontalScroll = new FlatScrollbar(true);
+        new FlatScrollbar VerticalScroll   = new FlatScrollbar(false);
+        new FlatScrollbar HorizontalScroll = new FlatScrollbar(true );
 
         new Size ClientSize {
             get {
-                int w = base.ClientSize.Width - (VerticalScroll.Visible ? VerticalScroll.Width : 0);
+                int w = base.ClientSize.Width  - (VerticalScroll  .Visible ? VerticalScroll  .Width  : 0);
                 int h = base.ClientSize.Height - (HorizontalScroll.Visible ? HorizontalScroll.Height : 0);
                 return new Size(w, h);
             }
@@ -262,9 +262,9 @@ namespace FastColoredTextBoxNS {
             DoubleBuffered = true;
             Controls.Add(HorizontalScroll);
             Controls.Add(VerticalScroll);
-            VerticalScroll.AlignByLines = true;
-            HorizontalScroll.AlignByLines = true;
-            VerticalScroll.ValueChanged += VerticalScroll_Scroll;
+            VerticalScroll  .AlignByLines = true;
+            HorizontalScroll.AlignByLines = false;
+            VerticalScroll  .ValueChanged += VerticalScroll_Scroll;
             HorizontalScroll.ValueChanged += HorizontalScroll_Scroll;
         }
 
@@ -2589,7 +2589,7 @@ namespace FastColoredTextBoxNS {
             if (Pasting != null) {
                 var args = new TextChangingEventArgs {
                     Cancel = false,
-                    InsertingText = text
+                    InsertingText = text 
                 };
 
                 Pasting(this, args);
@@ -2602,15 +2602,15 @@ namespace FastColoredTextBoxNS {
 
             if (!string.IsNullOrEmpty(text)) {
                 BeginUpdate();
-                Range r = Selection.Clone();
-                r.Normalize();
-                int st = PlaceToPosition(r.Start);
+                int st = SelectionStart;
                 InsertText(text);
                 if (FormatCodeWhenPaste) {
+                    int old = SelectionStart;
                     SelectionStart  = st;
                     SelectionLength = text.Length;
                     DoAutoIndent();
-                    Selection.Start = Selection.End;
+                    SelectionStart  = old;
+                    SelectionLength = 0;
                 }
                 EndUpdate();
             }
@@ -3231,13 +3231,13 @@ namespace FastColoredTextBoxNS {
             int v = VerticalScroll.Value;
             int h = HorizontalScroll.Value;
 
-            if (rect.Bottom > ClientRectangle.Height)
-                v += rect.Bottom - ClientRectangle.Height;
+            if (rect.Bottom > ClientSize.Height)
+                v += rect.Bottom - ClientSize.Height;
             else if (rect.Top < 0)
                 v += rect.Top;
 
-            if (rect.Right > ClientRectangle.Width)
-                h += rect.Right - ClientRectangle.Width;
+            if (rect.Right > ClientSize.Width)
+                h += rect.Right - ClientSize.Width;
             else if (rect.Left < LeftIndent)
                 h += rect.Left - LeftIndent;
             //
