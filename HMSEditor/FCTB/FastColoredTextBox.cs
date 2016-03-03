@@ -2606,11 +2606,13 @@ namespace FastColoredTextBoxNS {
                 InsertText(text);
                 if (FormatCodeWhenPaste) {
                     int old = SelectionStart;
+                    BeginAutoUndo();
                     SelectionStart  = st;
                     SelectionLength = text.Length;
                     DoAutoIndent();
                     SelectionStart  = old;
                     SelectionLength = 0;
+                    EndAutoUndo();
                 }
                 EndUpdate();
             }
@@ -5127,9 +5129,10 @@ namespace FastColoredTextBoxNS {
                             NativeMethods.CreateCaret(Handle, 0, carWidth, caretHeight + 1);
                             NativeMethods.ShowCaret(Handle);
                         } else if (DebugMode) {
+                            NativeMethods.CreateCaret(Handle, 0, carWidth, caretHeight + 1);
                             //NativeMethods.ShowCaret(Handle);
                         }
-                        NativeMethods.SetCaretPos(car.X, car.Y);
+                        NativeMethods.SetCaretPos(car.X, car.Y); 
                     }
 
                 prevCaretRect = caretRect;
@@ -6030,6 +6033,7 @@ namespace FastColoredTextBoxNS {
         }
 
         protected override void OnGotFocus(EventArgs e) {
+            caretCreated = false; // By WendyH
             SetAsCurrentTB();
             base.OnGotFocus(e);
             Invalidate();
@@ -6714,8 +6718,9 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         public void InsertLinePrefix(string prefix) {
             Range old = Selection.Clone();
+            if (SelectionLength > 0) SelectionLength--; // By WendyH
             int from = Math.Min(Selection.Start.iLine, Selection.End.iLine);
-            int to = Math.Max(Selection.Start.iLine, Selection.End.iLine);
+            int to   = Math.Max(Selection.Start.iLine, Selection.End.iLine);
             BeginUpdate();
             Selection.BeginUpdate();
             lines.Manager.BeginAutoUndoCommands();
@@ -6725,8 +6730,9 @@ namespace FastColoredTextBoxNS {
                 Selection.Start = new Place(spaces, i);
                 lines.Manager.ExecuteCommand(new InsertTextCommand(TextSource, prefix));
             }
-            Selection.Start = new Place(0, from);
-            Selection.End = new Place(lines[to].Count, to);
+            Selection = old;
+            //Selection.Start = new Place(0, from);
+            //Selection.End   = new Place(lines[to].Count, to);
             needRecalc = true;
             lines.Manager.EndAutoUndoCommands();
             Selection.EndUpdate();
@@ -6740,8 +6746,9 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         public void RemoveLinePrefix(string prefix) {
             Range old = Selection.Clone();
+            if (SelectionLength > 0) SelectionLength--; // By WendyH
             int from = Math.Min(Selection.Start.iLine, Selection.End.iLine);
-            int to = Math.Max(Selection.Start.iLine, Selection.End.iLine);
+            int to   = Math.Max(Selection.Start.iLine, Selection.End.iLine);
             BeginUpdate();
             Selection.BeginUpdate();
             lines.Manager.BeginAutoUndoCommands();
@@ -6756,8 +6763,9 @@ namespace FastColoredTextBoxNS {
                     ClearSelected();
                 }
             }
-            Selection.Start = new Place(0, from);
-            Selection.End = new Place(lines[to].Count, to);
+            Selection = old;
+            //Selection.Start = new Place(0, from);
+            //Selection.End   = new Place(lines[to].Count, to);
             needRecalc = true;
             lines.Manager.EndAutoUndoCommands();
             Selection.EndUpdate();
