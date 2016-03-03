@@ -101,7 +101,7 @@ namespace HMSEditorNS {
         private static Regex regexGetFromLineCmd  = new Regex(@"\s*?(\w.*?)(\||$)", RegexOptions.Compiled);
         private static Regex regexGetFromLineHelp = new Regex(@"\|(.*)"           , RegexOptions.Compiled);
         private static Regex regexGetFromLineType = new Regex(@"[^\|]*:\s*?(\w+)" , RegexOptions.Compiled);
-        private static Regex regexGetFromLineName = new Regex(@"^\s*?(\w+)"       , RegexOptions.Compiled);
+        private static Regex regexGetFromLineName = new Regex(@"^\s*?([\w-]+)"    , RegexOptions.Compiled);
 
         private static Regex regexTypePascal  = new Regex(@":\s*?(\w+)\s*;?$"            , RegexOptions.Compiled);
         private static Regex regexTypeCPP     = new Regex(@"^(\w+)\s+\w+\s*?(\(|;|=|\.)" , RegexOptions.Compiled);
