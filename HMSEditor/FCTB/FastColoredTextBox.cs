@@ -283,12 +283,25 @@ namespace FastColoredTextBoxNS {
         }
 
         // By WendyH
+        public int LightYellowSelect(Regex regex) {
+            if (regex.ToString().Length==0) { FoundLines = new int[0]; return 0; }
+            int n = 0; Range.ClearStyle(LightYellowSelectionStyle);
+            List<int> lines = new List<int>();
+            foreach (var r in Range.GetRanges(regex)) {
+                r.SetStyle(LightYellowSelectionStyle); n++;
+                lines.Add(r.FromLine+1);
+            }
+            FoundLines = lines.ToArray();
+            UpdateScrollMarkers();
+            return n;
+        }
+
         public int LightYellowSelect(string pattern, RegexOptions opt) {
             int n = 0; Range.ClearStyle(LightYellowSelectionStyle);
             List<int> lines = new List<int>();
             foreach (var r in Range.GetRanges(pattern, opt)) {
                 r.SetStyle(LightYellowSelectionStyle); n++;
-                lines.Add(r.FromLine+1);
+                lines.Add(r.FromLine + 1);
             }
             FoundLines = lines.ToArray();
             UpdateScrollMarkers();

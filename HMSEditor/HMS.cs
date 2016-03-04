@@ -33,15 +33,7 @@ namespace HMSEditorNS {
                 // Заполняем базу знаний функций, классов, встроенных констант и переменных...
                 InitAndLoadHMSKnowledgeDatabase();
 
-                //PrepareFastDraw(); 
-
-                bool prepareFastDraw = true;
-
-                if (prepareFastDraw) {
-                    Worker.DoWork += Worker_DoWork;
-                    Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
-                    Worker.RunWorkerAsync(BackgraundTask.PrepareFastDraw);
-                }
+                PrepareFastDrawInBackground(); 
 
             } catch (Exception e) {
                 LogError(e.ToString());
@@ -78,6 +70,16 @@ namespace HMSEditorNS {
         private static string _downloaddir = "";
         internal static string DownloadDir {
             get { if (_downloaddir.Length == 0) _downloaddir = Path.GetTempPath(); return _downloaddir; }
+        }
+
+        public static bool AllowPrepareFastDraw = false;
+        public static void PrepareFastDrawInBackground() {
+            if (AllowPrepareFastDraw) {
+                Worker.DoWork += Worker_DoWork;
+                Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+                Worker.RunWorkerAsync(BackgraundTask.PrepareFastDraw);
+            }
+
         }
 
         public static string AssemblyVersion { get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); } }
@@ -527,7 +529,7 @@ namespace HMSEditorNS {
         }
 
         public static HMSItem GetHmsItemFromLine(string line) {
-            HMSItem item = new HMSItem();
+            HMSItem item = new HMSItem(); 
             item.Text         = regexGetFromLineName.Match(line).Groups[1].Value.Trim();
             item.Type         = regexGetFromLineType.Match(line).Groups[1].Value.Trim(); // All ok, if not success - value is empty string
             item.ToolTipTitle = regexGetFromLineCmd .Match(line).Groups[1].Value.Trim();

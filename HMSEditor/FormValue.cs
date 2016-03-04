@@ -12,7 +12,7 @@ using FastColoredTextBoxNS;
 namespace HMSEditorNS {
     public partial class FormValue: Form {
 
-        public string Value      { get { return fastColoredTB.Text; } set { fastColoredTB.Text = value; fastColoredTB.Language = fastColoredTB.SyntaxHighlighter.DetectLang(value); } }
+        public string Value          { get { return fastColoredTB.Text; } set { fastColoredTB.Text = value; fastColoredTB.Language = fastColoredTB.SyntaxHighlighter.DetectLang(value); } }
         public string Expression = " ";
         public string RealExpression { get { return tbExpression.Text; } set { tbExpression.Text = value; } }
 
@@ -137,7 +137,7 @@ namespace HMSEditorNS {
                 Group group = m.Groups[0];
                 Range r = new Range(range.tb);
                 r.Start = charIndexToPlace[group.Index];
-                r.End = charIndexToPlace[group.Index + group.Length];
+                r.End = charIndexToPlace[group.Index + group.Length]; 
                 r.SetStyleOwerwrite(fastColoredTB.BlueSelectionStyle);
                 bool skipfisrt = false;
                 foreach (Group g in m.Groups) {
@@ -160,6 +160,9 @@ namespace HMSEditorNS {
             }
             if (chkHTML2Text.Checked) result = HtmlRemoval.Html2Text(result);
             tbResult.Text = result;
+            fastColoredTB.YellowSelection    = true;
+            fastColoredTB.SelectionAfterFind = true;
+            int n = fastColoredTB.LightYellowSelect(tt);
         }
 
         private bool CreateRegex() {
@@ -169,7 +172,7 @@ namespace HMSEditorNS {
             if (chkPCRE_SINGLELINE.Checked) options |= RegexOptions.Singleline;
             try {
                 tt = new Regex(cbPattern.Text, options);
-                label1.ForeColor = Color.Black;
+                label1.ForeColor = Color.Black; 
             } catch {
                 tt = null;
                 return false;

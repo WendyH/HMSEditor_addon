@@ -96,11 +96,11 @@ namespace HMSEditorNS {
             Editor.ChangedLineColor = Color.FromArgb(255, 152, 251, 152);
             Editor.LostFocus += Editor_LostFocus; // for hiding all tooltipds when lost focus
             helpPanel1.PanelClose += HelpPanel1_PanelClose;
-            SetAutoCompleteMenu(); 
             helpPanel1.Init(imageList1, HmsScriptMode.ToString());
             WorkerCheckSyntax.DoWork += WorkerCheckSyntax_DoWork;
             WorkerCheckSyntax.RunWorkerCompleted += WorkerCheckSyntax_RunWorkerCompleted;
             CreateAutocompleteItemsByScriptDescrition();
+            SetAutoCompleteMenu();
         }
 
         private void HelpPanel1_PanelClose(object sender, EventArgs e) {
@@ -222,6 +222,7 @@ namespace HMSEditorNS {
                 return Editor.Language.ToString();
             }
             set {
+                if (ScriptLanguage == value) return;
                 Editor.ClearStylesBuffer();
                 Editor.Range.ClearStyle(StyleIndex.All);
                 switch (value) {
@@ -557,19 +558,45 @@ namespace HMSEditorNS {
         }
 
         public void RestorePosition() {
+            Match m;
             if (btnStorePositions.Checked) {
-                uint thisHash = (uint)Text.GetHashCode();
-                string hash   = thisHash.ToString();
-                string hashes = Settings.Get("LastHash" + HmsScriptMode.ToString(), SettingsSection, "");
-                if (hashes == "") return;
-                Match match   = Regex.Match(hashes, hash + ":(\\d+):(\\d+)");
-                if (match.Success) {
-                    uint sel = 0, pos = 0;
-                    uint.TryParse(match.Groups[1].Value, out sel);
-                    if (sel < Editor.Text.Length) Editor.SelectionStart = (int)sel;
-                    uint.TryParse(match.Groups[2].Value, out pos);
-                    if (pos <= Editor.GetMaximumScrollValue()) Editor.SetVerticalScrollValue((int)pos);
+                try {
+                    string hash   = ((uint)Text.GetHashCode()).ToString();
+                    string hashes = Settings.Get("LastHash" + HmsScriptMode.ToString(), SettingsSection, "");
+                    hashes = Regex.Match(hashes, hash + ":[^\\|]+").Value;
+                    if (hashes == "") return;
+                    m = Regex.Match(hashes, hash + ":(\\d+):(\\d+)");
+                    if (m.Success) {
+                        uint sel = 0, pos = 0;
+                        uint.TryParse(m.Groups[1].Value, out sel);
+                        if (sel < Editor.Text.Length) Editor.SelectionStart = (int)sel;
+                        uint.TryParse(m.Groups[2].Value, out pos);
+                        if (pos <= Editor.GetMaximumScrollValue()) Editor.SetVerticalScrollValue((int)pos);
+                    }
+                    m = Regex.Match(hashes, hash + ":.*?:.*?:(.*?):(.*)");
+                    if (m.Success) {
+                        string[] sbp = m.Groups[1].Value.Split(',');
+                        string[] sbm = m.Groups[2].Value.Split(',');
+                        Editor.Breakpoints.Clear();
+                        foreach (string s in sbp) {
+                            m = Regex.Match(s, "\\d+");
+                            if (m.Success) ToggleBreakpoint(int.Parse(m.Value));
+                        }
+                        Editor.Bookmarks.Clear();
+                        foreach (string s in sbm) {
+                            m = Regex.Match(s, "(\\d+)\\.(\\d+)\"(.*?)\"");
+                            if (!m.Success) continue;
+                            Bookmark b = new Bookmark(Editor, "", 0);
+                            b.LineIndex = int.Parse(m.Groups[1].Value);
+                            b.CharIndex = int.Parse(m.Groups[2].Value);
+                            b.Name = m.Groups[3].Value;
+                            Editor.Bookmarks.Add(b);
+                        }
+                    }
                     Editor.Invalidate();
+                } catch (Exception e) {
+                    HMS.LogError(e.ToString());
+                    Console.WriteLine("Error restoring position", e);
                 }
             }
         }
@@ -727,25 +754,7 @@ namespace HMSEditorNS {
                 Settings.Set("UnderlinePascalKeywords", btnUnderlinePascalKeywords.Checked, section);
 
                 if (btnStorePositions.Checked) {
-                    string oldHash   = OldTextHash.ToString();
-                    string hashParam = "LastHash" + HmsScriptMode.ToString();
-                    string hashes = Settings.Get(hashParam, SettingsSection, "");
-                    Dictionary<string, string> hashesDict = new Dictionary<string, string>();
-                    string firstKey = "";
-                    foreach (string hashval in hashes.Split('|')) {
-                        Match m = Regex.Match(hashval, "(.*?):(.*)");
-                        if (!m.Success) continue;
-                        if (firstKey=="") firstKey = m.Groups[1].Value;
-                        hashesDict[m.Groups[1].Value] = m.Groups[2].Value;
-                    }
-                    if (hashesDict.ContainsKey(oldHash)) hashesDict.Remove(oldHash);
-                    if (hashesDict.Count>=20) hashesDict.Remove(firstKey);
-
-                    uint lastHash = (uint)Text.GetHashCode();
-                    hashesDict[lastHash.ToString()] = Editor.SelectionStart.ToString() + ":" + Editor.GetVerticalScrollValue().ToString();
-                    hashes = ""; foreach (var keyVal in hashesDict) hashes += "|" + keyVal.Key + ":" + keyVal.Value;
-                    if (hashes.Length > 0) hashes = hashes.Substring(1);
-                    Settings.Set(hashParam, hashes, section);
+                    SaveState();
                 }
 
                 string hotkeys = GetHotKeysMapping();
@@ -758,9 +767,36 @@ namespace HMSEditorNS {
             }
         }
 
-        private void GetLastPositionsArray() {
+        private void SaveState() {
+            string oldHash   = OldTextHash.ToString();
+            string hashParam = "LastHash" + HmsScriptMode.ToString();
+            string hashes    = Settings.Get(hashParam, SettingsSection, "");
+            string firstKey  = "";
+            string lastHash  = ((uint)Text.GetHashCode()).ToString();
+            string linesBPs  = "";
+            string linesBMs  = "";
 
+            Dictionary<string, string> hashesDict = new Dictionary<string, string>();
 
+            foreach (string hashval in hashes.Split('|')) {
+                Match m = Regex.Match(hashval, "(.*?):(.*)");
+                if (!m.Success) continue;
+                if (firstKey == "") firstKey  = m.Groups[1].Value;
+                hashesDict[m.Groups[1].Value] = m.Groups[2].Value;
+            }
+
+            if (hashesDict.ContainsKey(oldHash)) hashesDict.Remove(oldHash);
+            if (hashesDict.Count >= 20) hashesDict.Remove(firstKey);
+
+            // Store our state
+            foreach (var b in Editor.Breakpoints) { if (linesBPs != "") linesBPs += ","; linesBPs += b.LineIndex; }
+            foreach (var b in Editor.Bookmarks  ) { if (linesBMs != "") linesBMs += ","; linesBMs += b.LineIndex + "." + b.CharIndex + "\"" + b.Name.Replace("|", "") + "\""; };
+
+            hashesDict[lastHash] = ""+Editor.SelectionStart+":"+Editor.GetVerticalScrollValue()+":"+linesBPs+":"+linesBMs;
+
+            hashes = ""; foreach (var keyVal in hashesDict) hashes += "|" + keyVal.Key + ":" + keyVal.Value;
+            if (hashes.Length > 0) hashes = hashes.Substring(1);
+            Settings.Set(hashParam, hashes, SettingsSection);
         }
 
         private string GetHotKeysMapping() {
@@ -1977,7 +2013,7 @@ namespace HMSEditorNS {
                     if (foundItem.Help.Length == 0) foundItem.Help = descr;
                 } else {
                     ScriptAutocompleteItems.Add(item);
-                    Console.WriteLine(kind.ToString() + " MenuText: " + item.MenuText);
+                    //Console.WriteLine(kind.ToString() + " MenuText: " + item.MenuText);
                 }
             }
         }
@@ -1991,9 +2027,11 @@ namespace HMSEditorNS {
             if ((HmsScriptFrame == null) && (File.Exists(@"D:\descr.txt")))
                 xml = File.ReadAllText(@"D:\descr.txt");
 #endif
-            if (HmsScriptFrame != null)
+            if (HmsScriptFrame != null) {
                 xml = GetScriptDescriptions();
-                
+                //File.WriteAllText(@"D:\descr.txt", xml); 
+            }
+
             if (!string.IsNullOrEmpty(xml)) {
                 SearchAutocompleteItemsInScriptDescrition(regexCutFunctions, ref xml, ImagesIndex.Procedure, ""                     , DefKind.Function, HMS.ItemsFunction);
                 SearchAutocompleteItemsInScriptDescrition(regexCutVariables, ref xml, ImagesIndex.Field    , "Встроенная переменная", DefKind.Variable, HMS.ItemsVariable);
@@ -2005,6 +2043,8 @@ namespace HMSEditorNS {
             Console.WriteLine("CreateAutocompleteItemsByScriptDescrition ElapsedMilliseconds: " + sw.ElapsedMilliseconds);
             Console.WriteLine("ScriptAutocompleteItems.Count: " + ScriptAutocompleteItems.Count);
 #endif
+            HMS.AllowPrepareFastDraw = true;
+            HMS.PrepareFastDrawInBackground();
         }
 
         public void CreateInsertTemplateItems() {
@@ -2030,5 +2070,8 @@ namespace HMSEditorNS {
 
         } // end AddTemplateItemsRecursive
 
+        private void labelVersion_MouseDown(object sender, MouseEventArgs e) {
+            MessageBox.Show("labelVersion_MouseDown");
+        }
     }
 }

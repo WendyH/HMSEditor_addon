@@ -36,7 +36,7 @@
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(HMSEditor));
-            FastColoredTextBoxNS.ServiceColors serviceColors2 = new FastColoredTextBoxNS.ServiceColors();
+            FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.btnContextMenuBack = new System.Windows.Forms.ToolStripMenuItem();
             this.btnContextMenuForward = new System.Windows.Forms.ToolStripMenuItem();
@@ -988,11 +988,12 @@
             // labelVersion
             // 
             this.labelVersion.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.labelVersion.ForeColor = System.Drawing.Color.DarkGray;
+            this.labelVersion.ForeColor = System.Drawing.Color.Gray;
             this.labelVersion.Name = "labelVersion";
             this.labelVersion.Size = new System.Drawing.Size(145, 22);
             this.labelVersion.Text = "HMSEditor Addon v1.0.0.5";
             this.labelVersion.DoubleClick += new System.EventHandler(this.labelVersion_DoubleClick);
+            this.labelVersion.MouseDown += new System.Windows.Forms.MouseEventHandler(this.labelVersion_MouseDown);
             // 
             // labelNewVersion
             // 
@@ -1062,7 +1063,7 @@
         '\''};
             this.Editor.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);^\\s*(case|default)\\s*[^:]*(?<" +
     "range>:)\\s*(?<range>[^;]+);";
-            this.Editor.AutoScrollMinSize = new System.Drawing.Size(25, 15);
+            this.Editor.AutoScrollMinSize = new System.Drawing.Size(24, 15);
             this.Editor.BackBrush = null;
             this.Editor.BoldCaret = false;
             this.Editor.BookmarkIcon = global::HMSEditorNS.Properties.Resources.togglebookmark;
@@ -1090,13 +1091,13 @@
             this.Editor.Paddings = new System.Windows.Forms.Padding(0);
             this.Editor.RightBracket = ')';
             this.Editor.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
-            serviceColors2.CollapseMarkerBackColor = System.Drawing.Color.White;
-            serviceColors2.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors2.CollapseMarkerForeColor = System.Drawing.Color.Silver;
-            serviceColors2.ExpandMarkerBackColor = System.Drawing.Color.White;
-            serviceColors2.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors2.ExpandMarkerForeColor = System.Drawing.Color.Red;
-            this.Editor.ServiceColors = serviceColors2;
+            serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
+            serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
+            serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
+            serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
+            this.Editor.ServiceColors = serviceColors1;
             this.Editor.ShowScrollBars = false;
             this.Editor.Size = new System.Drawing.Size(672, 506);
             this.Editor.TabIndex = 0;
