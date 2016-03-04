@@ -1447,6 +1447,10 @@ namespace HMSEditorNS {
             form.ShowDialog();
         }
 
+        private void labelVersion_MouseDown(object sender, MouseEventArgs e) {
+            btnAbout_Click(sender, e);
+        }
+
         private void labelVersion_DoubleClick(object sender, EventArgs e) {
             btnAbout_Click(sender, e);
         }
@@ -2070,8 +2074,5 @@ namespace HMSEditorNS {
 
         } // end AddTemplateItemsRecursive
 
-        private void labelVersion_MouseDown(object sender, MouseEventArgs e) {
-            MessageBox.Show("labelVersion_MouseDown");
-        }
     }
 }
