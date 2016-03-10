@@ -2617,7 +2617,7 @@ namespace FastColoredTextBoxNS {
                 BeginUpdate();
                 int st = SelectionStart;
                 InsertText(text);
-                if (FormatCodeWhenPaste) {
+                if (FormatCodeWhenPaste && text.Length < 100000) {
                     int old = SelectionStart;
                     BeginAutoUndo();
                     SelectionStart  = st;

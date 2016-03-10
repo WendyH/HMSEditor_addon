@@ -122,10 +122,10 @@ namespace HMSEditorNS {
                         // Внедряемся в поток - показываем вплывающее окно со значением
                         Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
                             value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
-                            if (value.Length > MaxValueLength || HMSEditor.ActiveEditor.ValueForm.Visible) {
-                                //value = value.Substring(0, MaxValueLength) + "...";
+                            if (HMSEditor.ActiveEditor.ValueForm.Visible) {
                                 HMSEditor.ActiveEditor.ValueForm.Show(Editor, text, value, realExpression);
                             } else {
+                                if (value.Length > MaxValueLength) value = value.Substring(0, MaxValueLength) + "...";
                                 ActiveHMSEditor.ValueHint.ShowValue(Editor, text, value, point, realExpression);
                             }
                         });

@@ -64,7 +64,7 @@ namespace HMSEditorNS {
 
         private void Btn_Click(object sender, EventArgs e) {
             if (HMSEditor.ActiveEditor != null) {
-                HMSEditor.ActiveEditor.ValueForm.Show(this, Expression, ctl.Text, RealExpression);
+                HMSEditor.ActiveEditor.ValueForm.Show(HMSEditor.ActiveEditor.Editor, Expression, ctl.Text, RealExpression);
                 Close();
             }
         }

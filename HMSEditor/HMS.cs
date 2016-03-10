@@ -74,7 +74,7 @@ namespace HMSEditorNS {
 
         public static bool AllowPrepareFastDraw = false;
         public static void PrepareFastDrawInBackground() {
-            if (AllowPrepareFastDraw) {
+            if (AllowPrepareFastDraw && !Worker.IsBusy) {
                 Worker.DoWork += Worker_DoWork;
                 Worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
                 Worker.RunWorkerAsync(BackgraundTask.PrepareFastDraw);

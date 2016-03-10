@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -11,8 +12,17 @@ using FastColoredTextBoxNS;
 
 namespace HMSEditorNS {
     public partial class FormValue: Form {
+        private string _src = "";
 
-        public string Value          { get { return fastColoredTB.Text; } set { fastColoredTB.Text = value; fastColoredTB.Language = fastColoredTB.SyntaxHighlighter.DetectLang(value); } }
+        public string Value {
+            get { return fastColoredTB.Text; }
+            set {
+                fastColoredTB.Language = fastColoredTB.SyntaxHighlighter.DetectLang(value);
+                fastColoredTB.Text     = value;
+                cbLanguage.Text = fastColoredTB.SyntaxHighlighter.Lang2Str(fastColoredTB.Language);
+                //cbLanguage_SelectedIndexChanged(null, EventArgs.Empty);
+            }
+        }
         public string Expression = " ";
         public string RealExpression { get { return tbExpression.Text; } set { tbExpression.Text = value; } }
 
@@ -43,10 +53,15 @@ namespace HMSEditorNS {
                 MessageBox.Show(this, "Окно отображения значения не может быть показано.\nЕго кто-то или что-то уничтожило.", HMSEditor.Title);
                 return;
             }
-
+            fastColoredTB.Font = ctl.Font; 
             Expression = expr;
             Value      = text;
             RealExpression = realExpression;
+            _src       = text;
+
+            chkFormatting_CheckedChanged(null, EventArgs.Empty);
+
+            if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
 
             if (!Visible) {
                 Show(ctl);
@@ -216,5 +231,67 @@ namespace HMSEditorNS {
         private void chkOnTop_CheckedChanged(object sender, EventArgs e) {
             this.TopMost = chkOnTop.Checked;
         }
+
+        private void cbLanguage_SelectedIndexChanged(object sender, EventArgs e) {
+            fastColoredTB.Language = fastColoredTB.SyntaxHighlighter.Str2Lang(cbLanguage.Text);
+            fastColoredTB.SyntaxHighlighter.HighlightSyntax(fastColoredTB.Language, fastColoredTB.Range);
+        }
+
+        private void chkFormatting_CheckedChanged(object sender, EventArgs e) {
+            if (cbFormatting.Checked) {
+                try {
+                    if (Regex.IsMatch(Value.Trim(), @"^[\{\[].*[\}\]]$", RegexOptions.Singleline))
+                        Value = Utils.JsonHelper.FormatJson(_src);
+                    else
+                        Value = PrettyHTML(_src);
+                } catch {
+                }
+            } else {
+                Value = _src;
+            }
+        }
+
+        public static string PrettyHTML(string html) {
+            string result = html;
+            try {
+                TidyNet.Tidy document = new TidyNet.Tidy();
+                TidyNet.TidyMessageCollection messageCollection = new TidyNet.TidyMessageCollection();
+
+                document.Options.DocType         = TidyNet.DocType.Auto;
+                document.Options.Xhtml           = true;
+                document.Options.CharEncoding    = TidyNet.CharEncoding.UTF8;
+                document.Options.LogicalEmphasis = false;
+
+                document.Options.MakeClean       = true;
+                document.Options.QuoteNbsp       = false;
+                document.Options.SmartIndent     = false;
+                document.Options.IndentContent   = true;
+                document.Options.TidyMark        = false;
+
+                document.Options.DropFontTags    = false;
+                document.Options.QuoteAmpersand  = false;
+                document.Options.DropEmptyParas  = false;
+                document.Options.BreakBeforeBR   = true;
+                document.Options.FixComments     = true;
+                document.Options.IndentAttributes = false;
+                document.Options.LiteralAttribs   = true;
+                document.Options.PreserveEntities = false;
+
+                MemoryStream input  = new MemoryStream();
+                MemoryStream output = new MemoryStream();
+                byte[] array = Encoding.UTF8.GetBytes(html);
+                input.Write(array, 0, array.Length);
+                input.Position = 0;
+
+                document.Parse(input, output, messageCollection);
+
+                string tidyXhtml = Encoding.UTF8.GetString(output.ToArray());
+                if (tidyXhtml!="")
+                    result = tidyXhtml;
+
+            } catch { }
+            return result;
+        }
+
     }
 }

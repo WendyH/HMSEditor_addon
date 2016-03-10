@@ -300,7 +300,7 @@ namespace HMSEditorNS {
             if (Editor.ToolTip != null) Editor.ToolTip.RemoveAll();
             PopupMenu.ToolTip.RemoveAll();
             PopupMenu.Close();
-            ValueForm.Hide();
+            //ValueForm.Hide();
         }
 
         private void HideToolTip4Function(bool noCheckLine = false) {
@@ -596,7 +596,7 @@ namespace HMSEditorNS {
                     Editor.Invalidate();
                 } catch (Exception e) {
                     HMS.LogError(e.ToString());
-                    Console.WriteLine("Error restoring position", e);
+                    //Console.WriteLine("Error restoring position");
                 }
             }
         }
@@ -878,6 +878,7 @@ namespace HMSEditorNS {
             form.TextBox.BackColor = Editor.BackColor;
             form.TextBox.ForeColor = Editor.ForeColor;
             form.TextBox.Language  = Editor.Language;
+            form.TextBox.Font      = Editor.Font;
             form.TextBox.ShowFoldingLines   = false;
             form.TextBox.ShowFoldingMarkers = false;
 
@@ -1133,6 +1134,7 @@ namespace HMSEditorNS {
         }
 
         private void btnBookmarkPlus_Click(object sender, EventArgs e) {
+            //ValueForm.Show(Editor, "", Editor.Text, "");
             Bookmark();
         }
 

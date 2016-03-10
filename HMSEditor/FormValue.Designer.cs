@@ -26,6 +26,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormValue));
             FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.cbFormatting = new System.Windows.Forms.CheckBox();
+            this.cbLanguage = new System.Windows.Forms.ComboBox();
             this.chkOnTop = new System.Windows.Forms.CheckBox();
             this.chkWordWrap = new System.Windows.Forms.CheckBox();
             this.btnClose = new System.Windows.Forms.Button();
@@ -55,6 +57,8 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.ControlLightLight;
+            this.panel1.Controls.Add(this.cbFormatting);
+            this.panel1.Controls.Add(this.cbLanguage);
             this.panel1.Controls.Add(this.chkOnTop);
             this.panel1.Controls.Add(this.chkWordWrap);
             this.panel1.Controls.Add(this.btnClose);
@@ -63,6 +67,41 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(692, 42);
             this.panel1.TabIndex = 1;
+            // 
+            // cbFormatting
+            // 
+            this.cbFormatting.AutoSize = true;
+            this.cbFormatting.Location = new System.Drawing.Point(287, 15);
+            this.cbFormatting.Name = "cbFormatting";
+            this.cbFormatting.Size = new System.Drawing.Size(116, 17);
+            this.cbFormatting.TabIndex = 4;
+            this.cbFormatting.Text = "Форматирование";
+            this.cbFormatting.UseVisualStyleBackColor = true;
+            this.cbFormatting.CheckedChanged += new System.EventHandler(this.chkFormatting_CheckedChanged);
+            // 
+            // cbLanguage
+            // 
+            this.cbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbLanguage.FormattingEnabled = true;
+            this.cbLanguage.Items.AddRange(new object[] {
+            "C#",
+            "VisualBasic",
+            "HTML",
+            "XML",
+            "SQL",
+            "PHP",
+            "JavaScript",
+            "Lua",
+            "YAML",
+            "C++Script",
+            "PascalScript",
+            "BasicScript",
+            "JScript"});
+            this.cbLanguage.Location = new System.Drawing.Point(409, 13);
+            this.cbLanguage.Name = "cbLanguage";
+            this.cbLanguage.Size = new System.Drawing.Size(97, 21);
+            this.cbLanguage.TabIndex = 3;
+            this.cbLanguage.SelectedIndexChanged += new System.EventHandler(this.cbLanguage_SelectedIndexChanged);
             // 
             // chkOnTop
             // 
@@ -80,8 +119,6 @@
             // chkWordWrap
             // 
             this.chkWordWrap.AutoSize = true;
-            this.chkWordWrap.Checked = true;
-            this.chkWordWrap.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkWordWrap.Location = new System.Drawing.Point(12, 15);
             this.chkWordWrap.Name = "chkWordWrap";
             this.chkWordWrap.Size = new System.Drawing.Size(143, 17);
@@ -335,7 +372,7 @@
             this.fastColoredTB.ShowScrollBars = false;
             this.fastColoredTB.Size = new System.Drawing.Size(692, 215);
             this.fastColoredTB.SourceTextBox = this.fastColoredTB;
-            this.fastColoredTB.TabIndex = 0;
+            this.fastColoredTB.TabIndex = 3;
             this.fastColoredTB.Text = "<HTML>";
             this.fastColoredTB.WordWrap = true;
             this.fastColoredTB.WordWrapAutoIndent = false;
@@ -377,7 +414,6 @@
         private System.Windows.Forms.Panel panelTop;
         private System.Windows.Forms.TextBox tbExpression;
         private System.Windows.Forms.Label lblExpression;
-        private FastColoredTextBoxNS.FastColoredTextBox fastColoredTB;
         private System.Windows.Forms.GroupBox groupRegex;
         private System.Windows.Forms.ComboBox cbPattern;
         private System.Windows.Forms.TextBox tbRegexCount;
@@ -392,5 +428,8 @@
         private System.Windows.Forms.TextBox tbResult;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.CheckBox chkOnTop;
+        private System.Windows.Forms.ComboBox cbLanguage;
+        private FastColoredTextBoxNS.FastColoredTextBox fastColoredTB;
+        private System.Windows.Forms.CheckBox cbFormatting;
     }
 }

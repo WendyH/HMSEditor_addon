@@ -1523,14 +1523,17 @@ namespace FastColoredTextBoxNS {
         }
 
         public Language DetectLang(string txt) {
-            Language lang = Language.CSharp;
+            Language lang = Language.HTML;
             Dictionary<Language, string> langPatterns = new Dictionary<Language, string>();
+            langPatterns[Language.HTML  ] = @"^<!DOCTYPE";
             langPatterns[Language.XML   ] = @"^<\?xml";
             langPatterns[Language.PHP   ] = @"(^<\?php|\$\w+\s*?[=\[\)])";
-            langPatterns[Language.HTML  ] = @"<[^?]\w+.*?>";
             langPatterns[Language.PascalScript] = @"(\w+\s*?:=\s*?[\d'""\w]|ifthen|end;|end\.)";
             langPatterns[Language.JS          ] = @"{\s*?[\w-]+:\s*?[\d\w\s#\.]+;";
             langPatterns[Language.BasicScript ] = @"If[\S\s]+Then[\S\s]+End\sIf|Sub[\S\s]+End\sSub|^\s*?Dim\s\w+\s*?(,|$)";
+            langPatterns[Language.YAML        ] = @"^\s*?[\[\{].*[\]\}]$"; // JSON
+            langPatterns[Language.CPPScript   ] = @"^\s*?(int\s+\w+\s*?[,;=]|(void|int)\s+\w+\s*?\()";
+            langPatterns[Language.CSharp      ] = @"(using\s+\w+\.\w+.*?;|(public|private)\s+\w+\s+\w+\s+\w+\()";
             foreach (var item in langPatterns) {
                 string pattern = item.Value;
                 if (Regex.IsMatch(txt, pattern, RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.IgnoreCase)) {
@@ -1661,6 +1664,36 @@ namespace FastColoredTextBoxNS {
         // < By WendyH ------------------------------
         public Style ConstantsStyle    { get; set; }
         public Style DeclFunctionStyle { get; set; }
+
+        public string Lang2Str(Language l) {
+            if      (l == Language.CPPScript) return "C++Script";
+            else if (l == Language.JS       ) return "JavaScript";
+            else if (l == Language.VB       ) return "VisualBasic";
+            else if (l == Language.CSharp   ) return "C#";
+            else if (l == Language.Custom   ) return "";
+            else return l.ToString();
+        }
+
+        public Language Str2Lang(string name) {
+            Language l;
+            switch (name) {
+                case "C#"          : l = Language.CSharp      ; break;
+                case "VisualBasic" : l = Language.VB          ; break;
+                case "HTML"        : l = Language.HTML        ; break;
+                case "XML"         : l = Language.XML         ; break;
+                case "SQL"         : l = Language.SQL         ; break;
+                case "PHP"         : l = Language.PHP         ; break;
+                case "JavaScript"  : l = Language.JS          ; break;
+                case "Lua"         : l = Language.Lua         ; break;
+                case "YAML"        : l = Language.YAML        ; break;
+                case "C++Script"   : l = Language.CPPScript   ; break;
+                case "PascalScript": l = Language.PascalScript; break;
+                case "BasicScript" : l = Language.BasicScript ; break;
+                case "JScript"     : l = Language.JScript     ; break;
+                default            : l = Language.YAML        ; break;
+            }
+            return l;
+        }
         // > By WendyH ------------------------------
 
         #endregion
