@@ -101,6 +101,7 @@ namespace HMSEditorNS {
             WorkerCheckSyntax.RunWorkerCompleted += WorkerCheckSyntax_RunWorkerCompleted;
             CreateAutocompleteItemsByScriptDescrition();
             SetAutoCompleteMenu();
+            CreateAutocomplete();
         }
 
         private void HelpPanel1_PanelClose(object sender, EventArgs e) {
@@ -276,14 +277,6 @@ namespace HMSEditorNS {
         public int TextLength { get { return Text.Length; } }
 
         #region Fuctions and procedures
-        public bool ToLock() {
-            int countout = 20; // Maximum - two sec
-            while (Locked && (countout > 0)) { Thread.Sleep(100); countout--; } // Waiting if locked
-            if (Locked) return false;
-            Locked = true;
-            return Locked;
-        }
-
         public void OnRunningStateChange(bool running) {
             DebugMode = running;
             RunLineRised = false;
