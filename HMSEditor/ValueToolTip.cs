@@ -7,25 +7,25 @@ namespace HMSEditorNS {
     /// <summary>
     /// Класс для подсказки вычисленного выражения переменной или свойства при наведении курсора мыши в режиме отладки скрипта
     /// </summary>
-    public class ValueToolTip: ToolStripDropDown {
-        private ContextMenuStrip menustrip = new ContextMenuStrip();
-        private RichTextBox ctl     = new RichTextBox();
-        private Size    MaxSize = new Size(500, 400);
-        private Timer   timer   = new Timer();
-        private Size    MouseDX = new Size(30, 30);
-        private Button Btn = new Button();
+    public sealed class ValueToolTip: ToolStripDropDown {
         private ToolStripControlHost BtnHost;
-        public string Expression = "";
-        public bool   IsShowing  = false;
-        public string RealExpression = "";
+        private ContextMenuStrip     menustrip = new ContextMenuStrip();
+        private RichTextBox ctl = new RichTextBox();
+        private Size   MaxSize  = new Size(500, 400);
+        private Timer  timer    = new Timer();
+        private Size   MouseDX  = new Size(30, 30);
+        private Button Btn      = new Button();
+        public string  Expression     = "";
+        public string  RealExpression = "";
+        public bool    IsShowing;
 
         public string Value { get { return ctl.Text; } set { ctl.Text = value; } }
 
-        public ValueToolTip() : base() {
+        public ValueToolTip() {
             Btn.AutoSize = true;
             Btn.Size     = new Size(34, 25);
             Btn.Text     = "";
-            Btn.Image    = global::HMSEditorNS.Properties.Resources.Find_5650;
+            Btn.Image    = Properties.Resources.Find_5650;
             Btn.Click   += Btn_Click;
             ctl.BorderStyle = BorderStyle.None;
             ctl.BackColor   = Color.White;
@@ -37,11 +37,10 @@ namespace HMSEditorNS {
             ctl.WordWrap    = true;
             ctl.DetectUrls  = false;
             ctl.BackColor   = Color.FromArgb(255, 231, 232, 236);
-            MaximumSize = new Size(MaxSize.Width+20, MaxSize.Height+20);
-            timer.Tick     += new EventHandler(tick_CheckMouseNearly);
+            MaximumSize     = new Size(MaxSize.Width+20, MaxSize.Height+20);
+            timer.Tick     += tick_CheckMouseNearly;
             timer.Interval  = 500;
-            ToolStripItem item;
-            item = menustrip.Items.Add("Копировать", Properties.Resources.Copy_6524);
+            var item = menustrip.Items.Add("Копировать", Properties.Resources.Copy_6524);
             item.Click += Copy_Click;
             item = menustrip.Items.Add("Выделить всё");
             item.Click += SelectAll_Click;
@@ -50,15 +49,16 @@ namespace HMSEditorNS {
             ctl.ContextMenuStrip = menustrip;
             ctl.KeyDown += Ctl_KeyDown;
 
-            BtnHost = new ToolStripControlHost(this.Btn);
-            BtnHost.Margin   = Padding.Empty;
-            BtnHost.Padding  = Padding.Empty;
-            BtnHost.AutoSize = false;
-            BtnHost.Visible  = false;
-            this.Items.Add(BtnHost);
+            BtnHost = new ToolStripControlHost(Btn) {
+                Margin   = Padding.Empty,
+                Padding  = Padding.Empty,
+                AutoSize = false,
+                Visible  = false
+            };
+            Items.Add(BtnHost);
             //this.BackColor = Color.LightGray;
             Initialize();
-            this.BackColor = ctl.BackColor;
+            BackColor = ctl.BackColor;
             AutoClose = true;
         }
 
@@ -86,42 +86,42 @@ namespace HMSEditorNS {
                 int y = (int)((m.LParam.ToInt64() & 0xFFFF0000) >> 16);
                 Point pt = PointToClient(new Point(x, y));
                 Size clientSize = ClientSize;
-                ///allow resize on the lower right corner
+                //allow resize on the lower right corner
                 if (pt.X >= clientSize.Width - 16 && pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16) {
                     m.Result = (IntPtr)(IsMirrored ? htBottomLeft : htBottomRight);
                     return;
                 }
-                ///allow resize on the lower left corner
+                //allow resize on the lower left corner
                 if (pt.X <= 16 && pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16) {
                     m.Result = (IntPtr)(IsMirrored ? htBottomRight : htBottomLeft);
                     return;
                 }
-                ///allow resize on the upper right corner
+                //allow resize on the upper right corner
                 if (pt.X <= 16 && pt.Y <= 16 && clientSize.Height >= 16) {
                     m.Result = (IntPtr)(IsMirrored ? htTopRight : htTopLeft);
                     return;
                 }
-                ///allow resize on the upper left corner
+                //allow resize on the upper left corner
                 if (pt.X >= clientSize.Width - 16 && pt.Y <= 16 && clientSize.Height >= 16) {
                     m.Result = (IntPtr)(IsMirrored ? htTopLeft : htTopRight);
                     return;
                 }
-                ///allow resize on the top border
+                //allow resize on the top border
                 if (pt.Y <= 16 && clientSize.Height >= 16) {
                     m.Result = (IntPtr)(htTop);
                     return;
                 }
-                ///allow resize on the bottom border
+                //allow resize on the bottom border
                 if (pt.Y >= clientSize.Height - 16 && clientSize.Height >= 16) {
                     m.Result = (IntPtr)(htBottom);
                     return;
                 }
-                ///allow resize on the left border
+                //allow resize on the left border
                 if (pt.X <= 16 && clientSize.Height >= 16) {
                     m.Result = (IntPtr)(htLeft);
                     return;
                 }
-                ///allow resize on the right border
+                //allow resize on the right border
                 if (pt.X >= clientSize.Width - 16 && clientSize.Height >= 16) {
                     m.Result = (IntPtr)(htRight);
                     return;
@@ -133,7 +133,7 @@ namespace HMSEditorNS {
         protected override void OnMouseDown(MouseEventArgs mea) {
             base.OnMouseDown(mea);
             //ctrl-leftclick anywhere on the control to drag the form to a new location 
-            if (mea.Button == MouseButtons.Left && Control.ModifierKeys == Keys.Control) {
+            if (mea.Button == MouseButtons.Left && ModifierKeys == Keys.Control) {
                 NativeMethods.ReleaseCapture();
                 NativeMethods.SendMessage(Handle, NativeMethods.WM_NCLBUTTONDOWN, (IntPtr)NativeMethods.HT_CAPTION, (IntPtr)0);
             }
@@ -141,7 +141,7 @@ namespace HMSEditorNS {
 
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
-            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
+            ControlPaint.DrawBorder(e.Graphics, ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
         }
 
         protected override void OnResize(EventArgs e) {
@@ -252,16 +252,16 @@ namespace HMSEditorNS {
         }
 
         private void Initialize() {
-            this.AutoSize = false;
-            ToolStripControlHost host = new ToolStripControlHost(this.ctl);
-            this.Margin   = Padding.Empty;
-            this.Padding  = new Padding(3, 3, 0, 3);
+            AutoSize = false;
+            ToolStripControlHost host = new ToolStripControlHost(ctl);
+            Margin = Padding.Empty;
+            Padding = new Padding(3, 3, 0, 3);
             host.Margin   = Padding.Empty;
             host.Padding  = Padding.Empty;
             host.AutoSize = false;
             host.Size     = ctl.Size;
-            this.Size     = ctl.Size;
-            this.Items.Add(host);
+            Size = ctl.Size;
+            Items.Add(host);
         }
     }
 

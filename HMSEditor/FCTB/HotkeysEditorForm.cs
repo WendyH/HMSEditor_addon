@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using HMSEditorNS;
+// ReSharper disable LocalizableElement
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     public class myCombo: DataGridViewComboBoxColumn {
@@ -64,17 +64,17 @@ namespace FastColoredTextBoxNS
         private void dgv_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
             var cell = (dgv[0, e.RowIndex] as DataGridViewComboBoxCell);
-            if(cell.Items.Count == 0)
-            foreach(var item in new string[]{"", "Ctrl", "Ctrl + Shift", "Ctrl + Alt", "Shift", "Shift + Alt", "Alt", "Ctrl + Shift + Alt"})
+            if(cell != null && cell.Items.Count == 0)
+            foreach(var item in new[]{"", "Ctrl", "Ctrl + Shift", "Ctrl + Alt", "Shift", "Shift + Alt", "Alt", "Ctrl + Shift + Alt"})
                 cell.Items.Add(item);
 
             cell = (dgv[1, e.RowIndex] as DataGridViewComboBoxCell);
-            if (cell.Items.Count == 0)
+            if (cell != null && cell.Items.Count == 0)
             foreach (var item in Enum.GetValues(typeof(Keys)))
                 cell.Items.Add(item);
 
             cell = (dgv[2, e.RowIndex] as DataGridViewComboBoxCell);
-            if (cell.Items.Count == 0)
+            if (cell != null && cell.Items.Count == 0)
             foreach (var item in Enum.GetValues(typeof(FCTBAction)))
                 cell.Items.Add(item);
         }
@@ -94,12 +94,12 @@ namespace FastColoredTextBoxNS
 
         private void HotkeysEditorForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if(DialogResult == System.Windows.Forms.DialogResult.OK)
+            if(DialogResult == DialogResult.OK)
             {
                 var actions = GetUnAssignedActions();
                 if (!string.IsNullOrEmpty(actions))
                 {
-                    if (MessageBox.Show("Не все функции привязаны к горячим клавишам!\r\nФункции: " + actions + "\r\nНажмите Да для сохранения или Нет, чтобы продолжить редактирование.", "Не все функции привязаны к горячим клавишам", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.No)
+                    if (MessageBox.Show("Не все функции привязаны к горячим клавишам!\r\nФункции: " + actions + "\r\nНажмите Да для сохранения или Нет, чтобы продолжить редактирование.", "Не все функции привязаны к горячим клавишам", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
                         e.Cancel = true;
                 }
             }

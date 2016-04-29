@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
@@ -13,6 +10,7 @@ using FastColoredTextBoxNS;
 namespace HMSEditorNS {
     public partial class FormValue: Form {
         private string _src = "";
+        private Regex regexJSON = new Regex(@"^[\{\[].*[\}\]]$", RegexOptions.Singleline);
 
         public string Value {
             get { return fastColoredTB.Text; }
@@ -35,7 +33,7 @@ namespace HMSEditorNS {
             cbResultIndex.Items.Add("Группировка 1");
             cbResultIndex.Items.Add("Группировка 2");
             cbResultIndex.Items.Add("Группировка 3");
-            cbResultIndex.Text = "Группировка 1";
+            cbResultIndex.Text = @"Группировка 1";
 
             cbPattern.Items.Add(@"");
             cbPattern.Items.Add(@"<video(.*?)</video>");
@@ -59,6 +57,7 @@ namespace HMSEditorNS {
             RealExpression = realExpression;
             _src       = text;
 
+            cbFormatting.Visible = regexJSON.IsMatch(Value.Trim());
             chkFormatting_CheckedChanged(null, EventArgs.Empty);
 
             if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
@@ -79,7 +78,6 @@ namespace HMSEditorNS {
                     NativeMethods.SendNotifyKey(HMSEditor.ActiveEditor.Editor.Handle, e.KeyValue);
                 }
                 e.Handled = true;
-                return;
             }
         }
 
@@ -107,14 +105,14 @@ namespace HMSEditorNS {
 
         public MatchCollection MatchesWithTimeout(Regex regex, string input, int duration) {
             var reset = new AutoResetEvent(false);
-            Exception ex = null;
             MatchCollection r = null;
             
             var t = new Thread(() => {
                 try {
                     r = regex.Matches(input);
-                } catch (Exception e) {
-                    ex = e;
+                }
+                catch (Exception) {
+                    // ignored
                 }
                 reset.Set();
             });
@@ -150,21 +148,25 @@ namespace HMSEditorNS {
             string result = "";
             foreach (Match m in mc) {
                 Group group = m.Groups[0];
-                Range r = new Range(range.tb);
-                r.Start = charIndexToPlace[group.Index];
-                r.End = charIndexToPlace[group.Index + group.Length]; 
+                Range r = new Range(range.tb) {
+                    Start = charIndexToPlace[group.Index],
+                    End   = charIndexToPlace[group.Index + group.Length]
+                };
                 r.SetStyleOwerwrite(fastColoredTB.BlueSelectionStyle);
                 bool skipfisrt = false;
                 foreach (Group g in m.Groups) {
                     if (!skipfisrt) { skipfisrt = true; continue; }
-                    Range rg = new Range(range.tb);
-                    rg.Start = charIndexToPlace[g.Index];
-                    rg.End = charIndexToPlace[g.Index + g.Length];
+                    Range rg = new Range(range.tb) {
+                        Start = charIndexToPlace[g.Index],
+                        End   = charIndexToPlace[g.Index + g.Length]
+                    };
                     rg.SetStyleOwerwrite(fastColoredTB.GreenSelectionStyle);
                 }
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (!waspos) {
                     int posr = fastColoredTB.PlaceToPosition(r.Start);
                     if (pos < posr) {
+                        // ReSharper disable once RedundantAssignment
                         waspos = true;
                         fastColoredTB.SelectionStart = posr;
                         fastColoredTB.DoCaretVisible();
@@ -177,7 +179,7 @@ namespace HMSEditorNS {
             tbResult.Text = result;
             fastColoredTB.YellowSelection    = true;
             fastColoredTB.SelectionAfterFind = true;
-            int n = fastColoredTB.LightYellowSelect(tt);
+            fastColoredTB.LightYellowSelect(tt);
         }
 
         private bool CreateRegex() {
@@ -229,7 +231,7 @@ namespace HMSEditorNS {
         }
 
         private void chkOnTop_CheckedChanged(object sender, EventArgs e) {
-            this.TopMost = chkOnTop.Checked;
+            TopMost = chkOnTop.Checked;
         }
 
         private void cbLanguage_SelectedIndexChanged(object sender, EventArgs e) {
@@ -240,58 +242,18 @@ namespace HMSEditorNS {
         private void chkFormatting_CheckedChanged(object sender, EventArgs e) {
             if (cbFormatting.Checked) {
                 try {
-                    if (Regex.IsMatch(Value.Trim(), @"^[\{\[].*[\}\]]$", RegexOptions.Singleline))
+                    // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
+                    if (regexJSON.IsMatch(Value.Trim()))
                         Value = Utils.JsonHelper.FormatJson(_src);
-                    else
-                        Value = PrettyHTML(_src);
-                } catch {
+                }
+                catch {
+                    // ignored
                 }
             } else {
                 Value = _src;
             }
         }
 
-        public static string PrettyHTML(string html) {
-            string result = html;
-            try {
-                TidyNet.Tidy document = new TidyNet.Tidy();
-                TidyNet.TidyMessageCollection messageCollection = new TidyNet.TidyMessageCollection();
-
-                document.Options.DocType         = TidyNet.DocType.Auto;
-                document.Options.Xhtml           = true;
-                document.Options.CharEncoding    = TidyNet.CharEncoding.UTF8;
-                document.Options.LogicalEmphasis = false;
-
-                document.Options.MakeClean       = true;
-                document.Options.QuoteNbsp       = false;
-                document.Options.SmartIndent     = false;
-                document.Options.IndentContent   = true;
-                document.Options.TidyMark        = false;
-
-                document.Options.DropFontTags    = false;
-                document.Options.QuoteAmpersand  = false;
-                document.Options.DropEmptyParas  = false;
-                document.Options.BreakBeforeBR   = true;
-                document.Options.FixComments     = true;
-                document.Options.IndentAttributes = false;
-                document.Options.LiteralAttribs   = true;
-                document.Options.PreserveEntities = false;
-
-                MemoryStream input  = new MemoryStream();
-                MemoryStream output = new MemoryStream();
-                byte[] array = Encoding.UTF8.GetBytes(html);
-                input.Write(array, 0, array.Length);
-                input.Position = 0;
-
-                document.Parse(input, output, messageCollection);
-
-                string tidyXhtml = Encoding.UTF8.GetString(output.ToArray());
-                if (tidyXhtml!="")
-                    result = tidyXhtml;
-
-            } catch { }
-            return result;
-        }
 
     }
 }

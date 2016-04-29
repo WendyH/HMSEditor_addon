@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS {
     public partial class FlatScrollbar: Control {
 
@@ -19,15 +20,15 @@ namespace FastColoredTextBoxNS {
         public Color ArrowColor      = Color.DarkGray;
         public Color ArrowHoverColor = Color.CornflowerBlue;
         public Color FoundColor      = HMSEditorNS.Themes.ToColor("#E5C63BFF");
-        public int   ThumbSize     = 0;
-        public int   TrackSize     = 0;
+        public int   ThumbSize;
+        public int   TrackSize;
 
         public int MinThumbLength  = 16;
         public int LargeChange     = 10;
         public int SmallChange     = 1;
         public int ArrowAreaSize   = 16;
 
-        private bool _isHorizontal = false;
+        private bool _isHorizontal;
         public bool IsHorizontal {
             get { return _isHorizontal; }
             set {
@@ -47,19 +48,18 @@ namespace FastColoredTextBoxNS {
         protected Cursor oldCursor    = Cursors.Arrow;
         protected Timer  repeatTimer;
 
-        protected int _minimum     = 0;
+        protected int _minimum;
         protected int _maximum     = 100;
-        protected int _value       = 0;
+        protected int _value;
         private   int ClickPoint;
 
-        protected int ThumbTop = 0;
+        protected int ThumbTop;
 
-        private bool ThumbIsDown     = false;
-        private bool ThumbIsDragging = false;
+        private bool ThumbIsDown;
 
-        private bool _thumbIsHover     = false;
-        private bool _arrowUpIsHover   = false;
-        private bool _arrowDownIsHover = false;
+        private bool _thumbIsHover;
+        private bool _arrowUpIsHover;
+        private bool _arrowDownIsHover;
 
         private bool ThumbIsHover     { get { return _thumbIsHover    ; } set { if (_thumbIsHover     != value) { _thumbIsHover     = value; Invalidate(); } } }
         private bool ArrowUpIsHover   { get { return _arrowUpIsHover  ; } set { if (_arrowUpIsHover   != value) { _arrowUpIsHover   = value; Invalidate(); } } }
@@ -68,7 +68,7 @@ namespace FastColoredTextBoxNS {
         public int Minimum { get { return _minimum; } set { if (_minimum != value) { _minimum = value; Recalc(); } } }
         public int Maximum { get { return _maximum; } set { if (_maximum != value) { _maximum = value; Recalc(); } } }
 
-        public event EventHandler ValueChanged = null;
+        public event EventHandler ValueChanged;
 
         public int Value {
             get { return _value; }
@@ -77,15 +77,15 @@ namespace FastColoredTextBoxNS {
                     value = (int)(Math.Ceiling(1d * value / SmallChange) * SmallChange);
                 if (_value == value) return;
                 _value = Math.Max(Minimum, Math.Min(Maximum, value));
-                if ((_value == Minimum) || (_value == Minimum)) repeatTimer.Stop();
+                if ((_value == Minimum) || (_value == Maximum)) repeatTimer.Stop();
 
                 int realRange = Maximum - Minimum;
                 if (realRange > 0)
-                    ThumbTop = (int)((float)_value / (float)realRange * (float)(TrackSize - ThumbSize));
+                    ThumbTop = (int)(_value / (float)realRange * (TrackSize - ThumbSize));
                 else
                     ThumbTop = 0;
 
-                if (ValueChanged != null) ValueChanged(this, EventArgs.Empty);
+                ValueChanged?.Invoke(this, EventArgs.Empty);
                 Invalidate();
                 Application.DoEvents();
             }
@@ -93,7 +93,7 @@ namespace FastColoredTextBoxNS {
 
         protected int FirstRepeatInterval = 600;
         protected int NextRepeatInterval  = 150;
-        protected int NextRepeatCount     = 0;
+        protected int NextRepeatCount;
 
         public FlatScrollbar(bool isHorisontal=false) {
             InitializeComponent();
@@ -102,9 +102,10 @@ namespace FastColoredTextBoxNS {
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.Selectable, false);
             IsHorizontal = isHorisontal;
-            repeatTimer  = new Timer();
-            repeatTimer.Tag = 0;
-            repeatTimer.Interval = FirstRepeatInterval;
+            repeatTimer = new Timer {
+                Tag      = 0,
+                Interval = FirstRepeatInterval
+            };
             repeatTimer.Tick += RepeatTimer_Tick;
             TabStop = false;
         }
@@ -122,12 +123,8 @@ namespace FastColoredTextBoxNS {
                 repeatTimer.Stop();
             }
             repeatTimer.Interval = NextRepeatInterval;
-            Point point = this.PointToClient(Cursor.Position);
-            int pointVal;
-            if (IsHorizontal)
-                pointVal = X2Value(point.X);
-            else
-                pointVal = Y2Value(point.Y);
+            Point point = PointToClient(Cursor.Position);
+            var pointVal = IsHorizontal ? X2Value(point.X) : Y2Value(point.Y);
             if (delta > 0) {
                 if (newVal > pointVal) repeatTimer.Stop();
             } else {
@@ -143,12 +140,12 @@ namespace FastColoredTextBoxNS {
 
         public void Recalc() {
             int len = IsHorizontal ? Width : Height;
-            TrackSize = len - (ArrowAreaSize * 2);
+            TrackSize = len - ArrowAreaSize * 2;
             ThumbSize = 0;
-            if ((Maximum + len) != 0) ThumbSize = (int)((float)((float)len / (float)(Maximum+ len)) * (float)TrackSize);
+            if (Maximum + len != 0) ThumbSize = (int)(len / (float)(Maximum+ len) * TrackSize);
             ThumbSize = Math.Max(MinThumbLength, Math.Min(TrackSize, ThumbSize));
-            float k = 0; if ((Maximum - Minimum) != 0) k = (float)Value / (float)(Maximum - Minimum);
-            ThumbTop = (int)(((float)TrackSize * k) - ((float)ThumbSize / 2));
+            float k = 0; if (Maximum - Minimum != 0) k = Value / (float)(Maximum - Minimum);
+            ThumbTop = (int)(TrackSize * k - ((float)ThumbSize / 2));
             ThumbTop = Math.Max(0, ThumbTop);
             ThumbTop = Math.Min(TrackSize - ThumbSize, ThumbTop);
             if (!Visible && ((ThumbSize < TrackSize) && (Maximum >  Minimum))) Visible = true;
@@ -178,13 +175,13 @@ namespace FastColoredTextBoxNS {
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             Point[] points1;
             if (IsHorizontal) {
-                points1 = new Point[] {
+                points1 = new[] {
                     new Point(arrowsXPadding + arrowsWidth, arrowsYPadding),
                     new Point(arrowsXPadding + arrowsWidth, Height - arrowsYPadding),
                     new Point(arrowsXPadding, Height / 2)
                 };
             } else {
-                points1 = new Point[] {
+                points1 = new[] {
                     new Point(arrowsXPadding, arrowsYPadding + arrowsHeight),
                     new Point(Width - arrowsXPadding, arrowsYPadding + arrowsHeight),
                     new Point(Width / 2, arrowsYPadding)
@@ -209,13 +206,13 @@ namespace FastColoredTextBoxNS {
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
             Point[] points2;
             if (IsHorizontal) {
-                points2 = new Point[] {
+                points2 = new[] {
                     new Point(Width - arrowsXPadding - arrowsWidth, arrowsYPadding),
                     new Point(Width - arrowsXPadding - arrowsWidth, Height - arrowsYPadding),
                     new Point(Width - arrowsXPadding, Height / 2)
                 };
             } else {
-                points2 = new Point[] {
+                points2 = new[] {
                     new Point(arrowsXPadding, Height - arrowsYPadding - arrowsHeight),
                     new Point(Width - arrowsXPadding, Height - arrowsYPadding - arrowsHeight),
                     new Point(Width / 2, Height - arrowsYPadding)
@@ -234,8 +231,8 @@ namespace FastColoredTextBoxNS {
         }
 
         private void DrawRectByLine(Graphics g, int iLine, Color color, int x, int width, int height) {
-            float k = (float)(iLine-0.5) * (float)SmallChange / (float)(Maximum - Minimum + Height);
-            int top = (int)((float)TrackSize * k);
+            float k = (float)(iLine-0.5) * SmallChange / (Maximum - Minimum + Height);
+            int top = (int)(TrackSize * k);
             using (Brush brush = new SolidBrush(color)) {
                 g.FillRectangle(brush, new Rectangle(x, top + ArrowAreaSize - (height/2), width, height));
             }
@@ -243,7 +240,7 @@ namespace FastColoredTextBoxNS {
 
         private void CustomScrollbar_MouseDown(object sender, MouseEventArgs e) {
             int   top   = ThumbTop + ArrowAreaSize;
-            Point point = this.PointToClient(Cursor.Position);
+            Point point = PointToClient(Cursor.Position);
             Rectangle upArrowRect;
             Rectangle beforeThumbRect;
             Rectangle thumbRect;
@@ -264,11 +261,10 @@ namespace FastColoredTextBoxNS {
                 downArrowRect   = new Rectangle(new Point(1, ArrowAreaSize + TrackSize), new Size(Width, ArrowAreaSize));
             }
 
-            int oldVal = Value;
             if (thumbRect.Contains(point)) {
                 //hit the thumb
                 ClickPoint = ((IsHorizontal ? point.X : point.Y) - ThumbTop);
-                this.ThumbIsDown = true;
+                ThumbIsDown = true;
 
             } else if (beforeThumbRect.Contains(point)) {
                 Value -= Height;
@@ -297,8 +293,7 @@ namespace FastColoredTextBoxNS {
         }
 
         private void CustomScrollbar_MouseUp(object sender, MouseEventArgs e) {
-            this.ThumbIsDown     = false;
-            this.ThumbIsDragging = false;
+            ThumbIsDown = false;
             repeatTimer.Stop();
         }
 
@@ -324,33 +319,33 @@ namespace FastColoredTextBoxNS {
             if (ThumbIsDown && (allowRange > 0) && (realRange > 0)) {
                 ThumbTop = y - ClickPoint;
                 ThumbTop = Math.Max(0, Math.Min(allowRange, ThumbTop));
-                _value   = (int)((float)ThumbTop / (float)allowRange * Maximum);
+                _value   = (int)(ThumbTop / (float)allowRange * Maximum);
                 if (AlignByLines)
                     _value = (int)(Math.Ceiling(1d * _value / SmallChange) * SmallChange);
                 _value = Math.Max(Minimum, Math.Min(Maximum, _value));
 
                 Invalidate();
                 Application.DoEvents();
-                if (ValueChanged != null) ValueChanged(this, EventArgs.Empty);
+                ValueChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
         private int Y2Value(int y) {
             y = Math.Max(0, Math.Min(Height, y));
-            float k = (float)y / (float)Height;
-            int val = (int)(((float)Maximum - (float)Minimum) * k) + Minimum;
+            float k = y / (float)Height;
+            int val = (int)((Maximum - (float)Minimum) * k) + Minimum;
             return val;
         }
 
         private int X2Value(int x) {
             x = Math.Max(0, Math.Min(Width, x));
-            float k = (float)x / (float)Width;
-            int val = (int)(((float)Maximum - (float)Minimum) * k) + Minimum;
+            float k = x / (float)Width;
+            int val = (int)((Maximum - (float)Minimum) * k) + Minimum;
             return val;
         }
 
         private void CheckHover() {
-            Point point = this.PointToClient(Cursor.Position);
+            Point point = PointToClient(Cursor.Position);
             Rectangle thumbRect;
             Rectangle arrowUpRect;
             Rectangle arrowDownRect;
@@ -372,18 +367,8 @@ namespace FastColoredTextBoxNS {
 
         private void CustomScrollbar_MouseMove(object sender, MouseEventArgs e) {
             CheckHover();
-
-            if (ThumbIsDown == true) {
-                this.ThumbIsDragging = true;
-            }
-
-            if (this.ThumbIsDragging) {
-                if (IsHorizontal)
-                    MoveThumb(e.X);
-                else
-                    MoveThumb(e.Y);
-            }
-
+            if (!ThumbIsDown) return;
+            MoveThumb(IsHorizontal ? e.X : e.Y);
         }
 
     }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Text;
-using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS {
     /// <summary>
     /// Diapason of text chars
@@ -13,7 +13,7 @@ namespace FastColoredTextBoxNS {
         Place end;
         public readonly FastColoredTextBox tb;
         int preferedPos = -1;
-        int updating = 0;
+        int updating;
 
         string cachedText;
         // < By WendyH ---------------------------------
@@ -111,7 +111,7 @@ namespace FastColoredTextBoxNS {
             if (ColumnSelectionMode)
                 return GetIntersectionWith_ColumnSelectionMode(range);
 
-            Range r1 = this.Clone();
+            Range r1 = Clone();
             Range r2 = range.Clone();
             r1.Normalize();
             r2.Normalize();
@@ -128,7 +128,7 @@ namespace FastColoredTextBoxNS {
         /// <param name="range"></param>
         /// <returns></returns>
         public Range GetUnionWith(Range range) {
-            Range r1 = this.Clone();
+            Range r1 = Clone();
             Range r2 = range.Clone();
             r1.Normalize();
             r2.Normalize();
@@ -214,8 +214,7 @@ namespace FastColoredTextBoxNS {
         internal void GetText(out string text, out List<Place> charIndexToPlace, bool withoutStringAndComments = false) {
             //try get cached text
             if (tb.TextVersion == cachedTextVersion) {
-                if (withoutStringAndComments) text = cachedTextWithoutStringsAndComments; // By WendyH
-                else                          text = cachedText;
+                text = withoutStringAndComments ? cachedTextWithoutStringsAndComments : cachedText;
                 charIndexToPlace = cachedCharIndexToPlace;
                 return;
             }
@@ -257,7 +256,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         public char CharAfterStart {
             get {
-                if (Start.iChar >= tb[Start.iLine].Count)
+                if ((Start.iChar < 0) || (Start.iChar >= tb[Start.iLine].Count))
                     return '\n';
                 return tb[Start.iLine][Start.iChar].c;
             }
@@ -268,9 +267,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         public char CharBeforeStart {
             get {
-                if (Start.iChar > tb[Start.iLine].Count)
-                    return '\n';
-                if (Start.iChar <= 0)
+                if ((Start.iChar <= 0) || (Start.iChar > tb[Start.iLine].Count))
                     return '\n';
                 return tb[Start.iLine][Start.iChar - 1].c;
             }
@@ -323,13 +320,9 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        public int FromLine {
-            get { return Math.Min(Start.iLine, End.iLine); }
-        }
+        public int FromLine => Math.Min(Start.iLine, End.iLine);
 
-        public int ToLine {
-            get { return Math.Max(Start.iLine, End.iLine); }
-        }
+        public int ToLine   => Math.Max(Start.iLine, End.iLine);
 
         /// <summary>
         /// Move range right
@@ -386,6 +379,17 @@ namespace FastColoredTextBoxNS {
         }
 
         // By WendyH
+        public void ShiftStartLeft(int n) {
+            if (start.iChar - n < 0) {
+                n -= start.iChar;
+                if (start.iLine > 0) start.iLine--;
+                if (n <= tb[start.iLine].Count)
+                    start.iChar = tb[start.iLine].Count - n;
+            } else {
+                start.Offset(-n, 0);
+            }
+        }
+
         public void ShiftStart(int n) {
             start.Offset(n, 0);
             //end  .Offset(n, 0);
@@ -407,6 +411,8 @@ namespace FastColoredTextBoxNS {
                 while (!(start.iChar == 0 && start.iLine == 0)) {
                     if (start.iChar > 0)
                         start.Offset(-1, 0);
+                    else if (start.iLine == 0)
+                        break;
                     else
                         start = new Place(tb[start.iLine - 1].Count, start.iLine - 1);
                     if (!IsStringOrComment) break;
@@ -414,7 +420,7 @@ namespace FastColoredTextBoxNS {
             } else {
                 if (start.iChar > 0)
                     start.Offset(-1, 0);
-                else
+                else if (start.iLine > 0)
                     start = new Place(tb[start.iLine - 1].Count, start.iLine - 1);
             }
 
@@ -659,7 +665,7 @@ namespace FastColoredTextBoxNS {
             //set code to chars
             SetStyle(ToStyleIndex(code));
             //
-            tb.Invalidate();
+            //tb.Invalidate();
         }
 
         /// <summary>
@@ -686,7 +692,7 @@ namespace FastColoredTextBoxNS {
         /// <summary>
         /// Set style for given regex pattern
         /// </summary>
-        public void SetStyle(StyleIndex styleLayer, Regex regex, bool owerwrite = false) {
+        public void SetStyle(StyleIndex styleLayer, Regex regex, bool owerwrite) {
             if (owerwrite)
                 foreach (var range in GetRanges(regex))
                     range.SetStyleOwerwrite(styleLayer);
@@ -729,25 +735,32 @@ namespace FastColoredTextBoxNS {
             tb.Invalidate();
         }
 
+        private object obj4LockLines = new object();
         /// <summary>
         /// Appends style to chars of range
         /// </summary>
         public void SetStyle(StyleIndex styleIndex) {
             //set code to chars
-            int fromLine = Math.Min(End.iLine, Start.iLine);
-            int toLine = Math.Max(End.iLine, Start.iLine);
-            int fromChar = FromX;
-            int toChar = ToX;
-            if (fromLine < 0) return;
-            //
-            for (int y = fromLine; y <= toLine; y++) {
-                int fromX = y == fromLine ? fromChar : 0;
-                int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
-                for (int x = fromX; x <= toX; x++) {
-                    Char c = tb[y][x];
-                    c.style |= styleIndex;
-                    tb[y][x] = c;
+            lock (obj4LockLines) {
+                if (IsStringOrComment) return;
+                int fromLine = Math.Min(End.iLine, Start.iLine);
+                int toLine   = Math.Max(End.iLine, Start.iLine);
+                int fromChar = FromX;
+                int toChar   = ToX;
+                if (fromLine < 0) return;
+                bool changes = false;
+                //
+                for (int y = fromLine; y <= toLine; y++) {
+                    int fromX = y == fromLine ? fromChar : 0;
+                    int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
+                    for (int x = fromX; x <= toX; x++) {
+                        Char c = tb[y][x];
+                        c.style |= styleIndex;
+                        changes |= (c.style != tb[y][x].style);
+                        tb[y][x] = c;
+                    }
                 }
+                if (changes) tb.Invalidate(); // By WendyH
             }
         }
 
@@ -762,19 +775,21 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         public void SetStyleOwerwrite(StyleIndex styleIndex) {
             //set code to chars
-            int fromLine = Math.Min(End.iLine, Start.iLine);
-            int toLine = Math.Max(End.iLine, Start.iLine);
-            int fromChar = FromX;
-            int toChar = ToX;
-            if (fromLine < 0) return;
-            //
-            for (int y = fromLine; y <= toLine; y++) {
-                int fromX = y == fromLine ? fromChar : 0;
-                int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
-                for (int x = fromX; x <= toX; x++) {
-                    Char c = tb[y][x];
-                    c.style = styleIndex;
-                    tb[y][x] = c;
+            lock (obj4LockLines) {
+                int fromLine = Math.Min(End.iLine, Start.iLine);
+                int toLine   = Math.Max(End.iLine, Start.iLine);
+                int fromChar = FromX;
+                int toChar   = ToX;
+                if (fromLine < 0) return;
+                //
+                for (int y = fromLine; y <= toLine; y++) {
+                    int fromX = y == fromLine ? fromChar : 0;
+                    int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
+                    for (int x = fromX; x <= toX; x++) {
+                        Char c = tb[y][x];
+                        c.style = styleIndex;
+                        tb[y][x] = c;
+                    }
                 }
             }
         }
@@ -784,25 +799,49 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         public void SetStylesStringsAndComments(Regex regex, Style styleStrings, Style styleComments, bool singlequote = true) {
             tb.RegexStringAndComments = regex;
-            StyleIndex layer1 = ToStyleIndex(tb.GetOrSetStyleLayerIndex(styleStrings));
+            StyleIndex layer1 = ToStyleIndex(tb.GetOrSetStyleLayerIndex(styleStrings ));
             StyleIndex layer2 = ToStyleIndex(tb.GetOrSetStyleLayerIndex(styleComments));
             //get text
             string text;
-            char ch;
             List<Place> charIndexToPlace;
             GetText(out text, out charIndexToPlace);
             foreach (Match m in regex.Matches(text)) {
-                Range r = new Range(this.tb);
+                Range r = new Range(tb);
                 //try get 'range' group, otherwise use group 0
                 Group group = m.Groups["range"];
                 if (!group.Success) group = m.Groups[0];
-                ch = group.Value[0];
+                var ch = group.Value[0];
                 r.Start = charIndexToPlace[group.Index];
-                r.End = charIndexToPlace[group.Index + group.Length];
+                r.End   = charIndexToPlace[group.Index + group.Length];
                 if (ch == '"' || (singlequote && ch == '\''))
-                    r.SetStyleOwerwrite(layer1);
+                    r.SetStyle(layer1);
                 else
-                    r.SetStyleOwerwrite(layer2);
+                    r.SetStyle(layer2);
+            }
+        }
+
+        public void SetStylesAll(Regex regex, params Style[] styles) {
+            StyleIndex layer;
+            List<StyleIndex> layers = new List<StyleIndex>();
+            foreach (var s in styles) layers.Add(ToStyleIndex(tb.GetOrSetStyleLayerIndex(s)));
+            Range r = new Range(tb);
+            //get text
+            string text; List<Place> charIndexToPlace; Group group;
+            GetText(out text, out charIndexToPlace);
+            foreach (Match m in regex.Matches(text)) {
+                for (int i=m.Groups.Count; i>=0; --i) {
+                    group = m.Groups[i];
+                    if (group.Success) {
+                        layer   = layers[i];
+                        r.Start = charIndexToPlace[group.Index];
+                        r.End   = charIndexToPlace[group.Index + group.Length];
+                        r.SetStyle(layer);
+                        //if (group.Value.StartsWith(tb.MassCommentPrefix)) {
+
+                        //}
+                        break;
+                    }
+                }
             }
         }
         // By WendyH > -------------------------------------
@@ -821,6 +860,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         /// <param name="startFoldingPattern">Pattern for start folding line</param>
         /// <param name="finishFoldingPattern">Pattern for finish folding line</param>
+        /// <param name="options">Regex options</param>
         public void SetFoldingMarkers(string startFoldingPattern, string finishFoldingPattern, RegexOptions options) {
             // By WendyH < -----------------------------------------
             if (tb.FindEndOfFoldingBlockStrategy == FindEndOfFoldingBlockStrategy.StrategyIndent) {
@@ -833,20 +873,30 @@ namespace FastColoredTextBoxNS {
                 return;
             }
 
-            foreach (var range in GetRanges(startFoldingPattern, options, true))
-                tb[range.Start.iLine].FoldingStartMarker = startFoldingPattern;
+            lock (obj4LockLines) {
+                foreach (var range in GetRanges(startFoldingPattern, options, true))
+                    tb[range.Start.iLine].FoldingStartMarker = startFoldingPattern;
 
-            foreach (var range in GetRanges(finishFoldingPattern, options, true)) {
-                if (tb[range.Start.iLine].FoldingStartMarker == startFoldingPattern) // By WendyH
-                    tb[range.Start.iLine].FoldingStartMarker = null;
-                else
-                    tb[range.Start.iLine].FoldingEndMarker = startFoldingPattern;
+                foreach (var range in GetRanges(finishFoldingPattern, options, true)) {
+                    if (tb[range.Start.iLine].FoldingStartMarker == startFoldingPattern) // By WendyH
+                        tb[range.Start.iLine].FoldingStartMarker = null;
+                    else
+                        tb[range.Start.iLine].FoldingEndMarker = startFoldingPattern;
+                }
             }
             //
             tb.Invalidate();
         }
 
         // By WendyH < -----------------------------------------
+        public bool IsStringOrCommentBefore() {
+            bool shifting = (Start.iChar > 0);
+            if (shifting) ShiftStart(-1);
+            bool res = IsStringOrComment;
+            if (shifting) ShiftStart(+1);
+            return res;
+        }
+
         public bool IsStringOrComment {
             get {
                 // when is typing and other thread check range - need additional checks
@@ -856,7 +906,10 @@ namespace FastColoredTextBoxNS {
                     var si1 = ToStyleIndex(tb.GetStyleIndex(tb.SyntaxHighlighter.StringStyle));
                     var si2 = ToStyleIndex(tb.GetStyleIndex(tb.SyntaxHighlighter.CommentStyle));
                     if ((c.style & si1) != 0 || (c.style & si2) != 0) return true;
-                } catch {; }
+                }
+                catch {
+                    // ignored
+                }
                 return false;
             }
         }
@@ -869,7 +922,10 @@ namespace FastColoredTextBoxNS {
                     Char c = tb[Start.iLine][Start.iChar];
                     var si1 = ToStyleIndex(tb.GetStyleIndex(tb.ErrorStyle));
                     if ((c.style & si1) != 0) return true;
-                } catch {; }
+                }
+                catch {
+                    // ignored
+                }
                 return false;
             }
         }
@@ -889,27 +945,30 @@ namespace FastColoredTextBoxNS {
         /// <param name="startFoldingPattern">Pattern for start folding line</param>
         /// <param name="options">Regular expression options</param>
         public void SetFoldingMarkersByIndent(string startFoldingPattern, RegexOptions options) {
-            int indentLine, indentNext = 0, i, iBeginLine, iEndLine, iIndentEndLine;
-            foreach (var range in GetRanges(startFoldingPattern, options, true)) {
-                iBeginLine = range.End.iLine;
-                if (iBeginLine > tb.LinesCount - 2) break;
-                indentLine = GetLineIndent(iBeginLine);
-                iEndLine = iBeginLine; iIndentEndLine = 0;
-                for (i = iBeginLine + 1; i < tb.LinesCount - 1; i++) {
-                    indentNext = 0;
-                    if (tb[i].Text.TrimStart().StartsWith(tb.CommentPrefix)) continue;
-                    if (tb[i].Text.Trim() == "") continue;
-                    indentNext = GetLineIndent(i);
-                    if (indentNext <= indentLine) break;
-                    iEndLine = i;
-                    iIndentEndLine = indentNext;
-                }
-                if (iEndLine - iBeginLine > 1) {
-                    tb[iBeginLine].FoldingStartMarker = startFoldingPattern;
-                    tb[iBeginLine].LineIndent = indentLine;
-                    tb[iEndLine].FoldingEndMarker = startFoldingPattern;
-                    tb[iEndLine].LineIndent = iIndentEndLine;
-                    tb[iEndLine].NextLineIndent = indentNext;
+            lock (obj4LockLines) {
+                int indentNext = 0;
+                foreach (var range in GetRanges(startFoldingPattern, options, true)) {
+                    var iBeginLine = range.End.iLine;
+                    if (iBeginLine > tb.LinesCount - 2) break;
+                    var indentLine = GetLineIndent(iBeginLine);
+                    var iEndLine   = iBeginLine; var iIndentEndLine = 0;
+                    int i;
+                    for (i = iBeginLine + 1; i < tb.LinesCount - 1; i++) {
+                        indentNext = 0;
+                        if (tb[i].Text.TrimStart().StartsWith(tb.CommentPrefix)) continue;
+                        if (tb[i].Text.Trim() == "") continue;
+                        indentNext = GetLineIndent(i);
+                        if (indentNext <= indentLine) break;
+                        iEndLine = i;
+                        iIndentEndLine = indentNext;
+                    }
+                    if (iEndLine - iBeginLine > 1) {
+                        tb[iBeginLine].FoldingStartMarker = startFoldingPattern;
+                        tb[iBeginLine].LineIndent         = indentLine;
+                        tb[iEndLine].FoldingEndMarker = startFoldingPattern;
+                        tb[iEndLine].LineIndent       = iIndentEndLine;
+                        tb[iEndLine].NextLineIndent   = indentNext;
+                    }
                 }
             }
             tb.Invalidate();
@@ -920,12 +979,13 @@ namespace FastColoredTextBoxNS {
         /// Sets folding markers
         /// </summary>
         public void SetFoldingMarkers(string foldingPattern, RegexOptions options) {
-            foreach (var range in GetRanges(foldingPattern, options, true)) {
-                if (range.Start.iLine > 0)
-                    tb[range.Start.iLine - 1].FoldingEndMarker = foldingPattern;
-                tb[range.Start.iLine].FoldingStartMarker = foldingPattern;
+            lock (obj4LockLines) {
+                foreach (var range in GetRanges(foldingPattern, options, true)) {
+                    if (range.Start.iLine > 0)
+                        tb[range.Start.iLine - 1].FoldingEndMarker = foldingPattern;
+                    tb[range.Start.iLine].FoldingStartMarker = foldingPattern;
+                }
             }
-
             tb.Invalidate();
         }
         /// <summary>
@@ -941,6 +1001,8 @@ namespace FastColoredTextBoxNS {
         /// Finds ranges for given regex pattern
         /// </summary>
         /// <param name="regexPattern">Regex pattern</param>
+        /// <param name="options"></param>
+        /// <param name="withoutStringAndComments"></param>
         /// <returns>Enumeration of ranges</returns>
         public IEnumerable<Range> GetRanges(string regexPattern, RegexOptions options, bool withoutStringAndComments = false) {
             //get text
@@ -951,7 +1013,7 @@ namespace FastColoredTextBoxNS {
             Regex regex = new Regex(regexPattern, options);
             //
             foreach (Match m in regex.Matches(text)) {
-                Range r = new Range(this.tb);
+                Range r = new Range(tb);
                 //try get 'range' group, otherwise use group 0
                 Group group = m.Groups["range"];
                 if (!group.Success)
@@ -969,6 +1031,7 @@ namespace FastColoredTextBoxNS {
         /// This method requires less memory than GetRanges().
         /// </summary>
         /// <param name="regexPattern">Regex pattern</param>
+        /// <param name="options"></param>
         /// <returns>Enumeration of ranges</returns>
         public IEnumerable<Range> GetRangesByLines(string regexPattern, RegexOptions options) {
             var regex = new Regex(regexPattern, options);
@@ -991,7 +1054,7 @@ namespace FastColoredTextBoxNS {
             //enumaerate lines
             for (int iLine = Start.iLine; iLine <= End.iLine; iLine++) {
                 //
-                bool isLineLoaded = fts != null ? fts.IsLineLoaded(iLine) : true;
+                bool isLineLoaded = fts == null || fts.IsLineLoaded(iLine);
                 //
                 var r = new Range(tb, new Place(0, iLine), new Place(tb[iLine].Count, iLine));
                 if (iLine == Start.iLine || iLine == End.iLine)
@@ -1011,6 +1074,7 @@ namespace FastColoredTextBoxNS {
         /// This method requires less memory than GetRanges().
         /// </summary>
         /// <param name="regexPattern">Regex pattern</param>
+        /// <param name="options"></param>
         /// <returns>Enumeration of ranges</returns>
         public IEnumerable<Range> GetRangesByLinesReversed(string regexPattern, RegexOptions options) {
             Normalize();
@@ -1022,7 +1086,7 @@ namespace FastColoredTextBoxNS {
             //enumaerate lines
             for (int iLine = End.iLine; iLine >= Start.iLine; iLine--) {
                 //
-                bool isLineLoaded = fts != null ? fts.IsLineLoaded(iLine) : true;
+                bool isLineLoaded = fts == null || fts.IsLineLoaded(iLine);
                 //
                 var r = new Range(tb, new Place(0, iLine), new Place(tb[iLine].Count, iLine));
                 if (iLine == Start.iLine || iLine == End.iLine)
@@ -1052,7 +1116,7 @@ namespace FastColoredTextBoxNS {
             GetText(out text, out charIndexToPlace);
             //
             foreach (Match m in regex.Matches(text)) {
-                Range r = new Range(this.tb);
+                Range r = new Range(tb);
                 //try get 'range' group, otherwise use group 0
                 Group group = m.Groups["range"];
                 if (!group.Success)
@@ -1070,7 +1134,10 @@ namespace FastColoredTextBoxNS {
         public void ClearStyle(params Style[] styles) {
             try {
                 ClearStyle(tb.GetStyleIndexMask(styles));
-            } catch {; }
+            }
+            catch {
+                // ignored
+            }
         }
 
         /// <summary>
@@ -1078,23 +1145,26 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         public void ClearStyle(StyleIndex styleIndex) {
             //set code to chars
-            int fromLine = Math.Min(End.iLine, Start.iLine);
-            int toLine = Math.Max(End.iLine, Start.iLine);
-            int fromChar = FromX;
-            int toChar = ToX;
-            if (fromLine < 0) return;
-            //
-            for (int y = fromLine; y <= toLine; y++) {
-                int fromX = y == fromLine ? fromChar : 0;
-                int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
-                for (int x = fromX; x <= toX; x++) {
-                    Char c = tb[y][x];
-                    c.style &= ~styleIndex;
-                    tb[y][x] = c;
+            lock (obj4LockLines) {
+                int fromLine = Math.Min(End.iLine, Start.iLine);
+                int toLine   = Math.Max(End.iLine, Start.iLine);
+                int fromChar = FromX;
+                int toChar   = ToX;
+                if (fromLine < 0) return;
+                bool changes = false;
+                //
+                for (int y = fromLine; y <= toLine; y++) {
+                    int fromX = y == fromLine ? fromChar : 0;
+                    int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
+                    for (int x = fromX; x <= toX; x++) {
+                        Char c = tb[y][x];
+                        c.style &= ~styleIndex;
+                        changes |= (tb[y][x].style == c.style);
+                        tb[y][x] = c;
+                    }
                 }
+                if (changes) tb.Invalidate(); // By WendyH
             }
-            //
-            tb.Invalidate();
         }
 
         /// <summary>
@@ -1234,12 +1304,12 @@ namespace FastColoredTextBoxNS {
         /// Get fragment of text around Start place. Returns maximal matched to given Style.
         /// </summary>
         /// <param name="style">Allowed style for fragment</param>
+        /// <param name="allowLineBreaks"></param>
         /// <returns>Range of found fragment</returns>
         public Range GetFragment(Style style, bool allowLineBreaks) {
-            var mask = tb.GetStyleIndexMask(new Style[] { style });
+            var mask = tb.GetStyleIndexMask(new[] { style });
             //
-            Range r = new Range(tb);
-            r.Start = Start;
+            var r = new Range(tb) {Start = Start};
             //go left, check style
             while (r.GoLeftThroughFolded()) {
                 if (!allowLineBreaks && r.CharAfterStart == '\n')
@@ -1270,10 +1340,10 @@ namespace FastColoredTextBoxNS {
         /// Get fragment of text around Start place. Returns maximal mathed to pattern fragment.
         /// </summary>
         /// <param name="allowedSymbolsPattern">Allowed chars pattern for fragment</param>
+        /// <param name="options"></param>
         /// <returns>Range of found fragment</returns>
         public Range GetFragment(string allowedSymbolsPattern, RegexOptions options) {
-            Range r = new Range(tb);
-            r.Start = Start;
+            Range r = new Range(tb) {Start = Start};
             Regex regex = new Regex(allowedSymbolsPattern, options);
             //go left, check symbols
             while (r.GoLeftThroughFolded()) {
@@ -1297,12 +1367,13 @@ namespace FastColoredTextBoxNS {
 
         // < By WendyH -----------------------------------------------------
         public bool GetVariableForEqual(string allowedSymbolsPattern, out string text) {
-            Range r = new Range(tb, Start, Start); string ch; bool equalExists = false;
+            Range r = new Range(tb, Start, Start);
+            bool equalExists = false;
             //go left, check symbols
             while (r.GoLeftThroughFolded(true)) {
-                ch = r.CharAfterStart.ToString();
+                var ch = r.CharAfterStart.ToString();
                 if (ch == "=") equalExists = true;
-                if (!regexLookEqual.IsMatch(ch)) break;
+                if (!Regex.IsMatch(ch, @"[:=]")) break;
             }
             Place oldStart = Start;
             Start = r.Start;
@@ -1311,9 +1382,7 @@ namespace FastColoredTextBoxNS {
             return equalExists;
         }
 
-        private static Regex regexLookEqual = new Regex(@"[:= ]"  , RegexOptions.Compiled);
-        private static Regex regexLookLeft  = new Regex(@"[#\w\.]", RegexOptions.Compiled);
-        private static Regex regexLookRight = new Regex(@"\w"     , RegexOptions.Compiled);
+        private static Regex regexLookLeft  = new Regex(@"[#\w\.]");
 
         /// <summary>
         /// Get fragment of text around Start place with looking to left
@@ -1323,8 +1392,7 @@ namespace FastColoredTextBoxNS {
             return GetFragmentLookedLeft(Start);
         }
         public Range GetFragmentLookedLeft(Place place) {
-            Range r = new Range(tb);
-            r.Start = place;
+            Range r = new Range(tb) {Start = place};
             Stack<int> stack1 = new Stack<int>();
             Stack<int> stack2 = new Stack<int>();
             bool lastGood = true;
@@ -1345,7 +1413,7 @@ namespace FastColoredTextBoxNS {
 
             r.Start = place;
             //go right, check symbols
-            do if (!regexLookRight.IsMatch(r.CharAfterStart.ToString())) break; while (r.GoRightThroughFolded());
+            do if (!Regex.IsMatch(r.CharAfterStart.ToString(), @"\w")) break; while (r.GoRightThroughFolded());
             Place endFragment = r.Start;
 
             return new Range(tb, startFragment, endFragment);
@@ -1414,7 +1482,7 @@ namespace FastColoredTextBoxNS {
                 return;
             }
 
-            Range range = this.Clone();//to OnSelectionChanged disable
+            Range range = Clone();//to OnSelectionChanged disable
             bool wasSpace = false;
             while (IsSpaceChar(range.CharBeforeStart)) {
                 wasSpace = true;
@@ -1437,8 +1505,8 @@ namespace FastColoredTextBoxNS {
             }
 
 
-            this.Start = range.Start;
-            this.End = range.End;
+            Start = range.Start;
+            End = range.End;
 
             if (tb.LineInfos[Start.iLine].VisibleState != VisibleState.Visible)
                 GoRight(shift);
@@ -1452,7 +1520,7 @@ namespace FastColoredTextBoxNS {
                 return;
             }
 
-            Range range = this.Clone();//to OnSelectionChanged disable
+            Range range = Clone();//to OnSelectionChanged disable
 
             bool wasNewLine = false;
 
@@ -1481,6 +1549,7 @@ namespace FastColoredTextBoxNS {
                     if (!wasIdentifier)
                         range.GoRight(shift);
 
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                     if (goToStartOfNextWord && !wasSpace)
                         while (IsSpaceChar(range.CharAfterStart))
                             range.GoRight(shift);
@@ -1494,8 +1563,8 @@ namespace FastColoredTextBoxNS {
 
             }
 
-            this.Start = range.Start;
-            this.End = range.End;
+            Start = range.Start;
+            End = range.End;
 
             if (tb.LineInfos[Start.iLine].VisibleState != VisibleState.Visible)
                 GoLeft(shift);
@@ -1567,11 +1636,13 @@ namespace FastColoredTextBoxNS {
                 if (tb.ReadOnly) return true;
 
                 ReadOnlyStyle readonlyStyle = null;
-                foreach (var style in tb.Styles)
-                    if (style is ReadOnlyStyle) {
-                        readonlyStyle = (ReadOnlyStyle)style;
+                foreach (var style in tb.Styles) {
+                    var onlyStyle = style as ReadOnlyStyle;
+                    if (onlyStyle != null) {
+                        readonlyStyle = onlyStyle;
                         break;
                     }
+                }
 
                 if (readonlyStyle != null) {
                     var si = ToStyleIndex(tb.GetStyleIndex(readonlyStyle));
@@ -1610,11 +1681,13 @@ namespace FastColoredTextBoxNS {
             set {
                 //find exists ReadOnlyStyle of style buffer
                 ReadOnlyStyle readonlyStyle = null;
-                foreach (var style in tb.Styles)
-                    if (style is ReadOnlyStyle) {
-                        readonlyStyle = (ReadOnlyStyle)style;
+                foreach (var style in tb.Styles) {
+                    var onlyStyle = style as ReadOnlyStyle;
+                    if (onlyStyle != null) {
+                        readonlyStyle = onlyStyle;
                         break;
                     }
+                }
 
                 //create ReadOnlyStyle
                 if (readonlyStyle == null)
@@ -1668,26 +1741,26 @@ namespace FastColoredTextBoxNS {
 
         public IEnumerable<Place> GetPlacesCyclic(Place startPlace, bool backward = false) {
             if (backward) {
-                var r = new Range(this.tb, startPlace, startPlace);
+                var r = new Range(tb, startPlace, startPlace);
                 while (r.GoLeft() && r.start >= Start) {
                     if (r.Start.iChar < tb[r.Start.iLine].Count)
                         yield return r.Start;
                 }
 
-                r = new Range(this.tb, End, End);
+                r = new Range(tb, End, End);
                 while (r.GoLeft() && r.start >= startPlace) {
                     if (r.Start.iChar < tb[r.Start.iLine].Count)
                         yield return r.Start;
                 }
             } else {
-                var r = new Range(this.tb, startPlace, startPlace);
+                var r = new Range(tb, startPlace, startPlace);
                 if (startPlace < End)
                     do {
                         if (r.Start.iChar < tb[r.Start.iLine].Count)
                             yield return r.Start;
                     } while (r.GoRight());
 
-                r = new Range(this.tb, Start, Start);
+                r = new Range(tb, Start, Start);
                 if (r.Start < startPlace)
                     do {
                         if (r.Start.iChar < tb[r.Start.iLine].Count)
@@ -1720,13 +1793,13 @@ namespace FastColoredTextBoxNS {
             if (endOfLines)
                 return false;
 
-            var start = Start;
-            var end = End;
-            start.Offset(1, 0);
-            end.Offset(1, 0);
+            var localStart = Start;
+            var localEnd   = End;
+            localStart.Offset(1, 0);
+            localEnd  .Offset(1, 0);
             BeginUpdate();
-            Start = start;
-            End = end;
+            Start = localStart;
+            End   = localEnd;
             EndUpdate();
 
             return true;

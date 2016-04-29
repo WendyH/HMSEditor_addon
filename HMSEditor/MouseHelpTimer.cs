@@ -9,10 +9,10 @@ namespace HMSEditorNS {
     /// </summary>
     class MouseHelpTimer {
         const int MaxValueLength = 119000;
-        internal static Regex regexRemoveParams = new Regex(@"\(([^\)])*\)|\[([^\]])*\]|(//.*|\/\*[\s\S]*?\*\/)", RegexOptions.Compiled);
-        internal static Regex regexNoNewLines   = new Regex(@"[^\n]", RegexOptions.Compiled);
+        internal static Regex regexRemoveParams = new Regex(@"\(([^\)])*\)|\[([^\]])*\]|(//.*|\/\*[\s\S]*?\*\/)");
+        internal static Regex regexNoNewLines   = new Regex(@"[^\n]");
 
-        internal static MatchEvaluator evaluatorSharpLines = new MatchEvaluator(ReturnSharpLines);
+        internal static MatchEvaluator evaluatorSharpLines = ReturnSharpLines;
         internal static string ReturnSharpLines(Match m) { return regexNoNewLines.Replace(m.Value, "#"); }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace HMSEditorNS {
         private static bool OK4Evaluate(HMSItem item) {
             bool success = ((item.Kind == DefKind.Property) || (item.Kind == DefKind.Variable));
             if (!success && (item.Kind == DefKind.Function) || (item.Kind == DefKind.Method)) {
-                success = successMethods4Eval.IndexOf("|"+item.MenuText.ToLower()+"|") >= 0;
+                success = successMethods4Eval.IndexOf("|"+item.MenuText.ToLower()+"|", StringComparison.Ordinal) >= 0;
             }
             return success;
         }
@@ -54,21 +54,21 @@ namespace HMSEditorNS {
                 int iLine = iStartLine + i;
                 if (iLine >= Editor.Lines.Count) return;
                 Place place   = Editor.PointToPlace(point);
-                string line   = "";
+                string line;
                 try {  line   = Editor.Lines[iLine]; } catch { return; }
                 if (line.Length <= place.iChar) return;
-                string value  = "";
-                bool evalSelection = false;
-                HMSItem item = null; string text = "";
+                var value  = "";
+                var evalSelection = false;
+                string text;
                 if (Editor.DebugMode && (Editor.SelectedText.Length > 2)) {
                     int posStart = Editor.PlaceToPosition(Editor.Selection.Start);
                     int posEnd   = Editor.PlaceToPosition(Editor.Selection.End  );
                     int posCur   = Editor.PlaceToPosition(place);
                     // Если указатель мыши в области виделения, то будем вычислять выдиление
                     if (posStart < posEnd) {
-                        evalSelection = ((posCur >= posStart) && (posCur <= posEnd  ));
+                        evalSelection = (posCur >= posStart) && (posCur <= posEnd  );
                     } else {
-                        evalSelection = ((posCur >= posEnd  ) && (posCur <= posStart));
+                        evalSelection = (posCur >= posEnd  ) && (posCur <= posStart);
                     }
                 }
                 if (evalSelection) {
@@ -76,6 +76,7 @@ namespace HMSEditorNS {
                     if (text.Length == 0) return;
                     // Внедряемся в поток - показываем вплывающее окно со значением
                     Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
+                        Editor.ReshowCaret = true;
                         value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
                         if (value.Length > MaxValueLength || HMSEditor.ActiveEditor.ValueForm.Visible) {
                             //value = value.Substring(0, MaxValueLength) + "...";
@@ -103,8 +104,8 @@ namespace HMSEditorNS {
                 text = fragment.Text.Replace("#", "").Trim();
 
                 if (text.Length == 0) return;
-                item = ActiveHMSEditor.GetHMSItemByText(text); // Поиск известного элемента HMSItem по части текста
-                if (item != null && !string.IsNullOrEmpty(item.Text)) {
+                var item = ActiveHMSEditor.GetHMSItemByText(text);
+                if (!string.IsNullOrEmpty(item?.Text)) {
                     point.Offset(0, Editor.CharHeight-4);
                     // Если идёт отладка - проверяем, мы навели на переменную или свойство объекта?
                     if (Editor.DebugMode && OK4Evaluate(item)) {
@@ -121,6 +122,7 @@ namespace HMSEditorNS {
                         text = CheckTypeForToStringRules(item.Type, text);
                         // Внедряемся в поток - показываем вплывающее окно со значением
                         Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
+                            Editor.ReshowCaret = true;
                             value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
                             if (HMSEditor.ActiveEditor.ValueForm.Visible) {
                                 HMSEditor.ActiveEditor.ValueForm.Show(Editor, text, value, realExpression);

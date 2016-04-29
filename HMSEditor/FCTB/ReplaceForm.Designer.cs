@@ -200,7 +200,6 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Поиск и замена текста";
-            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ReplaceForm_FormClosing);
             this.Load += new System.EventHandler(this.ReplaceForm_Load);
             this.VisibleChanged += new System.EventHandler(this.ReplaceForm_VisibleChanged);

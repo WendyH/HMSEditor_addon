@@ -30,8 +30,8 @@ namespace HMSEditorNS {
         /// </summary>
         private List<string> lines = new List<string>();
 
-        private static Regex RegexComment = new Regex(@"(#.*)"        , RegexOptions.Multiline | RegexOptions.Compiled);
-        private static Regex RegexSection = new Regex(@"^\[(.*)\]\r?$", RegexOptions.Multiline | RegexOptions.Compiled);
+        private static Regex RegexComment = new Regex(@"(#.*)"        , RegexOptions.Multiline);
+        private static Regex RegexSection = new Regex(@"^\[(.*)\]\r?$", RegexOptions.Multiline);
 
         /// <summary>
         /// Data of settings ini file as text
@@ -62,15 +62,15 @@ namespace HMSEditorNS {
         /// Load the data of ini file
         /// </summary>
         public void Load() {
-            if (System.IO.File.Exists(this.File))
-                Text = System.IO.File.ReadAllText(this.File, FileEncoding);
+            if (System.IO.File.Exists(File))
+                Text = System.IO.File.ReadAllText(File, FileEncoding);
         }
 
         /// <summary>
         /// Save ini text data to file
         /// </summary>
         public void Save() {
-            System.IO.File.WriteAllText(this.File, Text, FileEncoding);
+            System.IO.File.WriteAllText(File, Text, FileEncoding);
         }
 
         /// <summary>
@@ -78,11 +78,9 @@ namespace HMSEditorNS {
         /// </summary>
         private void UpdateDictionaryData() {
             Dict.Clear();
-            string section = "", key = "", val = "";
+            string section = "";
             for (int i = 0; i < lines.Count; i++) {
-                string line;
-                if (NoComments) line = lines[i];
-                else line = RegexComment.Replace(lines[i], "");
+                var line = NoComments ? lines[i] : RegexComment.Replace(lines[i], "");
                 if (line.Trim().Length == 0) continue;   // Skip empty lines and comments
                 // if current line is section - get current section name and continue
                 if (RegexSection.IsMatch(line)) {
@@ -91,6 +89,8 @@ namespace HMSEditorNS {
                     continue;
                 }
                 int n = line.IndexOf('=');
+                string key;
+                string val;
                 if (n < 1) {
                     key = line.Trim();
                     val = "";
@@ -206,9 +206,9 @@ namespace HMSEditorNS {
         /// <returns>Return List of the lines</returns>
         public List<string> GetLines(string section = "", bool excludeComments = false) {
             List<string> sectLines = new List<string>();
-            string currentSection = "", line;
+            string currentSection = "";
             for (int i = 0; i < lines.Count; i++) {
-                line = lines[i];
+                var line = lines[i];
                 if (excludeComments) {   // Skip empty lines and comments
                     line = RegexComment.Replace(line, "");
                     if (line.Trim().Length == 0) continue;

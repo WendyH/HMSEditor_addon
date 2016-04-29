@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using FastColoredTextBoxNS;
 
 namespace HMSEditorNS {
@@ -33,18 +32,18 @@ namespace HMSEditorNS {
 
         public HMSItem(string text, int imageIndex)
             : this(text) {
-            base.ImageIndex = imageIndex;
+            ImageIndex = imageIndex;
         }
 
         public HMSItem(string text, int imageIndex, string menuText)
             : this(text, imageIndex) {
-            base.MenuText = menuText;
+            MenuText = menuText;
         }
 
         public HMSItem(string text, int imageIndex, string menuText, string toolTipTitle, string toolTipText)
             : this(text, imageIndex, menuText) {
-            base.ToolTipTitle = toolTipTitle;
-            base.ToolTipText  = toolTipText;
+            ToolTipTitle = toolTipTitle;
+            ToolTipText  = toolTipText;
         }
 
         /// <summary>
@@ -56,7 +55,6 @@ namespace HMSEditorNS {
             e.Tb.Selection.BeginUpdate();
             //remember places
             var p1 = popupMenu.Fragment.Start;
-            var p2 = e.Tb.Selection.Start;
             e.Tb.Selection.Start = p1;
             //move caret position right and find char ^
             while (e.Tb.Selection.CharBeforeStart != '^')
@@ -73,7 +71,7 @@ namespace HMSEditorNS {
             e.Tb.EndUpdate();
         }
 
-        public bool IsFuncOrProcedure { get { return ((Kind == DefKind.Function) || (Kind == DefKind.Procedure)); } }
+        public bool IsFuncOrProcedure => ((Kind == DefKind.Function) || (Kind == DefKind.Procedure));
     }
 
     public class HMSItemComparer: IComparer<HMSItem> {
@@ -84,7 +82,7 @@ namespace HMSEditorNS {
         }
 
         public int Compare(HMSItem item1, HMSItem item2) {
-            return item1.MenuText.ToLower().CompareTo(name);
+            return String.Compare(item1.MenuText.ToLower(), name, StringComparison.Ordinal);
         }
     }
 

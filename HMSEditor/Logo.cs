@@ -13,12 +13,12 @@ namespace HMSEditorNS {
 
         private Bitmap     bmp;
         private short[,,]  waves;
-        private int        activeBuffer  = 0;
-        private bool       haveWaves     = false;
-        private int        bmpHeight     = 0;
-        private int        bmpWidth      = 0;
-        private byte[]     bmpBytes      = null;        
-        private BitmapData bmpBitmapData = null;
+        private int        activeBuffer;
+        private bool       haveWaves;
+        private int        bmpHeight;
+        private int        bmpWidth;
+        private byte[]     bmpBytes;        
+        private BitmapData bmpBitmapData;
 
         private void InitializeComponent() {
             components  = new Container();
@@ -42,9 +42,9 @@ namespace HMSEditorNS {
             Marshal.Copy(bmpBitmapData.Scan0, bmpBytes, 0, bmpWidth * bmpHeight * 4);
             bmp.UnlockBits(bmpBitmapData);
 
-            effectTimer.Tick += new EventHandler(effectTimer_Tick);
-            Paint            += new PaintEventHandler(WaterEffectControl_Paint);
-            MouseMove        += new MouseEventHandler(WaterEffectControl_MouseMove);
+            effectTimer.Tick += effectTimer_Tick;
+            Paint            += WaterEffectControl_Paint;
+            MouseMove        += WaterEffectControl_MouseMove;
             effectTimer.Enabled  = true;
             effectTimer.Interval = 50;
             SetStyle(ControlStyles.UserPaint, true);
@@ -54,18 +54,15 @@ namespace HMSEditorNS {
         }
 
         protected override void Dispose( bool disposing ) {
-            if (disposing) {
-                if (effectTimer != null)
-                    effectTimer.Dispose();
-                if (components != null)
-                    components.Dispose();
-                if (bmp != null)
-                    bmp.Dispose();
-            }
             base.Dispose(disposing);
+            if (disposing) {
+                effectTimer.Dispose();
+                components .Dispose();
+                bmp        .Dispose();
+            }
         }
 
-        private void effectTimer_Tick(object sender, System.EventArgs e) {    
+        private void effectTimer_Tick(object sender, EventArgs e) {    
             if(haveWaves) {
                 Invalidate();
                 ProcessWaves();
@@ -75,7 +72,7 @@ namespace HMSEditorNS {
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public void WaterEffectControl_Paint(object sender, PaintEventArgs e) {
             using (Bitmap tmp = (Bitmap)bmp.Clone()) {
-                int xOffset, yOffset; byte alpha = 255;
+                byte alpha = 255;
                 int bmpLenght = bmpWidth * bmpHeight * 4;
                 if (haveWaves) {
                     BitmapData tmpData  = tmp.LockBits(new Rectangle(0, 0, bmpWidth, bmpHeight), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
@@ -84,8 +81,8 @@ namespace HMSEditorNS {
                     Marshal.Copy(tmpData.Scan0, tmpBytes, 0, bmpLenght);
                     for(int x=1; x<bmpWidth-1; x++) {
                         for(int y=1; y<bmpHeight-1; y++) {
-                            xOffset = (waves[x,y  ,activeBuffer] - waves[x+1,y  ,activeBuffer]) >> 3;
-                            yOffset = (waves[x  ,y,activeBuffer] - waves[x  ,y+1,activeBuffer]) >> 3;
+                            var xOffset = (waves[x,y  ,activeBuffer] - waves[x+1,y  ,activeBuffer]) >> 3;
+                            var yOffset = (waves[x  ,y,activeBuffer] - waves[x  ,y+1,activeBuffer]) >> 3;
 
                             if((xOffset != 0) || (yOffset != 0)) {
                                 //check bounds
@@ -141,12 +138,11 @@ namespace HMSEditorNS {
 
         private void PutDrop(int x, int y, short height, int radius = 1) {
             haveWaves = true;
-            double dist;
 
             for(int i = -radius; i<=radius; i++) {
                 for(int j = -radius; j<=radius; j++) {
                     if(((x+i>=0) && (x+i< bmpWidth - 1)) && ((y+j>=0) && (y+j< bmpHeight - 1))) {
-                        dist = Math.Sqrt(i * i + j * j);
+                        var dist = Math.Sqrt(i * i + j * j);
                         if(dist<radius)
                             waves[x+i, y+j, activeBuffer] = (short)(Math.Cos(dist*Math.PI / radius) * height);
                     }
@@ -155,8 +151,8 @@ namespace HMSEditorNS {
         }
 
         private void WaterEffectControl_MouseMove(object sender, MouseEventArgs e) {
-            int realX = (int)((e.X / (double)this.ClientRectangle.Width) * bmpWidth);
-            int realY = (int)((e.Y / (double)this.ClientRectangle.Height) * bmpHeight);
+            int realX = (int)((e.X / (double)ClientRectangle.Width) * bmpWidth);
+            int realY = (int)((e.Y / (double)ClientRectangle.Height) * bmpHeight);
             if (e.Button == MouseButtons.Left)
                 PutDrop(realX, realY, 90, 10);
             else

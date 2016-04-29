@@ -5,6 +5,7 @@ using System.Collections;
 using System.Drawing;
 using System.IO;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     /// <summary>
@@ -13,7 +14,7 @@ namespace FastColoredTextBoxNS
     /// </summary>
     public class TextSource: IList<Line>, IDisposable
     {
-        readonly protected List<Line> lines = new List<Line>();
+        protected readonly List<Line> lines = new List<Line>();
         protected LinesAccessor linesAccessor;
         int lastLineUniqueId;
         public CommandManager Manager { get; set; }
@@ -67,7 +68,12 @@ namespace FastColoredTextBoxNS
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        protected virtual void Dispose(Boolean disposing) { }
+
+        protected virtual void Dispose(bool disposing) {
+            if (disposing) {
+                DefaultStyle.Dispose();
+            }
+        }
 
         public virtual void ClearIsChanged()
         {
@@ -80,10 +86,8 @@ namespace FastColoredTextBoxNS
             return new Line(GenerateUniqueLineId());
         }
 
-        private void OnCurrentTBChanged()
-        {
-            if (CurrentTBChanged != null)
-                CurrentTBChanged(this, EventArgs.Empty);
+        private void OnCurrentTBChanged() {
+            CurrentTBChanged?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -94,14 +98,11 @@ namespace FastColoredTextBoxNS
 
         public TextSource(FastColoredTextBox currentTB)
         {
-            this.CurrentTB = currentTB;
+            CurrentTB = currentTB;
             linesAccessor = new LinesAccessor(this);
             Manager = new CommandManager(this);
 
-            if (Enum.GetUnderlyingType(typeof(StyleIndex)) == typeof(UInt32))
-                Styles = new Style[32];
-            else
-                Styles = new Style[16];
+            Styles = Enum.GetUnderlyingType(typeof(StyleIndex)) == typeof(UInt32) ? new Style[32] : new Style[16];
 
             DefaultStyle = new TextStyle(null, null, FontStyle.Regular);
         }
@@ -114,7 +115,7 @@ namespace FastColoredTextBoxNS
                  return lines[i];
             }
             set {
-                throw new NotImplementedException();
+                // ignore
             }
         }
 
@@ -136,9 +137,9 @@ namespace FastColoredTextBoxNS
             return lines.GetEnumerator();
         }
 
-        IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            return (lines  as IEnumerator);
+            return lines.GetEnumerator();
         }
 
         public virtual int BinarySearch(Line item, IComparer<Line> comparer)
@@ -162,10 +163,8 @@ namespace FastColoredTextBoxNS
             OnLineInserted(index, 1);
         }
 
-        public virtual void OnLineInserted(int index, int count)
-        {
-            if (LineInserted != null)
-                LineInserted(this, new LineInsertedEventArgs(index, count));
+        public virtual void OnLineInserted(int index, int count) {
+            LineInserted?.Invoke(this, new LineInsertedEventArgs(index, count));
         }
 
         public virtual void RemoveLine(int index)
@@ -173,10 +172,7 @@ namespace FastColoredTextBoxNS
             RemoveLine(index, 1);
         }
 
-        public virtual bool IsNeedBuildRemovedLineIds
-        {
-            get { return LineRemoved != null; }
-        }
+        public virtual bool IsNeedBuildRemovedLineIds => LineRemoved != null;
 
         public virtual void RemoveLine(int index, int count)
         {
@@ -194,15 +190,13 @@ namespace FastColoredTextBoxNS
 
         public virtual void OnLineRemoved(int index, int count, List<int> removedLineIds)
         {
-            if (count > 0)
-                if (LineRemoved != null)
-                    LineRemoved(this, new LineRemovedEventArgs(index, count, removedLineIds));
+            if (count > 0) {
+                LineRemoved?.Invoke(this, new LineRemovedEventArgs(index, count, removedLineIds));
+            }
         }
 
-        public virtual void OnTextChanged(int fromLine, int toLine)
-        {
-            if (TextChanged != null)
-                TextChanged(this, new TextChangedEventArgs(Math.Min(fromLine, toLine), Math.Max(fromLine, toLine) ));
+        public virtual void OnTextChanged(int fromLine, int toLine) {
+            TextChanged?.Invoke(this, new TextChangedEventArgs(Math.Min(fromLine, toLine), Math.Max(fromLine, toLine) ));
         }
 
         public class TextChangedEventArgs : EventArgs
@@ -213,7 +207,7 @@ namespace FastColoredTextBoxNS
             public TextChangedEventArgs(int iFromLine, int iToLine)
             {
                 this.iFromLine = iFromLine;
-                this.iToLine = iToLine;
+                this.iToLine   = iToLine;
             }
         }
 
@@ -255,15 +249,9 @@ namespace FastColoredTextBoxNS
         /// <summary>
         /// Lines count
         /// </summary>
-        public virtual int Count
-        {
-            get { return lines.Count; }
-        }
+        public virtual int Count => lines.Count;
 
-        public virtual bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public virtual bool IsReadOnly => false;
 
         public virtual bool Remove(Line item)
         {
@@ -277,16 +265,12 @@ namespace FastColoredTextBoxNS
                 return false;
         }
 
-        public virtual void NeedRecalc(TextChangedEventArgs args)
-        {
-            if (RecalcNeeded != null)
-                RecalcNeeded(this, args);
+        public virtual void NeedRecalc(TextChangedEventArgs args) {
+            RecalcNeeded?.Invoke(this, args);
         }
 
-        public virtual void OnRecalcWordWrap(TextChangedEventArgs args)
-        {
-            if (RecalcWordWrap != null)
-                RecalcWordWrap(this, args);
+        public virtual void OnRecalcWordWrap(TextChangedEventArgs args) {
+            RecalcWordWrap?.Invoke(this, args);
         }
 
         public virtual void OnTextChanging()
@@ -304,7 +288,7 @@ namespace FastColoredTextBoxNS
                 text = args.InsertingText;
                 if (args.Cancel)
                     text = string.Empty;
-            };
+            }
         }
 
         public virtual int GetLineLength(int i)

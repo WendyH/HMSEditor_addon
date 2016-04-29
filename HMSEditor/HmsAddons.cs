@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
-namespace HmsAddons {
+namespace HMSEditorNS {
     public struct HmsAddonInfo {
         public Guid   ClassID;
         public Guid   InterfaceID;
@@ -84,10 +84,10 @@ namespace HmsAddons {
     // Для вызова из списка дополнений
     [ComVisible(true), Guid("C5B24BFB-1F30-4F8A-91AD-943B82D8A067")]
     public interface IHmsAddonTools {
-        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+        [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         uint Setup(IntPtr aParent, ref int aReload);
 
-        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+        [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         uint Update(ref int aFlags, ref object aResult);
         /* Результатом (aResult) может быть ссылка на zip-файл обновления, загруженный zip-файл обновления, результат обновления.
            Флаги (aFlags) будут определять тип результата (Out) или тип вызова (In) Update (например, проверить наличие новой версии без загрузки обновления).
@@ -97,10 +97,10 @@ namespace HmsAddons {
     // Для получения списка классов и интерфейсов
     [ComVisible(true), Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A")]
     public interface IHmsAddonList {
-        uint GetCount(ref int aCount);
+        uint GetCount(out int aCount);
         uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref object aTitle, ref object aDescription, ref object aRequiredVersion, ref object aCheckedOnVersion);
         uint GetClassObject(ref Guid clsid, ref Guid iid, out object instance);
-        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+        [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         uint CanUnloadNow ();
     }
 

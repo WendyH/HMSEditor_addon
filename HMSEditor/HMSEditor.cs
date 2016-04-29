@@ -11,8 +11,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using FastColoredTextBoxNS;
+// ReSharper disable once RedundantUsingDirective
 using System.Diagnostics;
-using HmsAddons;
+using HMSEditorNS.Properties;
 
 namespace HMSEditorNS {
     public sealed partial class HMSEditor: UserControl {
@@ -20,52 +21,48 @@ namespace HMSEditorNS {
         public  static string    Title           = "HMS Editor addon v" + AboutDialog.AssemblyVersion;
         public  static string    Description     = "Альтернативный редактор скриптов c поддержкой IntelliSence";
         public  static string    SettingsSection = "AddonMain";
-        public  static HMSEditor ActiveEditor    = null;
         public  static bool      NeedRestart     = false;
         public  static string    NeedCopyNewFile = "";
         public  static string    NeedCopyDllFile = "";
         public  static INI       Settings        = new INI(HMS.SettingsFile);
-        private static bool      EnableMouseHelp = false;
-        private static object    LockObject      = new object();
+        public  static HMSEditor ActiveEditor;
+        private static bool      EnableMouseHelp;
 
         #region Regular Expressions Magnetic Field
-        private static Regex regexProceduresCPP    = new Regex(@"(?:^|[\r\n])\s*?(?<type>\w+)\s+(\w+)\s*?\("  , RegexOptions.Singleline | RegexOptions.Compiled);
-        private static Regex regexProceduresPascal = new Regex(@"\b(?:procedure|function)\s+(\w+)"            , RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static Regex regexProceduresBasic  = new Regex(@"(?:^|[\r\n])\s*?sub\s+(\w+)"                 , RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static Regex regexProceduresYAML   = new Regex(@"(?:^|[\r\n])\s*?(\w+)\s*?:"                  , RegexOptions.Singleline | RegexOptions.Compiled);
-        public  static Regex regexExcludeWords     = new Regex(@"\b(for|if|else|return|true|false|while|do)\b", RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static Regex regexDetectProcedure  = new Regex(@"\b(void|procedure)" , RegexOptions.IgnoreCase | RegexOptions.Multiline | RegexOptions.Compiled);
-        private static Regex regexPartOfLine       = new Regex(@"\b(.*?\s.*?\s.*?)\b", RegexOptions.Compiled);
+        private static Regex regexProceduresCPP    = new Regex(@"(?:^|[\r\n])\s*?(?<type>\w+)\s+(\w+)\s*?\("  , RegexOptions.Singleline);
+        private static Regex regexProceduresPascal = new Regex(@"\b(?:procedure|function)\s+(\w+)"            , RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        private static Regex regexProceduresBasic  = new Regex(@"(?:^|[\r\n])\s*?sub\s+(\w+)"                 , RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        public  static Regex regexExcludeWords     = new Regex(@"\b(for|if|else|return|true|false|while|do)\b", RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        private static Regex regexDetectProcedure  = new Regex(@"\b(void|procedure)" , RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        private static Regex regexPartOfLine       = new Regex(@"\b(.*?\s.*?\s.*?)\b");
 
-        private static Regex regexSearchConstantsCPP      = new Regex(@"#define\s+(\w+)(.*)"                             , RegexOptions.Compiled);
-        private static Regex regexSearchConstantsPascal1  = new Regex(@"\bconst\b(.*?)\b(var|procedure|function|begin)\b", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
-        private static Regex regexSearchConstantsPascal2  = new Regex(@"([\w]+)\s*?=\s*?(.*?)[;\r\n]"                    , RegexOptions.Compiled);
+        private static Regex regexSearchConstantsCPP      = new Regex(@"#define\s+(\w+)(.*)"         );
+        private static Regex regexSearchConstantsPascal1  = new Regex(@"\bconst\b(.*?)\b(var|procedure|function|begin)\b", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        private static Regex regexSearchConstantsPascal2  = new Regex(@"([\w]+)\s*?=\s*?(.*?)[;\r\n]");
 
-        private static Regex regexSearchVarsCPP           = new Regex(@"(?<type>\w+)\s+(?<vars>[^;{}]+)"   , RegexOptions.Compiled);
-        private static Regex regexSearchVarsJS            = new Regex(@"(?<type>\w+)\s+(?<vars>[^;{}]+)"   , RegexOptions.Compiled);
-        private static Regex regexSearchVarsPascal        = new Regex(@"(?<vars>[\w ,]+):(?<type>[^=;\)]+)", RegexOptions.Compiled);
+        private static Regex regexSearchVarsCPP           = new Regex(@"(?<type>\w+)\s+(?<vars>[^;{}]+)"   );
+        private static Regex regexSearchVarsJS            = new Regex(@"(?<type>\w+)\s+(?<vars>[^;{}]+)"   );
+        private static Regex regexSearchVarsPascal        = new Regex(@"(?<vars>[\w ,]+):(?<type>[^=;\)]+)");
 
-        private static Regex regexTwoWords                = new Regex(@"(\w+)\s+(\w+)\s*$"    , RegexOptions.Compiled);
-        private static Regex regexAssignment              = new Regex(@"=[^,$]+"              , RegexOptions.Compiled);
-        private static Regex regexConstantKeys            = new Regex(@"\b(var|const)\b"      , RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static Regex regexNotValidCharsInVars     = new Regex(@"[{}\(\[\]]"           , RegexOptions.Compiled);
-        private static Regex regexExractConstantValue     = new Regex(@"(""[^""]+""|'[^']+')" , RegexOptions.Compiled);
-        private static Regex regexBrackets                = new Regex(@"(\(|\)|\{|\})"        , RegexOptions.Compiled);
+        private static Regex regexTwoWords                = new Regex(@"(\w+)\s+(\w+)\s*$"    );
+        private static Regex regexAssignment              = new Regex(@"=[^,$]+"              );
+        private static Regex regexConstantKeys            = new Regex(@"\b(var|const)\b"      , RegexOptions.IgnoreCase);
+        private static Regex regexNotValidCharsInVars     = new Regex(@"[{}\(\[\]]"           );
+        private static Regex regexExractConstantValue     = new Regex(@"(""[^""]+""|'[^']+')" );
 
         private static Regex regexSplitFuncParam          = new Regex("[,;]", RegexOptions.Compiled);
-        private static Regex regexFoundOurFunction        = new Regex(@"([\w\.]+)\s*?[\(\[](.*)$", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static Regex regexFoundOurFunction        = new Regex(@"([\w\.]+)\s*?[\(\[](.*)$", RegexOptions.Singleline);
 
-        private static Regex regexIsNum      = new Regex(@"(\d|\$)", RegexOptions.Compiled);
-        private static Regex regexIsStr      = new Regex(@"(""|')" , RegexOptions.Compiled);
-        private static Regex regexAllSymbols = new Regex("."       , RegexOptions.Compiled);
-        private static Regex regexLineBreaks = new Regex(@"[\r\n]" , RegexOptions.Compiled);
-        private static Regex regexNotNewLine = new Regex(@"[^\n]"  , RegexOptions.Compiled);
+        private static Regex regexIsNum      = new Regex(@"(\d|\$)");
+        private static Regex regexIsStr      = new Regex(@"(""|')" );
+        private static Regex regexAllSymbols = new Regex("."       );
+        private static Regex regexLineBreaks = new Regex(@"[\r\n]" );
 
         private static RegexOptions StdOpt = RegexOptions.Singleline | RegexOptions.IgnoreCase; // Стандартные флаги RegexOptions
         #endregion Regular Expressions magnetic filed
 
         private static string ReturnSpaces(Match m) { return regexAllSymbols.Replace(m.Value, " "); }
-        private static MatchEvaluator evaluatorSpaces = new MatchEvaluator(ReturnSpaces);
+        private static readonly MatchEvaluator evaluatorSpaces = ReturnSpaces;
 
         private static char CensChar = ' '; // Символ замены строк и комментариев при обработке текста на поиск переменных и проч.
 
@@ -90,24 +87,57 @@ namespace HMSEditorNS {
             }
             HmsScriptMode  = (HmsScriptMode)aScriptMode;
             InitializeComponent();
-            labelVersion.Text = HMSEditor.Title;
+            labelVersion.Text = Title;
             splitContainer1.Panel2Collapsed = true;
             Editor.CurrentLineColor = Color.FromArgb(100, 210, 210, 255);
             Editor.ChangedLineColor = Color.FromArgb(255, 152, 251, 152);
-            Editor.LostFocus += Editor_LostFocus; // for hiding all tooltipds when lost focus
-            helpPanel1.PanelClose += HelpPanel1_PanelClose;
+            Editor.LostFocus       += Editor_LostFocus; // for hiding all tooltipds when lost focus
+            helpPanel1.PanelClose  += HelpPanel1_PanelClose;
             helpPanel1.Init(imageList1, HmsScriptMode.ToString());
-            WorkerCheckSyntax.DoWork += WorkerCheckSyntax_DoWork;
+            WorkerCheckSyntax.DoWork             += WorkerCheckSyntax_DoWork;
             WorkerCheckSyntax.RunWorkerCompleted += WorkerCheckSyntax_RunWorkerCompleted;
-            CreateAutocompleteItemsByScriptDescrition();
+
             SetAutoCompleteMenu();
+
+            WorkerCreateAutocomplete.DoWork             += WorkerCreateAutocomplete_DoWork;
+            WorkerCreateAutocomplete.RunWorkerCompleted += WorkerCreateAutocomplete_RunWorkerCompleted;
+
+            WorkerCodeAnalysis.DoWork             += WorkerCodeAnalysis_DoWork;
+            WorkerCodeAnalysis.RunWorkerCompleted += WorkerCodeAnalysis_RunWorkerCompleted; ;
+            WorkerCodeAnalysis.WorkerSupportsCancellation = true;
+
+            WorkerHighlighter.DoWork             += WorkerHighlighter_DoWork;
+            WorkerHighlighter.RunWorkerCompleted += WorkerHighlighter_RunWorkerCompleted;
+            WorkerHighlighter.WorkerSupportsCancellation = true;
+        }
+
+        private void WorkerHighlighter_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+        }
+
+        private void WorkerHighlighter_DoWork(object sender, DoWorkEventArgs e) {
+            //Editor.SyntaxHighlighter.HighlightSyntaxThread(Editor.Language, Editor.Range);
+        }
+
+        private void WorkerCreateAutocomplete_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            lock (ScriptAutocompleteItems) {
+                ScriptAutocompleteItems.Clear();
+                ScriptAutocompleteItems.AddRange(TempAutocompleteItems);
+            }
             CreateAutocomplete();
+        }
+
+        private void WorkerCreateAutocomplete_DoWork(object sender, DoWorkEventArgs e) {
+            CreateAutocompleteItemsByScriptDescrition();
         }
 
         private void HelpPanel1_PanelClose(object sender, EventArgs e) {
             splitContainer1.Panel2Collapsed = true;
             btnSprav.Checked = false;
         }
+
+        private BackgroundWorker WorkerCodeAnalysis       = new BackgroundWorker();
+        private BackgroundWorker WorkerCreateAutocomplete = new BackgroundWorker();
+        public static BackgroundWorker WorkerHighlighter  = new BackgroundWorker();
 
         private void WorkerCheckSyntax_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
             if (needCheckSyntaxAgain) {
@@ -141,13 +171,15 @@ namespace HMSEditorNS {
                         ErrorLine = Math.Max(0, nErrorLine - 1);
                         ErrorMessage = objErrorMessage.ToString();
                     }
-                } catch { ; }
-            } else {
-                Editor.SetErrorLines(8, 50, "Проверка!");
+                }
+                catch
+                {
+                    // ignored
+                }
             }
         }
 
-        bool needCheckSyntaxAgain = false;
+        bool needCheckSyntaxAgain;
         public void AutoCheckSyntaxBackground() {
             if (WorkerCheckSyntax.IsBusy) {
                 needCheckSyntaxAgain = true;
@@ -157,26 +189,25 @@ namespace HMSEditorNS {
 		} 
 
 		// Fields
-		public  bool   Locked             = false;
-        public  string Filename           = HMS.TemplatesDir; // last opened or saved file 
-        public  int    LastPtocedureIndex = -1;
-        public  bool   WasCommaOrBracket  = false;
+		public  bool   Locked;
+        public  string Filename             = HMS.TemplatesDir; // last opened or saved file 
+        public  int    LastPtocedureIndex   = -1;
         public  string CurrentValidTypes    = ""; // Sets in CreateAutocomplete() procedure
         public  string CurrentValidTypesReg = ""; // Sets in CreateAutocomplete() procedure
-        public  bool   IsFirstActivate    = true;
-        private bool   NeedRecalcVars     = false;
-        private string ThemeName          = "";
-        private uint   OldTextHash        = 0;
+        public  bool   IsFirstActivate      = true;
+        public  bool   WasCommaOrBracket;
+        private bool   NeedRecalcVars;
+        private string ThemeName            = "";
+        private uint   OldTextHash;
 
-        private IntPtr PtrScriptFrame = IntPtr.Zero;
-        public IHmsScriptFrame HmsScriptFrame = null;
-        private HmsScriptMode  HmsScriptMode  = HmsScriptMode.smUnknown;
+        public  IHmsScriptFrame  HmsScriptFrame;
+        public  IntPtr           PtrScriptFrame;
+        private HmsScriptMode    HmsScriptMode ;
         private BackgroundWorker WorkerCheckSyntax = new BackgroundWorker();
 
-        public bool Modified       { get { return Editor.IsChanged     ; } set { Editor.IsChanged      = value; } }
-        public int  SelectionStart { get { return Editor.SelectionStart; } set { Editor.SelectionStart = value; } }
-        public ImageList  IconList { get { return imageList1; } }
-        public string SelectedText { get { return Editor.Selection.Text; } set { Editor.InsertText(value); } }
+        public ImageList IconList       => imageList1;
+        public bool      Modified     { get { return Editor.IsChanged     ; } set { Editor.IsChanged = value; } }
+        public string    SelectedText { get { return Editor.Selection.Text; } set { Editor.InsertText(value); } }
 
         public bool NavigateBackwardEnable { get { return btnNavigateBack   .Enabled; } set { btnNavigateBack   .Enabled = value; } }
         public bool NavigateForwardEnable  { get { return btnNavigateForward.Enabled; } set { btnNavigateForward.Enabled = value; } }
@@ -189,23 +220,19 @@ namespace HMSEditorNS {
         public AutocompleteItems Variables = new AutocompleteItems();
         public AutocompleteItems Functions = new AutocompleteItems();
 
-        private System.Threading.Timer MouseTimer = new System.Threading.Timer(MouseTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
-        public  Point       MouseLocation         = new Point();
-        public  Style       InvisibleCharsStyle   = new InvisibleCharsRenderer(Pens.Gray);
-        public  MarkerStyle SameWordsStyle        = new MarkerStyle(new SolidBrush(Color.FromArgb(33, Color.Gray)));
-        private DateTime    LastNavigatedDateTime = DateTime.Now;
+        private System.Threading.Timer MouseTimer  = new System.Threading.Timer(MouseTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
+        public  Point       MouseLocation;
+        public  Style       InvisibleCharsStyle    = new InvisibleCharsRenderer(Pens.Gray);
+        public  MarkerStyle SameWordsStyle         = new MarkerStyle(new SolidBrush(Color.FromArgb(33, Color.Gray)));
 
-        private MatchEvaluator evaluatorSameLines = new MatchEvaluator(MatchReturnEmptyLines);
         public  AutocompleteMenu PopupMenu;
         public static int MaxPopupItems = 18;
 
-        private bool TextBoxFindChanged = false;
-        private int    ErrorLine = 0;
-        private int    ErrorChar = 0;
+        private int    ErrorLine;
+        private int    ErrorChar;
         private string ErrorMessage = "";
 
         public string Filter { get { return PopupMenu.Filter; } set { PopupMenu.Filter = value; } } // Фильтр для видимости переменных по заголовку окна
-        public int  tsHeight { get { return tsMain.Height; } }
 
         public bool AutoCompleteBrackets     { get { return Editor.AutoCompleteBrackets    ; } set { Editor.AutoCompleteBrackets    = value; } }
         public bool AutoIdent                { get { return Editor.AutoIndent              ; } set { Editor.AutoIndent              = value; } }
@@ -274,7 +301,7 @@ namespace HMSEditorNS {
             }
         }
 
-        public int TextLength { get { return Text.Length; } }
+        public int TextLength => Text.Length;
 
         #region Fuctions and procedures
         public void OnRunningStateChange(bool running) {
@@ -284,14 +311,14 @@ namespace HMSEditorNS {
 
         private void Editor_LostFocus(object sender, EventArgs e) {
             if (!PopupMenu.Focused)
-                HideAllToolTipsAndHints();
+                HideAllToolTipsAndHints(); 
             //if (ValueHint.IsShowing ) Editor.Focus();
         }
 
         private void HideAllToolTipsAndHints() {
             HideToolTip4Function(true);
-            if (Editor.ToolTip != null) Editor.ToolTip.RemoveAll();
-            PopupMenu.ToolTip.RemoveAll();
+            Editor.   ToolTip?.RemoveAll();
+            PopupMenu.ToolTip?.RemoveAll();
             PopupMenu.Close();
             //ValueForm.Hide();
         }
@@ -305,7 +332,7 @@ namespace HMSEditorNS {
             }
         }
 
-        public void GetCaretPos(ref int aLine, ref int aChar) {
+        public void GetCaretPos(out int aLine, out int aChar) {
             aLine = Editor.Selection.Start.iLine + 1;
             aChar = Editor.Selection.Start.iChar + 1;
         }
@@ -352,18 +379,16 @@ namespace HMSEditorNS {
         }
 
         public bool NavigateBackward() {
-            return Editor.NavigateBackward(); ;
+            return Editor.NavigateBackward();
         }
 
         public bool NavigateForward() {
-            return Editor.NavigateForward(); ;
+            return Editor.NavigateForward();
         }
 
         public void FindKeyPressed(KeyPressEventArgs e, string text) {
             if (e.KeyChar == '\r')
                 FindText(text);
-            else
-                TextBoxFindChanged = true;
         }
 
         private void tbFind_Leave(object sender, EventArgs e) {
@@ -373,8 +398,7 @@ namespace HMSEditorNS {
         public void FindText(string text, bool forward = true) {
             Editor.YellowSelection    = true;
             Editor.SelectionAfterFind = true;
-            TextBoxFindChanged = false;
-            Range r = TextBoxFindChanged ? Editor.Range.Clone() : Editor.Selection.Clone();
+            Range r = Editor.Selection.Clone();
             if (forward) {
                 r.End   = new Place(Editor[Editor.LinesCount - 1].Count, Editor.LinesCount - 1);
             } else {
@@ -394,7 +418,7 @@ namespace HMSEditorNS {
                 Editor.Selection = foundRange;
                 Editor.DoSelectionVisible();
             } else {
-                MessageBox.Show("\"" + text + "\"" + " не найдено.", Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show(@"""" + text + @"""" + @" не найдено.", Title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 Editor.SelectionStart = 0;
             }
 
@@ -402,25 +426,21 @@ namespace HMSEditorNS {
 
         public void OffBreakpointInHms(int iLine = -1) {
             if (HmsScriptFrame != null) {
-                if (HmsScriptFrame != null) {
-                    int isBreakpoint = 0;
-                    HmsScriptFrame.IsBreakpointLine(iLine + 1, ref isBreakpoint);
-                    bool lineIsBreakpointed = (isBreakpoint < 0);
-                    if (lineIsBreakpointed)
-                        HmsScriptFrame.ToggleBreakpoint(iLine + 1);
-                }
+                int isBreakpoint = 0;
+                HmsScriptFrame.IsBreakpointLine(iLine + 1, ref isBreakpoint);
+                bool lineIsBreakpointed = (isBreakpoint < 0);
+                if (lineIsBreakpointed)
+                    HmsScriptFrame.ToggleBreakpoint(iLine + 1);
             }
         }
 
         public void SetBreakpointInHms(int iLine = -1) {
             if (HmsScriptFrame != null) {
-                if (HmsScriptFrame != null) {
-                    int isBreakpoint = 0;
-                    HmsScriptFrame.IsBreakpointLine(iLine + 1, ref isBreakpoint);
-                    bool lineIsBreakpointed = (isBreakpoint < 0);
-                    if (!lineIsBreakpointed)
-                        HmsScriptFrame.ToggleBreakpoint(iLine + 1);
-                }
+                int isBreakpoint = 0;
+                HmsScriptFrame.IsBreakpointLine(iLine + 1, ref isBreakpoint);
+                bool lineIsBreakpointed = (isBreakpoint < 0);
+                if (!lineIsBreakpointed)
+                    HmsScriptFrame.ToggleBreakpoint(iLine + 1);
             }
         }
 
@@ -428,10 +448,13 @@ namespace HMSEditorNS {
             if (iLine == -1) iLine = Editor.Selection.Start.iLine;
             int  isBreakpoint = 0;
 
-            string line = Editor.WithoutStringAndComments(Editor.Lines[iLine]).Trim();
-            if (line.Length == 0) return;
-
             bool lineIsBreakpointed = Editor.Breakpoints.Contains(iLine);
+
+            if (!lineIsBreakpointed) {
+                string line = Editor.WithoutStringAndComments(Editor.Lines[iLine]).Trim();
+                if (line.Length == 0) return;
+            }
+
             if (HmsScriptFrame != null) {
                 HmsScriptFrame.IsBreakpointLine(iLine + 1, ref isBreakpoint);
                 lineIsBreakpointed = (isBreakpoint < 0);
@@ -442,8 +465,7 @@ namespace HMSEditorNS {
                 string name = regexPartOfLine.Match(Editor.Lines[iLine]).Value;
                 Editor.BreakpointLine(iLine, "Точка останова " + (Editor.Breakpoints.counter + 1) + " " + name + "...");
             }
-            if (HmsScriptFrame != null)
-                HmsScriptFrame.ToggleBreakpoint(iLine+1);
+            HmsScriptFrame?.ToggleBreakpoint(iLine+1);
         }
 
         public void Bookmark(int iLine = -1) {
@@ -505,7 +527,7 @@ namespace HMSEditorNS {
             fileFialog.Filter           = FileDialogFilter();
             fileFialog.FilterIndex      = FileDialogIndexFilter();
             fileFialog.RestoreDirectory = true;
-            fileFialog.Title            = "Выбор файла скрипта";
+            fileFialog.Title            = @"Выбор файла скрипта";
             if (fileFialog.ShowDialog() == DialogResult.OK) {
                 Filename = fileFialog.FileName;
                 if (File.Exists(Filename)) Editor.OpenFile(Filename);
@@ -522,7 +544,7 @@ namespace HMSEditorNS {
             fileFialog.Filter           = FileDialogFilter();
             fileFialog.FilterIndex      = FileDialogIndexFilter();
             fileFialog.RestoreDirectory = true;
-            fileFialog.Title            = "Выбор файла скрипта";
+            fileFialog.Title            = @"Выбор файла скрипта";
             if (fileFialog.ShowDialog() == DialogResult.OK) {
                 Filename = fileFialog.FileName;
                 try {
@@ -538,11 +560,12 @@ namespace HMSEditorNS {
 
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public void Print() {
-            var settings = new PrintDialogSettings();
-            settings.Title  = Filename;
-            settings.Header = "&b&w&b";
-            settings.Footer = "&b&p";
-            settings.ShowPrintPreviewDialog = true;
+            var settings = new PrintDialogSettings {
+                Title  = Filename,
+                Header = "&b&w&b",
+                Footer = "&b&p",
+                ShowPrintPreviewDialog = true
+            };
             Editor.Print(settings);
         }
 
@@ -551,16 +574,15 @@ namespace HMSEditorNS {
         }
 
         public void RestorePosition() {
-            Match m;
             if (btnStorePositions.Checked) {
                 try {
                     string hash   = ((uint)Text.GetHashCode()).ToString();
                     string hashes = Settings.Get("LastHash" + HmsScriptMode.ToString(), SettingsSection, "");
                     hashes = Regex.Match(hashes, hash + ":[^\\|]+").Value;
                     if (hashes == "") return;
-                    m = Regex.Match(hashes, hash + ":(\\d+):(\\d+)");
+                    var m = Regex.Match(hashes, hash + ":(\\d+):(\\d+)");
                     if (m.Success) {
-                        uint sel = 0, pos = 0;
+                        uint sel, pos;
                         uint.TryParse(m.Groups[1].Value, out sel);
                         if (sel < Editor.Text.Length) Editor.SelectionStart = (int)sel;
                         uint.TryParse(m.Groups[2].Value, out pos);
@@ -579,10 +601,11 @@ namespace HMSEditorNS {
                         foreach (string s in sbm) {
                             m = Regex.Match(s, "(\\d+)\\.(\\d+)\"(.*?)\"");
                             if (!m.Success) continue;
-                            Bookmark b = new Bookmark(Editor, "", 0);
-                            b.LineIndex = int.Parse(m.Groups[1].Value);
-                            b.CharIndex = int.Parse(m.Groups[2].Value);
-                            b.Name = m.Groups[3].Value;
+                            Bookmark b = new Bookmark(Editor, "", 0) {
+                                LineIndex = int.Parse(m.Groups[1].Value),
+                                CharIndex = int.Parse(m.Groups[2].Value),
+                                Name      = m.Groups[3].Value
+                            };
                             Editor.Bookmarks.Add(b);
                         }
                     }
@@ -598,11 +621,11 @@ namespace HMSEditorNS {
         /// Apply settings from .ini file to the this objects
         /// </summary>
         public void LoadSettings() {
-            try { Settings.Load(); } catch (Exception e) { HMS.LogError(e.ToString()); Console.WriteLine("Error loading config file '" + Settings.File + "'", e); return; }
+            try { Settings.Load(); } catch (Exception e) { HMS.LogError(e.ToString()); Console.WriteLine(@"Error loading config file '" + Settings.File + @"'", e); return; }
             OldTextHash = (uint)Text.GetHashCode();
 
             tsMain.Visible = false;
-            string section = SettingsSection, sVal;
+            string section = SettingsSection;
             tsMain.Visible                   = Settings.Get("ToolStripVisible"    , section, tsMain.Visible);
             btnHighlightCurrentLine .Checked = Settings.Get("HighlightCurrentLine", section, btnHighlightCurrentLine .Checked);
             btnShowLineNumbers      .Checked = Settings.Get("ShowLineNumbers"     , section, btnShowLineNumbers      .Checked);
@@ -629,20 +652,25 @@ namespace HMSEditorNS {
             btnCheckKeywordsRegister.Checked = Settings.Get("CheckKeywordsRegister",section, btnCheckKeywordsRegister.Checked);
             btnCheckNewVersionOnLoad.Checked = Settings.Get("CheckNewVersionOnLoad",section, btnCheckNewVersionOnLoad.Checked);
             btnFormatCodeWhenPaste  .Checked = Settings.Get("FormatCodeWhenPaste" , section, btnFormatCodeWhenPaste  .Checked);
+            btnUnderlinePascalKeywrd.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywrd.Checked);
 
-            btnUnderlinePascalKeywords.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywords.Checked);
-            Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
-            Editor.SyntaxHighlighter.RedStringsHighlight        = btnRedStringsHighlight    .Checked;
+            // Set to false deprecated settings
+            btnAutoIdentLines       .Checked = false;
+            btnCheckKeywordsRegister.Checked = false;
+            //btnUnderlinePascalKeywrd.Checked = false;
+
+            Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywrd.Checked;
+            Editor.SyntaxHighlighter.RedStringsHighlight        = btnRedStringsHighlight  .Checked;
              
             Editor.Font = new Font("Consolas", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
-            if ((Editor.Font.Name.ToLower().IndexOf("consolas") < 0) && (HMS.PFC.Families.Length > 1)) {
+            if ((Editor.Font.Name.ToLower().IndexOf("consolas", StringComparison.Ordinal) < 0) && (HMS.PFC.Families.Length > 1)) {
                 btnToolStripMenuItemFONT.Visible = false;
                 Editor.Font = new Font(HMS.PFC.Families[1], 10f, FontStyle.Regular, GraphicsUnit.Point);
             } else if (btnToolStripMenuItemFONT.Checked) { 
                 btnToolStripMenuItemFONT_Click(null, new EventArgs());
             }
 
-            sVal = Settings.Get("Zoom", section, "100"); 
+            var sVal = Settings.Get("Zoom", section, "100"); 
             Editor.Zoom = Int32.Parse(sVal);
 
             PopupMenu.OnlyCtrlSpace        = btnHints4CtrlSpace      .Checked;
@@ -691,12 +719,18 @@ namespace HMSEditorNS {
         private void FillThemes() {
             btnThemes.DropDownItems.Clear();
             foreach (var name in Themes.Dict.Keys) {
+                if (btnThemes.DropDownItems.Count == 20) {
+                    btnThemes.DropDownItems.Add(new ToolStripSeparator());
+                }
                 ToolStripMenuItem item = (ToolStripMenuItem)btnThemes.DropDownItems.Add(name);
                 item.Tag = name;
                 item.Click += (o, a) => {
                     ThemeName = (string)item.Tag;
                     Themes.SetTheme(this, ThemeName);
-                    foreach (ToolStripMenuItem i in btnThemes.DropDownItems) i.Checked = i.Text == ThemeName;
+                    foreach (var i in btnThemes.DropDownItems) {
+                        var b = i as ToolStripMenuItem;
+                        if (b!=null) b.Checked = b.Text == ThemeName;
+                    }
                 };
                 if (name == ThemeName) {
                     item.Checked = true;
@@ -744,7 +778,7 @@ namespace HMSEditorNS {
                 Settings.Set("Language"            , ScriptLanguage                  , section);
                 Settings.Set("Zoom"                , Editor.Zoom                     , section);
 
-                Settings.Set("UnderlinePascalKeywords", btnUnderlinePascalKeywords.Checked, section);
+                Settings.Set("UnderlinePascalKeywords", btnUnderlinePascalKeywrd.Checked, section);
 
                 if (btnStorePositions.Checked) {
                     SaveState();
@@ -783,7 +817,7 @@ namespace HMSEditorNS {
 
             // Store our state
             foreach (var b in Editor.Breakpoints) { if (linesBPs != "") linesBPs += ","; linesBPs += b.LineIndex; }
-            foreach (var b in Editor.Bookmarks  ) { if (linesBMs != "") linesBMs += ","; linesBMs += b.LineIndex + "." + b.CharIndex + "\"" + b.Name.Replace("|", "") + "\""; };
+            foreach (var b in Editor.Bookmarks  ) { if (linesBMs != "") linesBMs += ","; linesBMs += b.LineIndex + "." + b.CharIndex + "\"" + b.Name.Replace("|", "") + "\""; }
 
             hashesDict[lastHash] = ""+Editor.SelectionStart+":"+Editor.GetVerticalScrollValue()+":"+linesBPs+":"+linesBMs;
 
@@ -819,11 +853,10 @@ namespace HMSEditorNS {
 
         private void RunScript() {
             Editor.HmsDebugLine = -1;
-            if (HmsScriptFrame!=null)
-                HmsScriptFrame.ProcessCommand(Constatns.ecRunScript);
+            HmsScriptFrame?.ProcessCommand(Constatns.ecRunScript);
         }
 
-        bool RunLineRised = false;
+        bool RunLineRised;
         private void RunLine() {
             if (HmsScriptFrame != null) {
                 if (RunLineRised) return;
@@ -831,16 +864,15 @@ namespace HMSEditorNS {
                 string line = Editor.Lines[Editor.Selection.Start.iLine];
                 HmsScriptFrame.ProcessCommand(Constatns.ecRunLine);
                 if (ValueForm.Visible) {
-                    if (line.IndexOf(ValueForm.RealExpression) >= 0) ValueForm.Value = EvalVariableValue(ValueForm.Expression);
+                    if (line.IndexOf(ValueForm.RealExpression, StringComparison.Ordinal) >= 0) ValueForm.Value = EvalVariableValue(ValueForm.Expression);
                 } else if (ValueHint.IsShowing) {
-                    if (line.IndexOf(ValueHint.RealExpression) >= 0) ValueHint.Value = EvalVariableValue(ValueHint.Expression);
+                    if (line.IndexOf(ValueHint.RealExpression, StringComparison.Ordinal) >= 0) ValueHint.Value = EvalVariableValue(ValueHint.Expression);
                 }
             }
         }
 
         private void EvaluateDialog() {
-            if (HmsScriptFrame != null)
-                HmsScriptFrame.ProcessCommand(Constatns.ecEvaluate);
+            HmsScriptFrame?.ProcessCommand(Constatns.ecEvaluate);
         }
 
         private bool IsInRanges(List<Range> ranges, Place place) {
@@ -855,8 +887,7 @@ namespace HMSEditorNS {
 
         private string GetScriptDescriptions() {
             object objXml = "";
-            if (HmsScriptFrame!=null)
-                HmsScriptFrame.GenerateScriptDescriptions(ref objXml);
+            HmsScriptFrame?.GenerateScriptDescriptions(ref objXml);
             return objXml.ToString();
         }
 
@@ -865,8 +896,7 @@ namespace HMSEditorNS {
             string name = CurrentWord();
             if (name == "") return;
 
-            FormRename form = new FormRename();
-            form.OldVarName = name;
+            FormRename form = new FormRename {OldVarName = name};
 
             form.TextBox.BackColor = Editor.BackColor;
             form.TextBox.ForeColor = Editor.ForeColor;
@@ -929,18 +959,17 @@ namespace HMSEditorNS {
             // Собрать ExcludeRanges
 
             Regex regexSearchVarName = new Regex(@"\b(" + name + @")\b", RegexOptions.IgnoreCase);
-            int iLine = 0; string[] lines = text.Split('\n'); int iCharB, iCharE, addedLine = 0; 
+            int iLine = 0; string[] lines = text.Split('\n');
+            int addedLine = 0;
             foreach (string lineString in lines) {
                 MatchCollection mc = regexSearchVarName.Matches(lineString);
                 if (mc.Count > 0) {
-                    List<Range> rangeList = new List<Range>();
                     bool wasadded = false;
                     foreach (Match m in mc) {
-                        iCharB = m.Index;
-                        iCharE = iCharB + name.Length;
+                        var iCharB = m.Index;
+                        var iCharE = iCharB + name.Length;
                         if (IsInRanges(ExcludeRanges, new Place(iCharB, iLine))) continue;
-                        Range r = new Range(Editor, iCharB, iLine, iCharE, iLine);
-                        r.StoredLineNo = addedLine;
+                        var r = new Range(Editor, iCharB, iLine, iCharE, iLine) { StoredLineNo = addedLine };
                         form.OrigRanges.Add(r);
                         wasadded = true;
                     }
@@ -972,8 +1001,8 @@ namespace HMSEditorNS {
             else if (e.KeyCode == Keys.F12   ) GotoDefinition();
             else if (e.KeyCode == Keys.F2    ) RenameVariable();
             else if (e.KeyCode == Keys.Escape) {
-                if (Editor.findForm    != null) Editor.findForm   .Hide();
-                if (Editor.replaceForm != null) Editor.replaceForm.Hide();
+                Editor.findForm?.Hide();
+                Editor.replaceForm?.Hide();
                 HideAllToolTipsAndHints();
                 PopupMenu.TempNotShow = true;
             }
@@ -1031,6 +1060,8 @@ namespace HMSEditorNS {
             Locked = true;       // Say to other processes we is busy - don't tuch us!
             BuildFunctionList(); // Only when text changed - build the list of functions
 			if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxBackground();
+
+            WorkerHighlighter.RunWorkerAsync();
 
 			Locked = false;
             if (IsFirstActivate) { 
@@ -1137,7 +1168,7 @@ namespace HMSEditorNS {
             string txt = "";
             foreach (var b in Editor.Bookmarks) txt += b.Name + "\n";
 
-            if (MessageBox.Show("Удалить все закладки?\n"+ txt, Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question)== DialogResult.Yes)
+            if (MessageBox.Show(Resources.HMSEditor_btnBookmarkMinus_Click_+ txt, Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question)== DialogResult.Yes)
                 BookmarkClear();
         }
 
@@ -1155,7 +1186,9 @@ namespace HMSEditorNS {
                 ToolStripItem item = items.Add(bookmark.Name, imageList1.Images[9]);
                 item.Tag = bookmark;
                 item.Click += (o, a) => {
-                    var b = (Bookmark)(o as ToolStripItem).Tag;
+                    var toolStripItem = o as ToolStripItem;
+                    if (toolStripItem == null) return;
+                    var b = (Bookmark)toolStripItem.Tag;
                     b.DoVisible();
                 };
             }
@@ -1165,10 +1198,14 @@ namespace HMSEditorNS {
                 tipItem.Tag = item.PositionStart;
                 tipItem.Click += (o, a) => {
                     try {
-                        Editor.SelectionStart = (int)(o as ToolStripItem).Tag;
+                        var toolStripItem = o as ToolStripItem;
+                        if (toolStripItem != null) Editor.SelectionStart = (int)toolStripItem.Tag;
                         Editor.DoRangeVisible(Editor.Selection, true);
                         Editor.Invalidate();
-                    } catch { }
+                    }
+                    catch {
+                        // ignored
+                    }
                 };
             }
         }
@@ -1211,11 +1248,7 @@ namespace HMSEditorNS {
         private void btnAutoIdent_Click(object sender, EventArgs e) {
             Editor.AutoIndent = btnAutoIdent.Checked;
             btnAutoIdentLines.Enabled = Editor.AutoIndent;
-            if (btnAutoIdentLines.Enabled) {
-                btnAutoIdentLines.ToolTipText = "";
-            } else {
-                btnAutoIdentLines.ToolTipText = "Доступно только при включенном автоматическом отступе";
-            }
+            btnAutoIdentLines.ToolTipText = btnAutoIdentLines.Enabled ? "" : Resources.HMSEditor_btnAutoIdent_Click_Доступно_только_при_включенном_автоматическом_отступе;
         }
 
         private void btnAutoIdentChars_Click(object sender, EventArgs e) {
@@ -1306,7 +1339,7 @@ namespace HMSEditorNS {
             HMS.CheckNewVersion();
         }
 
-        private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e) {
             ToolStripMenuItemZoom100         .Enabled = (Editor.Zoom != 100);
             ToolStripMenuItemUndo            .Enabled = Editor.UndoEnabled;
             ToolStripMenuItemRedo            .Enabled = Editor.RedoEnabled;
@@ -1338,7 +1371,7 @@ namespace HMSEditorNS {
         }
 
         private void ToolStripMenuItemAltPascalScriptHighlight_Click(object sender, EventArgs e) {
-            Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywords.Checked;
+            Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywrd.Checked;
             Editor.RefreshTheme();
         }
 
@@ -1358,7 +1391,7 @@ namespace HMSEditorNS {
                 Editor.Font = new Font("Consolas", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
         }
 
-        private void EditorMouseClick(object sender, MouseEventArgs e) {
+        private void EditorMouseClick(MouseEventArgs e) {
             if (e.X < (Editor.LeftIndent - 4)) { 
                 //System.Windows.Forms.MessageBox.Show("VerticalScroll.Value=" + Editor.VerticalScroll.Value.ToString());
                 int iStartLine = Editor.YtoLineIndex();
@@ -1394,7 +1427,7 @@ namespace HMSEditorNS {
         }
 
         private void Editor_MouseDoubleClick(object sender, MouseEventArgs e) {
-            EditorMouseClick(sender, e);
+            EditorMouseClick(e);
         }
 
         private void btnVerticalLineText_Click(object sender, EventArgs e) {
@@ -1456,14 +1489,10 @@ namespace HMSEditorNS {
         #endregion Control Events
 
         #region Smart IDE functions
-        private static string MatchReturnEmptyLines(Match m) { return regexNotNewLine.Replace(m.Value, CensChar.ToString()); }
-        private static string MatchRemoveLinebreaks(Match m) { return regexLineBreaks.Replace(m.Value, String.Empty); }
-
         public string EvalVariableValue(string varName) {
             object varname = varName;
             object result  = "";
-            if (HmsScriptFrame != null)
-                HmsScriptFrame.SolveExpression(ref varname, ref result);
+            HmsScriptFrame?.SolveExpression(ref varname, ref result);
             if (result == null) return "";
             return result.ToString();
         }
@@ -1472,8 +1501,7 @@ namespace HMSEditorNS {
             int running = 0;
             int currentSourceLine = 0;
             int currentSourceChar = 0;
-            if (HmsScriptFrame != null)
-                HmsScriptFrame.GetCurrentState(ref running, ref currentSourceLine, ref currentSourceChar);
+            HmsScriptFrame?.GetCurrentState(ref running, ref currentSourceLine, ref currentSourceChar);
             Editor.DebugMode    = running < 0;
             Editor.HmsDebugLine = currentSourceLine - 1;
             Editor.HmsDebugChar = currentSourceChar - 1;
@@ -1482,17 +1510,22 @@ namespace HMSEditorNS {
         }
 
         private static Regex forbittenSameText = new Regex(@"\W+", RegexOptions.Compiled);
+        private string prevWord = "";
         private void HighlightSameWords() {
-            Editor.Range.ClearStyle(SameWordsStyle);
-            if (!Editor.Selection.IsEmpty) return;
+            if (!Editor.Selection.IsEmpty) {
+                Editor.Range.ClearStyle(SameWordsStyle);
+                return;
+            }
             var fragment = Editor.Selection.GetFragment(@"\w");
             string text = fragment.Text;
-            if (text.Length > 0 && !forbittenSameText.IsMatch(text)) {
+            if (prevWord != text && !forbittenSameText.IsMatch(text)) {
+                Editor.Range.ClearStyle(SameWordsStyle);
                 Editor.Range.SetStyle(SameWordsStyle, "\\b" + text + "\\b", RegexOptions.Multiline);
+                prevWord = text;
             }
         }
 
-		private static Regex regexTextOfComment = new Regex(@"^\s*?//.*?(\w.*)", RegexOptions.Compiled);
+		private static Regex regexTextOfComment = new Regex(@"^\s*?//.*?(\w.*)");
 
         private void BuildFunctionList() {
             Functions.Clear();
@@ -1501,8 +1534,8 @@ namespace HMSEditorNS {
             string txt = Editor.WithoutStringAndComments(Editor.Text);
             switch (Editor.Language) {
                 case Language.CPPScript   :
-                case Language.JScript     : mc = regexProceduresCPP   .Matches(txt); startBlock = "{"; endBlock = "}"; break;
-                case Language.PascalScript: mc = regexProceduresPascal.Matches(txt); startBlock = @"\b(begin|try)\b"; endBlock = @"\b(end)\b"; break;
+                case Language.JScript     : mc = regexProceduresCPP   .Matches(txt); startBlock = "{"                  ; endBlock = "}"; break;
+                case Language.PascalScript: mc = regexProceduresPascal.Matches(txt); startBlock = @"\b(begin|try)\b"   ; endBlock = @"\b(end)\b"; break;
                 case Language.BasicScript : mc = regexProceduresBasic .Matches(txt); startBlock = @"\b(Sub|Function)\b"; endBlock = @"\bEnd (Sub|Function)\b"; break;
             }
 
@@ -1510,11 +1543,12 @@ namespace HMSEditorNS {
                 foreach (Match m in mc) {
                     string name = m.Groups[1].Value;
                     if (regexExcludeWords.IsMatch(m.Value)) continue;
-                    HMSItem item = new HMSItem();
-                    item.Type          = m.Groups["type"].Value;
-                    item.Text          = name;
-                    item.MenuText      = name;
-                    item.Kind          = regexDetectProcedure.IsMatch(m.Value) ? DefKind.Procedure : DefKind.Function;
+                    HMSItem item = new HMSItem {
+                        Type     = m.Groups["type"].Value,
+                        Text     = name,
+                        MenuText = name,
+                        Kind     = regexDetectProcedure.IsMatch(m.Value) ? DefKind.Procedure : DefKind.Function
+                    };
                     item.ImageIndex    = (item.Kind == DefKind.Function) ? ImagesIndex.Function : ImagesIndex.Procedure;
                     item.ToolTipTitle  = name;
                     item.ToolTipText   = ((item.Kind == DefKind.Function) ? "Функция" : "Процедура") + " (объявлена в скрипте)";
@@ -1557,9 +1591,10 @@ namespace HMSEditorNS {
             if (Functions.LastEndPosition < txt.Length) {
                 Match matchMainProc = Regex.Match(txt.Substring(Functions.LastEndPosition), startBlock, StdOpt);
                 if (matchMainProc.Success) {
-                    HMSItem item = new HMSItem();
-                    item.Type          = "MainProcedure";
-                    item.Text          = "Главная процедура";
+                    HMSItem item = new HMSItem {
+                        Type = "MainProcedure",
+                        Text = "Главная процедура"
+                    };
                     item.MenuText      = item.Text;
                     item.Kind          = DefKind.Procedure;
                     item.Help          = "Процедура, с которой начинается запуск скрипта";
@@ -1597,14 +1632,42 @@ namespace HMSEditorNS {
         }
 
         private void GotoDefinition() {
-            Editor_SelectionChangedDelayed(null, new EventArgs());
+            //Editor_SelectionChangedDelayed(null, new EventArgs());
             string name = CurrentWord();
             if      (Variables.ContainsName(name)) GotoPosition(Variables[name].PositionStart);
             else if (LocalVars.ContainsName(name)) GotoPosition(LocalVars[name].PositionStart);
             else if (Functions.ContainsName(name)) GotoPosition(Functions[name].PositionStart);
         }
 
+        private bool needCodeAnalysisAgain;
+        private int  needCodeAnalysisPosition;
         private void UpdateCurrentVisibleVariables(int position = -1) {
+            if (WorkerCodeAnalysis.IsBusy) {
+                WorkerCodeAnalysis.CancelAsync();
+                needCodeAnalysisAgain = true;
+                needCodeAnalysisPosition = position;
+                return;
+            }
+            WorkerCodeAnalysis.RunWorkerAsync(position);
+            if (needCodeAnalysisAgain) {
+                needCodeAnalysisAgain = false;
+                if (!WorkerCodeAnalysis.IsBusy)
+                    WorkerCodeAnalysis.RunWorkerAsync(needCodeAnalysisPosition);
+            }
+        }
+
+        private void WorkerCodeAnalysis_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            if (e.Cancelled || e.Error != null) return;
+
+            PopupMenu.Items.SetVisibleVariablesItems(Variables);
+            PopupMenu.Items.SetLocalssVariablesItems(LocalVars);
+        }
+
+        private void WorkerCodeAnalysis_DoWork(object sender, DoWorkEventArgs e) {
+            UpdateCurrentVisibleVariablesTread((int)e.Argument);
+        }
+
+        private void UpdateCurrentVisibleVariablesTread(int position = -1) {
             if (Editor.Language == Language.YAML) return;
             if (position < 0) position = Editor.SelectionStart;
             HMSItem itemFunction = GetCurrentProcedure(position);
@@ -1624,8 +1687,7 @@ namespace HMSEditorNS {
                 string context = Editor.WithoutStringAndComments(Editor.GetRange(itemFunction.PositionStart, itemFunction.PositionEnd).Text);
                 if (context.Length > 0) GetVariables(context, itemFunction.PositionStart, LocalVars, Variables);
                 if (itemFunction.Kind == DefKind.Function) {
-                    HMSItem hmsItem = new HMSItem("Result");
-                    hmsItem.ImageIndex    = ImagesIndex.Field;
+                    HMSItem hmsItem = new HMSItem("Result") { ImageIndex = ImagesIndex.Field };
                     hmsItem.MenuText      = hmsItem.Text;
                     hmsItem.Type          = itemFunction.Type;
                     hmsItem.PositionStart = itemFunction.PositionStart;
@@ -1640,34 +1702,27 @@ namespace HMSEditorNS {
                 string contextGlobal = GetGlobalContext();
                 if (contextGlobal.Length > 0) GetVariables(contextGlobal, 0, Variables, LocalVars);
             }
-            PopupMenu.Items.SetVisibleVariablesItems(Variables);
-            PopupMenu.Items.SetLocalssVariablesItems(LocalVars);
-        }
-
-        private string GetTypeOfConstant(string part) {
-            if (part.Length == 0        ) return "String";
-            if (regexIsNum.IsMatch(part)) return "Integer";
-            if (regexIsStr.IsMatch(part)) return "String";
-            return "Variant";
         }
 
         private void GetVariables(string txt, int indexContext, AutocompleteItems ITEMS, AutocompleteItems ITEMSVersus) {
-            MatchCollection mc = null; bool isGlobalContext = (indexContext == 0);
+            MatchCollection mc; bool isGlobalContext = (indexContext == 0);
             // Collect constants
             if (isGlobalContext) {
                 switch (Editor.Language) {
                     case Language.CPPScript:
                         mc = regexSearchConstantsCPP.Matches(txt);
                         foreach (Match m in mc) {
+                            if (WorkerCodeAnalysis.CancellationPending) return;
                             string name = m.Groups[1].Value;
                             string sval = m.Groups[2].Value.Trim(); // Value
                             if (!ITEMS.ContainsName(name)) {
-                                HMSItem item = new HMSItem();
-                                item.Global        = isGlobalContext;
-                                item.Kind          = DefKind.Constant;
-                                item.ImageIndex    = ImagesIndex.Enum;
-                                item.Text          = name.Trim();
-                                item.MenuText      = RemoveLinebeaks(item.Text);
+                                var item = new HMSItem {
+                                    Global     = true,
+                                    Kind       = DefKind.Constant,
+                                    ImageIndex = ImagesIndex.Enum,
+                                    Text       = name.Trim()
+                                };
+                                item.MenuText = RemoveLinebeaks(item.Text);
                                 item.ToolTipTitle  = item.Text;
                                 item.ToolTipText   = "Объявленная константа";
                                 item.Type          = GetTypeOfConstant(sval);
@@ -1685,23 +1740,25 @@ namespace HMSEditorNS {
                         if (c.Success) {
                             mc = regexSearchConstantsPascal2.Matches(c.Groups[1].Value);
                             foreach (Match m in mc) {
+                                if (WorkerCodeAnalysis.CancellationPending) return;
                                 string name = m.Groups[1].Value;
                                 string sval = m.Groups[2].Value.Trim(); // Value
                                 if (!ITEMS.ContainsName(name)) {
-                                    HMSItem item = new HMSItem();
-                                    item.Global        = isGlobalContext;
-                                    item.Kind          = DefKind.Constant;
-                                    item.PositionStart = c.Groups[1].Index + m.Index + indexContext;
-                                    item.PositionEnd   = item.PositionStart + name.Length;
-                                    item.ImageIndex    = ImagesIndex.Enum;
-                                    item.Text          = name.Trim();
-                                    item.MenuText      = RemoveLinebeaks(item.Text);
-                                    item.ToolTipTitle  = item.Text;
-                                    item.ToolTipText   = "Объявленная константа";
-                                    item.Type          = GetTypeOfConstant(sval);
+                                    var item = new HMSItem {
+                                        Global = true,
+                                        Kind = DefKind.Constant,
+                                        PositionStart = c.Groups[1].Index + m.Index + indexContext
+                                    };
+                                    item.PositionEnd  = item.PositionStart + name.Length;
+                                    item.ImageIndex   = ImagesIndex.Enum;
+                                    item.Text         = name.Trim();
+                                    item.MenuText     = RemoveLinebeaks(item.Text);
+                                    item.ToolTipTitle = item.Text;
+                                    item.ToolTipText  = "Объявленная константа";
+                                    item.Type         = GetTypeOfConstant(sval);
                                     if (item.Type.Length > 0) item.ToolTipText += "\nТип: " + item.Type;
                                     if ((sval.Length == 0) || (sval == ";")) sval = regexExractConstantValue.Match(Editor.Text.Substring(m.Groups[2].Index, 96)).Value;
-                                    if (sval.Length > 0) item.Help += "\nЗначение: " + sval;
+                                    if  (sval.Length > 0 ) item.Help += "\nЗначение: " + sval;
                                     ITEMS.Add(item);
                                 }
                             }
@@ -1724,10 +1781,11 @@ namespace HMSEditorNS {
                     string type  = m.Groups["type"].Value.Trim();
                     if (!ValidHmsType(type)) continue;
                     names = HMS.GetTextWithoutBrackets(names); // Убираем скобки и всё что в них
-                    names = regexAssignment  .Replace(names, evaluatorSpaces); // Убираем присвоение - знак равно и после
+                    names = regexAssignment.Replace(names, evaluatorSpaces); // Убираем присвоение - знак равно и после
                     names = regexConstantKeys.Replace(names, evaluatorSpaces); // Убираем ключевые слова констант (var, const)
                     string[] aname = names.Split(',');
                     foreach (string namePart in aname) {
+                        if (WorkerCodeAnalysis.CancellationPending) return;
                         string name = namePart;
                         if ((namePart.Trim().Length != 0) && !regexExcludeWords.IsMatch(namePart)) {
                             if (Regex.IsMatch(name, @"\b(\w+).*?\b(\w+).*?\b(\w+)")) continue;
@@ -1739,12 +1797,13 @@ namespace HMSEditorNS {
                                 index += m2.Groups[typeFirst ? 2 : 1].Index;
                             }
                             if (!regexNotValidCharsInVars.IsMatch(name) && !ITEMS.ContainsName(name) && !Functions.ContainsName(name)) {
-                                HMSItem item = new HMSItem();
-                                item.Global        = isGlobalContext;
-                                item.Kind          = DefKind.Variable;
-                                item.Text          = name.Trim();
-                                item.Type          = type.Trim();
-                                item.MenuText      = RemoveLinebeaks(item.Text);
+                                HMSItem item = new HMSItem {
+                                    Global = isGlobalContext,
+                                    Kind = DefKind.Variable,
+                                    Text = name.Trim(),
+                                    Type = type.Trim()
+                                };
+                                item.MenuText = RemoveLinebeaks(item.Text);
                                 item.ToolTipTitle  = item.Text;
                                 item.ToolTipText   = item.Global ? "Глобальная переменная" : "Локальная переменная";
                                 item.PositionStart = index + (name.Length - name.TrimStart().Length) + indexContext;
@@ -1765,10 +1824,18 @@ namespace HMSEditorNS {
             }
         }
 
+
+        private string GetTypeOfConstant(string part) {
+            if (part.Length == 0) return "String";
+            if (regexIsNum.IsMatch(part)) return "Integer";
+            if (regexIsStr.IsMatch(part)) return "String";
+            return "Variant";
+        }
+
         private bool ValidHmsType(string type) {
-            string lowertype = type.ToLower();
-            if (CurrentValidTypes.IndexOf("|" + lowertype + "|") >= 0) return true;
-            if (HMS.ClassesString.IndexOf("|" + lowertype + "|") >= 0) return true;
+            var lowertype = type.ToLower();
+            if (CurrentValidTypes.IndexOf("|" + lowertype + "|", StringComparison.Ordinal) >= 0) return true;
+            if (HMS.ClassesString.IndexOf("|" + lowertype + "|", StringComparison.Ordinal) >= 0) return true;
             return false;
         }
 
@@ -1789,8 +1856,8 @@ namespace HMSEditorNS {
                 if (returnItemBeforeDot && (count >= names.Length)) break; // return last item before the dot
                 if (info.Name.Length > 0) {
                     // search in class members
-                                      item = info.MemberItems.GetItemOrNull(name);
-                    if (item == null) item = info.StaticItems.GetItemOrNull(name);
+                    item = info.MemberItems.GetItemOrNull(name) ??
+                           info.StaticItems.GetItemOrNull(name);
                     if (item != null) info = HMS.HmsClasses[item.Type];
                 } else {
                     // try get variabe
@@ -1812,15 +1879,6 @@ namespace HMSEditorNS {
             return item;
         }
 
-        private string NameCase(string s) {
-            if (s.Length > 0) {
-                char[] c = s.Trim().ToLower().ToCharArray();
-                c[0] = c[0].ToString().ToUpper().ToCharArray()[0];
-                s = new String(c);
-            }
-            return s;
-        }
-
         private void GotoPosition(int position) {
             Editor.SelectionStart = position;
             Editor.DoRangeVisible(Editor.Selection, true);
@@ -1838,15 +1896,13 @@ namespace HMSEditorNS {
         }
 
         private void CheckPositionIsInParametersSequence() {
-            string name, parameters;
-
             string text = Editor.Selection.GetFunctionLookedLeft();
 
             HMS.CurrentParamType = "";
-            Match m = regexFoundOurFunction.Match(text);
+            var m = regexFoundOurFunction.Match(text);
             if (m.Success) {
-                name       = m.Groups[1].Value;
-                parameters = m.Groups[2].Value;
+                var name = m.Groups[1].Value;
+                var parameters = m.Groups[2].Value;
                 Place pp = Editor.PositionToPlace(Editor.SelectionStart - text.Length + m.Index);
                 int iLinesCorrect = Editor.Selection.Start.iLine - pp.iLine + 1;
                 Point p  = Editor.PositionToPoint(Editor.SelectionStart - text.Length + m.Index);
@@ -1858,7 +1914,6 @@ namespace HMSEditorNS {
                     HideToolTip4Function(true);
             }
             WasCommaOrBracket = false;
-            return;
         }
 
         private void ShowFunctionToolTip(Point p, string name, string parameters="") {
@@ -1874,8 +1929,6 @@ namespace HMSEditorNS {
         }
 
         private void InsertTemplate(string text) {
-            int posSta = Editor.SelectionStart;
-            int posEnd = posSta + text.Length;
             text = FormatCodeText(text);
             Editor.InsertText(text);
         }
@@ -1916,44 +1969,48 @@ namespace HMSEditorNS {
         #endregion
 
         private void SetAutoCompleteMenu() {
-            PopupMenu = new AutocompleteMenu(Editor, this);
-            PopupMenu.ImageList         = imageList1;
-            PopupMenu.MinFragmentLength = 1; 
+            PopupMenu = new AutocompleteMenu(Editor) {
+                ImageList = imageList1,
+                MinFragmentLength = 1
+            };
             PopupMenu.InitSize = new Size(210, PopupMenu.Items.ItemHeight * MaxPopupItems);
             PopupMenu.InitDefaultSize();
         }
 
         public void CreateAutocomplete() {
             if (PopupMenu == null || PopupMenu.IsDisposed) return;
-            string hmsTypes = HMS.HmsTypesStringWithHelp;
-            string keywords = "", snippets = "";
-            string hlp = "", key = "";
-            CurrentValidTypes    = HMS.HmsTypesString;
-            switch (ScriptLanguage) {
-                case "C++Script":
-                    CurrentValidTypes    += "int|long|void|bool|float|";
-                    CurrentValidTypesReg += "int|long|void|bool|float|";
-                    hmsTypes = hmsTypes.Replace("Integer|", "int|long|").Replace("Extended|", "extended|float|").Replace("Boolean|", "bool|").Replace("String", "string") + "|{Тип функции: процедура (отсутствие возвращаемого значения)}void|";
-                    keywords = "#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|nil|null|true|false|";
-                    snippets = "if (^) {\n}|if (^) {\n}\nelse {\n}|for (^;;) {\n}|while (^) {\n}|do {\n^}while ();";
-                    break;
-                case "PascalScript":
-                    keywords = "Program|Uses|Const|Var|Not|In|Is|OR|XOR|DIV|MOD|AND|SHL|SHR|Break|Continue|Exit|Begin|End|If|Then|Else|Case|Of|Repeat|Until|While|Do|For|To|DownTo|Try|Finally|Except|With|Function|Procedure|Nil|Null|True|False";
-                    snippets = "If ^ Then |If (^) Then Begin\nEnd else Begin\nEnd;";
-                    break;
-                case "BasicScript":
-                    keywords = "EOL|IMPORTS|DIM|AS|NOT|IN|IS|OR|XOR|MOD|AND|ADDRESSOF|BREAK|CONTINUE|EXIT|DELETE|SET|RETURN|IF|THEN|END|ELSEIF|ELSE|SELECT|CASE|DO|LOOP|UNTIL|WHILE|WEND|FOR|TO|STEP|NEXT|TRY|FINALLY|CATCH|WITH|SUB|FUNCTION|BYREF|BYVAL|NIL|NULL|TRUE|FALSE";
-                    break;
-                case "JScript":
-                    hmsTypes = "var";
-                    keywords = "import|new|in|is|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|function|with|Nil|Null|True|False";
-                    break;
-            }
-            CurrentValidTypesReg = Regex.Replace(hmsTypes, "{.*?}", "");
-            HMS.Keywords = keywords;
-            HMS.KeywordsString = keywords.ToLower();
-            snippets += "|ShowMessage(\"^\");|HmsLogMessage(1, \"^\");";
-            lock (LockObject) {
+            lock (PopupMenuLockObject) {
+                string hmsTypes = HMS.HmsTypesStringWithHelp;
+                string keywords = "", snippets = "";
+                string hlp = "";
+                CurrentValidTypes = HMS.HmsTypesString;
+                switch (ScriptLanguage) {
+                    case "C++Script":
+                        HMS.InitItemsBoolean(true);
+                        CurrentValidTypes += "int|long|void|bool|float|";
+                        hmsTypes = hmsTypes.Replace("Integer|", "int|long|").Replace("Extended|", "extended|float|").Replace("Boolean|", "bool|").Replace("Boolean|", "bool|").Replace("String", "string") + "|{Тип функции: процедура (отсутствие возвращаемого значения)}void|";
+                        keywords = "#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|nil|null|true|false|";
+                        snippets = "for (i=0; i < ^; i++) {\n}|while (^)";
+                        break;
+                    case "PascalScript":
+                        HMS.InitItemsBoolean(false);
+                        keywords = "Program|Uses|Const|Var|Not|In|Is|OR|XOR|DIV|MOD|AND|SHL|SHR|Break|Continue|Exit|Begin|End|If|Then|Else|Case|Of|Repeat|Until|While|Do|For|To|DownTo|Try|Finally|Except|With|Function|Procedure|Nil|Null|True|False";
+                        snippets = "If ^ Then |If (^) Then Begin\nEnd else Begin\nEnd;";
+                        break;
+                    case "BasicScript":
+                        HMS.InitItemsBoolean(false);
+                        keywords = "EOL|IMPORTS|DIM|AS|NOT|IN|IS|OR|XOR|MOD|AND|ADDRESSOF|BREAK|CONTINUE|EXIT|DELETE|SET|RETURN|IF|THEN|END|ELSEIF|ELSE|SELECT|CASE|DO|LOOP|UNTIL|WHILE|WEND|FOR|TO|STEP|NEXT|TRY|FINALLY|CATCH|WITH|SUB|FUNCTION|BYREF|BYVAL|NIL|NULL|TRUE|FALSE";
+                        break;
+                    case "JScript":
+                        HMS.InitItemsBoolean(true);
+                        hmsTypes = "var";
+                        keywords = "import|new|in|is|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|function|with|Nil|Null|True|False";
+                        break;
+                }
+                CurrentValidTypesReg = Regex.Replace(hmsTypes, "{.*?}", "");
+                HMS.Keywords = keywords;
+                HMS.KeywordsString = keywords.ToLower();
+                snippets += "|ShowMessage(\"^\");|HmsLogMessage(1, \"^\");";
                 var items = new AutocompleteItems();
 
                 foreach (var s in keywords.Split('|')) if (s.Length > 0) items.Add(new HMSItem(s, ImagesIndex.Keyword, s, s, "Ключевое слово"));
@@ -1962,7 +2019,7 @@ namespace HMSEditorNS {
                 foreach (var name in hmsTypes.Split('|')) {
                     Match m = Regex.Match(name, "{(.*?)}");
                     if (m.Success) hlp = m.Groups[1].Value;
-                    key = Regex.Replace(name, "{.*?}", "");
+                    var key = Regex.Replace(name, "{.*?}", "");
                     items.Add(new HMSItem(key, ImagesIndex.Keyword, key, key, hlp));
                 }
 
@@ -1976,74 +2033,71 @@ namespace HMSEditorNS {
 
             }
         }
-
+        private object PopupMenuLockObject = new object();
         AutocompleteItems ScriptAutocompleteItems = new AutocompleteItems();
-        private static Regex regexCutFunctions = new Regex("<Functions>(.*?)</Functions>", RegexOptions.Compiled);
-        private static Regex regexCutClasses   = new Regex("<Classes>(.*?)</Classes>"    , RegexOptions.Compiled);
-        private static Regex regexCutTypes     = new Regex("<Types>(.*?)</Types>"        , RegexOptions.Compiled);
-        private static Regex regexCutVariables = new Regex("<Variables>(.*?)</Variables>", RegexOptions.Compiled);
-        private static Regex regexCutConstants = new Regex("<Constants>(.*?)</Constants>", RegexOptions.Compiled);
-        private static Regex regexCutItem      = new Regex("<item[^>]+/>"                , RegexOptions.Compiled);
-        private static Regex regexCutText      = new Regex("text=\"([^\"]+)"             , RegexOptions.Compiled);
-        private static Regex regexCutTextF     = new Regex("text=\"\\w+ ([^\"]+)"        , RegexOptions.Compiled);
-        private static Regex regexCutDesc      = new Regex("description=\"([^\"]+)"      , RegexOptions.Compiled);
-        private static Regex regexExcludeConst = new Regex("^(True|False|nil|Null)"      , RegexOptions.Compiled);
+        AutocompleteItems TempAutocompleteItems   = new AutocompleteItems();
+        private static Regex regexCutFunctions = new Regex("<Functions>(.*?)</Functions>");
+        private static Regex regexCutVariables = new Regex("<Variables>(.*?)</Variables>");
+        private static Regex regexCutConstants = new Regex("<Constants>(.*?)</Constants>");
+        private static Regex regexCutItem      = new Regex("<item[^>]+/>"                );
+        private static Regex regexCutText      = new Regex("text=\"([^\"]+)"             );
+        private static Regex regexCutTextF     = new Regex("text=\"\\w+ ([^\"]+)"        );
+        private static Regex regexCutDesc      = new Regex("description=\"([^\"]+)"      );
+        private static Regex regexExcludeConst = new Regex("^(True|False|nil|Null)"      );
 
         private void SearchAutocompleteItemsInScriptDescrition(Regex reBlock, ref string xml, int imageIndex, string toolTipText, DefKind kind, AutocompleteItems Items) {
             string xmlBlock = reBlock.Match(xml).Value;
-            string text, descr; HMSItem item, foundItem;
             MatchCollection mc = regexCutItem.Matches(xmlBlock);
             foreach (Match matchItem in mc) {
-                if (kind == DefKind.Function)
-                    text = regexCutTextF.Match(matchItem.Value).Groups[1].Value;
-                else
-                    text = regexCutText.Match(matchItem.Value).Groups[1].Value;
-                descr = regexCutDesc.Match(matchItem.Value).Groups[1].Value;
+                var text = kind == DefKind.Function ? regexCutTextF.Match(matchItem.Value).Groups[1].Value : regexCutText.Match(matchItem.Value).Groups[1].Value;
+                var descr = regexCutDesc.Match(matchItem.Value).Groups[1].Value;
                 if (text.Length==0) continue;
-                item = HMS.GetHmsItemFromLine(text);
+                var item = HMS.GetHmsItemFromLine(text);
                 item.ImageIndex  = imageIndex;
                 item.ToolTipText = toolTipText;
                 item.Kind        = kind;
                 item.Help        = descr;
                 if (kind == DefKind.Function) item.Kind = (item.Type.Length > 0) ? DefKind.Function : DefKind.Procedure;
                 if (regexExcludeConst.IsMatch(item.MenuText)) continue;
-                foundItem = Items.GetItemOrNull(item.MenuText);
+                var foundItem = Items.GetItemOrNull(item.MenuText);
                 if (foundItem!=null) {
                     if (foundItem.Help.Length == 0) foundItem.Help = descr;
                 } else {
-                    ScriptAutocompleteItems.Add(item);
+                    TempAutocompleteItems.Add(item);
                     //Console.WriteLine(kind.ToString() + " MenuText: " + item.MenuText);
                 }
             }
         }
 
         private void CreateAutocompleteItemsByScriptDescrition() {
-            ScriptAutocompleteItems.Clear();
-            string xml = "";
-#if DEBUG
-            var sw = Stopwatch.StartNew();
+            lock (TempAutocompleteItems) {
+                TempAutocompleteItems.Clear();
+                string xml = "";
+    #if DEBUG
+                var sw = Stopwatch.StartNew();
 
-            if ((HmsScriptFrame == null) && (File.Exists(@"D:\descr.txt")))
-                xml = File.ReadAllText(@"D:\descr.txt");
-#endif
-            if (HmsScriptFrame != null) {
-                xml = GetScriptDescriptions();
-                //File.WriteAllText(@"D:\descr.txt", xml); 
+    //            if ((HmsScriptFrame == null) && (File.Exists(@"D:\descr.txt")))
+    //                xml = File.ReadAllText(@"D:\descr.txt");
+    #endif
+                if (HmsScriptFrame != null) {
+                    xml = GetScriptDescriptions();
+                    //File.WriteAllText(@"D:\descr.txt", xml); 
+                }
+
+                if (!string.IsNullOrEmpty(xml)) {
+                    SearchAutocompleteItemsInScriptDescrition(regexCutFunctions, ref xml, ImagesIndex.Procedure, ""                     , DefKind.Function, HMS.ItemsFunction);
+                    SearchAutocompleteItemsInScriptDescrition(regexCutVariables, ref xml, ImagesIndex.Field    , "Встроенная переменная", DefKind.Variable, HMS.ItemsVariable);
+                    SearchAutocompleteItemsInScriptDescrition(regexCutConstants, ref xml, ImagesIndex.Enum     , "Встроенная константа" , DefKind.Constant, HMS.ItemsConstant);
+                }
+
+    #if DEBUG
+                sw.Stop();
+                Console.WriteLine(@"CreateAutocompleteItemsByScriptDescrition ElapsedMilliseconds: " + sw.ElapsedMilliseconds);
+                Console.WriteLine(@"ScriptAutocompleteItems.Count: " + ScriptAutocompleteItems.Count);
+    #endif
+                HMS.AllowPrepareFastDraw = true;
+                HMS.PrepareFastDrawInBackground();
             }
-
-            if (!string.IsNullOrEmpty(xml)) {
-                SearchAutocompleteItemsInScriptDescrition(regexCutFunctions, ref xml, ImagesIndex.Procedure, ""                     , DefKind.Function, HMS.ItemsFunction);
-                SearchAutocompleteItemsInScriptDescrition(regexCutVariables, ref xml, ImagesIndex.Field    , "Встроенная переменная", DefKind.Variable, HMS.ItemsVariable);
-                SearchAutocompleteItemsInScriptDescrition(regexCutConstants, ref xml, ImagesIndex.Enum     , "Встроенная константа" , DefKind.Constant, HMS.ItemsConstant);
-            }
-
-#if DEBUG
-            sw.Stop();
-            Console.WriteLine("CreateAutocompleteItemsByScriptDescrition ElapsedMilliseconds: " + sw.ElapsedMilliseconds);
-            Console.WriteLine("ScriptAutocompleteItems.Count: " + ScriptAutocompleteItems.Count);
-#endif
-            HMS.AllowPrepareFastDraw = true;
-            HMS.PrepareFastDrawInBackground();
         }
 
         public void CreateInsertTemplateItems() {
@@ -2061,7 +2115,8 @@ namespace HMSEditorNS {
 
                 } else {
                     item.Click += (o, a) => {
-                        InsertTemplate((o as ToolStripItem).AccessibleDescription);
+                        var toolStripItem = o as ToolStripItem;
+                        if (toolStripItem != null) InsertTemplate(toolStripItem.AccessibleDescription);
                     };
 
                 } // if

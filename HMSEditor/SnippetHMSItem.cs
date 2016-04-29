@@ -2,11 +2,15 @@
 using FastColoredTextBoxNS;
 
 namespace HMSEditorNS {
-    public class SnippetHMSItem: HMSItem {
+    public sealed class SnippetHMSItem: HMSItem {
         public SnippetHMSItem(string snippet) {
-            Text = snippet.Replace("\r", "");
-            base.ToolTipTitle = "Шаблон:";
-            base.ToolTipText  = Text;
+            Text         = snippet.Replace("\r", "");
+            ToolTipTitle = "Шаблон:";
+            ToolTipText  = Text;
+        }
+
+        public SnippetHMSItem(string snippet, int imageIndex): this(snippet) {
+            ImageIndex = imageIndex;
         }
 
         public override string ToString() {

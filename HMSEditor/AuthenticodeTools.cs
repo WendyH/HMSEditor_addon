@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+// ReSharper disable All
 
 namespace HMSEditorNS {
     internal static class AuthenticodeTools {
         private static uint WinVerifyTrust(string fileName) {
             Guid wintrust_action_generic_verify_v2 = new Guid("{00AAC56B-CD44-11d0-8CC2-00C04FC295EE}");
-            uint result = 0;
+            uint result;
             using (WINTRUST_FILE_INFO fileInfo   = new WINTRUST_FILE_INFO(fileName, Guid.Empty))
             using (UnmanagedPointer   guidPtr    = new UnmanagedPointer(Marshal.AllocHGlobal(Marshal.SizeOf(typeof(Guid))), AllocMethod.HGlobal))
             using (UnmanagedPointer   wvtDataPtr = new UnmanagedPointer(Marshal.AllocHGlobal(Marshal.SizeOf(typeof(WINTRUST_DATA))), AllocMethod.HGlobal)) {
@@ -51,9 +52,11 @@ namespace HMSEditorNS {
         }
 
         private void Dispose(bool disposing) {
-            if (pgKnownSubject != IntPtr.Zero) {
-                Marshal.DestroyStructure(this.pgKnownSubject, typeof(Guid));
-                Marshal.FreeHGlobal(this.pgKnownSubject);
+            if (disposing) {
+                if (pgKnownSubject != IntPtr.Zero) {
+                    Marshal.DestroyStructure(pgKnownSubject, typeof(Guid));
+                    Marshal.FreeHGlobal(pgKnownSubject);
+                }
             }
         }
         #endregion
@@ -87,6 +90,7 @@ namespace HMSEditorNS {
         AutoCache,
         AutoCacheFlush
     };
+    [Flags]
     enum TrustProviderFlags {
         UseIE4Trust            = 1,
         NoIE4Chain             = 2,
@@ -123,18 +127,18 @@ namespace HMSEditorNS {
             dwUIContext         = UIContext.Execute;
         }
 
-        public uint                 cbStruct;
-        public IntPtr               pPolicyCallbackData;
-        public IntPtr               pSIPCallbackData;
-        public UiChoice             dwUIChoice;
-        public RevocationCheckFlags fdwRevocationChecks;
-        public UnionChoice          dwUnionChoice;
-        public IntPtr               pInfoStruct;
-        public StateAction          dwStateAction;
-        public IntPtr               hWVTStateData;
-        private IntPtr              pwszURLReference;
-        public TrustProviderFlags   dwProvFlags;
-        public UIContext            dwUIContext;
+        public  uint                 cbStruct;
+        public  IntPtr               pPolicyCallbackData;
+        public  IntPtr               pSIPCallbackData;
+        public  UiChoice             dwUIChoice;
+        public  RevocationCheckFlags fdwRevocationChecks;
+        public  UnionChoice          dwUnionChoice;
+        public  IntPtr               pInfoStruct;
+        public  StateAction          dwStateAction;
+        public  IntPtr               hWVTStateData;
+        private IntPtr               pwszURLReference;
+        public  TrustProviderFlags   dwProvFlags;
+        public  UIContext            dwUIContext;
         
         #region IDisposable Members
         public void Dispose() {
@@ -142,13 +146,15 @@ namespace HMSEditorNS {
         }
 
         private void Dispose(bool disposing) {
-            if (dwUnionChoice == UnionChoice.File) {
-                WINTRUST_FILE_INFO info = new WINTRUST_FILE_INFO();
-                Marshal.PtrToStructure(pInfoStruct, info);
-                info.Dispose();
-                Marshal.DestroyStructure(pInfoStruct, typeof(WINTRUST_FILE_INFO));
+            if (disposing) {
+                if (dwUnionChoice == UnionChoice.File) {
+                    WINTRUST_FILE_INFO info = new WINTRUST_FILE_INFO();
+                    Marshal.PtrToStructure(pInfoStruct, info);
+                    info.Dispose();
+                    Marshal.DestroyStructure(pInfoStruct, typeof(WINTRUST_FILE_INFO));
+                }
+                Marshal.FreeHGlobal(pInfoStruct);
             }
-            Marshal.FreeHGlobal(pInfoStruct);
         }
         #endregion
     }

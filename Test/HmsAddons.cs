@@ -84,10 +84,10 @@ namespace HmsAddons {
     // Для вызова из списка дополнений
     [ComVisible(true), Guid("C5B24BFB-1F30-4F8A-91AD-943B82D8A067")]
     public interface IHmsAddonTools {
-        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+        [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         uint Setup(IntPtr aParent, ref int aReload);
 
-        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+        [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         uint Update(ref int aFlags, ref object aResult);
         /* Результатом (aResult) может быть ссылка на zip-файл обновления, загруженный zip-файл обновления, результат обновления.
            Флаги (aFlags) будут определять тип результата (Out) или тип вызова (In) Update (например, проверить наличие новой версии без загрузки обновления).
@@ -100,7 +100,7 @@ namespace HmsAddons {
         uint GetCount(ref int aCount);
         uint GetAddonInfo(int aIndex, ref Guid aClassID, ref Guid aInterfaceID, ref object aTitle, ref object aDescription, ref object aRequiredVersion, ref object aCheckedOnVersion);
         uint GetClassObject(ref Guid clsid, ref Guid iid, out object instance);
-        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+        [EnvironmentPermission(SecurityAction.LinkDemand, Unrestricted = true)]
         uint CanUnloadNow ();
     }
 
@@ -146,7 +146,6 @@ namespace HmsAddons {
 
         uint ChangeScriptName(ref object aScriptName);
 
-        [MTAThread]
         uint CompileScript(ref object aScriptName, ref object aScriptText, ref object aErrorMessage, ref int aErrorLine, ref int aErrorChar, ref int aResult);
 
         uint GenerateScriptDescriptions(ref object aXMLDescriptions);
@@ -156,7 +155,7 @@ namespace HmsAddons {
         uint IsBreakpointLine(int aLine, ref int aResult);
         uint IsExecutableLine(int aLine, ref int aResult);
 
-        uint ProcessCommand(int aCommand);
+        uint ProcessCommand (int aCommand);
         uint SolveExpression(ref object aExpression, ref object aResult);
 
         uint ToggleBreakpoint(int aLine);

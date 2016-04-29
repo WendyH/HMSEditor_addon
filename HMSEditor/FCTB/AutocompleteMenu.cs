@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Security.Permissions;
 using HMSEditorNS;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     /// <summary>
@@ -18,9 +19,9 @@ namespace FastColoredTextBoxNS
         // < By WendyH -------------------------------
         public Dictionary<string, long> LastWords = new Dictionary<string, long>();
         public  bool      OnlyCtrlSpace = false;
-        public  bool      AfterComplete = false;
+        public  bool      AfterComplete;
         public  string    Filter        = "";
-        public  bool      TempNotShow   = false;
+        public  bool      TempNotShow;
         // > By WendyH -------------------------------
 
         private AutocompleteListView listView;
@@ -90,8 +91,8 @@ namespace FastColoredTextBoxNS
         protected override void WndProc(ref Message m) {
             base.WndProc(ref m);
             if (m.Msg == 0x84) {  // Trap WM_NCHITTEST
-                var pos = this.PointToClient(new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16));
-                if (pos.X >= this.ClientSize.Width - grab && pos.Y >= this.ClientSize.Height - grab)
+                var pos = PointToClient(new Point(m.LParam.ToInt32() & 0xffff, m.LParam.ToInt32() >> 16));
+                if (pos.X >= ClientSize.Width - grab && pos.Y >= ClientSize.Height - grab)
                     m.Result = new IntPtr(17);  // HT_BOTTOMRIGHT
             }
         }
@@ -103,7 +104,7 @@ namespace FastColoredTextBoxNS
         //    get { var cp = base.CreateParams; cp.Style |= WS_BORDER; return cp; }
         //}
 
-        public AutocompleteMenu(FastColoredTextBox tb, HMSEditor ed)
+        public AutocompleteMenu(FastColoredTextBox tb)
         {
             // create a new popup and add the list view to it 
             AutoClose = false;
@@ -112,11 +113,12 @@ namespace FastColoredTextBoxNS
             Padding   = Padding.Empty;
             BackColor = Color.White;
             listView  = new AutocompleteListView(tb);
-            host      = new ToolStripControlHost(listView);
-            host.Margin      = new Padding(2, 2, 2, 2);
-            host.Padding     = Padding.Empty;
-            host.AutoSize    = false;
-            host.AutoToolTip = false;
+            host      = new ToolStripControlHost(listView) {
+                Margin      = new Padding(2, 2, 2, 2),
+                Padding     = Padding.Empty,
+                AutoSize    = false,
+                AutoToolTip = false
+            };
             CalcSize();
             base.Items.Add(host);
             listView.Parent   = this;
@@ -125,6 +127,11 @@ namespace FastColoredTextBoxNS
             InitSize = new Size(240, listView.ItemHeight * 15);
             ResizeRedraw = false;
             //listView.VerticalScrollBar.ThumbHoverColor = Color.FromArgb(255, Color.SkyBlue);
+        }
+
+        public sealed override bool AutoSize {
+            get { return base.AutoSize; }
+            set { base.AutoSize = value; }
         }
 
         public Size InitSize;
@@ -143,10 +150,8 @@ namespace FastColoredTextBoxNS
             set { listView.Font = value; }
         }
 
-        new internal void OnOpening(CancelEventArgs args)
-        {
-            if (Opening != null)
-                Opening(this, args);
+        internal new void OnOpening(CancelEventArgs args) {
+            Opening?.Invoke(this, args);
         }
 
         public void InitDefaultSize() {
@@ -176,10 +181,8 @@ namespace FastColoredTextBoxNS
             listView.SelectNext(shift);
         }
 
-        internal void OnSelecting(SelectingEventArgs args)
-        {
-            if (Selecting != null)
-                Selecting(this, args);
+        internal void OnSelecting(SelectingEventArgs args) {
+            Selecting?.Invoke(this, args);
         }
 
         public void OnSelected(SelectedEventArgs args)
@@ -195,14 +198,10 @@ namespace FastColoredTextBoxNS
                 */
             }
 
-            if (Selected != null)
-                Selected(this, args);
+            Selected?.Invoke(this, args);
         }
 
-        public new AutocompleteListView Items
-        {
-            get { return listView; }
-        }
+        public new AutocompleteListView Items => listView;
 
         /// <summary>
         /// Shows popup menu immediately
@@ -250,11 +249,6 @@ namespace FastColoredTextBoxNS
             set { Items.ToolTip = value; }
         }
 
-        private void InitializeComponent() {
-            this.SuspendLayout();
-            this.ResumeLayout(false);
-
-        }
         // < By WendyH -----------------------------------
         protected override void Dispose(bool disposing) {
             if (disposing) {
@@ -272,9 +266,8 @@ namespace FastColoredTextBoxNS
 
     }
 
-    [System.ComponentModel.ToolboxItem(false)]
-    public class AutocompleteListView: UserControl {
-        string LastSelected = "";
+    [ToolboxItem(false)]
+    public sealed class AutocompleteListView: UserControl {
         public event EventHandler FocussedItemIndexChanged;
 
         internal AutocompleteItems visibleItems;
@@ -283,30 +276,27 @@ namespace FastColoredTextBoxNS
         public AutocompleteItems VisibleLocalVars = new AutocompleteItems();
         public AutocompleteItems VisibleFunctions = new AutocompleteItems();
 
-        int focussedItemIndex = 0;
+        int focussedItemIndex;
 
         public FlatScrollbar VerticalScrollBar = new FlatScrollbar();
 
-        public int ItemHeight { get { return Font.Height + 2; } }
+        public int ItemHeight => Font.Height + 2;
 
-        AutocompleteMenu Menu { get { return Parent as AutocompleteMenu; } }
-        int oldItemCount = 0;
+        AutocompleteMenu Menu => Parent as AutocompleteMenu;
+        int oldItemCount;
         FastColoredTextBox tb;
         public HmsToolTip ToolTip = new HmsToolTip();
 
-        Timer timer = new System.Windows.Forms.Timer();
+        Timer timer = new Timer();
 
 
 
         // < By WendyH -----------------------------------
         protected override void Dispose(bool disposing) {
             if (disposing) {
-                if (ToolTip != null)
-                    ToolTip.Dispose();
-                if (timer != null)
-                    timer.Dispose();
-                if (VerticalScrollBar!=null)
-                    VerticalScrollBar.Dispose();
+                ToolTip?.Dispose();
+                timer  ?.Dispose();
+                VerticalScrollBar?.Dispose();
             }
             FocussedItemIndexChanged = null;
             visibleItems = null;
@@ -319,7 +309,7 @@ namespace FastColoredTextBoxNS
             timer   = null;
             VerticalScrollBar = null;
             base.Dispose(disposing);
-            this.ResizeRedraw = true;
+            ResizeRedraw = true;
         }
         // > By WendyH -----------------------------------
 
@@ -335,8 +325,7 @@ namespace FastColoredTextBoxNS
             set {
                 if (focussedItemIndex != value) {
                     focussedItemIndex = value;
-                    if (FocussedItemIndexChanged != null)
-                        FocussedItemIndexChanged(this, EventArgs.Empty);
+                    FocussedItemIndexChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -353,12 +342,13 @@ namespace FastColoredTextBoxNS
         }
 
         internal AutocompleteListView(FastColoredTextBox tb) {
-            this.Controls.Add(VerticalScrollBar);
+            Controls.Add(VerticalScrollBar);
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint, true);
+            // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
             if (HMS.PFC.Families.Length > 0) { // By WendyH
-                base.Font = new Font(HMS.PFC.Families[0], 9.25f, FontStyle.Regular, GraphicsUnit.Point);
+                Font = new Font(HMS.PFC.Families[0], 9.25f, FontStyle.Regular, GraphicsUnit.Point);
             } else {
-                base.Font = new Font("Consolas", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
+                Font = new Font("Consolas", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
             }
             visibleItems = new AutocompleteItems();
             VerticalScrollBar.SmallChange = ItemHeight;
@@ -366,15 +356,15 @@ namespace FastColoredTextBoxNS
             MaximumSize     = new Size(Size.Width, ItemHeight * 10);
             ToolTip.ShowAlways = false;
             AppearInterval  = 250;
-            timer.Tick     += new EventHandler(timer_Tick);
+            timer.Tick     += timer_Tick;
             SelectedColor   = Color.CornflowerBlue;
             HoveredColor    = Color.Red;
             ToolTipDuration = 300000;
             this.tb = tb;
             BorderStyle = BorderStyle.None;
-            tb.KeyDown          += new KeyEventHandler(tb_KeyDown);
-            tb.SelectionChanged += new EventHandler(tb_SelectionChanged);
-            tb.KeyPressed       += new KeyPressEventHandler(tb_KeyPressed);
+            tb.KeyDown          += tb_KeyDown;
+            tb.SelectionChanged += tb_SelectionChanged;
+            tb.KeyPressed       += tb_KeyPressed;
             Form form = tb.FindForm();
             if (form != null) {
                 form.LocationChanged += (o, e) => Menu.Close();
@@ -389,18 +379,24 @@ namespace FastColoredTextBoxNS
 
             tb.Scroll += (o, e) => Menu.Close();
 
-            this.VisibleChanged += (o, e) => {
-                if (this.Visible)
+            VisibleChanged += (o, e) => {
+                if (Visible)
                     DoSelectedVisible();
             };
-            this.VScroll = false;
-            this.HScroll = false;
+            VScroll = false;
+            HScroll = false;
             VerticalScrollBar.ValueChanged += VerticalScrollBar_Scroll;
             DoubleBuffered = true;
 
         }
 
         void tb_KeyPressed(object sender, KeyPressEventArgs e) {
+
+            Range r = tb.Selection.Clone();
+            r.GoLeft();
+            if (r.IsStringOrComment)
+                return;
+
             if (Menu.OnlyCtrlSpace) return; // By WendyH
             bool backspaceORdel = e.KeyChar == '\b' || e.KeyChar == 0xff;
 
@@ -413,7 +409,7 @@ namespace FastColoredTextBoxNS
             if (Menu.Visible && !backspaceORdel)
                 DoAutocomplete(false);
             else
-                ResetTimer(timer);
+                ResetTimer();
         }
 
         void timer_Tick(object sender, EventArgs e) {
@@ -421,7 +417,7 @@ namespace FastColoredTextBoxNS
             if (!Menu.TempNotShow) DoAutocomplete(false);
         }
 
-        void ResetTimer(System.Windows.Forms.Timer timer) {
+        void ResetTimer() {
             timer.Stop();
             timer.Start();
         }
@@ -443,8 +439,7 @@ namespace FastColoredTextBoxNS
                 if (returnItemBeforeDot && (count >= names.Length)) break; // return last item before the dot
                 if (info.Name.Length > 0) {
                     // search in class members
-                    item = info.MemberItems.GetItemOrNull(name);
-                    if (item == null) item = info.StaticItems.GetItemOrNull(name);
+                    item = info.MemberItems.GetItemOrNull(name) ?? info.StaticItems.GetItemOrNull(name);
                     if (item != null) info = HMS.HmsClasses[item.Type];
                 } else {
                     // try get variabe
@@ -465,23 +460,24 @@ namespace FastColoredTextBoxNS
         }
 
         internal void SetVisibleMethods(string text) {
-            string  part = ""; HMSClassInfo info;
+            string  part;
             HMSItem item = GetHMSItemByText(text, out part, true);
-            if (item != null) { 
+            if (item != null) {
+                HMSClassInfo info;
                 if (item.IsClass) {
                     info = HMS.HmsClasses[item.MenuText];
-                    if (!String.IsNullOrEmpty(info.Name))
+                    if (!string.IsNullOrEmpty(info.Name))
                         foreach (HMSItem childItem in info.StaticItems) if (childItem.MenuText.ToLower().StartsWith(part)) { childItem.Parent = Menu; visibleItems.Add(childItem); }
                 } else {
                     info = HMS.HmsClasses[item.Type];  // variable founded - search type in classes
-                    if (!String.IsNullOrEmpty(info.Name))
+                    if (!string.IsNullOrEmpty(info.Name))
                         foreach (HMSItem childItem in info.MemberItems) if (childItem.MenuText.ToLower().StartsWith(part)) { childItem.Parent = Menu; visibleItems.Add(childItem); }
                 }
             }
         }
 
         internal void SetVisibleTypes(string text) {
-            string part = "";
+            string part;
             HMSItem item = GetHMSItemByText(text, out part);
             if (item != null) {
                 if (item.Type.ToLower().StartsWith("bool")) {
@@ -498,7 +494,7 @@ namespace FastColoredTextBoxNS
             string lastword = "";
             List<KeyValuePair<string, long>> sortedWords = new List<KeyValuePair<string, long>>();
             foreach (var pair in Menu.LastWords) sortedWords.Add(pair);
-            sortedWords.Sort(delegate (KeyValuePair<string, long> firstPair, KeyValuePair<string, long> nextPair) { return nextPair.Value.CompareTo(firstPair.Value); });
+            sortedWords.Sort((firstPair, nextPair) => nextPair.Value.CompareTo(firstPair.Value));
             foreach (var pair in sortedWords) {
                 string word = pair.Key;
                 if (word.IndexOf(text, StringComparison.InvariantCultureIgnoreCase)>=0 && word != text) {
@@ -509,7 +505,7 @@ namespace FastColoredTextBoxNS
         }
 
         internal bool AddInVisibleItems(string text, string lastword, AutocompleteItems ITEMS, bool foundSelected) {
-            if (foundSelected) return foundSelected;
+            if (foundSelected) return true;
             // set active lastword in visible items
             foreach (var item in ITEMS) {
                 item.Parent = Menu;
@@ -529,26 +525,24 @@ namespace FastColoredTextBoxNS
         }
 
         internal bool GetActiveLastwordInVisibleItems(string text, string lastword) {
-            bool foundSelected = false;
-            foundSelected = AddInVisibleItems(text, lastword, VisibleVariables, foundSelected);
-            foundSelected = AddInVisibleItems(text, lastword, VisibleLocalVars, foundSelected);
-            foundSelected = AddInVisibleItems(text, lastword, VisibleFunctions, foundSelected);
+            var foundSelected = AddInVisibleItems(text, lastword, VisibleVariables, false);
+                foundSelected = AddInVisibleItems(text, lastword, VisibleLocalVars, foundSelected);
+                foundSelected = AddInVisibleItems(text, lastword, VisibleFunctions, foundSelected);
             return foundSelected;
         }
-        private string writtentext = "";
-        private static Regex regexIsPascalFunctionName = new Regex(@"\b(Procedure|Function)\b", RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        private static Regex regexSpaces = new Regex(@"[\s]", RegexOptions.Compiled);
+
+        private static Regex regexIsPascalFunctionName = new Regex(@"\b(Procedure|Function)\b", RegexOptions.IgnoreCase);
+        private static Regex regexSpaces = new Regex(@"[\s]");
 
         public static bool isType(string word) {
-            return (HMS.HmsTypesString).IndexOf("|" + word.ToLower() + "|") >= 0;
+            return (HMS.HmsTypesString).IndexOf("|" + word.ToLower() + "|", StringComparison.Ordinal) >= 0;
         }
-        private static Regex regexBeginWithDigit = new Regex("^\\d", RegexOptions.Compiled);
+        private static Regex regexBeginWithDigit = new Regex("^\\d");
         // > By WendyH ------------------------------------------ 
 
         internal void DoAutocomplete(bool forced) {
             if (tb.IsDisposed) return;
-            if (!Menu.Enabled || !this.Enabled) { Menu.Close(); return; }
-            if (tb.Selection.IsStringOrComment) return;
+            if (!Menu.Enabled || !Enabled) { Menu.Close(); return; }
             if (!forced && Menu.AfterComplete) { Menu.AfterComplete = false; return; }
             visibleItems.Clear();
             FocussedItemIndex = 0;
@@ -565,13 +559,11 @@ namespace FastColoredTextBoxNS
             if (!forced && regexBeginWithDigit.IsMatch(text)) return;
 
             Range fragmentBefore = fragment.Clone();
-            string ch;
-            while (fragmentBefore.GoLeftThroughFolded()) {
-                ch = fragmentBefore.CharAfterStart.ToString();
-                if (!regexSpaces.IsMatch(ch)) break;
-            }
-            fragmentBefore = fragmentBefore.GetFragmentLookedLeft();
-            string wordBefore = fragmentBefore.Text;
+            int iLine = fragmentBefore.Start.iLine;
+            int iChar = fragmentBefore.Start.iChar;
+            fragmentBefore.Start = new Place(0    , iLine);
+            fragmentBefore.End   = new Place(iChar, iLine);
+            string wordBefore = Regex.Match(fragmentBefore.Text, @"((\w+)[^\(\S,]+)[^\(;:]*?$", RegexOptions.RightToLeft).Groups[2].Value;
             if (tb.Language == Language.PascalScript && regexIsPascalFunctionName.IsMatch(wordBefore)) {
                 Menu.TempNotShow = true;
                 return;
@@ -596,12 +588,10 @@ namespace FastColoredTextBoxNS
                         forced = true;
                         showTypes = true;
                     } else {
-                        text = "";
                         return;
                     }
                 }
             }
-            writtentext = text;
             // > By WendyH ------------------------
             //calc screen point for popup menu
             Point point = tb.PlaceToPoint(fragment.End);
@@ -623,7 +613,7 @@ namespace FastColoredTextBoxNS
                 string lastword = GetLastSelectedWord(text);
                 if (showTypes) SetVisibleTypes(text);
                 else {
-                    int indexDot = text.IndexOf(".");
+                    int indexDot = text.IndexOf(".", StringComparison.Ordinal);
                     if (indexDot > 0) {
                         SetVisibleMethods(text);
                         doNotGetFromSourceItems = true;
@@ -666,7 +656,8 @@ namespace FastColoredTextBoxNS
                     if (!foundSelected && notExacctlyfoundSelected) FocussedItemIndex = visibleItems.Count + notExacctlyFocussedItemIndex;
                     visibleItems.AddRange(notExacctly);
                 }
-
+                if (visibleItems.Count > 0 && FocussedItemIndex < 0)
+                    FocussedItemIndex = 0;
                 if (foundSelected)
                 {
                     AdjustScroll();
@@ -681,7 +672,6 @@ namespace FastColoredTextBoxNS
                 // Recalc position
                 Menu.InitDefaultSize();
                 int h = MaximumSize.Height;
-                int w = MaximumSize.Width;
                 int ih = ItemHeight;
                 if (visibleItems.Count < HMSEditor.MaxPopupItems) {
                     h = visibleItems.Count * ih + 4;
@@ -743,17 +733,17 @@ namespace FastColoredTextBoxNS
         private static Keys[] keysBreaksTempNotShow = new Keys[] { Keys.Space, Keys.Tab, Keys.Enter, Keys.End, Keys.Home, Keys.Oemcomma, Keys.OemCloseBrackets, Keys.OemOpenBrackets, Keys.OemSemicolon, Keys.OemPeriod, Keys.Decimal };
         void tb_KeyDown(object sender, KeyEventArgs e)
         {
-            var tb = sender as FastColoredTextBox;
-
+            var box = sender as FastColoredTextBox;
             if (Menu.Visible)
                 if (ProcessKey(e.KeyCode, e.Modifiers))
                     e.Handled = true;
+            if (box == null) return;
 
             if (Menu.TempNotShow) {
-                char ch = tb.Selection.CharBeforeStart;
-                if (tb.Selection.Start.iChar == 0) {
+                char ch = box.Selection.CharBeforeStart;
+                if (box.Selection.Start.iChar == 0) {
                     Menu.TempNotShow = false;
-                } else if (ch == ' ' || ch == '\n') {
+                } else if (ch == ' ' || ch == '\n' || ch == '(') {
                     Menu.TempNotShow = false;
                 } else if (Array.IndexOf(keysBreaksTempNotShow, e.KeyCode)>=0) {
                     Menu.TempNotShow = false;
@@ -762,7 +752,7 @@ namespace FastColoredTextBoxNS
 
             if (!Menu.Visible)
             {
-                if (tb.HotkeysMapping.ContainsKey(e.KeyData) && tb.HotkeysMapping[e.KeyData] == FCTBAction.AutocompleteMenu)
+                if (box.HotkeysMapping.ContainsKey(e.KeyData) && box.HotkeysMapping[e.KeyData] == FCTBAction.AutocompleteMenu)
                 {
                     DoAutocomplete(true);
                     e.Handled = true;
@@ -812,11 +802,10 @@ namespace FastColoredTextBoxNS
             int finishI    = (VerticalScrollBar.Value + ClientSize.Height) / itemHeight + 1;
             startI  = Math.Max(startI , 0);
             finishI = Math.Min(finishI, visibleItems.Count);
-            int y = 0;
             int leftPadding = 18;
             for (int i = startI; i < finishI; i++)
             {
-                y = i * itemHeight - VerticalScrollBar.Value;
+                var y = i * itemHeight - VerticalScrollBar.Value;
 
                 var item = visibleItems[i];
                 // draw item background
@@ -832,9 +821,7 @@ namespace FastColoredTextBoxNS
                 // draw selected item
                 if (i == FocussedItemIndex) {
                     using (var selectedBrush = new SolidBrush(SelectedColor)) {
-                        using (var pen = new Pen(SelectedColor)) {
-                            g.FillRectangle(selectedBrush, leftPadding, y, ClientSize.Width, itemHeight);
-                        }
+                        g.FillRectangle(selectedBrush, leftPadding, y, ClientSize.Width, itemHeight);
                     }
                 }
                 // draw item text
@@ -857,7 +844,7 @@ namespace FastColoredTextBoxNS
         {
             base.OnMouseClick(e);
 
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
             {
                 FocussedItemIndex = PointToItemIndex(e.Location);
                 DoSelectedVisible();
@@ -873,7 +860,7 @@ namespace FastColoredTextBoxNS
             OnSelecting();
         }
 
-        internal virtual void OnSelecting()
+        internal void OnSelecting()
         {
             if (FocussedItemIndex < 0 || FocussedItemIndex >= visibleItems.Count)
                 return;
@@ -881,7 +868,6 @@ namespace FastColoredTextBoxNS
             try
             {
                 AutocompleteItem item = FocussedItem;
-                LastSelected = item.MenuText; // By WendyH
                 SelectingEventArgs args = new SelectingEventArgs()
                 {
                     Item = item,
@@ -924,47 +910,46 @@ namespace FastColoredTextBoxNS
             string newText = item.GetTextForReplace();
 
             //replace text of fragment
-            var tb = fragment.tb;
+            var box = fragment.tb;
             // < By WendyH ---------------------------
-            if (tb.ToolTip4Function.Visible) Menu.AfterComplete = true;
+            if (box.ToolTip4Function.Visible) Menu.AfterComplete = true;
             if (fragment.CharBeforeStart == '=') newText = " " + newText;
             int iLine = fragment.Start.iLine;
-            int iChar = fragment.Start.iChar;
             HMSItem hmsItem = item as HMSItem;
             if (hmsItem != null) {
                 if (((hmsItem.Kind == DefKind.Property) || (hmsItem.Kind == DefKind.Variable)) && !HMS.TypeIsClass(hmsItem.Type)) {
                     Range fwords = fragment.GetFragmentLookedLeft();
-                    var f = new Range(tb, new Place(0, iLine), new Place(fwords.Start.iChar, iLine));
+                    var f = new Range(box, new Place(0, iLine), new Place(fwords.Start.iChar, iLine));
                     string line = f.Text.Trim();
-                    if ((line.Length == 0) && (tb.Lines[iLine].IndexOf('=') < 0)) newText += (tb.Language == Language.PascalScript) ? " := " : " = ";
+                    if ((line.Length == 0) && (box.Lines[iLine].IndexOf('=') < 0)) newText += (box.Language == Language.PascalScript) ? " := " : " = ";
                 }
             }
 
             // > By WendyH ---------------------------
 
-            tb.BeginAutoUndo(); 
-            tb.TextSource.Manager.ExecuteCommand(new SelectCommand(tb.TextSource));
-            if (tb.Selection.ColumnSelectionMode)
+            box.BeginAutoUndo(); 
+            box.TextSource.Manager.ExecuteCommand(new SelectCommand(box.TextSource));
+            if (box.Selection.ColumnSelectionMode)
             {
-                var start = tb.Selection.Start; 
-                var end   = tb.Selection.End;
+                var start = box.Selection.Start; 
+                var end   = box.Selection.End;
                 start.iChar = fragment.Start.iChar;
                 end  .iChar = fragment.End  .iChar;
-                tb.Selection.Start = start;
-                tb.Selection.End   = end;
+                box.Selection.Start = start;
+                box.Selection.End   = end;
             }
             else
             {
-                tb.Selection.Start = fragment.Start;
-                tb.Selection.End = fragment.End;
+                box.Selection.Start = fragment.Start;
+                box.Selection.End = fragment.End;
             }
-            tb.InsertText(newText);
-            tb.TextSource.Manager.ExecuteCommand(new SelectCommand(tb.TextSource));
-            tb.EndAutoUndo();
+            box.InsertText(newText);
+            box.TextSource.Manager.ExecuteCommand(new SelectCommand(box.TextSource));
+            box.EndAutoUndo();
             if ((hmsItem != null) && (hmsItem.Params.Count > 0)) {
                 if (HMSEditor.ActiveEditor != null) HMSEditor.ActiveEditor.WasCommaOrBracket = true;
             }
-            tb.Focus();
+            box.Focus();
         }
 
         int PointToItemIndex(Point p)
@@ -1046,7 +1031,7 @@ namespace FastColoredTextBoxNS
         {
             if (IsDisposed) return;
             if (ToolTip.Visible && ToolTip.HmsItem == autocompleteItem) return;
-            IWin32Window window = this.Parent;
+            IWin32Window window = Parent;
             ToolTip.Hide(window);
             // By WendyH
             if (string.IsNullOrEmpty(autocompleteItem.ToolTipTitle)) {
@@ -1062,49 +1047,56 @@ namespace FastColoredTextBoxNS
             ToolTip.Show(autocompleteItem, window, location, ToolTipDuration);
         }
 
-        public int Count
-        {
-            get { return visibleItems.Count; }
-        }
+        public int Count => visibleItems.Count;
+        private object obj4LockItems = new object();
 
         public void SetAutocompleteItems(ICollection<string> items)
         {
-            AutocompleteItems list = new AutocompleteItems();
-            foreach (var item in items)
-                list.Add(new HMSItem(item));
-            SetAutocompleteItems(list);
+            lock (obj4LockItems) {
+                AutocompleteItems list = new AutocompleteItems();
+                foreach (var item in items)
+                    list.Add(new HMSItem(item));
+                SetAutocompleteItems(list);
+            }
         }
 
         public void SetAutocompleteItems(AutocompleteItems items)
         {
-            sourceItems = items;
+            lock (obj4LockItems)
+                sourceItems = items;
         }
 
         public void AddFilteredItems(AutocompleteItems items) {
-            AutocompleteItems list = new AutocompleteItems();
-            string filter = Menu.Filter;
-            foreach (var item in items) {
-                if ((filter.Length > 0) && (item.Filter.Length>0) && (filter.IndexOf(item.Filter)<0)) continue;
-                if (list.ContainsName(item.MenuText)) continue;
-                list.Add(item);
+            lock (obj4LockItems) {
+                AutocompleteItems list = new AutocompleteItems();
+                string filter = Menu.Filter;
+                foreach (var item in items) {
+                    if ((filter.Length > 0) && (item.Filter.Length>0) && (filter.IndexOf(item.Filter, StringComparison.Ordinal)<0)) continue;
+                    if (list.ContainsName(item.MenuText)) continue;
+                    list.Add(item);
+                }
+                AddAutocompleteItems(list);
             }
-            AddAutocompleteItems(list);
         }
 
         public void AddAutocompleteItems(AutocompleteItems items) {
-            sourceItems.AddRange(items);
+            lock (obj4LockItems)
+                sourceItems.AddRange(items);
         }
 
         public void SetVisibleVariablesItems(AutocompleteItems items) {
-            VisibleVariables = items;
+            lock (obj4LockItems)
+                VisibleVariables = items;
         }
 
         public void SetLocalssVariablesItems(AutocompleteItems items) {
-            VisibleLocalVars = items;
+            lock (obj4LockItems)
+                VisibleLocalVars = items;
         }
 
         public void SetVisibleFunctionsItems(AutocompleteItems items) {
-            VisibleFunctions = items;
+            lock (obj4LockItems)
+                VisibleFunctions = items;
         }
 
     }

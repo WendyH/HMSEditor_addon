@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     public class VisualMarker
@@ -19,10 +17,7 @@ namespace FastColoredTextBoxNS
         {
         }
 
-        public virtual Cursor Cursor
-        {
-            get { return Cursors.Hand; }
-        }
+        public virtual Cursor Cursor => Cursors.Hand;
     }
 
     public class CollapseFoldingMarker: VisualMarker
@@ -87,7 +82,7 @@ namespace FastColoredTextBoxNS
         public StyleVisualMarker(Rectangle rectangle, Style style)
             : base(rectangle)
         {
-            this.Style = style;
+            Style = style;
         }
     }
 
@@ -99,8 +94,8 @@ namespace FastColoredTextBoxNS
         public VisualMarkerEventArgs(Style style, StyleVisualMarker marker, MouseEventArgs args)
             : base(args.Button, args.Clicks, args.X, args.Y, args.Delta)
         {
-            this.Style = style;
-            this.Marker = marker;
+            Style = style;
+            Marker = marker;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using FastColoredTextBoxNS;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
 namespace HMSEditorNS {
@@ -12,7 +11,7 @@ namespace HMSEditorNS {
         public string    Name       = "";
         public string    Text       = "";
         public Templates ChildItems = new Templates();
-        public bool      Submenu { get { return ChildItems.Count > 0; } }
+        public bool      Submenu => ChildItems.Count > 0;
 
         // constructor
         public TemplateItem() {
@@ -50,8 +49,7 @@ namespace HMSEditorNS {
         public TemplateItem this[string name] {
             get {
                 foreach (var o in this) if (o.Name == name) return o;
-                TemplateItem item = new TemplateItem();
-                item.Name = name;
+                TemplateItem item = new TemplateItem {Name = name};
                 Add(item);
                 return item;
             }
@@ -73,9 +71,10 @@ namespace HMSEditorNS {
                     return o;
                 }
             }
-            TemplateItem item = new TemplateItem(lang);
-            item.Name = name;
-            item.Text = text;
+            TemplateItem item = new TemplateItem(lang) {
+                Name = name,
+                Text = text
+            };
             Add(item);
             return item;
         }

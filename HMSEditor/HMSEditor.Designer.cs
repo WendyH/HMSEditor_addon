@@ -13,17 +13,23 @@
             if (disposing && (components != null)) {
                 components.Dispose();
                 MouseTimer.Dispose();
-                if (InvisibleCharsStyle != null) InvisibleCharsStyle.Dispose();
-                if (SameWordsStyle      != null) SameWordsStyle.Dispose();
-                if (PopupMenu           != null && !PopupMenu.IsDisposed) PopupMenu.Dispose();
-                if (MouseTimer          != null) MouseTimer.Dispose();
-                if (ValueForm           != null && !ValueForm.IsDisposed) ValueForm.Close();
+                InvisibleCharsStyle?.Dispose();
+                SameWordsStyle     ?.Dispose();
+                MouseTimer         ?.Dispose();
+              //WorkerHighlighter  ?.Dispose();
+                WorkerCheckSyntax  ?.Dispose();
+                WorkerCodeAnalysis ?.Dispose();
+                if (PopupMenu != null && !PopupMenu.IsDisposed) PopupMenu.Dispose();
+                if (ValueForm != null && !ValueForm.IsDisposed) ValueForm.Close();
             }
             InvisibleCharsStyle = null;
-            SameWordsStyle = null;
-            PopupMenu      = null;
-            MouseTimer     = null;
-            ValueForm      = null;
+            SameWordsStyle      = null;
+            PopupMenu           = null;
+            MouseTimer          = null;
+            ValueForm           = null;
+          //WorkerHighlighter   = null;
+            WorkerCheckSyntax   = null;
+            WorkerCodeAnalysis  = null;
             base.Dispose(disposing);
         }
 
@@ -116,7 +122,7 @@
             this.btnCheckKeywordsRegister = new System.Windows.Forms.ToolStripMenuItem();
             this.btnHints4CtrlSpace = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
-            this.btnUnderlinePascalKeywords = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnUnderlinePascalKeywrd = new System.Windows.Forms.ToolStripMenuItem();
             this.btnRedStringsHighlight = new System.Windows.Forms.ToolStripMenuItem();
             this.btnToolStripMenuItemFONT = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripButtonHotKeys = new System.Windows.Forms.ToolStripMenuItem();
@@ -635,7 +641,7 @@
             this.btnHighlightSameWords,
             this.toolStripSubMenuIntelliSense,
             this.toolStripSeparator11,
-            this.btnUnderlinePascalKeywords,
+            this.btnUnderlinePascalKeywrd,
             this.btnRedStringsHighlight,
             this.btnToolStripMenuItemFONT,
             this.toolStripButtonHotKeys,
@@ -814,13 +820,13 @@
             // 
             // btnAutoIdentLines
             // 
-            this.btnAutoIdentLines.Checked = true;
             this.btnAutoIdentLines.CheckOnClick = true;
-            this.btnAutoIdentLines.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnAutoIdentLines.Enabled = false;
             this.btnAutoIdentLines.Name = "btnAutoIdentLines";
             this.btnAutoIdentLines.Size = new System.Drawing.Size(463, 22);
             this.btnAutoIdentLines.Text = "Выравнивание конструкций кода";
             this.btnAutoIdentLines.ToolTipText = "Автоматическое выравнивание строки, где набирается текст комманд кода";
+            this.btnAutoIdentLines.Visible = false;
             this.btnAutoIdentLines.Click += new System.EventHandler(this.btnAutoIdentChars_Click);
             // 
             // btnShowFoldingIndicator
@@ -902,9 +908,11 @@
             // btnCheckKeywordsRegister
             // 
             this.btnCheckKeywordsRegister.CheckOnClick = true;
+            this.btnCheckKeywordsRegister.Enabled = false;
             this.btnCheckKeywordsRegister.Name = "btnCheckKeywordsRegister";
             this.btnCheckKeywordsRegister.Size = new System.Drawing.Size(463, 22);
             this.btnCheckKeywordsRegister.Text = "Автоматическое приведение регистра ключевых слов";
+            this.btnCheckKeywordsRegister.Visible = false;
             this.btnCheckKeywordsRegister.Click += new System.EventHandler(this.btnCheckKeywordsRegister_Click);
             // 
             // btnHints4CtrlSpace
@@ -921,15 +929,13 @@
             this.toolStripSeparator11.Name = "toolStripSeparator11";
             this.toolStripSeparator11.Size = new System.Drawing.Size(357, 6);
             // 
-            // btnUnderlinePascalKeywords
+            // btnUnderlinePascalKeywrd
             // 
-            this.btnUnderlinePascalKeywords.Checked = true;
-            this.btnUnderlinePascalKeywords.CheckOnClick = true;
-            this.btnUnderlinePascalKeywords.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.btnUnderlinePascalKeywords.Name = "btnUnderlinePascalKeywords";
-            this.btnUnderlinePascalKeywords.Size = new System.Drawing.Size(360, 22);
-            this.btnUnderlinePascalKeywords.Text = "Подчеркивать ключевые слова PascalScript";
-            this.btnUnderlinePascalKeywords.Click += new System.EventHandler(this.ToolStripMenuItemAltPascalScriptHighlight_Click);
+            this.btnUnderlinePascalKeywrd.CheckOnClick = true;
+            this.btnUnderlinePascalKeywrd.Name = "btnUnderlinePascalKeywrd";
+            this.btnUnderlinePascalKeywrd.Size = new System.Drawing.Size(360, 22);
+            this.btnUnderlinePascalKeywrd.Text = "Подчеркивать ключевые слова PascalScript";
+            this.btnUnderlinePascalKeywrd.Click += new System.EventHandler(this.ToolStripMenuItemAltPascalScriptHighlight_Click);
             // 
             // btnRedStringsHighlight
             // 
@@ -1048,7 +1054,6 @@
             // Editor
             // 
             this.Editor.AllowDrop = false;
-            this.Editor.AllowSeveralTextStyleDrawing = true;
             this.Editor.AutoCompleteBrackets = true;
             this.Editor.AutoCompleteBracketsList = new char[] {
         '(',
@@ -1063,6 +1068,7 @@
         '\''};
             this.Editor.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);^\\s*(case|default)\\s*[^:]*(?<" +
     "range>:)\\s*(?<range>[^;]+);";
+            this.Editor.AutoIndentExistingLines = false;
             this.Editor.AutoScrollMinSize = new System.Drawing.Size(24, 15);
             this.Editor.BackBrush = null;
             this.Editor.BoldCaret = false;
@@ -1083,7 +1089,6 @@
             this.Editor.HighlightingRangeType = FastColoredTextBoxNS.HighlightingRangeType.VisibleRange;
             this.Editor.Hotkeys = resources.GetString("Editor.Hotkeys");
             this.Editor.IsReplaceMode = false;
-            this.Editor.Language = FastColoredTextBoxNS.Language.PascalScript;
             this.Editor.LeftBracket = '(';
             this.Editor.LeftPadding = 2;
             this.Editor.Location = new System.Drawing.Point(0, 0);
@@ -1174,7 +1179,7 @@
         private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButtonSettings;
         private System.Windows.Forms.ToolStripMenuItem btnHighlightSameWords;
-        private System.Windows.Forms.ToolStripMenuItem btnUnderlinePascalKeywords;
+        private System.Windows.Forms.ToolStripMenuItem btnUnderlinePascalKeywrd;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator11;
         private System.Windows.Forms.ToolStripMenuItem btnRedStringsHighlight;
         private System.Windows.Forms.ToolStripMenuItem btnToolStripMenuItemFONT;

@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.Text;
 
 namespace HMSEditorNS.Utils {
     public class JsonHelper {
         private const string INDENT_STRING = "  ";
         public static string FormatJson(string str) {
-            int n = 0;
             var indent = 0;
             var quoted = false;
             var sb = new StringBuilder();
             string sq = "";
             for (var i = 0; i < str.Length; i++) {
                 var ch = str[i];
+                int n;
                 switch (ch) {
                     case '{':
                     case '[':

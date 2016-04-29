@@ -14,11 +14,8 @@ namespace HMSEditorNS {
         }
 
         private void frmUpdateInfoDialog_KeyDown(object sender, KeyEventArgs e) {
-            if (e.KeyCode == Keys.Escape) this.Close();
+            if (e.KeyCode == Keys.Escape) Close();
         }
 
-        private void TextBox_KeyDown(object sender, KeyEventArgs e) {
-            if (e.KeyCode == Keys.Escape) this.Close();
-        }
     }
 }

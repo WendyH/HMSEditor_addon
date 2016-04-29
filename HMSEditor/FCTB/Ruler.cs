@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Drawing.Drawing2D;
-using System.Text;
 using System.Windows.Forms;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
-    public partial class Ruler : UserControl
+    public sealed partial class Ruler : UserControl
     {
         public EventHandler TargetChanged;
 
@@ -52,25 +50,22 @@ namespace FastColoredTextBoxNS
         }
 
 
-
-        protected virtual void OnTargetChanged()
-        {
-            if (TargetChanged != null)
-                TargetChanged(this, EventArgs.Empty);
+        private void OnTargetChanged() {
+            TargetChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual void UnSubscribe(FastColoredTextBox target)
+        private void UnSubscribe(FastColoredTextBox target1)
         {
-            target.Scroll -= new ScrollEventHandler(target_Scroll);
-            target.SelectionChanged -= new EventHandler(target_SelectionChanged);
-            target.VisibleRangeChanged -= new EventHandler(target_VisibleRangeChanged);
+            target1.Scroll              -= target_Scroll;
+            target1.SelectionChanged    -= target_SelectionChanged;
+            target1.VisibleRangeChanged -= target_VisibleRangeChanged;
         }
 
-        protected virtual void Subscribe(FastColoredTextBox target)
+        private void Subscribe(FastColoredTextBox target1)
         {
-            target.Scroll += new ScrollEventHandler(target_Scroll);
-            target.SelectionChanged += new EventHandler(target_SelectionChanged);
-            target.VisibleRangeChanged += new EventHandler(target_VisibleRangeChanged);
+            target1.Scroll              += target_Scroll;
+            target1.SelectionChanged    += target_SelectionChanged;
+            target1.VisibleRangeChanged += target_VisibleRangeChanged;
         }
 
         void target_VisibleRangeChanged(object sender, EventArgs e)
@@ -83,7 +78,7 @@ namespace FastColoredTextBoxNS
             Invalidate();
         }
 
-        protected virtual void target_Scroll(object sender, ScrollEventArgs e)
+        private void target_Scroll(object sender, ScrollEventArgs e)
         {
             Invalidate();
         }
@@ -107,9 +102,10 @@ namespace FastColoredTextBoxNS
             e.Graphics.FillRectangle(new LinearGradientBrush(new Rectangle(0, 0, Width, Height), BackColor, BackColor2, 270), new Rectangle(0, 0, Width, Height));
 
             float columnWidth = target.CharWidth;
-            var sf = new StringFormat();
-            sf.Alignment = StringAlignment.Center;
-            sf.LineAlignment = StringAlignment.Near;
+            var sf = new StringFormat {
+                Alignment     = StringAlignment.Center,
+                LineAlignment = StringAlignment.Near
+            };
 
             var zeroPoint = target.PositionToPoint(0);
             zeroPoint = PointToClient(target.PointToScreen(zeroPoint));

@@ -34,7 +34,8 @@ namespace HMSEditorNS {
         public Style ConstantsStyle;
         public Style CommentTagStyle; // only csharp
         public Style DeclFunctionStyle;
-        
+        public Style PunctuationStyle;
+
         public Style TagBracketStyle; // only YAML HTML
         public Style TagNameStyle;        // HTML
         public Style AttributeValueStyle; // HTML
@@ -87,6 +88,7 @@ namespace HMSEditorNS {
                 if (InScope(scope, "string"           )) t.StringStyle     = ToStyleFromSettings(settings);
                 if (InScope(scope, "constant.numeric" )) t.NumberStyle     = ToStyleFromSettings(settings);
                 if (InScope(scope, "keyword"          )) t.KeywordStyle    = ToStyleFromSettings(settings);
+                if (InScope(scope, "storage.type"     )) t.TypesStyle      = ToStyleFromSettings(settings);
                 if (InScope(scope, "entity.name.class")) t.ClassNameStyle  = ToStyleFromSettings(settings);
                 if (InScope(scope, "declaration.class")) t.ClassNameStyle  = ToStyleFromSettings(settings);
                 if (InScope(scope, "support.class"    )) t.ClassNameStyle  = ToStyleFromSettings(settings);
@@ -97,7 +99,7 @@ namespace HMSEditorNS {
                 if (InScope(scope, "support.function" )) t.FunctionsStyle  = ToStyleFromSettings(settings);
                 if (InScope(scope, "support.constant" )) t.ConstantsStyle  = ToStyleFromSettings(settings);
                 if (InScope(scope, "entity.name.function")) t.DeclFunctionStyle = ToStyleFromSettings(settings);
-
+                if (t.KeywordStyle == null) if(InScope(scope, "storage")) t.KeywordStyle = ToStyleFromSettings(settings);
             }
             Dict[themeName] = t;
         }
@@ -108,9 +110,9 @@ namespace HMSEditorNS {
             string fore = yo["foreground"];
             string back = yo["background"];
             string font = yo["fontStyle" ];
-            bool   bold = (font.IndexOf("bold"     ) >= 0);
-            bool   ital = (font.IndexOf("italic"   ) >= 0);
-            bool   undl = (font.IndexOf("underline") >= 0);
+            bool   bold = font.IndexOf("bold", StringComparison.Ordinal     ) >= 0;
+            bool   ital = font.IndexOf("italic", StringComparison.Ordinal   ) >= 0;
+            bool   undl = font.IndexOf("underline", StringComparison.Ordinal) >= 0;
             return ToStyle(fore, back, bold, ital, undl);
         }
 
@@ -196,8 +198,10 @@ namespace HMSEditorNS {
         }
 
         public static void LoadThemesFromFile(string file) {
-            if (!File.Exists(file))
-                file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.GetFileName(file));
+            if (!File.Exists(file)) {
+                var name = Path.GetFileName(file);
+                if (name != null) file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, name);
+            }
 
             if (File.Exists(file)) {
                 string data = File.ReadAllText(file);
@@ -206,11 +210,13 @@ namespace HMSEditorNS {
         }
 
         public static void LoadThemesFromString(string data) {
-            INI tini = new INI();
-            tini.NoComments = true;
-            tini.Text = data;
+            INI tini = new INI {
+                NoComments = true,
+                Text       = data
+            };
             Dict.Clear();
             foreach(string section in tini.Dict.Keys) {
+                // ReSharper disable once UseObjectOrCollectionInitializer
                 Theme tt = new Theme();
                 tt.Name = section;
                 tt.Background      = ToColor(tini.Get("Background"     , section, ""));
@@ -234,7 +240,9 @@ namespace HMSEditorNS {
                 tt.FunctionsStyle    = ToStyle2(tini.Get("FunctionsStyle"   , section, ""));
                 tt.VariableStyle     = ToStyle2(tini.Get("VariableStyle"    , section, ""));
                 tt.DeclFunctionStyle = ToStyle2(tini.Get("DeclFunctionStyle", section, ""));
+                tt.PunctuationStyle  = ToStyle2(tini.Get("PunctuationStyle" , section, ""));
                 tt.InvisibleStyle    = ToStyle (tini.Get("Invisibles"       , section, ""));
+                tt.TypesStyle        = ToStyle2(tini.Get("TypesStyle"       , section, ""));
                 Dict.Add(section, tt);
             }
 
@@ -268,6 +276,8 @@ namespace HMSEditorNS {
                 sb.AppendLine("FunctionsStyle="    + StyleToString(tt.FunctionsStyle));
                 sb.AppendLine("VariableStyle="     + StyleToString(tt.VariableStyle));
                 sb.AppendLine("DeclFunctionStyle=" + StyleToString(tt.DeclFunctionStyle));
+                sb.AppendLine("PunctuationStyle="  + StyleToString(tt.PunctuationStyle));
+                sb.AppendLine("TypesStyle="        + StyleToString(tt.TypesStyle));
                 sb.AppendLine();
             }
             File.WriteAllText(file, sb.ToString());
@@ -286,8 +296,7 @@ namespace HMSEditorNS {
             SolidBrush bf = (SolidBrush)s.ForeBrush;
             SolidBrush bb = (SolidBrush)s.BackgroundBrush;
 
-            string font = "";
-            font = s.FontStyle.ToString();
+            var font = s.FontStyle.ToString();
 
             string result = "{";
             result += (bf == null) ? "" : "fore:"+ColorToString(bf.Color)+";";
@@ -329,8 +338,11 @@ namespace HMSEditorNS {
                 val = "#" + aval + val.Substring(1, 6);
             }
             ColorConverter cc = new ColorConverter();
-            Color c = (Color)cc.ConvertFromString(val);
-            return c;
+            var fromString = cc.ConvertFromString(val);
+            if (fromString != null) {
+                return (Color)fromString;
+            }
+            return Color.Transparent;
         }
 
     }

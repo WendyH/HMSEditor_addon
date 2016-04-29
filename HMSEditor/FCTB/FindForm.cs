@@ -3,8 +3,8 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Security.Permissions;
 using HMSEditorNS;
-using System.Drawing;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     public partial class FindForm : Form
@@ -54,19 +54,20 @@ namespace FastColoredTextBoxNS
 
                     n = tb.LightYellowSelect(pattern, opt);
                 }
-            } catch {
-
+            }
+            catch {
+                // ignored
             }
             lblFound.Text = n.ToString();
         }
 
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
-            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
+            ControlPaint.DrawBorder(e.Graphics, ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
         }
 
         public virtual void FindNext(string pattern, bool toBack = false) {
-            tb.YellowSelection = true;
+            tb.YellowSelection    = true;
             tb.SelectionAfterFind = true;
 
             try {
@@ -85,6 +86,7 @@ namespace FastColoredTextBoxNS
                 }
                 //
                 range.Start = range.End;
+                // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
                 if (range.Start >= startPlace)
                     range.End = new Place(tb.GetLineLength(tb.LinesCount - 1), tb.LinesCount - 1);
                 else
@@ -124,7 +126,7 @@ namespace FastColoredTextBoxNS
                     found = true;
                 }
                 if (found) {
-                    tb.YellowSelection = true;
+                    tb.YellowSelection    = true;
                     tb.SelectionAfterFind = true;
                     tb.DoSelectionVisible();
                     tb.Invalidate();
@@ -148,7 +150,6 @@ namespace FastColoredTextBoxNS
                 Hide();
                 e.Handled = true;
                 SetFocusToEditor();
-                return;
             }
         }
 
@@ -167,7 +168,7 @@ namespace FastColoredTextBoxNS
             if (keyData == Keys.Escape)
             {
                 SetFocusToEditor();
-                this.Close();
+                Close();
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -209,7 +210,6 @@ namespace FastColoredTextBoxNS
             if (e.KeyChar == '\t') {
                 SelectNextControl(ActiveControl, true, false, false, true);
                 e.Handled = true;
-                return;
             }
         }
 

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-/// <summary>
-/// By WendyH. Worked with broken format without exceptions. Sorry 4 code. Magic code.
-/// </summary>
+// By WendyH. Worked with broken format without exceptions. Sorry 4 code. Magic code.
+// ReSharper disable once CheckNamespace
 namespace whYamlParser {
     public enum YamlObjectType { Scalar, Mapping, Sequence }
 
@@ -33,13 +32,13 @@ namespace whYamlParser {
     public class YamlObject : IEnumerable {
         public string         Name   = "";
         public string         Value  = "";
-        public int            Indent = 0;
-        public YamlObject     Parent = null;
-        public int            Line   = 0;
-        public int            Char   = 0;
+        public int            Indent;
+        public YamlObject     Parent;
+        public int            Line;
+        public int            Char;
         public YamlObjectType Type   = YamlObjectType.Scalar;
         public bool           Closed = true;
-        public bool           Inline = false;
+        public bool           Inline;
         public string         Tag    = "";
         public YamlObjects    ChildItems = new YamlObjects();
 
@@ -57,13 +56,9 @@ namespace whYamlParser {
             Value = value;
         }
 
-        public int Count { get { return ChildItems.Count; } }
+        public int Count => ChildItems.Count;
 
-        public string this[string name] {
-            get {
-                return GetObject(name).Value;
-            }
-        }
+        public string this[string name] => GetObject(name).Value;
 
         public YamlObject GetObject(string name) {
             string[] names = name.Split('\\');
@@ -78,9 +73,7 @@ namespace whYamlParser {
                     if (nameInList == part) { result = o; curList = o.ChildItems; break; }
                 }
             }
-            if (result == null)
-                result = new YamlObject();
-            return result;
+            return result ?? (new YamlObject());
         }
 
         public IEnumerator GetEnumerator() {
@@ -132,11 +125,11 @@ namespace whYamlParser {
         }
 
         private static void _CheckYamlValue(int iLine, ref int iChar, int indent, string sVal, ref YamlObject curObject, string sKey = "") {
-            Match m; bool catched = false;
+            bool catched = false;
             //if (sVal.Trim().Length == 0) return;
-            m = reTags.Match(sVal); // Tags
+            var m = reTags.Match(sVal);
             if (m.Success) { curObject.Tag = m.Groups[1].Value; sVal = m.Groups[2].Value; iChar += m.Groups[2].Index; }
-            if (!catched && !curObject.Inline) {
+            if (!curObject.Inline) {
                 m = reSequenceEntry.Match(sVal); // Sequence entry
                 if (m.Success) {
                     iChar += m.Groups[2].Index;
@@ -158,7 +151,7 @@ namespace whYamlParser {
                     curObject.Closed = false;
                     curObject.Type = (m.Groups[1].Value == "{") ? YamlObjectType.Mapping : YamlObjectType.Sequence;
                     catched = true;
-                    if (m.Groups[1].Value == "[") sKey = string.Empty; if (curObject.Inline) sKey = string.Empty;
+                    if (m.Groups[1].Value == "[") sKey = string.Empty;
                 }
             }
             if (!catched && curObject.Inline) {
@@ -224,8 +217,8 @@ namespace whYamlParser {
         }
 
         public static bool LoadFromString(string yamlText, YamlObject yoResult) {
-            bool bSuccess = true; string line = string.Empty, lastchar, mchar = string.Empty;
-            int mulindent = int.MaxValue, mulindent1 = -1, iChar, indent;
+            string mchar     = string.Empty;
+            int    mulindent = int.MaxValue, mulindent1 = -1;
             YamlObject curObject = yoResult; aliases.Clear(); Errors.Clear();
             // Remove all comments out the strings
             yaml = reStringsAndComments.Replace(yamlText,
@@ -233,10 +226,10 @@ namespace whYamlParser {
 
             string[] Lines = yaml.Split('\n');
             for (int i = 0; i < Lines.Length; i++) {
-                line   = Lines[i]; if (reComment.IsMatch(line)) continue;
-                indent = line.Length - line.TrimStart().Length;
+                var line = Lines[i]; if (reComment.IsMatch(line)) continue;
+                var    indent = line.Length - line.TrimStart().Length;
                 line   = line.Trim();
-                if (!curObject.Inline) {
+                if (curObject != null && !curObject.Inline) {
                     if (indent > mulindent) {   // Multiline scalar
                         if (mulindent1 < 0) mulindent1 = indent;                  // mulindent1 - indent first line of multiline text
                         if (curObject.Value.Length > 0) curObject.Value += mchar; // Skip for first line (mchar - "\r" or " ")
@@ -247,22 +240,22 @@ namespace whYamlParser {
                     // Get parent by indent
                     while ((curObject.Parent != null) && (indent <= curObject.Indent) && (curObject != curObject.Parent)) curObject = curObject.Parent;
                 }
-                iChar = indent;
+                var    iChar = indent;
                 _CheckYamlValue(i, ref iChar, indent, line, ref curObject);
                 if (curObject!=null && !curObject.Inline) {
-                    lastchar = (line.Length > 0) ? line.Substring(line.Length - 1) : string.Empty;
+                    var lastchar = (line.Length > 0) ? line.Substring(line.Length - 1) : string.Empty;
                     if ((lastchar == ">") || (lastchar == "|")) { mulindent = indent; mchar = (lastchar == ">") ? " " : "\n"; }
                 }
             }
             aliases.Clear();
-            return bSuccess;
+            return true;
         }
 
         private static YamlObject _AddChild(int iLine, int iChar, string name, string val, int indent,
                                             YamlObject parent, YamlObject copyObject = null, int level = 0) {
-            Match m; YamlObject childObject; string alias = string.Empty, refer = string.Empty;
-            m = reAlias.Match(name); if (m.Success) name = m.Groups[2].Value.TrimStart();
-            m = reAlias.Match(val ); if (m.Success) { val = m.Groups[2].Value.TrimStart(); alias = m.Groups[1].Value; }
+            YamlObject childObject; string alias = string.Empty, refer = string.Empty;
+            var m = reAlias.Match(name); if (m.Success)  name = m.Groups[2].Value.TrimStart();
+                m = reAlias.Match(val ); if (m.Success) { val = m.Groups[2].Value.TrimStart(); alias = m.Groups[1].Value; }
             if (copyObject == null) {
                 m = reObjectsEnds .Match(val ); if (m.Success) { val = m.Groups[1].Value.Trim(); }
                 m = reQuotedString.Match(name); if (m.Success) name = m.Groups[1].Value + m.Groups[2].Value; else name = name.Trim();
@@ -273,7 +266,9 @@ namespace whYamlParser {
                 copyObject = aliases[refer];
                 val = copyObject.Value;
             }
-            if ((copyObject == null) || (level > 0)) { childObject = new YamlObject(); childObject.Parent = parent; } else childObject = parent;
+            if ((copyObject == null) || (level > 0)) {
+                childObject = new YamlObject {Parent = parent};
+            } else childObject = parent;
             childObject.Name   = name;
             childObject.Value  = ReplaceScreeningSymbols(val);
             childObject.Indent = indent;
@@ -283,7 +278,7 @@ namespace whYamlParser {
             if ((copyObject == null) || (level > 0)) parent.ChildItems.Add(childObject);
 
             if (alias.Length > 0) aliases[alias] = childObject;
-            if (parent != null) parent.Value = string.Empty;
+            parent.Value = string.Empty;
             if ((copyObject != null) && (level < 30))
                 foreach (YamlObject yo in copyObject.ChildItems)
                     _AddChild(iLine, iChar, yo.Name, yo.Value, yo.Indent, childObject, yo, level + 1);
@@ -304,7 +299,7 @@ namespace whYamlParser {
         }
 
         public static string Msg(string errKey, int iLine = -1, int iChar = -1) {
-            string err = ""; iLine++; iChar++;
+            string err = ""; iLine++;
             //if ((iLine > 0) && (iChar > 0)) err += "[" + iLine.ToString() + ", " + iChar.ToString() + "] ";
             //else if (iLine > 0) err += "[" + iLine.ToString() + "] ";
             err += "[" + iLine.ToString() + "] ";

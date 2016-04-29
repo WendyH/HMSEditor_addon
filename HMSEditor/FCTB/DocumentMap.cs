@@ -1,18 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
 using System.Drawing.Drawing2D;
-using System.Text;
 using System.Windows.Forms;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     /// <summary>
     /// Shows document map of FCTB
     /// </summary>
-    public class DocumentMap : Control
+    public sealed class DocumentMap : Control
     {
         public EventHandler TargetChanged;
 
@@ -45,7 +43,9 @@ namespace FastColoredTextBoxNS
         /// </summary>
         [Description("Scale")]
         [DefaultValue(0.3f)]
+#pragma warning disable 109
         public new float Scale
+#pragma warning restore 109
         {
             get { return scale; }
             set
@@ -83,39 +83,38 @@ namespace FastColoredTextBoxNS
                 Invalidate();
         }
 
-        protected virtual void OnTargetChanged()
+        private void OnTargetChanged()
         {
             NeedRepaint();
 
-            if (TargetChanged != null)
-                TargetChanged(this, EventArgs.Empty);
+            TargetChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual void UnSubscribe(FastColoredTextBox target)
+        private void UnSubscribe(FastColoredTextBox subscribeTarget)
         {
-            target.Scroll -= new ScrollEventHandler(Target_Scroll);
-            target.SelectionChangedDelayed -= new EventHandler(Target_SelectionChanged);
-            target.VisibleRangeChanged -= new EventHandler(Target_VisibleRangeChanged);
+            subscribeTarget.Scroll                  -= Target_Scroll;
+            subscribeTarget.SelectionChangedDelayed -= Target_SelectionChanged;
+            subscribeTarget.VisibleRangeChanged     -= Target_VisibleRangeChanged;
         }
 
-        protected virtual void Subscribe(FastColoredTextBox target)
+        private void Subscribe(FastColoredTextBox subscribeTarget)
         {
-            target.Scroll += new ScrollEventHandler(Target_Scroll);
-            target.SelectionChangedDelayed += new EventHandler(Target_SelectionChanged);
-            target.VisibleRangeChanged += new EventHandler(Target_VisibleRangeChanged);
+            subscribeTarget.Scroll                  += Target_Scroll;
+            subscribeTarget.SelectionChangedDelayed += Target_SelectionChanged;
+            subscribeTarget.VisibleRangeChanged     += Target_VisibleRangeChanged;
         }
 
-        protected virtual void Target_VisibleRangeChanged(object sender, EventArgs e)
-        {
-            NeedRepaint();
-        }
-
-        protected virtual void Target_SelectionChanged(object sender, EventArgs e)
+        private void Target_VisibleRangeChanged(object sender, EventArgs e)
         {
             NeedRepaint();
         }
 
-        protected virtual void Target_Scroll(object sender, ScrollEventArgs e)
+        private void Target_SelectionChanged(object sender, EventArgs e)
+        {
+            NeedRepaint();
+        }
+
+        private void Target_Scroll(object sender, ScrollEventArgs e)
         {
             NeedRepaint();
         }
@@ -136,7 +135,7 @@ namespace FastColoredTextBoxNS
             if (target == null)
                 return;
 
-            var zoom = this.Scale * 100 / target.Zoom;
+            var zoom = Scale * 100 / target.Zoom;
 
             if (zoom <= float.Epsilon)
                 return;
@@ -201,14 +200,14 @@ namespace FastColoredTextBoxNS
 
         protected override void OnMouseDown(MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
                 Scroll(e.Location);
             base.OnMouseDown(e);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
-            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            if (e.Button == MouseButtons.Left)
                 Scroll(e.Location);
             base.OnMouseMove(e);
         }
@@ -218,7 +217,7 @@ namespace FastColoredTextBoxNS
             if (target == null)
                 return;
 
-            var zoom = this.Scale*100/target.Zoom;
+            var zoom = Scale * 100/target.Zoom;
 
             if (zoom <= float.Epsilon)
                 return;

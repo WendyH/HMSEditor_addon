@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     public class CommandManager
@@ -8,7 +9,7 @@ namespace FastColoredTextBoxNS
         readonly int maxHistoryLength = 200;
         LimitedStack<UndoableCommand> history;
         Stack<UndoableCommand> redoStack = new Stack<UndoableCommand>();
-        public TextSource TextSource{ get; private set; }
+        public TextSource TextSource{ get; }
         public bool UndoRedoStackIsEnabled { get; set; }
 
         public CommandManager(TextSource ts)
@@ -30,11 +31,12 @@ namespace FastColoredTextBoxNS
                 cmd = new MultiRangeCommand((UndoableCommand)cmd);
 
 
-            if (cmd is UndoableCommand)
+            var item = cmd as UndoableCommand;
+            if (item != null)
             {
                 //if range is ColumnRange, then create wrapper
-                (cmd as UndoableCommand).autoUndo = autoUndoCommands > 0;
-                history.Push(cmd as UndoableCommand);
+                item.autoUndo = autoUndoCommands > 0;
+                history.Push(item);
             }
 
             try
@@ -57,7 +59,7 @@ namespace FastColoredTextBoxNS
         }
 
         internal Stack<Range> OldPosition = new Stack<Range>(); // By WendyH
-        internal bool WasFastUndo = false;
+        internal bool WasFastUndo;
 
         public void Undo()
         {
@@ -90,7 +92,7 @@ namespace FastColoredTextBoxNS
             TextSource.CurrentTB.OnUndoRedoStateChanged();
         }
 
-        protected int disabledCommands = 0;
+        protected int disabledCommands;
 
         private void EndDisableCommands()
         {
@@ -102,7 +104,7 @@ namespace FastColoredTextBoxNS
             disabledCommands++;
         }
 
-        int autoUndoCommands = 0;
+        int autoUndoCommands;
 
         public void EndAutoUndoCommands()
         {
@@ -152,21 +154,9 @@ namespace FastColoredTextBoxNS
             TextSource.CurrentTB.OnUndoRedoStateChanged();
         }
 
-        public bool UndoEnabled 
-        { 
-            get
-            {
-                return history.Count > 0;
-            }
-        }
+        public bool UndoEnabled => history.Count > 0;
 
-        public bool RedoEnabled
-        {
-            get
-            {
-                return redoStack.Count > 0;
-            }
-        }
+        public bool RedoEnabled => redoStack.Count > 0;
     }
 
     public abstract class Command
@@ -202,15 +192,15 @@ namespace FastColoredTextBoxNS
         internal RangeInfo sel;
         internal RangeInfo lastSel;
         internal bool autoUndo;
-        internal bool FastUndo = false; // By WendyH
+        internal bool FastUndo; // By WendyH
 
-        public UndoableCommand(TextSource ts, bool fastUndo) {
+        protected UndoableCommand(TextSource ts, bool fastUndo) {
             FastUndo = fastUndo;
             this.ts = ts;
             sel = new RangeInfo(ts.CurrentTB.Selection);
         }
 
-        public UndoableCommand(TextSource ts)
+        protected UndoableCommand(TextSource ts)
         {
             this.ts = ts;
             sel = new RangeInfo(ts.CurrentTB.Selection);
@@ -232,17 +222,11 @@ namespace FastColoredTextBoxNS
             bool b = sel.Start.iLine < lastSel.Start.iLine;
             if (invert)
             {
-                if (b)
-                    ts.OnTextChanged(sel.Start.iLine, sel.Start.iLine);
-                else
-                    ts.OnTextChanged(sel.Start.iLine, lastSel.Start.iLine);
+                ts.OnTextChanged(sel.Start.iLine, b ? sel.Start.iLine : lastSel.Start.iLine);
             }
             else
             {
-                if (b)
-                    ts.OnTextChanged(sel.Start.iLine, lastSel.Start.iLine);
-                else
-                    ts.OnTextChanged(lastSel.Start.iLine, lastSel.Start.iLine);
+                ts.OnTextChanged(b ? sel.Start.iLine : lastSel.Start.iLine, lastSel.Start.iLine);
             }
         }
 

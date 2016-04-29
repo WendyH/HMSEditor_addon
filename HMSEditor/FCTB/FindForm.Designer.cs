@@ -166,7 +166,6 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Поиск";
-            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FindForm_FormClosing);
             this.VisibleChanged += new System.EventHandler(this.FindForm_VisibleChanged);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FindForm_KeyPress);

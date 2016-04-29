@@ -3,6 +3,7 @@ using System;
 using System.Drawing.Drawing2D;
 using System.Collections.Generic;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     /// <summary>
@@ -23,7 +24,7 @@ namespace FastColoredTextBoxNS
         /// <summary>
         /// Constructor
         /// </summary>
-        public Style()
+        protected Style()
         {
             IsExportable = true;
         }
@@ -41,8 +42,7 @@ namespace FastColoredTextBoxNS
         /// </summary>
         public virtual void OnVisualMarkerClick(FastColoredTextBox tb, VisualMarkerEventArgs args)
         {
-            if (VisualMarkerClick != null)
-                VisualMarkerClick(tb, args);
+            VisualMarkerClick?.Invoke(tb, args);
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace FastColoredTextBoxNS
 
         public static GraphicsPath GetRoundedRectangle(Rectangle rect, int d)
         {
-            GraphicsPath gp = new GraphicsPath();
+            var gp = new GraphicsPath();
 
             gp.AddArc(rect.X, rect.Y, d, d, 180, 90);
             gp.AddArc(rect.X + rect.Width - d, rect.Y, d, d, 270, 90);
@@ -76,7 +76,7 @@ namespace FastColoredTextBoxNS
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        protected virtual void Dispose(Boolean disposing) { }
+        protected virtual void Dispose(bool disposing) { }
 
         /// <summary>
         /// Returns CSS for export to HTML
@@ -104,9 +104,9 @@ namespace FastColoredTextBoxNS
             int charW = range.tb.CharWidth;
             int linedx = charW / 2;
             int linedy = charH / 6;
-            Pen redPen = new Pen(Color.Red, charH / 10);
-            float x1 = position.X - range.tb.CharWidth / 3;
-            float y1 = position.Y + range.tb.LineInterval / 2 + charH;
+            Pen redPen = new Pen(Color.Red, (float)charH / 10);
+            float x1 = position.X - (float)range.tb.CharWidth / 3;
+            float y1 = position.Y + (float)range.tb.LineInterval / 2 + charH;
             int charCount = range.End.iChar - range.Start.iChar;
             List<PointF> pointList = new List<PointF>();
             for (int i = 0; i < charCount; i++) {
@@ -126,19 +126,28 @@ namespace FastColoredTextBoxNS
     /// </summary>
     public class TextStyle : Style
     {
-        public Brush     ForeBrush       { get; set; }
-        public Brush     BackgroundBrush { get; set; }
-        public FontStyle FontStyle       { get; set; }
-        //public readonly Font Font;
-        public StringFormat stringFormat;
-        Brush zigzagBrush = new HatchBrush(HatchStyle.ZigZag, Color.Red);
+        public Brush        ForeBrush       { get; set; }
+        public Brush        BackgroundBrush { get; set; }
+        public FontStyle    FontStyle       { get; set; }
+        public StringFormat Sf              { get; set; }
+
+        protected new virtual void Dispose(bool isDispose) {
+            if (isDispose) {
+                ForeBrush      ?.Dispose();
+                BackgroundBrush?.Dispose();
+                Sf             ?.Dispose();
+            }
+            ForeBrush       = null;
+            BackgroundBrush = null;
+            Sf              = null;
+        }
 
         public TextStyle(Brush foreBrush, Brush backgroundBrush, FontStyle fontStyle)
         {
-            this.ForeBrush       = foreBrush;
-            this.BackgroundBrush = backgroundBrush;
-            this.FontStyle       = fontStyle;
-            stringFormat = new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
+            ForeBrush       = foreBrush;
+            BackgroundBrush = backgroundBrush;
+            FontStyle       = fontStyle;
+            Sf = new StringFormat(StringFormatFlags.MeasureTrailingSpaces);
         }
 
         public void RefreshColors(FastColoredTextBox tb) {
@@ -162,8 +171,8 @@ namespace FastColoredTextBoxNS
             int rangeH = charH;
             int rangeW = (range.End.iChar - range.Start.iChar) * charW;
             float dx = charW;
-            float y = position.Y + range.tb.LineInterval / 2;
-            float x = position.X - charW / 3;
+            float y = position.Y + (float)range.tb.LineInterval / 2;
+            float x = position.X - (float)charW / 3;
             //draw background
             if (BackgroundBrush != null)
                 gr.FillRectangle(BackgroundBrush, position.X, position.Y, rangeW, rangeH);
@@ -187,7 +196,7 @@ namespace FastColoredTextBoxNS
                         float k = size.Width > charW + 1 ? charW / size.Width : 1;
                         gr.TranslateTransform(x, y + (1 - k)*range.tb.CharHeight/2);
                         gr.ScaleTransform(k, (float) Math.Sqrt(k));
-                        gr.DrawString(line[i].c.ToString(), f, ForeBrush, 0, 0, stringFormat);
+                        gr.DrawString(line[i].c.ToString(), f, ForeBrush, 0, 0, Sf);
                         gr.Restore(gs);
                         x += dx;
                     }
@@ -198,7 +207,7 @@ namespace FastColoredTextBoxNS
                     for (int i = range.Start.iChar; i < range.End.iChar; i++)
                     {
                         //draw char
-                        gr.DrawString(line[i].c.ToString(), f, ForeBrush, x, y, stringFormat);
+                        gr.DrawString(line[i].c.ToString(), f, ForeBrush, x, y, Sf);
                         x += dx;
                     }
                 }
@@ -209,15 +218,17 @@ namespace FastColoredTextBoxNS
         {
             string result = "";
 
-            if (BackgroundBrush is SolidBrush)
+            var brush = BackgroundBrush as SolidBrush;
+            if (brush != null)
             {
-                var s =  ExportToHTML.GetColorAsString((BackgroundBrush as SolidBrush).Color);
+                var s =  ExportToHTML.GetColorAsString(brush.Color);
                 if (s != "")
                     result += "background-color:" + s + ";";
             }
-            if (ForeBrush is SolidBrush)
+            var foreBrush = ForeBrush as SolidBrush;
+            if (foreBrush != null)
             {
-                var s = ExportToHTML.GetColorAsString((ForeBrush as SolidBrush).Color);
+                var s = ExportToHTML.GetColorAsString(foreBrush.Color);
                 if (s != "")
                     result += "color:" + s + ";";
             }
@@ -237,11 +248,13 @@ namespace FastColoredTextBoxNS
         {
             var result = new RTFStyleDescriptor();
 
-            if (BackgroundBrush is SolidBrush)
-                result.BackColor = (BackgroundBrush as SolidBrush).Color;
-            
-            if (ForeBrush is SolidBrush)
-                result.ForeColor = (ForeBrush as SolidBrush).Color;
+            var brush = BackgroundBrush as SolidBrush;
+            if (brush != null)
+                result.BackColor = brush.Color;
+
+            var foreBrush = ForeBrush as SolidBrush;
+            if (foreBrush != null)
+                result.ForeColor = foreBrush.Color;
             
             if ((FontStyle & FontStyle.Bold) != 0)
                 result.AdditionalTags += @"\b";
@@ -301,13 +314,13 @@ namespace FastColoredTextBoxNS
     public class SelectionStyle : Style
     {
         public Brush BackgroundBrush { get; set;}
-        public Brush ForegroundBrush { get; private set; }
+        public Brush ForegroundBrush { get; }
 
         public SelectionStyle(Brush backgroundBrush, Brush foregroundBrush = null)
         {
-            this.IsExportable    = false;
-            this.BackgroundBrush = backgroundBrush;
-            this.ForegroundBrush = foregroundBrush;
+            IsExportable    = false;
+            BackgroundBrush = backgroundBrush;
+            ForegroundBrush = foregroundBrush;
         }
 
         public override void Draw(Graphics gr, Point position, Range range)
@@ -345,7 +358,7 @@ namespace FastColoredTextBoxNS
 
         public MarkerStyle(Brush backgroundBrush)
         {
-            this.BackgroundBrush = backgroundBrush;
+            BackgroundBrush = backgroundBrush;
             IsExportable = true;
         }
 
@@ -365,9 +378,10 @@ namespace FastColoredTextBoxNS
         {
             string result = "";
 
-            if (BackgroundBrush is SolidBrush)
+            var brush = BackgroundBrush as SolidBrush;
+            if (brush != null)
             {
-                var s = ExportToHTML.GetColorAsString((BackgroundBrush as SolidBrush).Color);
+                var s = ExportToHTML.GetColorAsString(brush.Color);
                 if (s != "")
                     result += "background-color:" + s + ";";
             }
@@ -407,7 +421,7 @@ namespace FastColoredTextBoxNS
     /// <remarks>Thanks for Yallie</remarks>
     public class WavyLineStyle : Style
     {
-        private Pen Pen { get; set; }
+        private Pen Pen;
 
         public WavyLineStyle(int alpha, Color color)
         {
@@ -416,9 +430,9 @@ namespace FastColoredTextBoxNS
 
         public override void Draw(Graphics gr, Point pos, Range range)
         {
-            var size = GetSizeOfRange(range);
+            var size  = GetSizeOfRange(range);
             var start = new Point(pos.X, pos.Y + size.Height - 1);
-            var end = new Point(pos.X + size.Width, pos.Y + size.Height - 1);
+            var end   = new Point(pos.X + size.Width, pos.Y + size.Height - 1);
             DrawWavyLine(gr, start, end);
         }
 
@@ -442,10 +456,11 @@ namespace FastColoredTextBoxNS
             graphics.DrawLines(Pen, points.ToArray());
         }
 
-        protected override void Dispose(bool disposible)
+        protected new virtual void Dispose(bool disposing)
         {
-            if (Pen != null) Pen.Dispose();
-            base.Dispose();
+            if (disposing) {
+                Pen.Dispose();
+            }
         }
     }
 

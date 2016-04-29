@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Drawing;
 
+// ReSharper disable once CheckNamespace
 namespace HmsAddons {
     class HmsEditBox: RichTextBox {
         public string ScriptLanguage = "ThisLang";
@@ -22,7 +23,7 @@ namespace HmsAddons {
             return GetLineFromCharIndex(SelectionStart);
         }
 
-        public void GetCaretPos(ref int aLine, ref int aChar) {
+        public void GetCaretPos(out int aLine, out int aChar) {
             Point p = GetPositionFromCharIndex(SelectionStart);
             aLine = p.X;
             aChar = p.Y;

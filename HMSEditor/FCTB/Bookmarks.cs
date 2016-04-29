@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     /// <summary>
@@ -105,8 +106,6 @@ namespace FastColoredTextBoxNS
         protected virtual void tb_LineInserted(object sender, LineInsertedEventArgs e)
         {
             for (int i = 0; i < Count; i++) {
-                int oldIndex = items[i].LineIndex;
-                
                 if (items[i].LineIndex >= e.Index) {
                     items[i].LineIndex = items[i].LineIndex + e.Count;
 
@@ -148,6 +147,7 @@ namespace FastColoredTextBoxNS
 
                 if (needMoveBreakpointInHms && ActiveEditor != null) {
                     ActiveEditor.OffBreakpointInHms(oldIndex);
+                    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                     if (!was) ActiveEditor.SetBreakpointInHms(items[i].LineIndex);
                 }
 
@@ -254,15 +254,9 @@ namespace FastColoredTextBoxNS
             items.CopyTo(array, arrayIndex);
         }
 
-        public override int Count
-        {
-            get { return items.Count; }
-        }
+        public override int Count => items.Count;
 
-        public override bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public override bool IsReadOnly => false;
 
         public override bool Remove(Bookmark item)
         {
@@ -308,7 +302,7 @@ namespace FastColoredTextBoxNS
     /// </summary>
     public class Bookmark
     {
-        public FastColoredTextBox TB { get; private set; }
+        public FastColoredTextBox TB { get; }
         /// <summary>
         /// Name of bookmark
         /// </summary>
@@ -342,10 +336,10 @@ namespace FastColoredTextBoxNS
 
         public Bookmark(FastColoredTextBox tb, string name, int lineIndex)
         {
-            this.TB = tb;
-            this.Name = name;
-            this.LineIndex = lineIndex;
-            this.CharIndex = tb.Selection.Start.iChar; // By WendyH
+            TB = tb;
+            Name = name;
+            LineIndex = lineIndex;
+            CharIndex = tb.Selection.Start.iChar; // By WendyH
             Color = tb.BookmarkColor;
         }
 

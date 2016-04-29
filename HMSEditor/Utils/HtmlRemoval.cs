@@ -12,7 +12,7 @@ namespace HMSEditorNS {
         /// <summary>
         /// Compiled regular expression for performance.
         /// </summary>
-        static Regex _htmlRegex = new Regex("<.*?>", RegexOptions.Compiled);
+        static Regex _htmlRegex = new Regex("<.*?>");
 
         /// <summary>
         /// Remove HTML from string with compiled Regex.

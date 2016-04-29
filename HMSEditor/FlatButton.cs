@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
+﻿using System.Windows.Forms;
 
 namespace HMSEditorNS {
     public class FlatButton: Button {
@@ -15,6 +11,6 @@ namespace HMSEditorNS {
             base.NotifyDefault(false);
         }
 
-        protected override bool ShowFocusCues { get { return false; } }
+        protected override bool ShowFocusCues => false;
     }
 }

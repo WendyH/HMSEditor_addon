@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Printing;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS {
     /// <summary>
     /// Item of autocomplete menu
@@ -10,9 +10,6 @@ namespace FastColoredTextBoxNS {
         public  string Text;
         public  int    ImageIndex = -1;
         public  object Tag;
-        private string toolTipTitle;
-        private string toolTipText;
-        private string menuText;
         public AutocompleteMenu Parent { get; internal set; }
 
         public AutocompleteItem() {
@@ -24,18 +21,7 @@ namespace FastColoredTextBoxNS {
 
         public AutocompleteItem(string text, int imageIndex)
             : this(text) {
-            this.ImageIndex = imageIndex;
-        }
-
-        public AutocompleteItem(string text, int imageIndex, string menuText)
-            : this(text, imageIndex) {
-            this.menuText = menuText;
-        }
-
-        public AutocompleteItem(string text, int imageIndex, string menuText, string toolTipTitle, string toolTipText)
-            : this(text, imageIndex, menuText) {
-            this.toolTipTitle = toolTipTitle;
-            this.toolTipText  = toolTipText;
+            ImageIndex = imageIndex;
         }
 
         /// <summary>
@@ -69,7 +55,7 @@ namespace FastColoredTextBoxNS {
         /// Returns text for display into popup menu
         /// </summary>
         public override string ToString() {
-            return menuText ?? Text;
+            return MenuText ?? Text;
         }
 
         /// <summary>
@@ -82,43 +68,28 @@ namespace FastColoredTextBoxNS {
         /// Title for tooltip.
         /// </summary>
         /// <remarks>Return null for disable tooltip for this item</remarks>
-        public virtual string ToolTipTitle {
-            get { return toolTipTitle; }
-            set { toolTipTitle = value; }
-        }
+        public string ToolTipTitle { get; set; }
 
         /// <summary>
         /// Tooltip text.
         /// </summary>
         /// <remarks>For display tooltip text, ToolTipTitle must be not null</remarks>
-        public virtual string ToolTipText {
-            get { return toolTipText; }
-            set { toolTipText = value; }
-        }
+        public string ToolTipText { get; set; }
 
         /// <summary>
         /// Menu text. This text is displayed in the drop-down menu.
         /// </summary>
-        public virtual string MenuText {
-            get { return menuText; }
-            set { menuText = value; }
-        }
+        public string MenuText { get; set; }
 
         /// <summary>
         /// Fore color of text of item
         /// </summary>
-        public virtual Color ForeColor {
-            get { return Color.Transparent; }
-            set { throw new NotImplementedException("Override this property to change color"); }
-        }
+        public virtual Color ForeColor => Color.Transparent;
 
         /// <summary>
         /// Back color of item
         /// </summary>
-        public virtual Color BackColor {
-            get { return Color.Transparent; }
-            set { throw new NotImplementedException("Override this property to change color"); }
-        }
+        public virtual Color BackColor => Color.Transparent;
     }
 
     public enum CompareResult {
@@ -141,8 +112,8 @@ namespace FastColoredTextBoxNS {
     /// </summary>
     /// <remarks>Snippet can contain special char ^ for caret position.</remarks>
     public class SnippetAutocompleteItem: AutocompleteItem {
-        public override string ToolTipTitle { get { return "Шаблон:"; } }
-        public override string ToolTipText  { get { return Text; } }
+        public new string ToolTipTitle => "Шаблон:";
+        public new string ToolTipText  => Text;
 
         public SnippetAutocompleteItem(string snippet) {
             Text = snippet.Replace("\r", "");

@@ -2,17 +2,15 @@
 using System.Drawing;
 using System.Windows.Forms;
 using FastColoredTextBoxNS;
-using System.Text.RegularExpressions;
 using System.ComponentModel;
-using System.Collections.Generic;
 
 namespace HMSEditorNS {
-	public partial class HelpPanel: UserControl {
+	public sealed partial class HelpPanel: UserControl {
         public string Filter = "";
 
         public int SplitterDistance { get { return splitContainer1.SplitterDistance; } set { splitContainer1.SplitterDistance = value; } }
 
-        protected HMSItem[] visibleItems;
+	    private HMSItem[] visibleItems;
         //protected TreeNode[] visibleNodes;
         private Timer    timer  = new Timer();
         BackgroundWorker worker = new BackgroundWorker();
@@ -25,6 +23,7 @@ namespace HMSEditorNS {
             timer.Interval = 200;
             flatListBox1.FocussedItemIndexChanged += FlatListBox1_FocussedItemIndexChanged;
             flatListBox1.BackColor    = panel1.BackColor;
+            // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
             if (HMS.PFC.Families.Length > 0) { // By WendyH
                 HelpTextBox.Font = new Font(HMS.PFC.Families[0], 9.25f, FontStyle.Regular, GraphicsUnit.Point);
             } else {
@@ -70,14 +69,8 @@ namespace HMSEditorNS {
             worker.RunWorkerAsync(word);
         }
 
-        private void AddNode(List<TreeNode> nodes, HMSItem item) {
-            TreeNode node = new TreeNode(item.ToString(), item.ImageIndex, item.ImageIndex);
-            node.Tag = item;
-            nodes.Add(node);
-        }
-
-        private void CheckItem(AutocompleteItems exactlyItems, AutocompleteItems notExacItems, HMSItem item, string word) {
-            if ((Filter.Length > 0) && (item.Filter.Length > 0) && (Filter.IndexOf(item.Filter) < 0)) return;
+	    private void CheckItem(AutocompleteItems exactlyItems, AutocompleteItems notExacItems, HMSItem item, string word) {
+            if ((Filter.Length > 0) && (item.Filter.Length > 0) && (Filter.IndexOf(item.Filter, StringComparison.Ordinal) < 0)) return;
             if (exactlyItems.ContainsName(item.MenuText) || notExacItems.ContainsName(item.MenuText)) return;
 
             string itemtext = item.ToString();
@@ -116,7 +109,7 @@ namespace HMSEditorNS {
         private void ShowHelp(HMSItem item = null) {
             if (flatListBox1.Items.Count == 0) return; 
             HelpTextBox.BeginUpdate();
-            if (item == null) item = (HMSItem)flatListBox1.SelectedItem;
+            if (item == null) item = flatListBox1.SelectedItem;
             if (item.Rtf.Length == 0) {
                 string help = HmsToolTip.GetTextWithHelp(item);
                 item.Rtf    = HmsToolTip.GetRtf(help);
@@ -162,8 +155,8 @@ namespace HMSEditorNS {
         }
 
         private void btnClose_Click(object sender, EventArgs e) {
-            if (PanelClose != null) PanelClose(this, new EventArgs());
+            PanelClose?.Invoke(this, new EventArgs());
         }
-    }
+	}
 
 }

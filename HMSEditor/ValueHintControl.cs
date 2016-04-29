@@ -21,9 +21,9 @@ namespace HMSEditorNS {
             Expression = expression;
             Value = value;
 
-            Point p = this.PointToClient(point);
-            this.Left = p.X;
-            this.Top  = p.Y;
+            Point p = PointToClient(point);
+            Left = p.X;
+            Top = p.Y;
             Visible = true;
         }
 

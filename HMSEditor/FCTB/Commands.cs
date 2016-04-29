@@ -206,7 +206,7 @@ namespace FastColoredTextBoxNS
         /// <param name="insertedText">Text for inserting</param>
         public InsertTextCommand(TextSource ts, string insertedText, bool fastUndo=false): base(ts)
         {
-            this.InsertedText = insertedText;
+            InsertedText = insertedText;
             FastUndo = fastUndo;
         }
 
@@ -664,7 +664,7 @@ namespace FastColoredTextBoxNS
 
         public MultiRangeCommand(UndoableCommand command):base(command.ts)
         {
-            this.cmd = command;
+            cmd = command;
             range = ts.CurrentTB.Selection.Clone();
         }
 

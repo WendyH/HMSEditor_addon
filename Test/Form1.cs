@@ -3,8 +3,8 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using HmsAddons;
 using System.IO;
+// ReSharper disable All
 
 namespace test {
 
@@ -13,11 +13,10 @@ namespace test {
         Guid clsid = new Guid();
         Guid iidAddonList    = new Guid("A8F688A7-441E-4701-9EA0-9C591D0B997A"); // guid by IHmsAddonList
         Guid iidScriptEditor = new Guid("B43BB779-379D-4244-A53D-0AAC3863A0FB"); // guid by IHmsScriptEditor
-        IHmsScriptFrame  ScriptFrame  = new HmsScriptFrame();
-        IntPtr           EditorHandle = IntPtr.Zero;
-        object objAddonList     = null;
-        object objScriptEditor  = null;
-        Type   typeScriptEditor = null;
+        IntPtr EditorHandle  = IntPtr.Zero;
+        object objAddonList;
+        object objScriptEditor;
+        Type   typeScriptEditor;
 		
         public Form1() {
             InitializeComponent();
@@ -26,7 +25,7 @@ namespace test {
             comboBox1.Items.Add("BasicScript" );
             comboBox1.Items.Add("JScript"     );
             comboBox1.Items.Add("Нет скрипта" );
-            comboBox1.Text = "C++Script";
+            comboBox1.Text = @"C++Script";
             //ScriptFrame.LogTextBox = LogTextBox;
         }
 
@@ -54,7 +53,7 @@ namespace test {
                     sb.AppendLine(t.ToString());
                     MethodInfo[] methods = t.GetMethods(BindingFlags.Public);
                     foreach (MethodInfo info in methods) {
-                        sb.AppendLine("   " + info.ToString());
+                        sb.AppendLine("   " + info);
                     }
                 }
                 
@@ -68,7 +67,8 @@ namespace test {
 
                         // Return a pointer to the objects IUnknown interface.
                         IntPtr pIUnk = Marshal.GetIUnknownForObject(objAddonList);
-                        IntPtr pInterface = IntPtr.Zero;
+                        IntPtr pInterface;
+                        // ReSharper disable once UnusedVariable
                         Int32 result = Marshal.QueryInterface(pIUnk, ref iidAddonList, out pInterface);
 
                         //object obj = Marshal.GetTypedObjectForIUnknown(pInterface, typeof(IHmsAddonList));
@@ -89,8 +89,8 @@ namespace test {
                             Form1_Resize(null, EventArgs.Empty);
 
                             string file = @"D:\tesst2.cpp";
-                            if (System.IO.File.Exists(file)) {
-                                string text = System.IO.File.ReadAllText(file);
+                            if (File.Exists(file)) {
+                                string text = File.ReadAllText(file);
                                 MethodInfo method3 = typeScriptEditor.GetMethod("SetScriptText");
                                 method3.Invoke(objScriptEditor, new object[] { text });
                             }
@@ -104,7 +104,7 @@ namespace test {
                 }
 
             }
-            richTextBox1.Text = "Проверка:\r\n" + sb.ToString();
+            richTextBox1.Text = "Проверка:\r\n" + sb;
             
         }
 
@@ -138,7 +138,9 @@ namespace test {
                 MethodInfo methodSaveSettings = typeScriptEditor.GetMethod("SaveSettings");
                 methodSaveSettings.Invoke(objScriptEditor, new object[] { });
             }
-            catch { }
+            catch {
+                // ignored
+            }
         }
     }
 }

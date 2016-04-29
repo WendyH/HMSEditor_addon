@@ -1,4 +1,6 @@
 ﻿/* This code is released under WTFPL Version 2 (http://www.wtfpl.net/) * Created by WendyH. Copyleft. */
+
+using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -56,11 +58,7 @@ namespace HMSEditorNS {
                 return (m.Groups[1].Value + " " + m.Groups[2].Value + " " + m.Groups[3].Value).Trim();
             }
 
-            public override string ToolTipTitle {
-                get {
-                    return Text;
-                }
-            }
+            public new string ToolTipTitle => Text;
         }
 
     }
@@ -70,7 +68,7 @@ namespace HMSEditorNS {
         public int LastEndPosition { get { if (Count > 0) return this[Count - 1].PositionEnd; return 0; } }
 
         public void SortByMenuText() {
-            this.Sort(delegate (HMSItem a, HMSItem b) { return a.MenuText.CompareTo(b.MenuText); });
+            Sort((a, b) => string.Compare(a.MenuText, b.MenuText, StringComparison.Ordinal));
         }
 
         public HMSItem GetItemOrNull(string name) {

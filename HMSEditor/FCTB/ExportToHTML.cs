@@ -57,7 +57,7 @@ namespace FastColoredTextBoxNS
         
         public string GetHtml(Range r)
         {
-            this.tb = r.tb;
+            tb = r.tb;
             Dictionary<StyleIndex, object> styles = new Dictionary<StyleIndex, object>();
             StringBuilder sb = new StringBuilder();
             StringBuilder tempSB = new StringBuilder();

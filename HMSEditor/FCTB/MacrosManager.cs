@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     /// <summary>
@@ -40,7 +40,7 @@ namespace FastColoredTextBoxNS
         /// <summary>
         /// FCTB
         /// </summary>
-        public FastColoredTextBox UnderlayingControl { get; private set; }
+        public FastColoredTextBox UnderlayingControl { get; }
 
         /// <summary>
         /// Executes recorded macro
@@ -110,7 +110,7 @@ namespace FastColoredTextBoxNS
         /// <summary>
         /// Returns True if last macro is empty
         /// </summary>
-        public bool MacroIsEmpty { get { return macro.Count == 0; }}
+        public bool MacroIsEmpty => macro.Count == 0;
 
         /// <summary>
         /// Macros as string.
@@ -167,13 +167,19 @@ namespace FastColoredTextBoxNS
                     var ka = node.GetAttributeNode("key");
                     if (ca != null)
                     {
-                        if(ka!=null)
-                            AddCharToMacros((char)int.Parse(ca.Value), (Keys)kc.ConvertFromString(ka.Value));
+                        if(ka!=null) {
+                            var convertFromString = kc.ConvertFromString(ka.Value);
+                            if (convertFromString != null)
+                                AddCharToMacros((char)int.Parse(ca.Value), (Keys)convertFromString);
+                        }
                         else
                             AddCharToMacros((char)int.Parse(ca.Value), Keys.None);
                     }else
-                    if(ka!=null)
-                            AddKeyToMacros((Keys)kc.ConvertFromString(ka.Value));
+                    if(ka!=null) {
+                        var fromString = kc.ConvertFromString(ka.Value);
+                        if (fromString != null)
+                            AddKeyToMacros((Keys)fromString);
+                    }
                 }
 
                 Thread.CurrentThread.CurrentUICulture = cult;

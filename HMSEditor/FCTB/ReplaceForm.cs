@@ -3,21 +3,22 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Security.Permissions;
-using System.Drawing;
 using HMSEditorNS;
+using HMSEditorNS.Properties;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     public partial class ReplaceForm : Form
     {
         FastColoredTextBox tb;
-        bool firstSearch = true;
-        Place startPlace;
-        ToolTip tooltip1 = new ToolTip();
-        ToolTip tooltip2 = new ToolTip();
-        ToolTip tooltip3 = new ToolTip();
-        string MBCaption = "HMS Editor - Поиск и замена";
-        Timer timer = new Timer();
+        bool    firstSearch = true;
+        Place   startPlace;
+        ToolTip tooltip1  = new ToolTip();
+        ToolTip tooltip2  = new ToolTip();
+        ToolTip tooltip3  = new ToolTip();
+        string  MBCaption = "HMS Editor - Поиск и замена";
+        Timer   timer     = new Timer();
 
         public ReplaceForm(FastColoredTextBox tb)
         {
@@ -55,8 +56,9 @@ namespace FastColoredTextBoxNS
 
                     n = tb.LightYellowSelect(pattern, opt);
                 }
-            } catch {
-
+            }
+            catch {
+                // ignored
             }
             btnReplace   .Enabled = (n > 0);
             btnReplaceAll.Enabled = (n > 0);
@@ -66,7 +68,7 @@ namespace FastColoredTextBoxNS
         protected override void OnMouseDown(MouseEventArgs mea) {
             base.OnMouseDown(mea);
             //ctrl-leftclick anywhere on the control to drag the form to a new location 
-            if (mea.Button == MouseButtons.Left && Control.ModifierKeys == Keys.Control) {
+            if (mea.Button == MouseButtons.Left && ModifierKeys == Keys.Control) {
                 NativeMethods.ReleaseCapture();
                 NativeMethods.SendMessage(Handle, NativeMethods.WM_NCLBUTTONDOWN, (IntPtr)NativeMethods.HT_CAPTION, (IntPtr)0);
             }
@@ -74,7 +76,7 @@ namespace FastColoredTextBoxNS
 
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
-            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
+            ControlPaint.DrawBorder(e.Graphics, ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
         }
 
         private void btFindNext_Click(object sender, EventArgs e)
@@ -82,7 +84,7 @@ namespace FastColoredTextBoxNS
             try
             {
                 if (!Find(tbFind.Text))
-                    MessageBox.Show("Указанный текст не найден: \n\n"+tbFind.Text, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show(Resources.ReplaceForm_btFindNext_Click_+tbFind.Text, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             } catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -133,10 +135,7 @@ namespace FastColoredTextBoxNS
             }
             //
             range.Start = range.End;
-            if (range.Start >= startPlace)
-                range.End = new Place(tb.GetLineLength(tb.LinesCount - 1), tb.LinesCount - 1);
-            else
-                range.End = startPlace;
+            range.End   = range.Start >= startPlace ? new Place(tb.GetLineLength(tb.LinesCount - 1), tb.LinesCount - 1) : startPlace;
             //
             foreach (var r in range.GetRangesByLines(pattern, opt))
             {
@@ -230,7 +229,7 @@ namespace FastColoredTextBoxNS
                 }
                 //
                 tb.Invalidate();
-                MessageBox.Show(getNumText(ranges.Count, new[] { "Произведена", "Произведено", "Произведено" }) + " " + ranges.Count + " " + getNumText(ranges.Count, new[] {"замена", "замены", "замен" }), MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show(getNumText(ranges.Count, new[] { "Произведена", "Произведено", "Произведено" }) + @" " + ranges.Count + @" " + getNumText(ranges.Count, new[] {"замена", "замены", "замен" }), MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
@@ -283,7 +282,6 @@ namespace FastColoredTextBoxNS
             if (e.KeyChar == '\t') {
                 SelectNextControl(ActiveControl, true, false, false, true);
                 e.Handled = true;
-                return;
             }
         }
 

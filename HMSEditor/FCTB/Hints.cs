@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Text;
 using System.Windows.Forms;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     /// <summary>
@@ -24,9 +23,9 @@ namespace FastColoredTextBoxNS
             tb.VisibleRangeChanged += OnTextBoxVisibleRangeChanged;
         }
 
-        private void OnTextBoxKeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        private void OnTextBoxKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == System.Windows.Forms.Keys.Escape && e.Modifiers == System.Windows.Forms.Keys.None)
+            if (e.KeyCode == Keys.Escape && e.Modifiers == Keys.None)
                 Clear();
         }
 
@@ -35,8 +34,9 @@ namespace FastColoredTextBoxNS
             Clear();
         }
 
-        private void Dispose(bool disposeble) {
-            ;
+        // ReSharper disable once UnusedParameter.Local
+        private void Dispose(bool isDispose) {
+            //
         }
 
         public void Dispose() {
@@ -46,7 +46,6 @@ namespace FastColoredTextBoxNS
                 tb.VisibleRangeChanged -= OnTextBoxVisibleRangeChanged;
             }
             Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         void OnTextBoxVisibleRangeChanged(object sender, EventArgs e)
@@ -174,15 +173,9 @@ namespace FastColoredTextBoxNS
         /// <summary>
         /// Count of hints
         /// </summary>
-        public int Count
-        {
-            get { return items.Count; }
-        }
+        public int Count => items.Count;
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public bool Remove(Hint item)
         {
@@ -281,9 +274,9 @@ namespace FastColoredTextBoxNS
 
         private Hint(Range range, Control innerControl, string text, bool inline, bool dock)
         {
-            this.Range = range;
-            this.Inline = inline;
-            this.InnerControl = innerControl;
+            Range = range;
+            Inline = inline;
+            InnerControl = innerControl;
 
             Init();
 

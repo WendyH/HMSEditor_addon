@@ -2,14 +2,15 @@
 using System.Windows.Forms;
 using HMSEditorNS;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     public partial class GoToForm : Form
     {
         public int SelectedLineNumber { get; set; }
         public int TotalLineCount { get; set; }
-        public ToolStripItemCollection Items { get { return btnGoto.DropDownItems; } }
-        public int GotoPosition = 0;
+        public ToolStripItemCollection Items => btnGoto.DropDownItems;
+        public int GotoPosition;
 
         public GoToForm()
         {
@@ -18,50 +19,50 @@ namespace FastColoredTextBoxNS
 
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
-            ControlPaint.DrawBorder(e.Graphics, this.ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
+            ControlPaint.DrawBorder(e.Graphics, ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
         }
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
 
-            this.tbLineNumber.Text = this.SelectedLineNumber.ToString();
+            tbLineNumber.Text = SelectedLineNumber.ToString();
 
-            this.label.Text = String.Format("Номер строки (1 - {0}):", this.TotalLineCount);
+            label.Text = $"Номер строки (1 - {TotalLineCount}):";
         }
 
         protected override void OnShown(EventArgs e)
         {
             base.OnShown(e);
 
-            this.tbLineNumber.Focus();
+            tbLineNumber.Focus();
             toolStrip1.Visible = (Items.Count != 0);
         }
 
         private void btnOk_Click(object sender, EventArgs e)
         {
             int enteredLine;
-            if (int.TryParse(this.tbLineNumber.Text, out enteredLine))
+            if (int.TryParse(tbLineNumber.Text, out enteredLine))
             {
-                enteredLine = Math.Min(enteredLine, this.TotalLineCount);
+                enteredLine = Math.Min(enteredLine, TotalLineCount);
                 enteredLine = Math.Max(1, enteredLine);
 
-                this.SelectedLineNumber = enteredLine;
+                SelectedLineNumber = enteredLine;
             }
 
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
+            DialogResult = DialogResult.Cancel;
+            Close();
          }
 
         private void btnGoto_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e) {
-            this.DialogResult = DialogResult.Retry;
+            DialogResult = DialogResult.Retry;
             GotoPosition = (int)e.ClickedItem.Tag;
-            this.Close();
+            Close();
         }
 
         private void GoToForm_FormClosed(object sender, FormClosedEventArgs e) {

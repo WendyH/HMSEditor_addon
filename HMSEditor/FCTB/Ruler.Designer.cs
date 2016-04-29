@@ -1,6 +1,6 @@
 ﻿namespace FastColoredTextBoxNS
 {
-    partial class Ruler
+    sealed partial class Ruler
     {
         /// <summary> 
         /// Required designer variable.

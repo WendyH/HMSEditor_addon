@@ -1,5 +1,5 @@
 ﻿namespace HMSEditorNS {
-	partial class HelpPanel {
+    sealed partial class HelpPanel {
 		/// <summary> 
 		/// Обязательная переменная конструктора.
 		/// </summary>

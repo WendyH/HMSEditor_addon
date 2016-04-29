@@ -61,6 +61,87 @@ namespace HMSEditorNS.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Идёт загрузка....
+        /// </summary>
+        internal static string AboutDialog_btnUpdate_Click_Идёт_загрузка___ {
+            get {
+                return ResourceManager.GetString("AboutDialog_btnUpdate_Click_Идёт_загрузка___", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Есть новая версия .
+        /// </summary>
+        internal static string AboutDialog_CheckUpdate_Есть_новая_версия_ {
+            get {
+                return ResourceManager.GetString("AboutDialog_CheckUpdate_Есть_новая_версия_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Есть новая версия шаблонов от .
+        /// </summary>
+        internal static string AboutDialog_CheckUpdate_Есть_новая_версия_шаблонов_от_ {
+            get {
+                return ResourceManager.GetString("AboutDialog_CheckUpdate_Есть_новая_версия_шаблонов_от_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Не удалось проверить версию на GitHub.
+        /// </summary>
+        internal static string AboutDialog_CheckUpdate_Не_удалось_проверить_версию_на_GitHub {
+            get {
+                return ResourceManager.GetString("AboutDialog_CheckUpdate_Не_удалось_проверить_версию_на_GitHub", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на У вас последняя версия.
+        /// </summary>
+        internal static string AboutDialog_CheckUpdate_У_вас_последняя_версия {
+            get {
+                return ResourceManager.GetString("AboutDialog_CheckUpdate_У_вас_последняя_версия", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Обновлено.
+        /// </summary>
+        internal static string AboutDialog_DownloadTemplateCallback_Обновлено {
+            get {
+                return ResourceManager.GetString("AboutDialog_DownloadTemplateCallback_Обновлено", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Информация о новых шаблонах HMS Editor.
+        /// </summary>
+        internal static string AboutDialog_labelNewTemplates_LinkClicked_Информация_о_новых_шаблонах_HMS_Editor {
+            get {
+                return ResourceManager.GetString("AboutDialog_labelNewTemplates_LinkClicked_Информация_о_новых_шаблонах_HMS_Editor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Перезапустить.
+        /// </summary>
+        internal static string AboutDialog_SetNeedRestart_Перезапустить {
+            get {
+                return ResourceManager.GetString("AboutDialog_SetNeedRestart_Перезапустить", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Требуется перезапуск дополнения.
+        /// </summary>
+        internal static string AboutDialog_SetNeedRestart_Требуется_перезапуск_дополнения {
+            get {
+                return ResourceManager.GetString("AboutDialog_SetNeedRestart_Требуется_перезапуск_дополнения", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap Arrow_RedoRetry_16xLG_color {
@@ -291,6 +372,47 @@ namespace HMSEditorNS.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Будет установлена новая версия дополнения. Просканируйте список дополнений через несколько секунд..
+        /// </summary>
+        internal static string HmsAddonList_CanUnloadNow_Будет_установлена_новая_версия_дополнения__Просканируйте_список_дополнений_через_несколько_секунд_ {
+            get {
+                return ResourceManager.GetString("HmsAddonList_CanUnloadNow_Будет_установлена_новая_версия_дополнения__Просканируйт" +
+                        "е_список_дополнений_через_несколько_секунд_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Доступно только при включенном автоматическом отступе.
+        /// </summary>
+        internal static string HMSEditor_btnAutoIdent_Click_Доступно_только_при_включенном_автоматическом_отступе {
+            get {
+                return ResourceManager.GetString("HMSEditor_btnAutoIdent_Click_Доступно_только_при_включенном_автоматическом_отступ" +
+                        "е", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Удалить все закладки?
+        ///.
+        /// </summary>
+        internal static string HMSEditor_btnBookmarkMinus_Click_ {
+            get {
+                return ResourceManager.GetString("HMSEditor_btnBookmarkMinus_Click_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Ошибка создания окна редактора.
+        ///
+        ///.
+        /// </summary>
+        internal static string HmsScriptEditor_CreateEditor_ {
+            get {
+                return ResourceManager.GetString("HmsScriptEditor_CreateEditor_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap logo {
@@ -377,6 +499,17 @@ namespace HMSEditorNS.Properties {
             get {
                 object obj = ResourceManager.GetObject("RefactoringLog_12810", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на Указанный текст не найден: 
+        ///
+        ///.
+        /// </summary>
+        internal static string ReplaceForm_btFindNext_Click_ {
+            get {
+                return ResourceManager.GetString("ReplaceForm_btFindNext_Click_", resourceCulture);
             }
         }
         

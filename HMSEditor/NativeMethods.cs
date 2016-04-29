@@ -1,6 +1,7 @@
 ﻿/* This code is released under WTFPL Version 2 (http://www.wtfpl.net/) * Created by WendyH. Copyleft. */
 using System;
 using System.Runtime.InteropServices;
+// ReSharper disable MemberCanBePrivate.Local
 
 namespace HMSEditorNS {
     internal static class NativeMethods {
@@ -89,17 +90,17 @@ namespace HMSEditorNS {
 
         [StructLayout(LayoutKind.Sequential)]
         struct SYSTEM_INFO {
-            public ushort wProcessorArchitecture;
-            public ushort wReserved;
-            public uint dwPageSize;
-            public IntPtr lpMinimumApplicationAddress;
-            public IntPtr lpMaximumApplicationAddress;
+            public ushort  wProcessorArchitecture;
+            public ushort  wReserved;
+            public uint    dwPageSize;
+            public IntPtr  lpMinimumApplicationAddress;
+            public IntPtr  lpMaximumApplicationAddress;
             public UIntPtr dwActiveProcessorMask;
-            public uint dwNumberOfProcessors;
-            public uint dwProcessorType;
-            public uint dwAllocationGranularity;
-            public ushort wProcessorLevel;
-            public ushort wProcessorRevision;
+            public uint    dwNumberOfProcessors;
+            public uint    dwProcessorType;
+            public uint    dwAllocationGranularity;
+            public ushort  wProcessorLevel;
+            public ushort  wProcessorRevision;
         }
 
         public enum Platform { X86, X64, Unknown }
@@ -129,15 +130,14 @@ namespace HMSEditorNS {
         }
 
         const ushort PROCESSOR_ARCHITECTURE_INTEL = 0;
-        const ushort PROCESSOR_ARCHITECTURE_IA64 = 6;
+        const ushort PROCESSOR_ARCHITECTURE_IA64  = 6;
         const ushort PROCESSOR_ARCHITECTURE_AMD64 = 9;
-        const ushort PROCESSOR_ARCHITECTURE_UNKNOWN = 0xFFFF;
 
         public const uint WM_SETREDRAW = 0x0B;
         #endregion
 
         public static void SendNotifyKey(IntPtr hwnd, int key) {
-            NativeMethods.SendNotifyMessage(hwnd, NativeMethods.WM_KEYDOWN, (IntPtr)key, IntPtr.Zero);
+            SendNotifyMessage(hwnd, WM_KEYDOWN, (IntPtr)key, IntPtr.Zero);
         }
 
     }

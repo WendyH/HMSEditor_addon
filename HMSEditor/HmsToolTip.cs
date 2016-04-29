@@ -1,13 +1,14 @@
 ﻿//#define debug
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using System.Windows.Forms.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using HMSEditorNS;
 using System.Collections.Generic;
 using System;
+// ReSharper disable InconsistentNaming
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS {
 
     /// <summary>
@@ -15,10 +16,10 @@ namespace FastColoredTextBoxNS {
     /// </summary>
     public sealed class HmsToolTip: ToolTip {
         #region Static computed field
-        private static Regex regexPhrases        = new Regex(@"(.*?[,;]|.*?$)", RegexOptions.Compiled | RegexOptions.Multiline);
-        private static Regex regexWords          = new Regex(@"(<.*?>|[\w-_]+|[^\w-_<]+)", RegexOptions.Compiled);
-        private static Regex regexSplitFuncParam = new Regex("[,;]"          , RegexOptions.Compiled);
-        private static Regex regexFunctionParams = new Regex(@"\(([^\)]+)"   , RegexOptions.Compiled);
+        private static Regex regexPhrases        = new Regex(@"(.*?[,;]|.*?$)", RegexOptions.Multiline);
+        private static Regex regexWords          = new Regex(@"(<.*?>|[\w-_]+|[^\w-_<]+)");
+        private static Regex regexSplitFuncParam = new Regex("[,;]"       );
+        private static Regex regexFunctionParams = new Regex(@"\(([^\)]+)");
         private static Size Margin        = new Size(6, 4);
         private static Font FontTitle     = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
         private static Font FontText      = new Font("Segoe UI", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
@@ -42,9 +43,9 @@ namespace FastColoredTextBoxNS {
 
         private string  _value   = "";
         public string    Help    = "";
-        public Rectangle Bounds  = new Rectangle();
+        public Rectangle Bounds;
         public int       iLine   = 0;
-        public bool      Visible = false;
+        public bool      Visible;
         public Rectangle ParentRect = new Rectangle();
         public HMSItem   HmsItem;
         //private long LastTS = 0;
@@ -52,22 +53,17 @@ namespace FastColoredTextBoxNS {
 
         public string Value {
             get { return _value; }
-            set {
-                if (value.Length > MaxValueLenght)
-                    _value = value.Substring(0, MaxValueLenght);
-                else
-                    _value = value;
-            }
+            set { _value = value.Length > MaxValueLenght ? value.Substring(0, MaxValueLenght) : value; }
         }
 
         public HmsToolTip() {
-            this.OwnerDraw    = true;
-            this.Popup       += new PopupEventHandler(this.OnPopup);
-            this.Draw        += new DrawToolTipEventHandler(this.OnDraw);
-            this.UseFading    = false;
-            this.UseAnimation = false;
-            this.ShowAlways   = false;
-            this.ReshowDelay  = 100000; 
+            OwnerDraw = true;
+            Popup    += OnPopup;
+            Draw     += OnDraw;
+            UseFading    = false;
+            UseAnimation = false;
+            ShowAlways   = false;
+            ReshowDelay  = 100000; 
             if (HMS.PFC.Families.Length > 0) {
                 FontTitle    = new Font(HMS.PFC.Families[0], 9.75f, FontStyle.Regular, GraphicsUnit.Point);
                 FontText     = new Font(HMS.PFC.Families[0], 9.75f, FontStyle.Regular, GraphicsUnit.Point);
@@ -83,13 +79,14 @@ namespace FastColoredTextBoxNS {
             base.Dispose(disposing);
         }
 
-        public new void Hide(IWin32Window win) {
+        public new void Hide(IWin32Window window) {
             HmsItem = null;
             Visible = false;
-            if (win!=null && ((Control)win).InvokeRequired) {
-                ((Control)win).Invoke((MethodInvoker)delegate { base.Hide(win); });
+            var win = window as Control;
+            if (win != null && win.InvokeRequired) {
+                win.Invoke((MethodInvoker)delegate { base.Hide(win); });
             } else {
-                base.Hide(win);
+                if (win != null) base.Hide(win);
             }
         }
 
@@ -146,7 +143,7 @@ namespace FastColoredTextBoxNS {
             }
             */
             // prepeare for tooltip
-            float heightCorrection = 0;
+            float heightCorrection;
             item.ToolTipTitle = CalcPhrasesBreaks(g, item.ToolTipTitle);
             string text  = GetText(item, out heightCorrection);
             //if (text.IndexOf("HmsRegExMatch3") > 0) {
@@ -164,10 +161,12 @@ namespace FastColoredTextBoxNS {
             if (item.Words.Count == 0) PrepareFastDraw(win, item);
             if (ParentRect.Width > 0) {
                 Control ctrl = win as Control;
-                Rectangle tipRect = ctrl.RectangleToScreen(new Rectangle(point.X, point.Y, item.ToolTipSize.Width, item.ToolTipSize.Height));
-                Rectangle scrRect = Screen.FromHandle(win.Handle).Bounds;
-                if ((tipRect.X + tipRect.Width) > scrRect.Width) {
-                    point.X = ParentRect.X - tipRect.Width - 2;
+                if (ctrl != null) {
+                    Rectangle tipRect = ctrl.RectangleToScreen(new Rectangle(point.X, point.Y, item.ToolTipSize.Width, item.ToolTipSize.Height));
+                    Rectangle scrRect = Screen.FromHandle(win.Handle).Bounds;
+                    if ((tipRect.X + tipRect.Width) > scrRect.Width) {
+                        point.X = ParentRect.X - tipRect.Width - 2;
+                    }
                 }
             }
             HmsItem = item;
@@ -180,7 +179,7 @@ namespace FastColoredTextBoxNS {
                 e.ToolTipSize = HmsItem.ToolTipSize;
             else {
                 Graphics g = Graphics.FromHwnd(e.AssociatedControl.Handle);
-                float heightCorrection = 0;
+                float heightCorrection;
                 string text  = GetText(GetToolTip(e.AssociatedControl), out heightCorrection);
                 //Size size    = TextRenderer.MeasureText(g, text, FontText, MaxSize, TextFormatFlags.WordBreak);
                 //size.Width  += Margin.Width  * 2;
@@ -232,18 +231,17 @@ namespace FastColoredTextBoxNS {
             //long ts = System.Diagnostics.Stopwatch.GetTimestamp();
             //if (ts - LastTS < 5000) return;
             Bounds = e.Bounds; // Store show Bounds
-            HmsToolTip        tip = sender as HmsToolTip;
             Graphics            g = e.Graphics;
             LinearGradientBrush b = new LinearGradientBrush(Bounds, Color.WhiteSmoke, Color.FromArgb(255, ColorBackgrnd), 90f);
             g.FillRectangle(b, Bounds);
             e.DrawBorder();
             g.SmoothingMode = SmoothingMode.HighQuality;
-            float i;
             if (HmsItem != null && HmsItem.Words.Count > 0) {
                 DrawFast(g, HmsItem.Words);
             } else if (OwnWords.Count > 0) {
                 DrawFast(g, OwnWords);
             } else {
+                float i;
                 WriteWords(GetText(e.ToolTipText, out i), Bounds, g);
             }
             b.Dispose();
@@ -268,7 +266,7 @@ namespace FastColoredTextBoxNS {
             string[] prmtrs = regexSplitFuncParam.Split(parameters);
             if ((nParam > 0) && (nParam <= prmtrs.Length)) activparam = prmtrs[nParam-1];
             if (activparam.Length > 0) {
-                int ind = parameters.IndexOf(activparam);
+                int ind = parameters.IndexOf(activparam, StringComparison.Ordinal);
                 paramtype = HMS.GetType(parameters.Substring(ind));
             }
             HMS.CurrentParamType = paramtype.ToLower();
@@ -295,21 +293,16 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        private static string CalcPhrasesBreaks(IWin32Window win, string text) {
-            Graphics g = Graphics.FromHwnd(win.Handle);
-            return CalcPhrasesBreaks(g, text);
-        }
-
         private static string CalcPhrasesBreaks(Graphics g, string text) {
             string newText = "";
-            Size wordSize; int x = Margin.Width;
+            int x = Margin.Width;
             string[] lines = text.Split('\n');
             for (int iline = 0; iline < lines.Length; iline++) {
                 MatchCollection mc = regexPhrases.Matches(lines[iline]);
                 foreach (Match m in mc) {
                     string word = m.Groups[1].Value;
                     if (word.StartsWith("<")) { newText += word; continue; }
-                    wordSize = TextRenderer.MeasureText(g, Regex.Replace(word, "<.*?>", ""), FontTitle, MaxSize, tf);
+                    var wordSize = TextRenderer.MeasureText(g, Regex.Replace(word, "<.*?>", ""), FontTitle, MaxSize, tf);
                     if (wordSize.Width > (MaxSize.Width - x - Margin.Width * 2 - 12)) { x = Margin.Width; newText += "\n"; word = word.TrimStart(); }
                     x += wordSize.Width;
                     newText += word;
@@ -334,7 +327,6 @@ namespace FastColoredTextBoxNS {
             Color  prevColor  = colorText;
             Size   wordSize   = new Size();
             int    prevHeight = 0;
-            bool   notColored = false;
             int    maxWidth   = 0;
             string[] lines = text.Split('\n');
             for (int iline = 0; iline < lines.Length; iline++) {
@@ -355,6 +347,7 @@ namespace FastColoredTextBoxNS {
                     if (word == "<p>" ) { prevColor = color  ; font = FontTextBold; color = colorParam; continue; }
                     if (word == "</p>") { color = prevColor  ; font = FontTitle   ; continue; }
                     if (word == "<id>") { point.Y += 3       ; continue; }
+                    bool notColored;
                     if (tb!=null) {
                         notColored = (color == colorString) || (color == colorValue);
                         if      (!notColored && isKeyWord(word)) tb.AppendText(word, colorKeyword, font);
@@ -405,11 +398,11 @@ namespace FastColoredTextBoxNS {
         }
 
         private static bool isKeyWord(string word) {
-            return (HMS.HmsTypesString + HMS.KeywordsString).IndexOf("|" + word.ToLower() + "|") >= 0;
+            return (HMS.HmsTypesString + HMS.KeywordsString).IndexOf("|" + word.ToLower() + "|", StringComparison.Ordinal) >= 0;
         }
 
         private static bool isClass(string word) {
-            return HMS.ClassesString.IndexOf("|" + word.ToLower() + "|") >= 0;
+            return HMS.ClassesString.IndexOf("|" + word.ToLower() + "|", StringComparison.Ordinal) >= 0;
         }
 
     }
@@ -428,7 +421,7 @@ namespace FastColoredTextBoxNS {
         }
 
         public bool SameStyle(WordStyle o) {
-            return ((Font == o.Font) && (Color == o.Color) && (Point.Y == o.Point.Y));
+            return Equals(Font, o.Font) && (Color == o.Color) && (Point.Y == o.Point.Y);
         }
 
         public void Draw(Graphics g) {

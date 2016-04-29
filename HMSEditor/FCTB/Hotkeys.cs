@@ -127,9 +127,12 @@ namespace FastColoredTextBoxNS
             foreach (var p in s.Split(','))
             {
                 var pp = p.Split('=');
-                var k = (Keys)kc.ConvertFromString(pp[0].Trim());
-                var a = (FCTBAction)Enum.Parse(typeof(FCTBAction), pp[1].Trim());
-                result[k] = a;
+                var convertFromString = kc.ConvertFromString(pp[0].Trim());
+                if (convertFromString != null) {
+                    var k = (Keys)convertFromString;
+                    var a = (FCTBAction)Enum.Parse(typeof(FCTBAction), pp[1].Trim());
+                    result[k] = a;
+                }
             }
 
             Thread.CurrentThread.CurrentUICulture = cult;
@@ -240,14 +243,14 @@ namespace FastColoredTextBoxNS
 
     internal class HotkeysEditor : UITypeEditor
     {
-        public override UITypeEditorEditStyle GetEditStyle(System.ComponentModel.ITypeDescriptorContext context)
+        public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
         {
             return UITypeEditorEditStyle.Modal;
         }
 
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
-            if ((provider != null) && (((IWindowsFormsEditorService) provider.GetService(typeof(IWindowsFormsEditorService))) != null))
+            if ((IWindowsFormsEditorService) provider?.GetService(typeof(IWindowsFormsEditorService)) != null)
             {
                 var form = new HotkeysEditorForm(HotkeysMapping.Parse(value as string));
 

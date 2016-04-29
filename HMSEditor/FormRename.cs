@@ -11,14 +11,13 @@ namespace HMSEditorNS {
         public string Context    { get { return labelContext.Text; } set { labelContext.Text = value; } }
         public string ExcludeFunctions = "";
         public string LocalFunction    = "";
-        public FastColoredTextBox TextBox { get { return fastColoredTextBox1; } }
-        public int LineNo4Goto = 0;
-        public int CharNo4Goto = 0;
+        // ReSharper disable once ConvertToAutoProperty
+        public FastColoredTextBox TextBox => fastColoredTextBox1;
+        public int LineNo4Goto;
+        public int CharNo4Goto;
 
         public List<Range> OrigRanges = new List<Range>();
         public string TextLines = "";
-
-        private static Regex regexAllowedChars = new Regex(@"^\w+$", RegexOptions.Compiled);
 
         private ToolTip ContextToolTip = new ToolTip();
 
@@ -46,7 +45,7 @@ namespace HMSEditorNS {
             }
         }
 
-        private bool wasChanges = false;
+        private bool wasChanges;
         private void textBoxName_TextChanged(object sender, EventArgs e) {
             Place oldCaret = TextBox.Selection.Start;
             if (wasChanges) TextBox.Undo();
@@ -55,10 +54,9 @@ namespace HMSEditorNS {
             TextBox.BeginAutoUndo();
             try {
                 List<Range> ranges = new List<Range>();
-                int iLine;
                 foreach (Range range in OrigRanges) {
-                    iLine = range.StoredLineNo;
-                    Line line = TextBox.GetRealLine(iLine);
+                    var  iLine  = range.StoredLineNo;
+                    Line line   = TextBox.GetRealLine(iLine);
                     line.LineNo = range.Start.iLine + 1;
                     Range r = new Range(TextBox, range.Start.iChar, iLine, range.End.iChar, iLine);
                     ranges.Add(r);
@@ -73,10 +71,14 @@ namespace HMSEditorNS {
                 TextBox.EndAutoUndo();
             }
             int count = OrigRanges.Count;
-            if (NewVarName != OldVarName)
-                labelFounded.Text = getNumText(count, new[] { "Произведена", "Произведено", "Произведено" }) + " " + count.ToString() + " " + getNumText(count, new[] { "замена", "замены", "замен" });
-            else
-                labelFounded.Text = "Найдено " + count.ToString() + " " + getNumText(count, new[] { "совпадение", "совпадения", "совпадений" });
+            if (NewVarName != OldVarName) {
+                var wordMaked = getNumText(count, new[] {"Произведена", "Произведено", "Произведено"});
+                var wordRepl  = getNumText(count, new[] {"замена"     , "замены"     , "замен"      });
+                labelFounded.Text = $"{wordMaked} {count} {wordRepl}";
+            } else {
+                var wordMatch = getNumText(count, new[] { "совпадение", "совпадения" , "совпадений" });
+                labelFounded.Text = $"Найдено {count} {wordMatch}";
+            }
             textBoxName.Focus();
         }
 
@@ -94,7 +96,7 @@ namespace HMSEditorNS {
         private void textBoxName_KeyPress(object sender, KeyPressEventArgs e) {
             if (System.Char.IsDigit  (e.KeyChar)) return;
             if (System.Char.IsControl(e.KeyChar)) return;
-            e.Handled = !regexAllowedChars.IsMatch(e.KeyChar.ToString());
+            e.Handled = !Regex.IsMatch(e.KeyChar.ToString(), @"^\w+$");
         }
 
         /// <summary>
@@ -128,7 +130,7 @@ namespace HMSEditorNS {
             if (e.X < (TextBox.LeftIndent - 4)) {
                 int iFirstLine = TextBox.YtoLineIndex();
                 int yFirstLine = TextBox.LineInfos[iFirstLine].startY - TextBox.VerticalScroll.Value;
-                int iLine = (int)((e.Y - yFirstLine) / (TextBox.Font.Height - 1)) + iFirstLine;
+                int iLine = (e.Y - yFirstLine) / (TextBox.Font.Height - 1) + iFirstLine;
                 try {
                     Line line    = TextBox.GetRealLine(iLine);
                     LineNo4Goto  = line.LineNo-1;
@@ -140,7 +142,10 @@ namespace HMSEditorNS {
                     }
                     DialogResult = DialogResult.Retry;
                     Close();
-                } catch { }
+                }
+                catch {
+                    // ignored
+                }
             }
         }
 

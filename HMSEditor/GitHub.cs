@@ -8,11 +8,8 @@ using whYamlParser;
 
 namespace HMSEditorNS {
     public static class GitHub {
-        private static string      giturl = "https://api.github.com/repos/";
-        private static Regex regexUpdDate = new Regex(@"""pushed_at""\s*?:\s*?""(.*?)""" , RegexOptions.Compiled);
-        private static Regex regexVersion = new Regex(@"""tag_name""\s*?:\s*?""(.*?)"""  , RegexOptions.Compiled);
-        private static Regex regexRelease = new Regex(@"""browser_download_url""\s*?:\s*?""([^""]+HMSEditor.exe)""", RegexOptions.Compiled);
-        private static string  ReleaseUrl = "";
+        private static string giturl       = "https://api.github.com/repos/";
+        private static string ReleaseUrl   = "";
 
         public static bool IsWinVistaOrHigher() {
             OperatingSystem OS = Environment.OSVersion;
@@ -32,31 +29,30 @@ namespace HMSEditorNS {
             WebResponse  response   = null;
             StreamReader readStream = null;
             try {
-                HttpWebRequest  request = CreateRequest(url);
+                HttpWebRequest request = CreateRequest(url);
                 response = request.GetResponse();
-                Stream    receiveStream = response.GetResponseStream();
-                readStream = new StreamReader(receiveStream, Encoding.UTF8);
-                body = readStream.ReadToEnd();
+                Stream receiveStream = response.GetResponseStream();
+                if (receiveStream != null) readStream = new StreamReader(receiveStream, Encoding.UTF8);
+                if (readStream    != null) body = readStream.ReadToEnd();
             } catch (WebException e) {
                 HMS.LogError("Ошибка получения JSON данных с GitHub: " + url);
                 HMS.LogError("Сообщение: " + e.Message+ " Status: " + e.Status.ToString());
-                if (e.Response != null) {
-                    string resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
+                var respStream = e.Response?.GetResponseStream();
+                if (respStream != null) {
+                    string resp = new StreamReader(respStream).ReadToEnd();
                     HMS.LogError(resp);
                 }
-
             } catch (Exception e) {
                 HMS.LogError(e.ToString());
 
             } finally {
-                if (response   != null) response  .Close();
-                if (readStream != null) readStream.Close();
+                response  ?.Close();
+                readStream?.Close();
             }
             return body;
         }
 
-        private static int DownloadFile(string url, string file) {
-            int   bytesProcessed = 0;
+        private static void DownloadFile(string url, string file) {
             Stream  remoteStream = null;
             Stream   localStream = null;
             WebResponse response = null;
@@ -65,36 +61,32 @@ namespace HMSEditorNS {
                 HttpWebRequest request = CreateRequest(url);
                 if (request != null) {
                     response = request.GetResponse();
-                    if (response != null) {
-                        remoteStream  = response.GetResponseStream();
-                        localStream   = File.Create(file);
-                        byte[] buffer = new byte[1024];
-                        int bytesRead;
-                        do {
-                            bytesRead = remoteStream.Read(buffer, 0, buffer.Length);
-                            localStream.Write(buffer, 0, bytesRead);
-                            bytesProcessed += bytesRead;
-                        } while (bytesRead > 0);
-                    }
+                    remoteStream  = response.GetResponseStream();
+                    localStream   = File.Create(file);
+                    byte[] buffer = new byte[1024];
+                    int bytesRead = 0;
+                    do {
+                        if (remoteStream != null) bytesRead = remoteStream.Read(buffer, 0, buffer.Length);
+                        localStream.Write(buffer, 0, bytesRead);
+                    } while (bytesRead > 0);
                 }
 
             } catch (WebException e) {
-                HMS.LogError("Ошибка получения файла с GitHub: " + url);
-                HMS.LogError(e.Message + " Status: " + e.Status.ToString());
-                if (e.Response != null) {
-                    string resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
+                HMS.LogError($"Ошибка получения файла с GitHub: {url}");
+                HMS.LogError($"{e.Message} Status: {e.Status}");
+                var respStream = e.Response?.GetResponseStream();
+                if (respStream != null) {
+                    string resp = new StreamReader(respStream).ReadToEnd();
                     HMS.LogError(resp);
                 }
-
             } catch (Exception e) {
                 HMS.LogError(e.ToString());
 
             } finally {
-                if (response     != null) response    .Close();
-                if (remoteStream != null) remoteStream.Close();
-                if (localStream  != null) localStream .Close();
+                response    ?.Close();
+                remoteStream?.Close();
+                localStream ?.Close();
             }
-            return bytesProcessed;
         }
 
         public static string NormalizeDate(string date) {
@@ -102,20 +94,20 @@ namespace HMSEditorNS {
         }
 
         public static string GetRepoUpdatedDate(string userRepo, out string info) {
-            string lastDate = ""; info = ""; StringBuilder sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
             string jsonInfo = DownloadString(giturl + userRepo);
-            lastDate = regexUpdDate.Match(jsonInfo).Groups[1].Value;
+            var lastDate = Regex.Match(jsonInfo, @"""pushed_at""\s*?:\s*?""(.*?)""").Groups[1].Value;
             string jsonCommitsData = DownloadString(giturl + userRepo + "/commits");
             YamlObject Commits = YamlParser.Parse(jsonCommitsData);
             foreach (var commit in Commits.ChildItems) {
                 string date = NormalizeDate(commit[@"commit\author\date"]);
                 string msg  = commit[@"commit\message"];
                 if (date.StartsWith("2015.10")) break;
-                if ((msg.IndexOf("README.md") > 0) || (msg.IndexOf("gitignore") > 0)) continue;
+                if ((msg.IndexOf("README.md", StringComparison.Ordinal) > 0) || (msg.IndexOf("gitignore", StringComparison.Ordinal) > 0)) continue;
                 sb.AppendLine("### "+date + "  \r\n" + msg + "\r\n");
             }
             info = DownloadString("https://raw.githubusercontent.com/"+userRepo+"/master/README.md");
-            info+= "  \r\n## История обновлений и исправлений  \r\n" + sb.ToString();
+            info+= "  \r\n## История обновлений и исправлений  \r\n" + sb;
             info = MarkdownToHtml(info);
             return lastDate;
         }
@@ -137,25 +129,24 @@ namespace HMSEditorNS {
                 dataStream.Write(byteArray, 0, byteArray.Length);
 
                 response = request.GetResponse();
-                Stream    receiveStream = response.GetResponseStream();
-                readStream = new StreamReader(receiveStream, Encoding.UTF8);
-                body = readStream.ReadToEnd();
-
+                Stream receiveStream = response.GetResponseStream();
+                if (receiveStream != null) readStream = new StreamReader(receiveStream, Encoding.UTF8);
+                if (readStream    != null) body = readStream.ReadToEnd();
             } catch (WebException e) {
                 HMS.LogError("Ошибка получения Markdown данных с GitHub: " + url);
                 HMS.LogError("Сообщение: " + e.Message+ " Status: " + e.Status.ToString());
-                if (e.Response != null) {
-                    string resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
+                var respStream = e.Response?.GetResponseStream();
+                if (respStream != null) {
+                    string resp = new StreamReader(respStream).ReadToEnd();
                     HMS.LogError(resp);
                 }
-
             } catch (Exception e) {
                 HMS.LogError(e.ToString());
 
             } finally {
-                if (response   != null) dataStream.Close();
-                if (response   != null) response  .Close();
-                if (readStream != null) readStream.Close();
+                dataStream?.Close();
+                response  ?.Close();
+                readStream?.Close();
             }
             return body;
         }
@@ -163,7 +154,6 @@ namespace HMSEditorNS {
         public static string GetLatestReleaseVersion(string userRepo, out string updateInfo) {
             string urlInfo = giturl + userRepo + "/releases";
             string version = "";
-            updateInfo = "";
             ReleaseUrl = "";
             StringBuilder sbVersionHistory = new StringBuilder();
             string jsonData = DownloadString(urlInfo);
@@ -199,14 +189,11 @@ namespace HMSEditorNS {
         private static void TimeoutCallback(object state, bool timedOut) {
             if (timedOut) {
                 HttpWebRequest request = state as HttpWebRequest;
-                if (request != null) {
-                    request.Abort();
-                }
+                request?.Abort();
             }
         }
 
         private static void StartAsyncRequest(string url, RequestState requestState) {
-            IAsyncResult result = null;
             try {
                 requestState.StreamDst = File.OpenWrite(requestState.File);
                 if (!requestState.StreamDst.CanWrite) {
@@ -215,22 +202,19 @@ namespace HMSEditorNS {
                 }
                 HttpWebRequest request = CreateRequest(url);
                 requestState.request = request;
-                result = request.BeginGetResponse(new AsyncCallback(AsyncRespCallback), requestState);
-
-                if (result != null)
-                    ThreadPool.RegisterWaitForSingleObject(result.AsyncWaitHandle, new WaitOrTimerCallback(TimeoutCallback), request, DefaultTimeout, true);
-
+                var result = request.BeginGetResponse(AsyncRespCallback, requestState);
+                ThreadPool.RegisterWaitForSingleObject(result.AsyncWaitHandle, TimeoutCallback, request, DefaultTimeout, true);
                 //allDone.WaitOne();
 
             } catch (WebException e) {
                 requestState.Close();
-                HMS.LogError("Ошибка асинхронного запроса на GitHub: " + url);
-                HMS.LogError(e.Message + " Status: " + e.Status.ToString());
-                if (e.Response != null) {
-                    string resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
+                HMS.LogError($"Ошибка асинхронного запроса на GitHub: {url}");
+                HMS.LogError($"{e.Message} Status: {e.Status}");
+                var respStream = e.Response?.GetResponseStream();
+                if (respStream != null) {
+                    string resp = new StreamReader(respStream).ReadToEnd();
                     HMS.LogError(resp);
                 }
-
             } catch (Exception e) {
                 requestState.Close();
                 HMS.LogError(e.ToString());
@@ -241,20 +225,18 @@ namespace HMSEditorNS {
         private static void AsyncRespCallback(IAsyncResult asyncResult) {
             RequestState requestState = ((RequestState)(asyncResult.AsyncState));
             try {
-                HttpWebResponse response = ((HttpWebResponse)(requestState.request.EndGetResponse(asyncResult)));
-                if (requestState.response == null)
-                    requestState.response = response;
+                HttpWebResponse response = (HttpWebResponse)requestState.request.EndGetResponse(asyncResult);
+                requestState.response   = response;
                 requestState.TotalBytes = response.ContentLength;
-                if (DownloadProgressChanged != null)
-                    DownloadProgressChanged(requestState, EventArgs.Empty);
+                DownloadProgressChanged?.Invoke(requestState, EventArgs.Empty);
                 Stream stream = requestState.response.GetResponseStream();
-                stream.BeginRead(requestState.BufferRead, 0, BUFFER_SIZE, new AsyncCallback(AsyncReadCallback), requestState);
-
+                stream?.BeginRead(requestState.BufferRead, 0, BUFFER_SIZE, AsyncReadCallback, requestState);
             } catch (WebException e) {
                 HMS.LogError("Ошибка асинхронного получения данных с GitHub");
-                HMS.LogError(e.Message + " Status: " + e.Status.ToString());
-                if (e.Response != null) {
-                    string resp = new StreamReader(e.Response.GetResponseStream()).ReadToEnd();
+                HMS.LogError($"{e.Message} Status: {e.Status}");
+                var respStream = e.Response?.GetResponseStream();
+                if (respStream != null) {
+                    string resp = new StreamReader(respStream).ReadToEnd();
                     HMS.LogError(resp);
                 }
                 requestState.Close();
@@ -267,20 +249,19 @@ namespace HMSEditorNS {
         }
 
         private static void AsyncReadCallback(IAsyncResult asyncResult) {
-            RequestState state = ((RequestState)(asyncResult.AsyncState));
+            RequestState state = (RequestState)asyncResult.AsyncState;
             int bytesRead = 0;
             try {
                 Stream stream = state.response.GetResponseStream();
-                if (stream.CanRead)
+                if (stream != null && stream.CanRead)
                     bytesRead = stream.EndRead(asyncResult);
 
                 if (bytesRead > 0) {
                     state.BytesRead += bytesRead;
                     state.StreamDst.Write(state.BufferRead, 0, bytesRead);
                     state.StreamDst.Flush();
-                    stream.BeginRead(state.BufferRead, 0, BUFFER_SIZE, new AsyncCallback(AsyncReadCallback), state);
-                    if (DownloadProgressChanged != null)
-                        DownloadProgressChanged(state, EventArgs.Empty);
+                    stream?.BeginRead(state.BufferRead, 0, BUFFER_SIZE, AsyncReadCallback, state);
+                    DownloadProgressChanged?.Invoke(state, EventArgs.Empty);
                 } else {
                     state.Close();
                 }
@@ -295,12 +276,11 @@ namespace HMSEditorNS {
         }
 
         public static void DownloadFileAsync(string url, string tmpFile) {
-            RequestState requestState = new RequestState();
-            requestState.File = tmpFile;
+            RequestState requestState = new RequestState {File = tmpFile};
             StartAsyncRequest(url, requestState);
         }
 
-        internal static Regex extractOnlyVersion = new Regex(@"[\d\.,\s]+", RegexOptions.Compiled);
+        internal static Regex extractOnlyVersion = new Regex(@"[\d\.,\s]+");
 
         /// <summary>
         /// Create all folders and subfolders in the file path
@@ -309,12 +289,16 @@ namespace HMSEditorNS {
         private static void CreateFoldersOfFilePath(string path) {
             try {
                 string directory = "";
-                foreach (string dir in Path.GetDirectoryName(path).Split(Path.DirectorySeparatorChar)) {
-                    directory += dir + Path.DirectorySeparatorChar;
-                    if (!Directory.Exists(directory))
-                        Directory.CreateDirectory(directory);
-                }
-            } catch {
+                var directoryName = Path.GetDirectoryName(path);
+                if (directoryName != null)
+                    foreach (string dir in directoryName.Split(Path.DirectorySeparatorChar)) {
+                        directory += dir + Path.DirectorySeparatorChar;
+                        if (!Directory.Exists(directory))
+                            Directory.CreateDirectory(directory);
+                    }
+            }
+            catch {
+                // ignored
             }
         }
 
@@ -344,22 +328,21 @@ namespace HMSEditorNS {
         }
 
         public class RequestState {
-            const int BUFFER_SIZE = 1024;
             public StringBuilder   requestData = new StringBuilder("");
             public byte[]          BufferRead  = new byte[BUFFER_SIZE];
-            public HttpWebRequest  request     = null;
-            public HttpWebResponse response    = null;
-            public Stream          StreamDst   = null;
-            public long            TotalBytes  = 0;
-            public long            BytesRead   = 0;
             public string          File        = "";
+            public HttpWebRequest  request;
+            public HttpWebResponse response;
+            public Stream          StreamDst;
+            public long            TotalBytes;
+            public long            BytesRead;
 
             public void Close() {
-                if (StreamDst != null) StreamDst.Close();
+                StreamDst?.Close();
                 if (response != null) {
                     response.Close();
                     if (DownloadProgressChanged != null)
-                        DownloadFileCompleted(this, EventArgs.Empty);
+                        DownloadFileCompleted?.Invoke(this, EventArgs.Empty);
                 }
             }
         }

@@ -394,7 +394,6 @@
             this.Name = "FormValue";
             this.ShowIcon = false;
             this.Text = "Просмотр значения";
-            this.TopMost = true;
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormValue_KeyDown);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

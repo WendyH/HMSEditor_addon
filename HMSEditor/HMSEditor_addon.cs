@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using HMSEditorNS;
 using NativeMethods = HMSEditorNS.NativeMethods;
 
+// ReSharper disable once CheckNamespace
 namespace HmsAddons {
 
     [Guid("9A871DC9-D8ED-4790-A5AB-E1A825639F2B")]
@@ -19,11 +20,11 @@ namespace HmsAddons {
                             Title            = HMSEditor.Title,
                             Description      = HMSEditor.Description,
                             RequiredVersion  = "2.03",
-                            CheckedOnVersion = "2.12"
+                            CheckedOnVersion = "2.14"
                         }
                     };
 
-        public uint GetCount(ref int aCount) {
+        public uint GetCount(out int aCount) {
             aCount = AddonsCount;
             return HRESULT.S_OK;
         }
@@ -32,11 +33,11 @@ namespace HmsAddons {
             uint result = HRESULT.E_UNEXPECTED;
             if ((aIndex >= 0) && (aIndex < AddonsCount)) {
                 HmsAddonInfo info = AddonInfoList[aIndex];
-                aClassID          = info.ClassID;
-                aInterfaceID      = info.InterfaceID;
-                aTitle            = info.Title;
-                aDescription      = info.Description;
-                aRequiredVersion  = info.RequiredVersion;
+                aClassID = info.ClassID;
+                aInterfaceID = info.InterfaceID;
+                aTitle = info.Title;
+                aDescription = info.Description;
+                aRequiredVersion = info.RequiredVersion;
                 aCheckedOnVersion = info.CheckedOnVersion;
                 result = HRESULT.S_OK;
             }
@@ -81,8 +82,8 @@ namespace HmsAddons {
     [ClassInterface(ClassInterfaceType.None)]
     [ComVisible(true)]
     public class HmsScriptEditor: IHmsScriptEditor, IDisposable {
-        private HMSEditor EditBox = null;
-        private bool  FirstSetPos = false;
+        private HMSEditor EditBox;
+        private bool      FirstSetPos;
         protected virtual void Dispose(bool disposing) {
             if (disposing) {
                 if (EditBox != null && !EditBox.IsDisposed) EditBox.Dispose();
@@ -94,22 +95,16 @@ namespace HmsAddons {
             Dispose(false);
         }
 
-        private void Timer_Tick(object sender, EventArgs e) {
-            if (EditBox != null) EditBox.Focus();
-        }
-
         public void Dispose() {
             Dispose(true);
         }
 
         public void LoadSettings() {
-            if (EditBox!=null)
-                EditBox.LoadSettings();
+            EditBox?.LoadSettings();
         }
 
         public void SaveSettings() {
-            if (EditBox != null)
-                EditBox.SaveSettings();
+            EditBox?.SaveSettings();
         }
 
         public uint AddMessage(ref object aMessage) {
@@ -125,7 +120,7 @@ namespace HmsAddons {
                 aEditor = EditBox.Handle;
 
             } catch (Exception e) {
-                MessageBox.Show("Ошибка создания окна редактора.\n\n" + e.ToString(), HMSEditor.Title);
+                MessageBox.Show("Ошибка создания окна редактора.\n\n" + e, HMSEditor.Title);
                 Dispose();
                 return HRESULT.E_UNEXPECTED;
             }
@@ -147,8 +142,8 @@ namespace HmsAddons {
         }
 
         public uint GetCaretPos(ref int aLine, ref int aChar) {
-            if (EditBox !=null) {
-                EditBox.GetCaretPos(ref aLine, ref aChar);
+            if (EditBox != null) {
+                EditBox.GetCaretPos(out aLine, out aChar);
                 return HRESULT.S_OK;
             }
             return HRESULT.E_UNEXPECTED;
@@ -240,7 +235,7 @@ namespace HmsAddons {
 
         public uint SetScriptText(ref object aText) {
             if (EditBox != null) {
-                EditBox.Text     = (string)aText;
+                EditBox.Text = (string)aText;
                 EditBox.Modified = false;
                 EditBox.IsFirstActivate = true;
                 EditBox.Editor.ClearUndo();
@@ -259,9 +254,7 @@ namespace HmsAddons {
         }
 
         public uint Setup() {
-            if (EditBox != null) {
-                EditBox.HotKeysDialog();
-            }
+            EditBox?.HotKeysDialog();
             return HRESULT.S_OK;
         }
 

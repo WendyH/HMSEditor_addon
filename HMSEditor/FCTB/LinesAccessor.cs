@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS
 {
     public class LinesAccessor : IList<string>
@@ -24,12 +23,12 @@ namespace FastColoredTextBoxNS
 
         public void Insert(int index, string item)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void RemoveAt(int index)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public string this[int index]
@@ -40,18 +39,18 @@ namespace FastColoredTextBoxNS
             }
             set
             {
-                throw new NotImplementedException();
+                //throw new NotImplementedException();
             }
         }
 
         public void Add(string item)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public bool Contains(string item)
@@ -69,19 +68,14 @@ namespace FastColoredTextBoxNS
                 array[i + arrayIndex] = ts[i].Text;
         }
 
-        public int Count
-        {
-            get { return ts.Count; }
-        }
+        public int Count => ts.Count;
 
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public bool IsReadOnly => true;
 
         public bool Remove(string item)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
+            return true;
         }
 
         public IEnumerator<string> GetEnumerator()

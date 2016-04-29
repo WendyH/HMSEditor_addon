@@ -7,19 +7,20 @@ using System.IO;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Security.Permissions;
+using HMSEditorNS.Properties;
 
 namespace HMSEditorNS {
     partial class AboutDialog: Form {
-        private static AboutDialog ThisDialog = null;
-        private static ProgressBar progress   = null;
+        private static AboutDialog ThisDialog;
+        private static ProgressBar progress;
         private static string tmpFileRelease  = "";
         private static string tmpFileTemplate = "";
         private System.Threading.Timer UpdateTimer = new System.Threading.Timer(UpdateTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
         private string TemplatesInfo = "";
         private string TemplatesDate = "";
-        private int ProgressProcent  = 0;
+        private int ProgressProcent;
         private static string ExecutableDir = Path.GetDirectoryName(Application.ExecutablePath);
-        private static bool   DeniedClose   = false;
+        private static bool   DeniedClose;
 
         public AboutDialog() {
             ThisDialog = this;
@@ -27,16 +28,21 @@ namespace HMSEditorNS {
             
             tmpFileRelease  = HMS.DownloadDir + "HMSEditor_addon.zip";
             tmpFileTemplate = HMS.DownloadDir + "HMSEditorTemplates.zip";
-            
-            this.Text = string.Format("О программе {0}", AssemblyTitle);
-            this.labelProductName.Text = AssemblyProduct;
-            this.labelVersion      .Text = string.Format("Версия {0}", AssemblyVersion);
-            this.labelCopyright    .Text = AssemblyCopyright;
-            this.labelCompanyName  .Text = AssemblyCompany;
-            this.textBoxDescription.Text = AssemblyDescription;
+
+            Text = $"О программе {AssemblyTitle}";
+            labelProductName.Text = AssemblyProduct;
+            labelVersion.Text = $"Версия {AssemblyVersion}";
+            labelCopyright.Text = AssemblyCopyright;
+            labelCompanyName.Text = AssemblyCompany;
+            textBoxDescription.Text = AssemblyDescription;
             DeleteGarbage();
             progress = progressBar1;
             logo.Init();
+        }
+
+        public sealed override string Text {
+            get { return base.Text; }
+            set { base.Text = value; }
         }
 
         #region Методы доступа к атрибутам сборки
@@ -50,15 +56,11 @@ namespace HMSEditorNS {
                         return titleAttribute.Title;
                     }
                 }
-                return System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
+                return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
             }
         }
 
-        public static string AssemblyVersion {
-            get {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            }
-        }
+        public static string AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         public static string AssemblyDescription {
             get {
@@ -106,17 +108,17 @@ namespace HMSEditorNS {
             string tmpltsLastUpdateStored = HMSEditor.Settings.Get("TemplateLastUpdate", "Common", "");
             if (tmpltsLastUpdateStored != templateVersion) {
                 string datetime = templateVersion.Replace("T", " ").Replace("Z", "").Replace("-", ".");
-                labelNewTemplates.Text = "Есть новая версия шаблонов от " + datetime;
+                labelNewTemplates.Text = Resources.AboutDialog_CheckUpdate_Есть_новая_версия_шаблонов_от_ + datetime;
                 labelNewTemplates .Visible = true;
                 btnUpdateTemplates.Visible = true;
             }
             int resultCompares = GitHub.CompareVersions(lastVersion, AssemblyVersion);
             if (lastVersion.Length == 0) {
-                labelNewVersion.Text = "Не удалось проверить версию на GitHub";
+                labelNewVersion.Text = Resources.AboutDialog_CheckUpdate_Не_удалось_проверить_версию_на_GitHub;
             } else if (resultCompares == 0) {
-                labelNewVersion.Text = "У вас последняя версия";
+                labelNewVersion.Text = Resources.AboutDialog_CheckUpdate_У_вас_последняя_версия;
             } else if (resultCompares > 0) {
-                labelNewVersion.Text = "Есть новая версия " + lastVersion;
+                labelNewVersion.Text = Resources.AboutDialog_CheckUpdate_Есть_новая_версия_ + lastVersion;
                 HMS.NewVersionExist      = true;
                 btnUpdateProgram.Visible = true;
             }
@@ -175,13 +177,13 @@ namespace HMSEditorNS {
             int DL2 = Math.Min(L, h);     L -= DL2;
             int DL3 = Math.Min(L, w);     L -= DL3;
             int DL4 = Math.Min(L, h);     L -= DL4;
-            int DL5 = Math.Min(L, w / 2); L -= DL5;
+            int DL5 = Math.Min(L, w / 2);
             int x = w / 2 + 1, y = h + 1;
             if (DL1 > 0) g.DrawLine(pen, x, y, x - DL1 - 1, y); x -= DL1;
             if (DL2 > 0) g.DrawLine(pen, x, y, x, y - DL2 - 1); y -= DL2;
             if (DL3 > 0) g.DrawLine(pen, x, y, x + DL3 + 1, y); x += DL3;
             if (DL4 > 0) g.DrawLine(pen, x, y, x, y + DL4 + 1); y += DL4;
-            if (DL5 > 0) g.DrawLine(pen, x, y, x - DL5 - 1, y); x -= DL5;
+            if (DL5 > 0) g.DrawLine(pen, x, y, x - DL5 - 1, y);
             pen.Dispose();
             g.Dispose();
         }
@@ -189,11 +191,11 @@ namespace HMSEditorNS {
         private void btnUpdate_Click(object sender, EventArgs e) {
             //progress.Show();
             Refresh();
-            btnUpdateProgram.Text = "Идёт загрузка...";
+            btnUpdateProgram.Text = Resources.AboutDialog_btnUpdate_Click_Идёт_загрузка___;
             btnUpdateProgram  .Enabled = false;
             btnUpdateTemplates.Enabled = false;
-            GitHub.DownloadFileCompleted   += new EventHandler(DownloadReleaseCallback);
-            GitHub.DownloadProgressChanged += new EventHandler(DownloadProgressCallback);
+            GitHub.DownloadFileCompleted   += DownloadReleaseCallback;
+            GitHub.DownloadProgressChanged += DownloadProgressCallback;
 
             GitHub.DownloadLatestReleaseAsync(tmpFileRelease);
         }
@@ -210,19 +212,20 @@ namespace HMSEditorNS {
             }
 
             bool   isAllow = false;
-            string userSID = identity.User.Value;
-            int i;
-            foreach (FileSystemAccessRule rule in rules) {
-                if (rule.IdentityReference.ToString() == userSID || identity.Groups.Contains(rule.IdentityReference)) {
-                    i  = (int)(rule.FileSystemRights & FileSystemRights.Write);
-                    i |= (int)(rule.FileSystemRights & FileSystemRights.WriteAttributes);
-                    i |= (int)(rule.FileSystemRights & FileSystemRights.WriteData);
-                    i |= (int)(rule.FileSystemRights & FileSystemRights.CreateDirectories);
-                    i |= (int)(rule.FileSystemRights & FileSystemRights.CreateFiles);
-                    if ((i > 0) && (rule.AccessControlType == AccessControlType.Deny))
-                        return false;
-                    else if ((i > 0) && (rule.AccessControlType == AccessControlType.Allow))
-                        isAllow = true;
+            if (identity.User != null) {
+                string userSID = identity.User.Value;
+                foreach (FileSystemAccessRule rule in rules) {
+                    if (identity.Groups != null && (rule.IdentityReference.ToString() == userSID || identity.Groups.Contains(rule.IdentityReference))) {
+                        var i = (int)(rule.FileSystemRights & FileSystemRights.Write);
+                        i |= (int)(rule.FileSystemRights & FileSystemRights.WriteAttributes);
+                        i |= (int)(rule.FileSystemRights & FileSystemRights.WriteData);
+                        i |= (int)(rule.FileSystemRights & FileSystemRights.CreateDirectories);
+                        i |= (int)(rule.FileSystemRights & FileSystemRights.CreateFiles);
+                        if ((i > 0) && (rule.AccessControlType == AccessControlType.Deny))
+                            return false;
+                        else if ((i > 0) && (rule.AccessControlType == AccessControlType.Allow))
+                            isAllow = true;
+                    }
                 }
             }
             return isAllow;
@@ -232,14 +235,16 @@ namespace HMSEditorNS {
             try {
                 if (File.Exists(file))
                     File.Delete(file);
-            } catch {
+            }
+            catch {
+                // ignored
             }
         }
 
         public void SetNeedRestart() {
-            labelNewVersion .Text    = "Требуется перезапуск дополнения";
+            labelNewVersion .Text    = Resources.AboutDialog_SetNeedRestart_Требуется_перезапуск_дополнения;
             labelNewVersion .Visible = true;
-            btnUpdateProgram.Text    = "Перезапустить";
+            btnUpdateProgram.Text    = Resources.AboutDialog_SetNeedRestart_Перезапустить;
             btnUpdateProgram.Visible = false;
             btnUpdateProgram  .Enabled = true;
             btnUpdateTemplates.Enabled = true;
@@ -255,7 +260,6 @@ namespace HMSEditorNS {
         }
 
         private void DownloadReleaseCallback(object sender, EventArgs e) {
-            GitHub.RequestState state = sender as GitHub.RequestState;
             GitHub.DownloadFileCompleted   -= DownloadReleaseCallback;
             GitHub.DownloadProgressChanged -= DownloadProgressCallback;
 
@@ -306,7 +310,7 @@ namespace HMSEditorNS {
                     }
                 }
             } else {
-                if (state != null) state.Close();
+                state?.Close();
             }
         }
 
@@ -323,7 +327,7 @@ namespace HMSEditorNS {
             frmUpdateInfoDialog form = new frmUpdateInfoDialog();
             string html = HMS.ReadTextFromResource("Markdown.html");
             form.SetText(html.Replace("<MarkdownText>", TemplatesInfo));
-            form.Text = "Информация о новых шаблонах HMS Editor";
+            form.Text = Resources.AboutDialog_labelNewTemplates_LinkClicked_Информация_о_новых_шаблонах_HMS_Editor;
             form.ShowDialog();
         }
 
@@ -340,8 +344,6 @@ namespace HMSEditorNS {
         }
 
         private void DownloadTemplateCallback(object sender, EventArgs e) {
-            GitHub.RequestState state = sender as GitHub.RequestState;
-
             GitHub.DownloadFileCompleted   -= DownloadTemplateCallback;
             GitHub.DownloadProgressChanged -= DownloadProgressCallback;
 
@@ -357,7 +359,7 @@ namespace HMSEditorNS {
                             HMSEditor.Settings.Set("TemplateLastUpdate", TemplatesDate, "Common");
                             HMSEditor.Settings.Save();
                             HMS.LoadTemplates();
-                            labelNewTemplates.Text = "Обновлено";
+                            labelNewTemplates.Text = Resources.AboutDialog_DownloadTemplateCallback_Обновлено;
                             if (HMSEditor.ActiveEditor != null) HMSEditor.ActiveEditor.CreateInsertTemplateItems();
                         }
                     });
@@ -370,25 +372,27 @@ namespace HMSEditorNS {
         private void btnUpdateTemplates_Click(object sender, EventArgs e) {
             //progress.Show();
             Refresh();
-            btnUpdateTemplates.Text = "Идёт загрузка...";
+            btnUpdateTemplates.Text = Resources.AboutDialog_btnUpdate_Click_Идёт_загрузка___;
             btnUpdateProgram  .Enabled = false;
             btnUpdateTemplates.Enabled = false;
-            GitHub.DownloadFileCompleted   += new EventHandler(DownloadTemplateCallback);
-            GitHub.DownloadProgressChanged += new EventHandler(DownloadProgressCallback);
+            GitHub.DownloadFileCompleted   += DownloadTemplateCallback;
+            GitHub.DownloadProgressChanged += DownloadProgressCallback;
 
             GitHub.DownloadFileAsync("https://codeload.github.com/" + HMS.GitHubTemplates + "/legacy.zip/master", tmpFileTemplate);
         }
 
         private void btnDelete_Click(object sender, EventArgs e) {
-            string msg;
-            msg = "ВНИМАНИЕ!\n" +
-                  "Загруженные шаблоны, настройки и установленные темы будут УДАЛЕНЫ!\n" +
-                  "Вы уверены, что хотите удалить папку и всё её содержимое: "+HMS.WorkingDir+"?";
+            var msg = "ВНИМАНИЕ!\n" +
+                      "Загруженные шаблоны, настройки и установленные темы будут УДАЛЕНЫ!\n" +
+                      "Вы уверены, что хотите удалить папку и всё её содержимое: "+HMS.WorkingDir+"?";
             DialogResult answ = MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (answ == DialogResult.Yes) {
                 try {
                     Directory.Delete(HMS.WorkingDir, true);
-                } catch { }
+                }
+                catch {
+                    // ignored
+                }
                 TryDeleteFile(HMS.ErrorLogFile);
                 DeleteGarbage();
             }
@@ -403,11 +407,12 @@ namespace HMSEditorNS {
                 string addonfile = addonDir + "HMSEditor.dll";
                 // waiting 3 sek, copy new file to our path and start our executable
                 string rargs = "/C ping 127.0.0.1 -n 3 && Copy /Y \"" + HMSEditor.NeedCopyDllFile + "\" \"" + addonfile + "\" &&  Del \"" + HMSEditor.NeedCopyDllFile + "\"";
-                ProcessStartInfo Info = new ProcessStartInfo();
-                Info.Arguments = rargs;
-                Info.WindowStyle = ProcessWindowStyle.Hidden;
-                Info.CreateNoWindow = true;
-                Info.FileName = "cmd.exe";
+                ProcessStartInfo Info = new ProcessStartInfo {
+                    Arguments      = rargs,
+                    WindowStyle    = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                    FileName       = "cmd.exe"
+                };
                 if (!DirIsWriteable(addonDir)) {
                     msg = "Дополнение находится в каталоге, где нужны привилегии для записи файлов.\n" +
                           "Будет сделан запрос на ввод имени и пароля пользователя,\n" +

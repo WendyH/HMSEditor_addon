@@ -2,8 +2,10 @@
 using System;
 using System.Text;
 using System.Drawing;
+// ReSharper disable once RedundantUsingDirective
 using System.Runtime.InteropServices;
 
+// ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS {
     /// <summary>
     /// Line of text
@@ -45,7 +47,7 @@ namespace FastColoredTextBoxNS {
         }
 
         internal Line(int uid) {
-            this.UniqueId = uid;
+            UniqueId = uid;
             chars = new List<Char>();
         }
 
@@ -138,13 +140,9 @@ namespace FastColoredTextBoxNS {
         /// <summary>
         /// Chars count
         /// </summary>
-        public int Count {
-            get { return chars.Count; }
-        }
+        public int Count => chars.Count;
 
-        public bool IsReadOnly {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public bool Remove(Char item) {
             return chars.Remove(item);
@@ -155,7 +153,7 @@ namespace FastColoredTextBoxNS {
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-            return chars.GetEnumerator() as System.Collections.IEnumerator;
+            return chars.GetEnumerator();
         }
 
         public virtual void RemoveRange(int index, int count) {
@@ -195,15 +193,9 @@ namespace FastColoredTextBoxNS {
         /// <summary>
         /// Positions for wordwrap cutoffs
         /// </summary>
-        public List<int> CutOffPositions {
-            get {
-                if (cutOffPositions == null)
-                    cutOffPositions = new List<int>();
-                return cutOffPositions;
-            }
-        }
+        public List<int> CutOffPositions => cutOffPositions ?? (cutOffPositions = new List<int>());
 
-        /// <summary>
+	    /// <summary>
         /// Count of wordwrap string count for this line
         /// </summary>
         public int WordWrapStringsCount {

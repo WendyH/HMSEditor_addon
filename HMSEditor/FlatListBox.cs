@@ -7,13 +7,11 @@ using FastColoredTextBoxNS;
 
 namespace HMSEditorNS {
     public partial class FlatListBox: UserControl {
-        new FlatScrollbar VerticalScroll   = new FlatScrollbar(false);
-        new FlatScrollbar HorizontalScroll = new FlatScrollbar(true );
+        new FlatScrollbar VerticalScroll   = new FlatScrollbar();
+        new FlatScrollbar HorizontalScroll = new FlatScrollbar(true);
 
         public Color ArrowColor      = Color.DarkGray;
         public Color ArrowHoverColor = Color.CornflowerBlue;
-        private bool _arrowDownIsHover = false;
-        private bool ArrowDownIsHover { get { return _arrowDownIsHover; } set { if (_arrowDownIsHover != value) { _arrowDownIsHover = value; Invalidate(); } } }
 
         public string Filter = "";
 
@@ -40,13 +38,11 @@ namespace HMSEditorNS {
 
         public AutocompleteItems Items = new AutocompleteItems();
 
-        int focussedItemIndex = 0;
+        int focussedItemIndex;
         
-        public int ItemHeight {
-            get { return Font.Height + 2; }
-        }
+        public int ItemHeight => Font.Height + 2;
 
-        int oldItemCount = 0;
+        int oldItemCount;
 
         internal bool AllowTabKey  { get; set; }
         public ImageList ImageList { get; set; }
@@ -64,8 +60,7 @@ namespace HMSEditorNS {
                     if ((value< startI) || (value> finishI))
                         VerticalScroll.Value = value * ItemHeight;
                     focussedItemIndex = value;
-                    if (FocussedItemIndexChanged != null)
-                        FocussedItemIndexChanged(this, EventArgs.Empty);
+                    FocussedItemIndexChanged?.Invoke(this, EventArgs.Empty);
                     Recalc();
                 }
             }
@@ -85,8 +80,9 @@ namespace HMSEditorNS {
         public FlatListBox() {
             InitializeComponent();
 
-            this.Controls.Add(VerticalScroll);
+            Controls.Add(VerticalScroll);
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.Selectable, true);
+            // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
             if (HMS.PFC.Families.Length > 0) { // By WendyH
                 base.Font = new Font(HMS.PFC.Families[0], 9.25f, FontStyle.Regular, GraphicsUnit.Point);
             } else {
@@ -95,8 +91,8 @@ namespace HMSEditorNS {
             SelectedColor = Color.CornflowerBlue;
             HoveredColor  = Color.Red;
             BorderStyle   = BorderStyle.None;
-            this.VScroll  = false;
-            this.HScroll  = false;
+            VScroll = false;
+            HScroll = false;
             Controls.Add(HorizontalScroll);
             Controls.Add(VerticalScroll  );
             VerticalScroll.SmallChange     = ItemHeight;
@@ -157,7 +153,7 @@ namespace HMSEditorNS {
             HorizontalScroll.Maximum = Math.Max(0, needWidth - Width);
         }
 
-        protected bool isUpdated = false;
+        protected bool isUpdated;
 
         public void BeginUpdate() {
             isUpdated = true;
@@ -176,20 +172,18 @@ namespace HMSEditorNS {
 
             //int scrollValue = (int)(Math.Ceiling(1d * VerticalScroll.Value / itemHeight) * itemHeight);
             int scrollValue = VerticalScroll.Value;
-            int leftShift   = 0;
             int startI  = VerticalScroll.Value / itemHeight;
             int finishI = (VerticalScroll.Value + ClientSize.Height) / itemHeight;
             startI  = Math.Max(startI, 0);
             finishI = Math.Min(finishI, Items.Count);
-            int y = 0;
             int x = -HorizontalScroll.Value;
             int leftPadding = (ImageList!=null ? 18 : 0);
             for (int i = startI; i < finishI; i++) {
-                y = i * itemHeight - scrollValue;
+                var y = i * itemHeight - scrollValue;
 
                 var item = Items[i];
 
-                leftShift = item.Level * 16;
+                var leftShift = item.Level * 16;
 
                 // draw item background
                 if (item.BackColor != Color.Transparent) {
@@ -207,7 +201,7 @@ namespace HMSEditorNS {
                     int x2 = x + leftPadding + leftShift;
                     Point[] points2;
                     if (item.Expanded) {
-                        points2 = new Point[] {
+                        points2 = new[] {
                             new Point(x2+10, y+3),
                             new Point(x2+10, y+14),
                             new Point(x2, y+14)
@@ -216,7 +210,7 @@ namespace HMSEditorNS {
                             g.FillPolygon(brush, points2);
                         }
                     } else {
-                        points2 = new Point[] {
+                        points2 = new[] {
                             new Point(x2+5, y+13),
                             new Point(x2+5, y+3),
                             new Point(x2+4, y+2),
@@ -235,9 +229,7 @@ namespace HMSEditorNS {
                 // draw selected item
                 if (i == FocussedItemIndex) {
                     using (var selectedBrush = new SolidBrush(SelectedColor)) {
-                        using (var pen = new Pen(SelectedColor)) {
-                            g.FillRectangle(selectedBrush, x+leftPadding+ leftShift, y, ClientSize.Width - 1 - leftPadding-x, itemHeight+1);
-                        }
+                        g.FillRectangle(selectedBrush, x+leftPadding+ leftShift, y, ClientSize.Width - 1 - leftPadding-x, itemHeight+1);
                     }
                 }
                 // draw item text
@@ -262,7 +254,7 @@ namespace HMSEditorNS {
         protected override void OnMouseClick(MouseEventArgs e) {
             base.OnMouseClick(e);
 
-            if (e.Button == System.Windows.Forms.MouseButtons.Left) {
+            if (e.Button == MouseButtons.Left) {
                 FocussedItemIndex = PointToItemIndex(e.Location);
                 DoSelectedVisible();
                 Invalidate();
@@ -270,8 +262,6 @@ namespace HMSEditorNS {
         }
 
         internal virtual void OnSelecting() {
-            if (FocussedItemIndex < 0 || FocussedItemIndex >= Items.Count)
-                return;
         }
 
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
@@ -316,40 +306,38 @@ namespace HMSEditorNS {
             base.OnDoubleClick(e);
         }
 
-        private bool ProcessKey(Keys keyData, Keys keyModifiers) {
+        private void ProcessKey(Keys keyData, Keys keyModifiers) {
             int count = ClientSize.Height / ItemHeight;
             if (keyModifiers == Keys.None)
                 switch (keyData) {
                     case Keys.Right:
                         if (SelectedItem.IsClass && !SelectedItem.Expanded) OnDoubleClick(EventArgs.Empty);
-                        return true;
+                        return;
                     case Keys.Left:
                         if (SelectedItem.IsClass && SelectedItem.Expanded) OnDoubleClick(EventArgs.Empty);
-                        return true;
+                        return;
                     case Keys.Down:
                         SelectNext(+1);
-                        return true;
+                        return;
                     case Keys.PageDown:
                         SelectNext(+count);
-                        return true;
+                        return;
                     case Keys.Up:
                         SelectNext(-1);
-                        return true;
+                        return;
                     case Keys.PageUp:
                         SelectNext(-count);
-                        return true;
+                        return;
                     case Keys.Home:
                         SelectFirst();
-                        return true;
+                        return;
                     case Keys.End:
                         SelectLast();
-                        return true;
+                        return;
                     case Keys.Enter:
                         OnSelecting();
-                        return true;
+                        return;
                 }
-
-            return false;
         }
 
         public void SelectFirst() {
@@ -387,7 +375,7 @@ namespace HMSEditorNS {
             }
         }
 
-        public int Count { get { return Items.Count; } }
+        public int Count => Items.Count;
 
         public void SetAutocompleteItems(ICollection<string> items) {
             AutocompleteItems list = new AutocompleteItems();
@@ -404,7 +392,7 @@ namespace HMSEditorNS {
         public void AddFilteredItems(AutocompleteItems items, string filter) {
             AutocompleteItems list = new AutocompleteItems();
             foreach (var item in items) {
-                if ((filter.Length > 0) && (item.Filter.Length > 0) && (filter.IndexOf(item.Filter) < 0)) continue;
+                if ((filter.Length > 0) && (item.Filter.Length > 0) && (filter.IndexOf(item.Filter, StringComparison.Ordinal) < 0)) continue;
                 if (list.ContainsName(item.MenuText)) continue;
                 list.Add(item);
             }
@@ -427,18 +415,18 @@ namespace HMSEditorNS {
 
         public void BeginUpdate() {
             // Stop redrawing:
-            NativeMethods.SendMessage(this.Handle, WM_SETREDRAW, (IntPtr)0, IntPtr.Zero);
+            NativeMethods.SendMessage(Handle, WM_SETREDRAW, (IntPtr)0, IntPtr.Zero);
             // Stop sending of events:
-            eventMask = NativeMethods.SendMessage(this.Handle, EM_GETEVENTMASK, (IntPtr)0, IntPtr.Zero);
+            eventMask = NativeMethods.SendMessage(Handle, EM_GETEVENTMASK, (IntPtr)0, IntPtr.Zero);
         }
 
         public void EndUpdate() {
             // turn on events
-            NativeMethods.SendMessage(this.Handle, EM_SETEVENTMASK, (IntPtr)0, eventMask);
+            NativeMethods.SendMessage(Handle, EM_SETEVENTMASK, (IntPtr)0, eventMask);
             // turn on redrawing
-            NativeMethods.SendMessage(this.Handle, WM_SETREDRAW, (IntPtr)1, IntPtr.Zero);
+            NativeMethods.SendMessage(Handle, WM_SETREDRAW, (IntPtr)1, IntPtr.Zero);
             // this forces a repaint, which for some reason is necessary in some cases.
-            this.Invalidate();
+            Invalidate();
         }
 
         public void AppendText(string text, Color color, Font font) {
