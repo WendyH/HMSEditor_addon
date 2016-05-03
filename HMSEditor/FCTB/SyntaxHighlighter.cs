@@ -1296,7 +1296,7 @@ namespace FastColoredTextBoxNS {
             CPPClassNameRegex     = new Regex(@"\b(" + HmsClasses + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
         }
 
-        void InitPascalScriptRegex() {
+        public void InitPascalScriptRegex() {
             if (HMS.ClassesString.Length > 2)
                 HmsClasses = HMS.ClassesString.Substring(1, HMS.ClassesString.Length - 2);
             PascalScriptStringRegex = new Regex(@"""([^""\r])*""?|'([^'\r])*'?|(//.*|\{[\s\S]*?(\}|$))", RegexCompiledOption);

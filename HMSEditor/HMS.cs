@@ -39,6 +39,7 @@ namespace HMSEditorNS {
                 // Заполняем базу знаний функций, классов, встроенных констант и переменных...
                 InitAndLoadHMSKnowledgeDatabase();
 
+                HMS.AllowPrepareFastDraw = true;
                 PrepareFastDrawInBackground(); 
 
             } catch (Exception e) {
@@ -137,7 +138,9 @@ namespace HMSEditorNS {
                 foreach (var item in ItemsFunction) HmsToolTip.PrepareFastDraw(item, g);
                 foreach (var item in ItemsVariable) HmsToolTip.PrepareFastDraw(item, g);
                 foreach (var item in ItemsConstant) HmsToolTip.PrepareFastDraw(item, g);
-                foreach (var item in ItemsClass   ) HmsToolTip.PrepareFastDraw(item, g);
+                lock (ItemsClass) {
+                    foreach(var item in ItemsClass) HmsToolTip.PrepareFastDraw(item, g);
+                }
             } finally {
                 g.Dispose();
                 NativeMethods.ReleaseDC(IntPtr.Zero, desktopPtr);
@@ -303,141 +306,142 @@ namespace HMSEditorNS {
             HmsTypesString = Regex.Replace(HmsTypesStringWithHelp, "{.*?}", "").ToLower();
             Assembly assembly = Assembly.GetExecutingAssembly();
             bool     isStatic = false;
+            lock (HmsClasses) {
+                Stream stream = null;
+                try {
+                    // Load classes items
+                    HMSItem item;
+                    stream = assembly.GetManifestResourceStream(ResourcePath + "hms_classes.txt");
+                    if (stream != null) {
+                        using (var reader = new StreamReader(stream)) {
+                            stream = null;
+                            ClassesString = "|";
+                            HMSClassInfo hmsclass = null;
+                            var line = reader.ReadLine();
+                            while (line != null) {
+                                if ((line.Trim().Length < 1) || (line.StartsWith("*"))) { line = reader.ReadLine(); continue; }
+                                int indent = line.Length - line.TrimStart().Length;
 
-            Stream stream = null;
-            try {
-                // Load classes items
-                HMSItem item;
-                stream = assembly.GetManifestResourceStream(ResourcePath + "hms_classes.txt");
-                if (stream != null) {
-                    using (var reader = new StreamReader(stream)) {
-                        stream = null;
-                        ClassesString = "|";
-                        HMSClassInfo hmsclass = null;
-                        var line = reader.ReadLine();
-                        while (line != null) {
-                            if ((line.Trim().Length < 1) || (line.StartsWith("*"))) { line = reader.ReadLine(); continue; }
-                            int indent = line.Length - line.TrimStart().Length;
+                                item = GetHmsItemFromLine(line);
+                                if (indent == 0) {
+                                    // it's Class
+                                    if (!HmsClasses.ContainsName(item.Text)) {
+                                        hmsclass = new HMSClassInfo {
+                                            Name = item.Text,
+                                            Type = item.Type,
+                                            Help = item.Help
+                                        };
+                                        HmsClasses.Add(hmsclass);
+                                        item.Kind         = DefKind.Class;
+                                        item.ImageIndex   = ImagesIndex.Class;
+                                        item.ToolTipTitle = "Класс " + item.Text;
+                                        item.IsClass      = true;
+                                        item.ClassInfo    = hmsclass;
+                                        ItemsClass.Add(item);
+                                        ClassesString += hmsclass.Name.ToLower() + "|";
+                                    }
 
-                            item = GetHmsItemFromLine(line);
-                            if (indent == 0) {
-                                // it's Class
-                                if (!HmsClasses.ContainsName(item.Text)) {
-                                    hmsclass = new HMSClassInfo {
+                                } else if (indent == 2) {
+                                    // it's method or property of the class
+                                    var cmd = item.ToolTipTitle;
+                                    if      (cmd.StartsWith("function" )) { item.ImageIndex = ImagesIndex.Method; item.Kind = DefKind.Method   ; }
+                                    else if (cmd.StartsWith("procedure")) { item.ImageIndex = ImagesIndex.Method; item.Kind = DefKind.Procedure; }
+                                    else if (cmd.StartsWith("property" )) { item.ImageIndex = ImagesIndex.Field ; item.Kind = DefKind.Property ; }
+                                    else if (cmd.StartsWith("index"    )) { item.ImageIndex = ImagesIndex.Enum  ; item.Kind = DefKind.Property ; }
+                                    else if (cmd.StartsWith("event"    )) { item.ImageIndex = ImagesIndex.Event ; item.Kind = DefKind.Event    ; }
+                                    var name = Regex.Replace(cmd, @"^(function|procedure|property|index property|event)\s+", "");
+                                    name = Regex.Match(name, @"\w+").Value.Trim();
+                                    if (name.Length < 1) name += " ";
+                                    item.Text         = name;
+                                    item.MenuText     = name;
+                                    item.Level        = 1;
+                                    if (item.ImageIndex == ImagesIndex.Enum) item.Text = name + "[^]";
+                                    else if (item.ImageIndex == ImagesIndex.Method) {
+                                        if (cmd.IndexOf('(')>0) item.Text = name + "(^)";
+                                      //else                    item.Text = name + "()";
+                                    }
+                                    if (name.ToLower() == "create") {
+                                        // hmm... only one static method
+                                        isStatic = true;
+                                        hmsclass?.StaticItems.Add(item);
+                                    }
+                                    else {
+                                        isStatic = false;
+                                        hmsclass?.MemberItems.Add(item);
+                                    }
+                                } else if ((indent == 4) || (line[0] == '\t')) {
+                                    // it's help for parameters of last method
+                                    if (isStatic) {
+                                        if (hmsclass?.StaticItems.Count > 0) {
+                                            item = hmsclass.StaticItems[hmsclass.StaticItems.Count - 1];
+                                            item.Params.Add(StylishHelp(line));
+                                        }
+                                    } else {
+                                        if (hmsclass?.MemberItems.Count > 0) {
+                                            item = hmsclass.MemberItems[hmsclass.MemberItems.Count - 1];
+                                            item.Params.Add(StylishHelp(line));
+                                        }
+                                    }
+                                }
+                                line = reader.ReadLine();
+                            }
+                        }
+                    }
+                    // For each Class look the derived class and add his methods (info1) and methods of derived class of derived class (info2)
+                    foreach (var classItem in HmsClasses) {
+                        if (classItem.Type.Length == 0) continue;        // if no type - skip
+                        HMSClassInfo info1 = HmsClasses[classItem.Type]; // get derived class
+                        if (info1.Name.Length == 0) continue;            // if no found - skip
+                        HMSClassInfo info2 = HmsClasses[info1.Type];     // get derived class of the derived class
+                        if (info2.Name.Length > 0) {
+                            foreach (var i2 in info2.MemberItems) if (!classItem.MemberItems.ContainsName(i2.MenuText)) classItem.MemberItems.Add(i2);
+                            foreach (var i2 in info2.StaticItems) if (!classItem.StaticItems.ContainsName(i2.MenuText)) classItem.StaticItems.Add(i2);
+                        }
+                        foreach (var i1 in info1.MemberItems) if (!classItem.MemberItems.ContainsName(i1.MenuText)) classItem.MemberItems.Add(i1);
+                        foreach (var i1 in info1.StaticItems) if (!classItem.StaticItems.ContainsName(i1.MenuText)) classItem.StaticItems.Add(i1);
+                        classItem.MemberItems.SortByMenuText();
+                        classItem.StaticItems.SortByMenuText();
+                    }
+
+                    // Load a built-in Types (Enumerates)
+                    stream = assembly.GetManifestResourceStream(ResourcePath + "hms_types.txt");
+                    if (stream != null) {
+                        using (var reader = new StreamReader(stream)) {
+                            stream = null; string line;
+                            while ((line = reader.ReadLine()) != null) {
+                                if (line.StartsWith("*") || (line.Trim().Length == 0)) continue; // Skip comments and blank lines
+                                item = GetHmsItemFromLine(line);
+                                if (!HmsTypes.ContainsName(item.Text)) {
+                                    var hmsType = new HMSClassInfo {
                                         Name = item.Text,
-                                        Type = item.Type,
+                                        Type = item.Text,
                                         Help = item.Help
                                     };
-                                    HmsClasses.Add(hmsclass);
-                                    item.Kind         = DefKind.Class;
-                                    item.ImageIndex   = ImagesIndex.Class;
-                                    item.ToolTipTitle = "Класс " + item.Text;
-                                    item.IsClass      = true;
-                                    item.ClassInfo    = hmsclass;
-                                    ItemsClass.Add(item);
-                                    ClassesString += hmsclass.Name.ToLower() + "|";
-                                }
-
-                            } else if (indent == 2) {
-                                // it's method or property of the class
-                                var cmd = item.ToolTipTitle;
-                                if      (cmd.StartsWith("function" )) { item.ImageIndex = ImagesIndex.Method; item.Kind = DefKind.Method   ; }
-                                else if (cmd.StartsWith("procedure")) { item.ImageIndex = ImagesIndex.Method; item.Kind = DefKind.Procedure; }
-                                else if (cmd.StartsWith("property" )) { item.ImageIndex = ImagesIndex.Field ; item.Kind = DefKind.Property ; }
-                                else if (cmd.StartsWith("index"    )) { item.ImageIndex = ImagesIndex.Enum  ; item.Kind = DefKind.Property ; }
-                                else if (cmd.StartsWith("event"    )) { item.ImageIndex = ImagesIndex.Event ; item.Kind = DefKind.Event    ; }
-                                var name = Regex.Replace(cmd, @"^(function|procedure|property|index property|event)\s+", "");
-                                name = Regex.Match(name, @"\w+").Value.Trim();
-                                if (name.Length < 1) name += " ";
-                                item.Text         = name;
-                                item.MenuText     = name;
-                                item.Level        = 1;
-                                if (item.ImageIndex == ImagesIndex.Enum) item.Text = name + "[^]";
-                                else if (item.ImageIndex == ImagesIndex.Method) {
-                                    if (cmd.IndexOf('(')>0) item.Text = name + "(^)";
-                                  //else                    item.Text = name + "()";
-                                }
-                                if (name.ToLower() == "create") {
-                                    // hmm... only one static method
-                                    isStatic = true;
-                                    hmsclass?.StaticItems.Add(item);
-                                }
-                                else {
-                                    isStatic = false;
-                                    hmsclass?.MemberItems.Add(item);
-                                }
-                            } else if ((indent == 4) || (line[0] == '\t')) {
-                                // it's help for parameters of last method
-                                if (isStatic) {
-                                    if (hmsclass?.StaticItems.Count > 0) {
-                                        item = hmsclass.StaticItems[hmsclass.StaticItems.Count - 1];
-                                        item.Params.Add(StylishHelp(line));
+                                    string names = Regex.Match(line, @"\((.*?)\)").Groups[1].Value;
+                                    foreach(string name in names.Split(',')) {
+                                        item = new HMSItem {
+                                            ImageIndex   = ImagesIndex.Enum,
+                                            Text         = name,
+                                            MenuText     = name,
+                                            ToolTipTitle = name,
+                                            ToolTipText  = "Перечисление типа " + hmsType.Name
+                                        };
+                                        hmsType.MemberItems.Add(item);
                                     }
-                                } else {
-                                    if (hmsclass?.MemberItems.Count > 0) {
-                                        item = hmsclass.MemberItems[hmsclass.MemberItems.Count - 1];
-                                        item.Params.Add(StylishHelp(line));
-                                    }
+                                    HmsTypes.Add(hmsType);
+                                    ClassesString += hmsType.Name.ToLower() + "|";
                                 }
-                            }
-                            line = reader.ReadLine();
-                        }
-                    }
-                }
-                // For each Class look the derived class and add his methods (info1) and methods of derived class of derived class (info2)
-                foreach (var classItem in HmsClasses) {
-                    if (classItem.Type.Length == 0) continue;        // if no type - skip
-                    HMSClassInfo info1 = HmsClasses[classItem.Type]; // get derived class
-                    if (info1.Name.Length == 0) continue;            // if no found - skip
-                    HMSClassInfo info2 = HmsClasses[info1.Type];     // get derived class of the derived class
-                    if (info2.Name.Length > 0) {
-                        foreach (var i2 in info2.MemberItems) if (!classItem.MemberItems.ContainsName(i2.MenuText)) classItem.MemberItems.Add(i2);
-                        foreach (var i2 in info2.StaticItems) if (!classItem.StaticItems.ContainsName(i2.MenuText)) classItem.StaticItems.Add(i2);
-                    }
-                    foreach (var i1 in info1.MemberItems) if (!classItem.MemberItems.ContainsName(i1.MenuText)) classItem.MemberItems.Add(i1);
-                    foreach (var i1 in info1.StaticItems) if (!classItem.StaticItems.ContainsName(i1.MenuText)) classItem.StaticItems.Add(i1);
-                    classItem.MemberItems.SortByMenuText();
-                    classItem.StaticItems.SortByMenuText();
-                }
-
-                // Load a built-in Types (Enumerates)
-                stream = assembly.GetManifestResourceStream(ResourcePath + "hms_types.txt");
-                if (stream != null) {
-                    using (var reader = new StreamReader(stream)) {
-                        stream = null; string line;
-                        while ((line = reader.ReadLine()) != null) {
-                            if (line.StartsWith("*") || (line.Trim().Length == 0)) continue; // Skip comments and blank lines
-                            item = GetHmsItemFromLine(line);
-                            if (!HmsTypes.ContainsName(item.Text)) {
-                                var hmsType = new HMSClassInfo {
-                                    Name = item.Text,
-                                    Type = item.Text,
-                                    Help = item.Help
-                                };
-                                string names = Regex.Match(line, @"\((.*?)\)").Groups[1].Value;
-                                foreach(string name in names.Split(',')) {
-                                    item = new HMSItem {
-                                        ImageIndex   = ImagesIndex.Enum,
-                                        Text         = name,
-                                        MenuText     = name,
-                                        ToolTipTitle = name,
-                                        ToolTipText  = "Перечисление типа " + hmsType.Name
-                                    };
-                                    hmsType.MemberItems.Add(item);
-                                }
-                                HmsTypes.Add(hmsType);
-                                ClassesString += hmsType.Name.ToLower() + "|";
                             }
                         }
                     }
+
+                } catch (Exception e) {
+                    LogError(e.ToString());
+
+                } finally {
+                    // ReSharper disable once UseNullPropagation
+                    if (stream != null) stream.Dispose();
                 }
-
-            } catch (Exception e) {
-                LogError(e.ToString());
-
-            } finally {
-                // ReSharper disable once UseNullPropagation
-                if (stream != null) stream.Dispose();
             }
 
             // Load a built-in Functions and Procedures items
@@ -553,7 +557,7 @@ namespace HMSEditorNS {
             return item;
         }
 
-        private static string StylishHelp(string help) {
+        public static string StylishHelp(string help) {
             help = help.Replace(@"\n", "\n").Trim();
             help = regexStringAndComments.Replace(help, "<s>$0</s>");
             return help;

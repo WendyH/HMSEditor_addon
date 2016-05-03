@@ -841,6 +841,9 @@ WordPosition(const nNum: Integer; const cStr: String; const cWordDelims: String)
   cWordDelims - разделитель слов в строке
 
 * Транскодирование
+HmsAddStreamExtInfo(const aMediaItem: THmsScriptMediaItem; const aFiles: string): Boolean|Подключение к медиа-ресурсу дополнительных звуковых дорожек и субтитров из указанных источников (разделитель #13#10).
+  aMediaItem - медиа-ресурс, к которому будут подключены дополнительные файлы
+  aFiles - файлы дополнительных источников звуковых дорожек или субтитров, разделённые символами #13#10.
 HmsCalculateThumbnailDimension(aImageWidth, aImageHeight, aDestWidth, aDestHeight: Integer; var aThumbnailWidth, aThumbnailHeight: Integer; aAlign: Integer = 2): Boolean|Вычисление новой ширины и высоты изображения, пропорционально вмещённую в указанную ширину и высоту
   aImageWidth - оригинальная ширина изображения
   aImageHeight - оригинальная высота изображения
@@ -956,6 +959,8 @@ HmsTranscodingDvdParams(aScreenWidth: Integer = 0; aScreenHeight: Integer = 0; a
   aScreenHeight - высота кадра. Необязательный параметр.
   aVideoBitrate - битрейт видео-дорожки. Необязательный параметр.
   aAudioBitrate - битрейт звуковой дорожки. Необязательный параметр.
+HmsTranscodingEncoderParams(const aCodecName: string): string|Получение строки параметров для заданного имени кодека
+  aCodecName - название кодека
 HmsTranscodingExecute(const aTranscoderName, aTranscoderParams: String; aWait: Boolean = True; const aInputFileName: String = ''; const aOutputFileName: String = ''): Boolean|Выполнение транскодирования с указанными параметрами
   aTranscoderName - имя транскодера. Список транскодеров в программе: Настройки -> Транскодер -> Профили (верхняя таблица).
   aTranscoderParams - параметры транскодирования

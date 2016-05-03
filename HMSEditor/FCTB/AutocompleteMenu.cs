@@ -449,7 +449,7 @@ namespace FastColoredTextBoxNS
                     if (item == null) item = HMS.ItemsVariable.GetItemOrNull(name); // try internal variables
                     if (item == null) item = HMS.ItemsConstant.GetItemOrNull(name); // try internal constants
                     if (item == null) item = HMS.ItemsFunction.GetItemOrNull(name); // try internal functions
-                    if (item == null) item = HMS.ItemsClass.GetItemOrNull(name); // try internal classes
+                    if (item == null) item = HMS.ItemsClass   .GetItemOrNull(name); // try internal classes
                     if (count < names.Length) {
                         if (item != null) info = HMS.HmsClasses[item.Type];
                         else break;
@@ -1059,7 +1059,7 @@ namespace FastColoredTextBoxNS
         }
 
         public int Count => visibleItems.Count;
-        private object obj4LockItems = new object();
+        public object obj4LockItems = new object();
 
         public void SetAutocompleteItems(ICollection<string> items)
         {

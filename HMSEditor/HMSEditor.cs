@@ -99,35 +99,10 @@ namespace HMSEditorNS {
 
             SetAutoCompleteMenu();
 
-            WorkerCreateAutocomplete.DoWork             += WorkerCreateAutocomplete_DoWork;
-            WorkerCreateAutocomplete.RunWorkerCompleted += WorkerCreateAutocomplete_RunWorkerCompleted;
-
             WorkerCodeAnalysis.DoWork             += WorkerCodeAnalysis_DoWork;
             WorkerCodeAnalysis.RunWorkerCompleted += WorkerCodeAnalysis_RunWorkerCompleted; ;
             WorkerCodeAnalysis.WorkerSupportsCancellation = true;
 
-            WorkerHighlighter.DoWork             += WorkerHighlighter_DoWork;
-            WorkerHighlighter.RunWorkerCompleted += WorkerHighlighter_RunWorkerCompleted;
-            WorkerHighlighter.WorkerSupportsCancellation = true;
-        }
-
-        private void WorkerHighlighter_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
-        }
-
-        private void WorkerHighlighter_DoWork(object sender, DoWorkEventArgs e) {
-            //Editor.SyntaxHighlighter.HighlightSyntaxThread(Editor.Language, Editor.Range);
-        }
-
-        private void WorkerCreateAutocomplete_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
-            lock (ScriptAutocompleteItems) {
-                ScriptAutocompleteItems.Clear();
-                ScriptAutocompleteItems.AddRange(TempAutocompleteItems);
-            }
-            CreateAutocomplete();
-        }
-
-        private void WorkerCreateAutocomplete_DoWork(object sender, DoWorkEventArgs e) {
-            CreateAutocompleteItemsByScriptDescrition();
         }
 
         private void HelpPanel1_PanelClose(object sender, EventArgs e) {
@@ -136,8 +111,6 @@ namespace HMSEditorNS {
         }
 
         private BackgroundWorker WorkerCodeAnalysis       = new BackgroundWorker();
-        private BackgroundWorker WorkerCreateAutocomplete = new BackgroundWorker();
-        public static BackgroundWorker WorkerHighlighter  = new BackgroundWorker();
 
         private void WorkerCheckSyntax_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
             if (needCheckSyntaxAgain) {
@@ -244,6 +217,7 @@ namespace HMSEditorNS {
         public bool DebugMode                { get { return Editor.DebugMode               ; } set { Editor.DebugMode               = value; } }
         public bool EnableFunctionToolTip = true;
         public bool EnableEvaluateByMouse = true;
+        private bool GetScriptDescrition  = false;
 
         public string ScriptLanguage {
             get {
@@ -656,6 +630,7 @@ namespace HMSEditorNS {
             btnFormatCodeWhenPaste  .Checked = Settings.Get("FormatCodeWhenPaste" , section, btnFormatCodeWhenPaste  .Checked);
             btnUnderlinePascalKeywrd.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywrd.Checked);
             btnKeywordsToLowcase    .Checked = Settings.Get("KeywordsToLowcase"      , section, btnKeywordsToLowcase    .Checked);
+            btnGetScriptDescriptions.Checked = Settings.Get("GetScriptDescriptions"  , section, btnGetScriptDescriptions.Checked);
 
             // Set to false deprecated settings
             btnAutoIdentLines.Checked = false;
@@ -693,6 +668,12 @@ namespace HMSEditorNS {
 
             HMS.LoadTemplates(); // Сначала загружаем шаблоны, какие есть
             FillThemes();
+
+            // Need before the set ScriptLanguage!
+            btnGetScriptDescriptions_Click(null, EventArgs.Empty);
+            if (GetScriptDescrition) {
+                CreateAutocompleteItemsByScriptDescrition();
+            }
 
             ScriptLanguage = Settings.Get("Language", section, "C++Script");
 
@@ -777,6 +758,7 @@ namespace HMSEditorNS {
                 Settings.Set("CheckNewVersionOnLoad",btnCheckNewVersionOnLoad.Checked, section);
                 Settings.Set("FormatCodeWhenPaste"  ,btnFormatCodeWhenPaste  .Checked, section);
                 Settings.Set("KeywordsToLowcase"    ,btnKeywordsToLowcase    .Checked, section);
+                Settings.Set("GetScriptDescriptions",btnGetScriptDescriptions.Checked, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -1065,9 +1047,6 @@ namespace HMSEditorNS {
             Locked = true;       // Say to other processes we is busy - don't tuch us!
             BuildFunctionList(); // Only when text changed - build the list of functions
 			if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxBackground();
-
-            if (!WorkerHighlighter.IsBusy)
-                WorkerHighlighter.RunWorkerAsync();
 
 			Locked = false;
             if (IsFirstActivate) { 
@@ -1497,6 +1476,10 @@ namespace HMSEditorNS {
         private void btnKeywordsToLowcase_Click(object sender, EventArgs e) {
             Editor.KeywordsToLowcase = btnKeywordsToLowcase.Checked;
         }
+
+        private void btnGetScriptDescriptions_Click(object sender, EventArgs e) {
+            GetScriptDescrition = btnGetScriptDescriptions.Checked;
+        }
         #endregion Control Events
 
         #region Smart IDE functions
@@ -1882,6 +1865,7 @@ namespace HMSEditorNS {
                     if (item == null) item = HMS.ItemsConstant.GetItemOrNull(name); // try internal constants
                     if (item == null) item = HMS.ItemsFunction.GetItemOrNull(name); // try internal functions
                     if (item == null) item = HMS.ItemsClass   .GetItemOrNull(name); // try internal classes
+                    if (item == null) item = ScriptAutocompleteItems.GetItemOrNull(name); // try additional
                     if (count < names.Length) {
                         if (item != null) {
                             info = HMS.HmsClasses[item.MenuText];
@@ -2044,12 +2028,10 @@ namespace HMSEditorNS {
                 PopupMenu.Items.AddAutocompleteItems(HMS.ItemsConstant);
                 PopupMenu.Items.AddAutocompleteItems(HMS.ItemsClass   );
                 PopupMenu.Items.AddAutocompleteItems(ScriptAutocompleteItems);
-
             }
         }
         private object PopupMenuLockObject = new object();
         AutocompleteItems ScriptAutocompleteItems = new AutocompleteItems();
-        AutocompleteItems TempAutocompleteItems   = new AutocompleteItems();
         private static Regex regexCutFunctions = new Regex("<Functions>(.*?)</Functions>");
         private static Regex regexCutVariables = new Regex("<Variables>(.*?)</Variables>");
         private static Regex regexCutConstants = new Regex("<Constants>(.*?)</Constants>");
@@ -2058,6 +2040,65 @@ namespace HMSEditorNS {
         private static Regex regexCutTextF     = new Regex("text=\"\\w+ ([^\"]+)"        );
         private static Regex regexCutDesc      = new Regex("description=\"([^\"]+)"      );
         private static Regex regexExcludeConst = new Regex("^(True|False|nil|Null)"      );
+
+        private void SearchClassesItemsInScriptDescrition(ref string xml) {
+            lock (HMS.HmsClasses) {
+                string xmlBlock = Regex.Match(xml, "<Classes>(.*?)</Classes>").Value;
+                MatchCollection mc = Regex.Matches(xmlBlock, @"<item(.*?)</item>");
+                foreach (Match matchItem in mc) {
+                    var text  = regexCutText.Match(matchItem.Value).Groups[1].Value;
+                    var descr = regexCutDesc.Match(matchItem.Value).Groups[1].Value;
+                    if (text.Length == 0) continue;
+                    var item = HMS.GetHmsItemFromLine(text);
+                    item.ImageIndex  = ImagesIndex.Class;
+                    item.ToolTipText = "Класс";
+                    item.Kind = DefKind.Class;
+                    item.Help = descr;
+                    var foundItem = HMS.ItemsClass.GetItemOrNull(item.MenuText);
+                    if (foundItem != null) {
+                        if (foundItem.Help.Length == 0) foundItem.Help = descr;
+                    } else {
+                        var hmsclass = new HMSClassInfo {
+                            Name = item.Text,
+                            Type = item.Type,
+                            Help = item.Help
+                        };
+                        HMS.HmsClasses.Add(hmsclass);
+                        item.Kind         = DefKind.Class;
+                        item.ImageIndex   = ImagesIndex.Class;
+                        item.ToolTipTitle = "Класс " + item.Text;
+                        item.IsClass      = true;
+                        item.ClassInfo    = hmsclass;
+                        HMS.ItemsClass.Add(item);
+                        HMS.ClassesString += hmsclass.Name.ToLower() + "|";
+                        //ScriptAutocompleteItems.Add(item);
+                        MatchCollection mcChild = Regex.Matches(matchItem.Groups[1].Value, "<item text=\"(.*?)\"");
+                        foreach (Match m in mcChild) {
+                            var childItem = HMS.GetHmsItemFromLine(m.Groups[1].Value);
+                            var cmd = childItem.ToolTipTitle;
+                            if      (cmd.StartsWith("function" )) { childItem.ImageIndex = ImagesIndex.Method; childItem.Kind = DefKind.Method   ; }
+                            else if (cmd.StartsWith("procedure")) { childItem.ImageIndex = ImagesIndex.Method; childItem.Kind = DefKind.Procedure; }
+                            else if (cmd.StartsWith("property" )) { childItem.ImageIndex = ImagesIndex.Field ; childItem.Kind = DefKind.Property ; }
+                            else if (cmd.StartsWith("index"    )) { childItem.ImageIndex = ImagesIndex.Enum  ; childItem.Kind = DefKind.Property ; }
+                            else if (cmd.StartsWith("event"    )) { childItem.ImageIndex = ImagesIndex.Event ; childItem.Kind = DefKind.Event    ; }
+                            var name = Regex.Replace(cmd, @"^(function|procedure|property|index property|event)\s+", "");
+                            name = Regex.Match(name, @"\w+").Value.Trim();
+                            if (name.Length < 1) name += " ";
+                            childItem.Text         = name;
+                            childItem.MenuText     = name;
+                            childItem.Level        = 1;
+                            if      (childItem.ImageIndex == ImagesIndex.Enum  ) childItem.Text = name + "[^]";
+                            else if (childItem.ImageIndex == ImagesIndex.Method) {
+                                if (cmd.IndexOf('(')>0) childItem.Text = name + "(^)";
+                            }
+                            if (name.ToLower() == "create") hmsclass?.StaticItems.Add(childItem);
+                            else                            hmsclass?.MemberItems.Add(childItem);
+                        }
+                        //Console.WriteLine(kind.ToString() + " MenuText: " + item.MenuText);
+                    }
+                }
+            }
+        }
 
         private void SearchAutocompleteItemsInScriptDescrition(Regex reBlock, ref string xml, int imageIndex, string toolTipText, DefKind kind, AutocompleteItems Items) {
             string xmlBlock = reBlock.Match(xml).Value;
@@ -2077,40 +2118,40 @@ namespace HMSEditorNS {
                 if (foundItem!=null) {
                     if (foundItem.Help.Length == 0) foundItem.Help = descr;
                 } else {
-                    TempAutocompleteItems.Add(item);
+                    ScriptAutocompleteItems.Add(item);
                     //Console.WriteLine(kind.ToString() + " MenuText: " + item.MenuText);
                 }
             }
         }
 
         private void CreateAutocompleteItemsByScriptDescrition() {
-            lock (TempAutocompleteItems) {
-                TempAutocompleteItems.Clear();
+            lock (ScriptAutocompleteItems) {
+                ScriptAutocompleteItems.Clear();
                 string xml = "";
-    #if DEBUG
+#if DEBUG
                 var sw = Stopwatch.StartNew();
 
-    //            if ((HmsScriptFrame == null) && (File.Exists(@"D:\descr.txt")))
-    //                xml = File.ReadAllText(@"D:\descr.txt");
-    #endif
+                //if ((HmsScriptFrame == null) && (File.Exists(@"D:\descr.txt")))
+                //    xml = File.ReadAllText(@"D:\descr.txt");
+#endif
                 if (HmsScriptFrame != null) {
                     xml = GetScriptDescriptions();
-                    //File.WriteAllText(@"D:\descr.txt", xml); 
+                    //File.WriteAllText(@"D:\descr.txt", xml);
                 }
 
                 if (!string.IsNullOrEmpty(xml)) {
+                    SearchClassesItemsInScriptDescrition(ref xml);
                     SearchAutocompleteItemsInScriptDescrition(regexCutFunctions, ref xml, ImagesIndex.Procedure, ""                     , DefKind.Function, HMS.ItemsFunction);
                     SearchAutocompleteItemsInScriptDescrition(regexCutVariables, ref xml, ImagesIndex.Field    , "Встроенная переменная", DefKind.Variable, HMS.ItemsVariable);
                     SearchAutocompleteItemsInScriptDescrition(regexCutConstants, ref xml, ImagesIndex.Enum     , "Встроенная константа" , DefKind.Constant, HMS.ItemsConstant);
                 }
-
-    #if DEBUG
+#if DEBUG
                 sw.Stop();
                 Console.WriteLine(@"CreateAutocompleteItemsByScriptDescrition ElapsedMilliseconds: " + sw.ElapsedMilliseconds);
                 Console.WriteLine(@"ScriptAutocompleteItems.Count: " + ScriptAutocompleteItems.Count);
-    #endif
-                HMS.AllowPrepareFastDraw = true;
-                HMS.PrepareFastDrawInBackground();
+#endif
+                //HMS.AllowPrepareFastDraw = true;
+                //HMS.PrepareFastDrawInBackground();
             }
         }
 
