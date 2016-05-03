@@ -737,6 +737,9 @@ namespace FastColoredTextBoxNS
             if (Menu.Visible)
                 if (ProcessKey(e.KeyCode, e.Modifiers))
                     e.Handled = true;
+
+            Console.WriteLine("!!!!!!!!!!! e.Handled="+ e.Handled);
+
             if (box == null) return;
 
             if (Menu.TempNotShow) {
@@ -924,28 +927,36 @@ namespace FastColoredTextBoxNS
                     if ((line.Length == 0) && (box.Lines[iLine].IndexOf('=') < 0)) newText += (box.Language == Language.PascalScript) ? " := " : " = ";
                 }
             }
-
+            if (box.KeywordsToLowcase) {
+                if (HMS.WordIsKeyword(newText))
+                    newText = newText.ToLower();
+            }
             // > By WendyH ---------------------------
 
-            box.BeginAutoUndo(); 
-            box.TextSource.Manager.ExecuteCommand(new SelectCommand(box.TextSource));
-            if (box.Selection.ColumnSelectionMode)
-            {
-                var start = box.Selection.Start; 
-                var end   = box.Selection.End;
-                start.iChar = fragment.Start.iChar;
-                end  .iChar = fragment.End  .iChar;
-                box.Selection.Start = start;
-                box.Selection.End   = end;
+            box.BeginAutoUndo();
+            box.BeginUpdate();
+            try {
+                box.TextSource.Manager.ExecuteCommand(new SelectCommand(box.TextSource));
+                if (box.Selection.ColumnSelectionMode)
+                {
+                    var start = box.Selection.Start; 
+                    var end   = box.Selection.End;
+                    start.iChar = fragment.Start.iChar;
+                    end  .iChar = fragment.End  .iChar;
+                    box.Selection.Start = start;
+                    box.Selection.End   = end;
+                }
+                else
+                {
+                    box.Selection.Start = fragment.Start;
+                    box.Selection.End   = fragment.End;
+                }
+                box.InsertText(newText);
+                box.TextSource.Manager.ExecuteCommand(new SelectCommand(box.TextSource));
+            } finally {
+                box.EndUpdate();
+                box.EndAutoUndo();
             }
-            else
-            {
-                box.Selection.Start = fragment.Start;
-                box.Selection.End = fragment.End;
-            }
-            box.InsertText(newText);
-            box.TextSource.Manager.ExecuteCommand(new SelectCommand(box.TextSource));
-            box.EndAutoUndo();
             if ((hmsItem != null) && (hmsItem.Params.Count > 0)) {
                 if (HMSEditor.ActiveEditor != null) HMSEditor.ActiveEditor.WasCommaOrBracket = true;
             }

@@ -1375,10 +1375,7 @@ namespace FastColoredTextBoxNS {
                 if (ch == "=") equalExists = true;
                 if (!Regex.IsMatch(ch, @"[:=]")) break;
             }
-            Place oldStart = Start;
-            Start = r.Start;
-            text = GetFragment(allowedSymbolsPattern).Text;
-            Start = oldStart;
+            text = r.GetFragment(allowedSymbolsPattern).Text;
             return equalExists;
         }
 

@@ -318,7 +318,7 @@ namespace FastColoredTextBoxNS {
         // < By WendyH ------------------------------------------
         private void PascalAutoIndentNeeded(AutoIndentEventArgs args) {
             Match m;
-            string beginBlock = "\\b(Begin|Try|Repeat)\\b";
+            string beginBlock = "\\b(Begin|Try|Repeat|Case)\\b";
             string endBlock   = "\\b(End|Until)\\b";
             if (Regex.IsMatch(args.LineText, @"^\s*(Begin)\b", RegexOptions.IgnoreCase)) {
                 if (!Regex.IsMatch(args.PrevLineText, @"\b(Then|Do)[\s#]*$", RegexOptions.IgnoreCase)) {
@@ -387,7 +387,7 @@ namespace FastColoredTextBoxNS {
                 args.Shift = args.TabLength;
                 return;
             }
-            if (Regex.IsMatch(args.PrevLineText, @"\b(Then|Else)[\s#]*$", RegexOptions.IgnoreCase)) {
+            if (Regex.IsMatch(args.PrevLineText, @"\b(Then|Else|Do)[\s#]*$", RegexOptions.IgnoreCase)) {
                 args.Shift = args.TabLength;
                 return;
             }
@@ -1302,8 +1302,8 @@ namespace FastColoredTextBoxNS {
             PascalScriptStringRegex = new Regex(@"""([^""\r])*""?|'([^'\r])*'?|(//.*|\{[\s\S]*?(\}|$))", RegexCompiledOption);
             PascalScriptNumberRegex = new Regex(@"\b\d+[\.]?\d*([eE]\-?\d+)?[lLdDfF]?\b|\b0x[a-fA-F\d]+\b", RegexCompiledOption);
             string keywords = "PROGRAM|USES|CONST|VAR|ARRAY|NOT|IN|IS|OR|XOR|DIV|MOD|AND|SHL|SHR|BREAK|CONTINUE|EXIT|BEGIN|END|IF|THEN|ELSE|CASE|OF|REPEAT|UNTIL|WHILE|DO|FOR|TO|DOWNTO|TRY|FINALLY|EXCEPT|WITH|FUNCTION|PROCEDURE";
-            PascalScriptKeywordRegex1  = new Regex(@"(?:[\+-/<>\*\&\^\%\!]|\b(" + hmsCommonTypes + @")\b)", RegexCompiledOption | RegexOptions.IgnoreCase);
-            PascalScriptKeywordRegex2  = new Regex(@"\b(" + keywords   + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
+            PascalScriptKeywordRegex1  = new Regex(@"\b(" + hmsCommonTypes + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
+            PascalScriptKeywordRegex2  = new Regex(@"(?:[\+-/<>\*\&\^\%\!]|\b(" + keywords   + @")\b)", RegexCompiledOption | RegexOptions.IgnoreCase);
             PascalScriptClassNameRegex = new Regex(@"\b(" + HmsClasses + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
         }
 

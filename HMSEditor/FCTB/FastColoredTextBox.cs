@@ -71,6 +71,7 @@ namespace FastColoredTextBoxNS {
         public bool YellowSelection;
         public bool DebugMode = false;
         public bool FormatCodeWhenPaste = false;
+        public bool KeywordsToLowcase = false;
         public int HmsDebugLine = -1;
         public int HmsDebugChar = -1;
         public ErrorStyle ErrorStyle = new ErrorStyle();
@@ -79,7 +80,7 @@ namespace FastColoredTextBoxNS {
         private Brush debugColor = new SolidBrush(Color.FromArgb(100, 250, 11, 11));
         public  bool CheckKeywordsRegister = false;
         public  bool SelectionAfterFind    = false;
-        private bool freez;
+        public  bool freez;
 
         internal const int minLeftIndent = 8;
         private const int maxBracketSearchIterations = 1000;
@@ -4156,7 +4157,6 @@ namespace FastColoredTextBoxNS {
         public bool ProcessKey(char c, Keys modifiers) {
             if (handledChar)
                 return true;
-
             macrosManager?.ProcessKey(c, modifiers);
             /*  !!!!
             if (c == ' ')

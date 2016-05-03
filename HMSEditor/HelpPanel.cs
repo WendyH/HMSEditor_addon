@@ -65,8 +65,8 @@ namespace HMSEditorNS {
         }
 
         private void FillBackGround(string word = "") {
-            if (worker.IsBusy) return;
-            worker.RunWorkerAsync(word);
+            if (!worker.IsBusy)
+                worker.RunWorkerAsync(word);
         }
 
 	    private void CheckItem(AutocompleteItems exactlyItems, AutocompleteItems notExacItems, HMSItem item, string word) {

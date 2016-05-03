@@ -142,7 +142,8 @@ namespace HMSEditorNS {
         private void WorkerCheckSyntax_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
             if (needCheckSyntaxAgain) {
                 needCheckSyntaxAgain = false;
-                WorkerCheckSyntax.RunWorkerAsync();
+                if (!WorkerCheckSyntax.IsBusy)
+                    WorkerCheckSyntax.RunWorkerAsync();
             }
             if (ErrorMessage.Length > 0) {
                 Editor.SetErrorLines(ErrorChar, ErrorLine, ErrorMessage);
@@ -185,7 +186,8 @@ namespace HMSEditorNS {
                 needCheckSyntaxAgain = true;
                 return;
             }
-            WorkerCheckSyntax.RunWorkerAsync();
+            if (!WorkerCheckSyntax.IsBusy)
+                WorkerCheckSyntax.RunWorkerAsync();
 		} 
 
 		// Fields
@@ -310,8 +312,8 @@ namespace HMSEditorNS {
         }
 
         private void Editor_LostFocus(object sender, EventArgs e) {
-            if (!PopupMenu.Focused)
-                HideAllToolTipsAndHints(); 
+            //if (!PopupMenu.Focused)
+                //HideAllToolTipsAndHints(); 
             //if (ValueHint.IsShowing ) Editor.Focus();
         }
 
@@ -653,9 +655,10 @@ namespace HMSEditorNS {
             btnCheckNewVersionOnLoad.Checked = Settings.Get("CheckNewVersionOnLoad",section, btnCheckNewVersionOnLoad.Checked);
             btnFormatCodeWhenPaste  .Checked = Settings.Get("FormatCodeWhenPaste" , section, btnFormatCodeWhenPaste  .Checked);
             btnUnderlinePascalKeywrd.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywrd.Checked);
+            btnKeywordsToLowcase    .Checked = Settings.Get("KeywordsToLowcase"      , section, btnKeywordsToLowcase    .Checked);
 
             // Set to false deprecated settings
-            btnAutoIdentLines       .Checked = false;
+            btnAutoIdentLines.Checked = false;
             btnCheckKeywordsRegister.Checked = false;
             //btnUnderlinePascalKeywrd.Checked = false;
 
@@ -705,6 +708,7 @@ namespace HMSEditorNS {
             btnCheckKeywordsRegister_Click(null, EventArgs.Empty);
             btnCheckNewVersionOnLoad_Click(null, EventArgs.Empty);
             btnFormatCodeWhenPaste_Click  (null, EventArgs.Empty);
+            btnKeywordsToLowcase_Click    (null, EventArgs.Empty);
 
             Editor.HotkeysMapping.InitDefault(); 
             string hotkeys = Settings.Get("Map", "AddonHotkeys", "");
@@ -771,7 +775,8 @@ namespace HMSEditorNS {
                 Settings.Set("BoldCaret"           , btnBoldCaret            .Checked, section);
                 Settings.Set("CheckKeywordsRegister",btnCheckKeywordsRegister.Checked, section);
                 Settings.Set("CheckNewVersionOnLoad",btnCheckNewVersionOnLoad.Checked, section);
-                Settings.Set("FormatCodeWhenPaste" , btnFormatCodeWhenPaste  .Checked, section);
+                Settings.Set("FormatCodeWhenPaste"  ,btnFormatCodeWhenPaste  .Checked, section);
+                Settings.Set("KeywordsToLowcase"    ,btnKeywordsToLowcase    .Checked, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -1061,7 +1066,8 @@ namespace HMSEditorNS {
             BuildFunctionList(); // Only when text changed - build the list of functions
 			if (btnAutoCheckSyntax.Checked) AutoCheckSyntaxBackground();
 
-            WorkerHighlighter.RunWorkerAsync();
+            if (!WorkerHighlighter.IsBusy)
+                WorkerHighlighter.RunWorkerAsync();
 
 			Locked = false;
             if (IsFirstActivate) { 
@@ -1325,9 +1331,10 @@ namespace HMSEditorNS {
         private void btnCheckNewVersionOnLoad_Click(object sender, EventArgs e) {
             if (!HMS.NewVersionChecked && btnCheckNewVersionOnLoad.Checked) {
                 BackgroundWorker w = new BackgroundWorker();
-                w.DoWork += W_DoWork;
+                w.DoWork             += W_DoWork;
                 w.RunWorkerCompleted += W_RunWorkerCompleted;
-                w.RunWorkerAsync();
+                if (!w.IsBusy)
+                    w.RunWorkerAsync();
             }
         }
 
@@ -1486,6 +1493,10 @@ namespace HMSEditorNS {
         private void btnFormatCodeWhenPaste_Click(object sender, EventArgs e) {
             Editor.FormatCodeWhenPaste = btnFormatCodeWhenPaste.Checked;
         }
+
+        private void btnKeywordsToLowcase_Click(object sender, EventArgs e) {
+            Editor.KeywordsToLowcase = btnKeywordsToLowcase.Checked;
+        }
         #endregion Control Events
 
         #region Smart IDE functions
@@ -1512,12 +1523,14 @@ namespace HMSEditorNS {
         private static Regex forbittenSameText = new Regex(@"\W+", RegexOptions.Compiled);
         private string prevWord = "";
         private void HighlightSameWords() {
-            if (!Editor.Selection.IsEmpty) {
+            if (Editor.Selection.IsEmpty) {
                 Editor.Range.ClearStyle(SameWordsStyle);
+                prevWord = "";
                 return;
             }
             var fragment = Editor.Selection.GetFragment(@"\w");
             string text = fragment.Text;
+            if (text != Editor.Selection.Text) return;
             if (prevWord != text && !forbittenSameText.IsMatch(text)) {
                 Editor.Range.ClearStyle(SameWordsStyle);
                 Editor.Range.SetStyle(SameWordsStyle, "\\b" + text + "\\b", RegexOptions.Multiline);
@@ -1648,7 +1661,8 @@ namespace HMSEditorNS {
                 needCodeAnalysisPosition = position;
                 return;
             }
-            WorkerCodeAnalysis.RunWorkerAsync(position);
+            if (!WorkerCodeAnalysis.IsBusy)
+                WorkerCodeAnalysis.RunWorkerAsync(position);
             if (needCodeAnalysisAgain) {
                 needCodeAnalysisAgain = false;
                 if (!WorkerCodeAnalysis.IsBusy)
@@ -1886,12 +1900,12 @@ namespace HMSEditorNS {
         }
 
         private void CheckPositionIsInParametersSequence_DoWork(object sender, DoWorkEventArgs e) {
-            if (Editor.IsUpdating) {
-                for (int i = 3; i > 0; i--) {
-                    Thread.Sleep(100);
-                    if (!Editor.IsUpdating) break;
-                }
-            }
+            //if (Editor.IsUpdating) {
+            //    for (int i = 3; i > 0; i--) {
+            //        Thread.Sleep(100);
+            //        if (!Editor.IsUpdating) break;
+            //    }
+            //}
             if (!Editor.IsUpdating) CheckPositionIsInParametersSequence();
         }
 
