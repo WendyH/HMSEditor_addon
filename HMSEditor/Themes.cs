@@ -183,10 +183,10 @@ namespace HMSEditorNS {
 
         
 
-        public static void Init() {
+        public static int Init() {
             string data = HMS.ReadTextFromResource("ColorThemes.txt");
             LoadThemesFromString(data);
-            
+            int buildinThemes = Dict.Count;
             // И сканируем файлы шаблонов в директории
             if (Directory.Exists(HMS.ThemesDir)) {
                 string[] files = Directory.GetFiles(HMS.ThemesDir);
@@ -195,6 +195,7 @@ namespace HMSEditorNS {
                 }
             }
             //SaveThemesToFile(@"D:\ColorThemes.txt");
+            return buildinThemes;
         }
 
         public static void LoadThemesFromFile(string file) {

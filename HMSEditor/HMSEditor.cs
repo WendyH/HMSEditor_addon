@@ -661,13 +661,13 @@ namespace HMSEditorNS {
             Editor.EnableFoldingIndicator  = btnShowFoldingIndicator .Checked;
             Editor.HighlightCurrentLine    = btnHighlightCurrentLine .Checked;
 
-            Themes.Init();
+            int buildinThemes = Themes.Init();
 
             ThemeName = Settings.Get("Theme"   , section, ThemeName);
             Filename  = Settings.Get("LastFile", section, Filename );
 
             HMS.LoadTemplates(); // Сначала загружаем шаблоны, какие есть
-            FillThemes();
+            FillThemes(buildinThemes);
 
             // Need before the set ScriptLanguage!
             btnGetScriptDescriptions_Click(null, EventArgs.Empty);
@@ -701,10 +701,10 @@ namespace HMSEditorNS {
             Editor.Refresh();
         }
 
-        private void FillThemes() {
+        private void FillThemes(int buildinThemes) {
             btnThemes.DropDownItems.Clear();
             foreach (var name in Themes.Dict.Keys) {
-                if (btnThemes.DropDownItems.Count == 20) {
+                if (btnThemes.DropDownItems.Count == buildinThemes) {
                     btnThemes.DropDownItems.Add(new ToolStripSeparator());
                 }
                 ToolStripMenuItem item = (ToolStripMenuItem)btnThemes.DropDownItems.Add(name);
