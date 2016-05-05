@@ -828,6 +828,8 @@ namespace FastColoredTextBoxNS {
             InitStyleTheme();
             if ((lang == Language.PascalScript) && (KeywordStyle != null))
                 KeywordStyle = new TextStyle(((TextStyle)KeywordStyle).ForeBrush, ((TextStyle)KeywordStyle).BackgroundBrush, ((TextStyle)KeywordStyle).FontStyle | FontStyle.Bold | (AltPascalKeywordsHighlight ? FontStyle.Underline : FontStyle.Regular));
+            if ((lang == Language.BasicScript) && (KeywordStyle != null))
+                KeywordStyle = new TextStyle(((TextStyle)KeywordStyle).ForeBrush, ((TextStyle)KeywordStyle).BackgroundBrush, ((TextStyle)KeywordStyle).FontStyle | FontStyle.Bold);
             StringStyle = RedStringsHighlight ? RedStyle : StringStyle; // By WendyH
         }
 
@@ -1314,8 +1316,8 @@ namespace FastColoredTextBoxNS {
 
         void InitBasicScriptRegex() {
             string keywords = "EOL|IMPORTS|DIM|AS|NOT|IN|IS|OR|XOR|MOD|AND|ADDRESSOF|BREAK|CONTINUE|EXIT|DELETE|SET|RETURN|IF|THEN|END|ELSEIF|ELSE|SELECT|CASE|DO|LOOP|UNTIL|WHILE|WEND|FOR|TO|STEP|NEXT|TRY|FINALLY|CATCH|WITH|SUB|FUNCTION|BYREF|BYVAL";
-            BasicScriptKeywordRegex1 = new Regex(@"(?:[:=\+-/<>\*\&\^\%\!]|\b(" + hmsCommonTypes + @")\b)", RegexCompiledOption | RegexOptions.IgnoreCase);
-            BasicScriptKeywordRegex2 = new Regex(@"\b(" + keywords + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
+            BasicScriptKeywordRegex1 = new Regex(@"\b(" + hmsCommonTypes + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
+            BasicScriptKeywordRegex2 = new Regex(@"\b(" + keywords       + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
         }
 
         void InitHmsJScriptRegex() {
@@ -1368,6 +1370,7 @@ namespace FastColoredTextBoxNS {
             range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
             range.tb.AutoIndentCharsPatterns   = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
             if (PascalScriptStringRegex == null) InitPascalScriptRegex();
+            bool bigText = range.Text.Length > MaxLenght4FastWork;
 
             Range fullRange = range.tb.Range;
             fullRange.ClearStyle(StringStyle, CommentStyle);
@@ -1382,10 +1385,10 @@ namespace FastColoredTextBoxNS {
             range.SetFoldingMarkers(@"\b(begin|try)\b", @"\b(end)\b"  , RegexCompiledOption | RegexOptions.IgnoreCase); //allow to collapse brackets block
 
             timer?.Stop();
-            if (range.Text.Length < 15000) {
-                PascalScriptSyntaxHighlight2(range);
-            } else {
+            if (bigText) {
                 HighlightSyntax2();
+            } else {
+                PascalScriptSyntaxHighlight2(range);
             }
         }
         public void PascalScriptSyntaxHighlight2(Range range) {
@@ -1412,6 +1415,7 @@ namespace FastColoredTextBoxNS {
             range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy2;
             range.tb.AutoIndentCharsPatterns   = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
             if (CPPScriptKeywordRegex == null) InitCPPScriptRegex();
+            bool bigText = range.Text.Length > MaxLenght4FastWork;
 
             Range fullRange = range.tb.Range;
             fullRange.ClearStyle(StringStyle, CommentStyle);
@@ -1425,10 +1429,10 @@ namespace FastColoredTextBoxNS {
             range.SetFoldingMarkers("{", "}"); //allow to collapse brackets block
 
             timer?.Stop();
-            if (range.Text.Length < 15000) {
-                CPPScriptSyntaxHighlight2(range);
-            } else {
+            if (bigText) {
                 HighlightSyntax2();
+            } else {
+                CPPScriptSyntaxHighlight2(range);
             }
         }
         public void CPPScriptSyntaxHighlight2(Range range) {
@@ -1485,15 +1489,15 @@ namespace FastColoredTextBoxNS {
             range.tb.AutoIndentCharsPatterns   = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);";
             if (JScriptNumberRegex     == null) InitJScriptRegex();
             if (HmsJScriptKeywordRegex == null) InitHmsJScriptRegex();
+            if (CPPClassNameRegex      == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
             Range fullRange = range.tb.Range;
             fullRange.ClearStyle(StringStyle, CommentStyle);
             fullRange.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
-            range.ClearStyle(NumberStyle, KeywordStyle, DeclFunctionStyle);
-            range.SetStyle(NumberStyle      , JScriptNumberRegex    );
-            range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP  );
-            range.SetStyle(KeywordStyle     , HmsJScriptKeywordRegex);
+            range.ClearStyle(NumberStyle, DeclFunctionStyle);
+            range.SetStyle(NumberStyle      , JScriptNumberRegex  );
+            range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP);
 
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers("{", "}"); //allow to collapse brackets block
@@ -1506,11 +1510,13 @@ namespace FastColoredTextBoxNS {
             }
         }
         public void HmsJScriptSyntaxHighlight2(Range range) {
-            range.ClearStyle(FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle);
-            range.SetStyle(FunctionsStyle , HMS.RegexHmsFunctions);
-            range.SetStyle(VariableStyle  , HMS.RegexHmsVariables);
-            range.SetStyle(ConstantsStyle , HMS.RegexHmsConstants);
-            range.SetStyle(PunctuationSyle, regexPunctuationCPP  );
+            range.ClearStyle(FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, KeywordStyle, ClassNameStyle);
+            range.SetStyle(ClassNameStyle , CPPClassNameRegex     );
+            range.SetStyle(KeywordStyle   , HmsJScriptKeywordRegex);
+            range.SetStyle(FunctionsStyle , HMS.RegexHmsFunctions );
+            range.SetStyle(VariableStyle  , HMS.RegexHmsVariables );
+            range.SetStyle(ConstantsStyle , HMS.RegexHmsConstants );
+            range.SetStyle(PunctuationSyle, regexPunctuationCPP   );
         }
 
         /// <summary>
@@ -1524,8 +1530,10 @@ namespace FastColoredTextBoxNS {
             range.tb.LeftBracket2  = '\x0';
             range.tb.RightBracket2 = '\x0';
             range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.\(\)]+\s*(?<range>=)\s*(?<range>.+)";
-            if (VBStringRegex == null) InitVBRegex();
+            if (VBStringRegex            == null) InitVBRegex();
             if (BasicScriptKeywordRegex1 == null) InitBasicScriptRegex();
+            if (CPPClassNameRegex        == null) InitCPPScriptRegex();
+            bool bigText = range.Text.Length > MaxLenght4FastWork;
 
             Range fullRange = range.tb.Range;
             fullRange.ClearStyle(StringStyle, CommentStyle);
@@ -1545,17 +1553,17 @@ namespace FastColoredTextBoxNS {
             //range.SetFoldingMarkers(@"^\s*(?<range>Do)\b", @"^\s*(?<range>Loop)\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
             timer?.Stop();
-            if (range.Text.Length < 15000) {
-                BasicSyntaxHighlight2(range);
-            } else {
+            if (bigText) {
                 HighlightSyntax2();
+            } else {
+                BasicSyntaxHighlight2(range);
             }
         }
         public void BasicSyntaxHighlight2(Range range) {
             range.ClearStyle(ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle);
-            range.SetStyle(ClassNameStyle , VBClassNameRegex);
-            range.SetStyle(KeywordStyle   , BasicScriptKeywordRegex1);
-            range.SetStyle(BlueBoldStyle  , BasicScriptKeywordRegex2);
+            range.SetStyle(ClassNameStyle , CPPClassNameRegex       );
+            range.SetStyle(TypesStyle     , BasicScriptKeywordRegex1);
+            range.SetStyle(KeywordStyle   , BasicScriptKeywordRegex2);
             range.SetStyle(FunctionsStyle , HMS.RegexHmsFunctions);
             range.SetStyle(VariableStyle  , HMS.RegexHmsVariables);
             range.SetStyle(ConstantsStyle , HMS.RegexHmsConstants);
