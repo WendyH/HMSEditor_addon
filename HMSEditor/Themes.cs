@@ -99,6 +99,7 @@ namespace HMSEditorNS {
                 if (InScope(scope, "support.function" )) t.FunctionsStyle  = ToStyleFromSettings(settings);
                 if (InScope(scope, "support.constant" )) t.ConstantsStyle  = ToStyleFromSettings(settings);
                 if (InScope(scope, "entity.name.function")) t.DeclFunctionStyle = ToStyleFromSettings(settings);
+                if (InScope(scope, "punctuation"         )) t.PunctuationStyle  = ToStyleFromSettings(settings);
                 if (t.KeywordStyle == null) if(InScope(scope, "storage")) t.KeywordStyle = ToStyleFromSettings(settings);
             }
             Dict[themeName] = t;
@@ -110,9 +111,10 @@ namespace HMSEditorNS {
             string fore = yo["foreground"];
             string back = yo["background"];
             string font = yo["fontStyle" ];
-            bool   bold = font.IndexOf("bold", StringComparison.Ordinal     ) >= 0;
-            bool   ital = font.IndexOf("italic", StringComparison.Ordinal   ) >= 0;
+            bool   bold = font.IndexOf("bold"     , StringComparison.Ordinal) >= 0;
+            bool   ital = font.IndexOf("italic"   , StringComparison.Ordinal) >= 0;
             bool   undl = font.IndexOf("underline", StringComparison.Ordinal) >= 0;
+            if ((fore.Length + back.Length == 0) && !bold && !ital && !undl) return null;
             return ToStyle(fore, back, bold, ital, undl);
         }
 
@@ -255,15 +257,15 @@ namespace HMSEditorNS {
             foreach (var name in Dict.Keys) {
                 Theme tt = Dict[name];
                 sb.AppendLine("[" + name + "]");
-                sb.AppendLine("Background="      + ColorToString(tt.Background));
-                sb.AppendLine("Caret="           + ColorToString(tt.Caret));
-                sb.AppendLine("Foreground="      + ColorToString(tt.Foreground));
-                sb.AppendLine("Invisibles="      + ColorToString(tt.Invisibles));
-                sb.AppendLine("LineHighlight="   + ColorToString(tt.LineHighlight));
-                sb.AppendLine("ChangedLines="    + ColorToString(tt.ChangedLines));
-                sb.AppendLine("Selection="       + ColorToString(tt.Selection));
-                sb.AppendLine("LineNumberColor=" + ColorToString(tt.LineNumberColor));
-                sb.AppendLine("IndentBackColor=" + ColorToString(tt.IndentBackColor));
+                sb.AppendLine("Background="        + ColorToString(tt.Background));
+                sb.AppendLine("Caret="             + ColorToString(tt.Caret));
+                sb.AppendLine("Foreground="        + ColorToString(tt.Foreground));
+                sb.AppendLine("Invisibles="        + ColorToString(tt.Invisibles));
+                sb.AppendLine("LineHighlight="     + ColorToString(tt.LineHighlight));
+                sb.AppendLine("ChangedLines="      + ColorToString(tt.ChangedLines));
+                sb.AppendLine("Selection="         + ColorToString(tt.Selection));
+                sb.AppendLine("LineNumberColor="   + ColorToString(tt.LineNumberColor));
+                sb.AppendLine("IndentBackColor="   + ColorToString(tt.IndentBackColor));
 
                 // Должно быть всё, что в SyntaxHighlighter.InitStyleSchema()
                 sb.AppendLine("StringStyle="       + StyleToString(tt.StringStyle));
@@ -313,6 +315,7 @@ namespace HMSEditorNS {
             bool bold      = Regex.IsMatch(styleString, "font:.*?Bold"     , RegexOptions.IgnoreCase);
             bool italic    = Regex.IsMatch(styleString, "font:.*?Italic"   , RegexOptions.IgnoreCase);
             bool underline = Regex.IsMatch(styleString, "font:.*?Underline", RegexOptions.IgnoreCase);
+            if ((fore.Length + back.Length == 0) && !bold && !italic && !underline) return null;
             return ToStyle(fore, back, bold, italic, underline);
         }
 

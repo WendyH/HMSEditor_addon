@@ -20,6 +20,7 @@ TagBracketStyle={fore:#FF8C00;font:Regular;}
 FunctionsStyle={font:Regular;}
 VariableStyle={fore:#891155;font:Regular;}
 DeclFunctionStyle={fore:#660000;font:Bold;}
+PunctuationStyle=null
 
 [Dark on pastels]
 Background=#211E1E
@@ -43,6 +44,7 @@ TagBracketStyle={font:Regular;}
 FunctionsStyle={fore:#A1A1FF;font:Regular;}
 VariableStyle={fore:#C1C144;font:Regular;}
 DeclFunctionStyle={fore:#EDCA06;font:Bold;}
+PunctuationStyle={fore:#5FB3B3;}
 
 [Arstotzka]
 Background=#211F1E
@@ -66,6 +68,7 @@ TagBracketStyle=null
 FunctionsStyle={fore:#CF433E;font:Regular;}
 VariableStyle={font:Regular;}
 DeclFunctionStyle={fore:#70807B;font:Regular;}
+PunctuationStyle={fore:#A2A797;}
 
 [Dracula]
 Background=#222B30
@@ -89,6 +92,7 @@ TagBracketStyle={fore:#EE88CC;font:Regular;}
 FunctionsStyle={font:Regular;}
 VariableStyle={font:Regular;}
 DeclFunctionStyle={fore:#63C9EC;font:Bold;}
+PunctuationStyle=null
 
 [Chrome DevTools]
 Background=#FFFFFF
@@ -112,6 +116,7 @@ TagBracketStyle={fore:#AA0D91;font:Regular;}
 FunctionsStyle={fore:#000000;font:Bold;}
 VariableStyle={fore:#5B18A3;font:Regular;}
 DeclFunctionStyle={fore:#000000;font:Bold;}
+PunctuationStyle=null
 
 [Cobalt]
 Background=#002240
@@ -159,6 +164,7 @@ TagBracketStyle={font:Regular;}
 FunctionsStyle={fore:#691C97;font:Regular;}
 VariableStyle={fore:#234A97;font:Regular;}
 DeclFunctionStyle={fore:#BF4F24;font:Bold;}
+PunctuationStyle=null
 
 [Eiffel]
 Background=#FFFFFF
@@ -182,6 +188,7 @@ TagBracketStyle={fore:#1C02FF;font:Regular;}
 FunctionsStyle={fore:#3C4C72;font:Bold;}
 VariableStyle={fore:#0206FF;font:Italic;}
 DeclFunctionStyle={fore:#0000A2;font:Bold;}
+PunctuationStyle=null
 
 [Espresso Libre]
 Background=#2A211C
@@ -205,6 +212,7 @@ TagBracketStyle={fore:#43A8ED;font:Regular;}
 FunctionsStyle={fore:#7290D9;font:Bold;}
 VariableStyle={font:Regular;}
 DeclFunctionStyle={fore:#FF9358;font:Bold;}
+PunctuationStyle=null
 
 [IDLE]
 Background=#FFFFFF
@@ -228,6 +236,7 @@ TagBracketStyle={font:Regular;}
 FunctionsStyle={font:Regular;}
 VariableStyle={fore:#21439C;font:Regular;}
 DeclFunctionStyle={fore:#21439C;font:Bold;}
+PunctuationStyle=null
 
 [iPlastic]
 Background=#EEEEEEEB
@@ -251,6 +260,7 @@ TagBracketStyle={fore:#0033CC;font:Regular;}
 FunctionsStyle={fore:#3333FF;font:Bold;}
 VariableStyle={font:Bold;}
 DeclFunctionStyle={fore:#FF8000;font:Regular;}
+PunctuationStyle=null
 
 [LAZY]
 Background=#FFFFFF
@@ -274,6 +284,7 @@ TagBracketStyle={fore:#3A4A64;font:Regular;}
 FunctionsStyle={fore:#3B5BB5;font:Regular;}
 VariableStyle={fore:#3B5BB5;font:Regular;}
 DeclFunctionStyle=null
+PunctuationStyle=null
 
 [Monokai]
 Background=#272822
@@ -297,6 +308,7 @@ TagBracketStyle=null
 FunctionsStyle={fore:#CCACFF;font:Regular;}
 VariableStyle={fore:#FD971F;font:Regular;}
 DeclFunctionStyle={fore:#A6E22E;font:Bold;}
+PunctuationStyle=null
 
 [Tomorrow Night - Eighties]
 Background=#2D2D2D
@@ -320,6 +332,7 @@ TagBracketStyle={fore:#F2777A;font:Regular;}
 FunctionsStyle={fore:#6699CC;font:Regular;}
 VariableStyle={fore:#F2777A;font:Regular;}
 DeclFunctionStyle={fore:#FFCC66;font:Bold;}
+PunctuationStyle=null
 
 [Zenburnesque]
 Background=#404040
@@ -343,6 +356,7 @@ TagBracketStyle=null
 FunctionsStyle={font:Regular;}
 VariableStyle=null
 DeclFunctionStyle={fore:#FFCC66;font:Bold;}
+PunctuationStyle=null
 
 [Zeus]
 Background=#2E3336
@@ -366,6 +380,7 @@ TagBracketStyle=null
 FunctionsStyle={fore:#A7B3C2;font:Regular;}
 VariableStyle={fore:#FFD1C5;font:Regular;}
 DeclFunctionStyle={fore:#F6624A;font:Bold;}
+PunctuationStyle={fore:#A7DBD8;}
 
 [Afterglow]
 Background=#2E2E2E
@@ -389,6 +404,7 @@ TagBracketStyle={fore:#E8BF6A;font:Regular;}
 FunctionsStyle=null
 VariableStyle={fore:#C45837;font:Regular;}
 DeclFunctionStyle={fore:#FFC66D;font:Bold;}
+PunctuationStyle=null
 
 [Capo-Light]
 Background=#DADADA
@@ -412,6 +428,7 @@ TagBracketStyle={fore:#0066CC;font:Regular;}
 FunctionsStyle={fore:#007700;back:#E7DDB9;font:Regular;}
 VariableStyle={fore:#8C0E55;font:Regular;}
 DeclFunctionStyle={fore:#007700;font:Bold;}
+PunctuationStyle={fore:#9128b1;}
 
 [Oceanic Next]
 Background=#1B2B34
@@ -435,6 +452,7 @@ TagBracketStyle={fore:#5FB3B3;font:Regular;}
 FunctionsStyle={fore:#6699CC;font:Regular;}
 VariableStyle={fore:#5FB3B3;font:Regular;}
 DeclFunctionStyle={fore:#5FCFA7;font:Bold;}
+PunctuationStyle={fore:#5FB3B3;}
 
 [Resesif]
 Background=#2B2B2B
@@ -458,6 +476,7 @@ TagBracketStyle=null
 FunctionsStyle={fore:#D98339;font:Regular;}
 VariableStyle={fore:#D9A539;font:Regular;}
 DeclFunctionStyle={fore:#E16C5B;back:#BE493C1A;font:Bold;}
+PunctuationStyle=null
 
 [Material Theme - HMS]
 Background=#263238
@@ -481,6 +500,7 @@ TagBracketStyle=null
 FunctionsStyle={fore:#82AAFF;font:Regular;}
 VariableStyle={fore:#82B1FF;font:Regular;}
 DeclFunctionStyle={fore:#FFCB6B;font:Bold;}
+PunctuationStyle={fore:#d9f5dd;}
 
 [Material Theme - Darker - OceanicNext]
 Background=#212121
@@ -504,3 +524,4 @@ TagBracketStyle=null
 FunctionsStyle={fore:#6699CC;font:Regular;}
 VariableStyle={fore:#F2777A;font:Regular;}
 DeclFunctionStyle={fore:#FAC863;font:Bold;}
+PunctuationStyle={fore:#5FB3B3;}

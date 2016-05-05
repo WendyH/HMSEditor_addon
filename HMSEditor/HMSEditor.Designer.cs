@@ -835,12 +835,11 @@
             // btnAutoIdentLines
             // 
             this.btnAutoIdentLines.CheckOnClick = true;
-            this.btnAutoIdentLines.Enabled = false;
             this.btnAutoIdentLines.Name = "btnAutoIdentLines";
             this.btnAutoIdentLines.Size = new System.Drawing.Size(463, 22);
-            this.btnAutoIdentLines.Text = "Выравнивание конструкций кода";
-            this.btnAutoIdentLines.ToolTipText = "Автоматическое выравнивание строки, где набирается текст комманд кода";
-            this.btnAutoIdentLines.Visible = false;
+            this.btnAutoIdentLines.Text = "Выравнивание конструкций кода после нажатия \';\' или \'}\'";
+            this.btnAutoIdentLines.ToolTipText = "Автоматическое выравнивание строки, где набирается текст комманд кода конца блока" +
+    "";
             this.btnAutoIdentLines.Click += new System.EventHandler(this.btnAutoIdentChars_Click);
             // 
             // btnShowFoldingIndicator

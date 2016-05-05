@@ -633,9 +633,7 @@ namespace HMSEditorNS {
             btnGetScriptDescriptions.Checked = Settings.Get("GetScriptDescriptions"  , section, btnGetScriptDescriptions.Checked);
 
             // Set to false deprecated settings
-            btnAutoIdentLines.Checked = false;
             btnCheckKeywordsRegister.Checked = false;
-            //btnUnderlinePascalKeywrd.Checked = false;
 
             Editor.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywrd.Checked;
             Editor.SyntaxHighlighter.RedStringsHighlight        = btnRedStringsHighlight  .Checked;

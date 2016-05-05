@@ -4251,7 +4251,8 @@ namespace FastColoredTextBoxNS {
             }
 
             //do autoindent
-            if (c == '\n' || AutoIndentExistingLines)
+            //if (c == '\n' || AutoIndentExistingLines)
+            if (c == '\n' || c == '}' || c == ';')
                 DoAutoIndentIfNeed();
 
             if (AutoIndentChars)

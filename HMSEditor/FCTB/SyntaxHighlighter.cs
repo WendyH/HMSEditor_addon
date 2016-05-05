@@ -684,8 +684,10 @@ namespace FastColoredTextBoxNS {
                 ConstantsStyle    = StyleTheme.ConstantsStyle;
                 DeclFunctionStyle = StyleTheme.DeclFunctionStyle;
                 TypesStyle        = StyleTheme.TypesStyle;
-                if (TypesStyle     == null) TypesStyle     = KeywordStyle;
-                if (ClassNameStyle == null) ClassNameStyle = TypesStyle;
+                PunctuationSyle   = StyleTheme.PunctuationStyle;
+                if (TypesStyle      == null) TypesStyle      = KeywordStyle;
+                if (ClassNameStyle  == null) ClassNameStyle  = TypesStyle;
+                if (PunctuationSyle == null) PunctuationSyle = KeywordStyle;
             }
         }
 
@@ -696,6 +698,7 @@ namespace FastColoredTextBoxNS {
             DeclFunctionStyle = null;
             VariableStyle     = null;
             ConstantsStyle    = null;
+            PunctuationSyle   = null;
             switch (lang) {
                 case Language.CSharp:
                     StringStyle     = BrownStyle;
@@ -1280,9 +1283,11 @@ namespace FastColoredTextBoxNS {
         string hmsCommonTypes = "Byte|Word|Integer|Longint|Cardinal|TColor|Boolean|Real|Single|Double|Extended|Currency|TDate|TTime|TDateTime|Char|String|Pointer|Variant|Array";
 
         static Regex CPPScriptKeywordRegex, CPPScriptTypesRegex, CPPClassNameRegex;
-        static Regex regexDeclFunctionCPP = new Regex(@"^(?:\w+)\s+(?<range>\w+)\s*?\(",  RegexOptions.Multiline);
-        static Regex regexDeclFunctionPAS = new Regex(@"^\s*?(?:Function|Procedure)\s+(?<range>\w+)\b", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-        static Regex regexDeclFunctionBAS = new Regex(@"^\s*?(?:Function|SUB)\s+(?<range>\w+)\b"      , RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        static Regex regexDeclFunctionCPP = new Regex(@"^(?:\w+)\s+(?<range>\w+)\s*?\("               , RegexCompiledOption | RegexOptions.Multiline);
+        static Regex regexDeclFunctionPAS = new Regex(@"^\s*?(?:Function|Procedure)\s+(?<range>\w+)\b", RegexCompiledOption | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        static Regex regexDeclFunctionBAS = new Regex(@"^\s*?(?:Function|SUB)\s+(?<range>\w+)\b"      , RegexCompiledOption | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        static Regex regexPunctuationCPP  = new Regex(@"[\+-/<>\*\&\^\%\!:=]", RegexCompiledOption);
+        static Regex regexPunctuationPAS  = new Regex(@"[\+-/<>\*\&\^\%\!]"  , RegexCompiledOption);
         Regex PascalScriptStringRegex, PascalScriptNumberRegex, PascalScriptKeywordRegex1, PascalScriptKeywordRegex2, PascalScriptClassNameRegex;
         Regex BasicScriptKeywordRegex1, BasicScriptKeywordRegex2;
         Regex HmsJScriptKeywordRegex;
@@ -1291,7 +1296,7 @@ namespace FastColoredTextBoxNS {
         void InitCPPScriptRegex() {
             if (HMS.ClassesString.Length > 2)
                 HmsClasses = HMS.ClassesString.Substring(1, HMS.ClassesString.Length - 2);
-            CPPScriptKeywordRegex = new Regex(@"(?:[:=\+-/<>\*\&\^\%\!]|\b(include|define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is)\b)", RegexCompiledOption | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            CPPScriptKeywordRegex = new Regex(@"\b(include|define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is)\b", RegexCompiledOption | RegexOptions.IgnoreCase | RegexOptions.Multiline);
             CPPScriptTypesRegex   = new Regex(@"\b(byte|word|longint|Cardinal|TColor|Real|Single|Double|Extended|Currency|TDate|TTime|TDateTime|Char|String|Pointer|Variant|Array|bool|float|int|long|void)\b", RegexCompiledOption | RegexOptions.IgnoreCase | RegexOptions.Multiline);
             CPPClassNameRegex     = new Regex(@"\b(" + HmsClasses + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
         }
@@ -1303,8 +1308,8 @@ namespace FastColoredTextBoxNS {
             PascalScriptNumberRegex = new Regex(@"\b\d+[\.]?\d*([eE]\-?\d+)?[lLdDfF]?\b|\b0x[a-fA-F\d]+\b", RegexCompiledOption);
             string keywords = "PROGRAM|USES|CONST|VAR|ARRAY|NOT|IN|IS|OR|XOR|DIV|MOD|AND|SHL|SHR|BREAK|CONTINUE|EXIT|BEGIN|END|IF|THEN|ELSE|CASE|OF|REPEAT|UNTIL|WHILE|DO|FOR|TO|DOWNTO|TRY|FINALLY|EXCEPT|WITH|FUNCTION|PROCEDURE";
             PascalScriptKeywordRegex1  = new Regex(@"\b(" + hmsCommonTypes + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
-            PascalScriptKeywordRegex2  = new Regex(@"(?:[\+-/<>\*\&\^\%\!]|\b(" + keywords   + @")\b)", RegexCompiledOption | RegexOptions.IgnoreCase);
-            PascalScriptClassNameRegex = new Regex(@"\b(" + HmsClasses + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
+            PascalScriptKeywordRegex2  = new Regex(@"\b(" + keywords   + @")\b"    , RegexCompiledOption | RegexOptions.IgnoreCase);
+            PascalScriptClassNameRegex = new Regex(@"\b(" + HmsClasses + @")\b"    , RegexCompiledOption | RegexOptions.IgnoreCase);
         }
 
         void InitBasicScriptRegex() {
@@ -1315,13 +1320,13 @@ namespace FastColoredTextBoxNS {
 
         void InitHmsJScriptRegex() {
             string keywords = @"import|var|new|in|is|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|function|with|" + hmsCommonTypes;
-            HmsJScriptKeywordRegex = new Regex(@"(?:[:=\+-/<>\*\&\^\%\!]|\b(" + keywords + @")\b)", RegexCompiledOption | RegexOptions.IgnoreCase);
+            HmsJScriptKeywordRegex = new Regex(@"\b(" + keywords + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
         }
 
         void InitYAMLRegex() {
             YAMLStringRegex     = new Regex(@"""(\\""|[^""\r])*""|'(\\'|[^'\r])*'|(#.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption);
             YAMLNumberRegex     = new Regex(@"\b\d+[\.]?\d*([eE]\-?\d+)?\b", RegexCompiledOption);
-            YAMLKeywordRegex    = new Regex(@"(?:[:=\+-/<>\*\&\^\%\!]|\b(true|false|null)\b)", RegexCompiledOption);
+            YAMLKeywordRegex    = new Regex(@"\b(true|false|null)\b"       , RegexCompiledOption);
             YAMLObjectNameRegex = new Regex(@"(?:^|{|,)[\s-]*?(?<range>[\w-]+)\s*?:", RegexCompiledOption | RegexOptions.Multiline);
             YAMLBreaketsRegex   = new Regex(@"[{},]", RegexCompiledOption);
         }
@@ -1384,10 +1389,11 @@ namespace FastColoredTextBoxNS {
             }
         }
         public void PascalScriptSyntaxHighlight2(Range range) {
-            range.ClearStyle(ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, TypesStyle);
-            range.SetStyle(ClassNameStyle, PascalScriptClassNameRegex);
-            range.SetStyle(TypesStyle    , PascalScriptKeywordRegex1);
-            range.SetStyle(KeywordStyle  , PascalScriptKeywordRegex2);
+            range.ClearStyle(ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, TypesStyle, PunctuationSyle);
+            range.SetStyle(ClassNameStyle , PascalScriptClassNameRegex);
+            range.SetStyle(TypesStyle     , PascalScriptKeywordRegex1 );
+            range.SetStyle(KeywordStyle   , PascalScriptKeywordRegex2 );
+            range.SetStyle(PunctuationSyle, regexPunctuationPAS       );
             range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
             range.SetStyle(VariableStyle , HMS.RegexHmsVariables);
             range.SetStyle(ConstantsStyle, HMS.RegexHmsConstants);
@@ -1415,8 +1421,6 @@ namespace FastColoredTextBoxNS {
             range.SetStyle(NumberStyle      , CSharpNumberRegex    );
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP );
 
-            
-
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers("{", "}"); //allow to collapse brackets block
 
@@ -1428,10 +1432,11 @@ namespace FastColoredTextBoxNS {
             }
         }
         public void CPPScriptSyntaxHighlight2(Range range) {
-            range.ClearStyle(ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle);
-            range.SetStyle(ClassNameStyle, CPPClassNameRegex    );
-            range.SetStyle(KeywordStyle  , CPPScriptKeywordRegex);
-            range.SetStyle(TypesStyle    , CPPScriptTypesRegex  );
+            range.ClearStyle(ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle);
+            range.SetStyle(ClassNameStyle , CPPClassNameRegex    );
+            range.SetStyle(KeywordStyle   , CPPScriptKeywordRegex);
+            range.SetStyle(TypesStyle     , CPPScriptTypesRegex  );
+            range.SetStyle(PunctuationSyle, regexPunctuationCPP  );
             range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
             range.SetStyle(VariableStyle , HMS.RegexHmsVariables);
             range.SetStyle(ConstantsStyle, HMS.RegexHmsConstants);
@@ -1501,10 +1506,11 @@ namespace FastColoredTextBoxNS {
             }
         }
         public void HmsJScriptSyntaxHighlight2(Range range) {
-            range.ClearStyle(FunctionsStyle, VariableStyle, ConstantsStyle);
-            range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
-            range.SetStyle(VariableStyle , HMS.RegexHmsVariables);
-            range.SetStyle(ConstantsStyle, HMS.RegexHmsConstants);
+            range.ClearStyle(FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle);
+            range.SetStyle(FunctionsStyle , HMS.RegexHmsFunctions);
+            range.SetStyle(VariableStyle  , HMS.RegexHmsVariables);
+            range.SetStyle(ConstantsStyle , HMS.RegexHmsConstants);
+            range.SetStyle(PunctuationSyle, regexPunctuationCPP  );
         }
 
         /// <summary>
@@ -1524,8 +1530,7 @@ namespace FastColoredTextBoxNS {
             Range fullRange = range.tb.Range;
             fullRange.ClearStyle(StringStyle, CommentStyle);
             fullRange.SetStylesStringsAndComments(VBStringRegex, StringStyle, CommentStyle, false);
-            range.ClearStyle(NumberStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle);
-
+            range.ClearStyle(NumberStyle, DeclFunctionStyle);
             range.SetStyle(NumberStyle      , VBNumberRegex);
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionBAS);
 
@@ -1547,12 +1552,14 @@ namespace FastColoredTextBoxNS {
             }
         }
         public void BasicSyntaxHighlight2(Range range) {
-            range.SetStyle(ClassNameStyle, VBClassNameRegex);
-            range.SetStyle(KeywordStyle  , BasicScriptKeywordRegex1);
-            range.SetStyle(BlueBoldStyle , BasicScriptKeywordRegex2);
-            range.SetStyle(FunctionsStyle, HMS.RegexHmsFunctions);
-            range.SetStyle(VariableStyle , HMS.RegexHmsVariables);
-            range.SetStyle(ConstantsStyle, HMS.RegexHmsConstants);
+            range.ClearStyle(ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle);
+            range.SetStyle(ClassNameStyle , VBClassNameRegex);
+            range.SetStyle(KeywordStyle   , BasicScriptKeywordRegex1);
+            range.SetStyle(BlueBoldStyle  , BasicScriptKeywordRegex2);
+            range.SetStyle(FunctionsStyle , HMS.RegexHmsFunctions);
+            range.SetStyle(VariableStyle  , HMS.RegexHmsVariables);
+            range.SetStyle(ConstantsStyle , HMS.RegexHmsConstants);
+            range.SetStyle(PunctuationSyle, regexPunctuationCPP  );
         }
 
         public Language DetectLang(string txt) {
@@ -1690,8 +1697,9 @@ namespace FastColoredTextBoxNS {
         public Style TypesStyle { get; set; }
 
         // < By WendyH ------------------------------
-        public Style ConstantsStyle { get; set; }
+        public Style ConstantsStyle    { get; set; }
         public Style DeclFunctionStyle { get; set; }
+        public Style PunctuationSyle   { get; set; }
 
         public string Lang2Str(Language l) {
             if (l == Language.CPPScript) return "C++Script";
