@@ -130,11 +130,14 @@ namespace HMSEditorNS {
 
                 editor.SelectionColor  = t.Selection;
                 editor.PaddingBackColor= t.Background;
+                editor.InvisibleCharsStyle = new InvisibleCharsRenderer(new Pen(t.Invisibles, 2));
                 //editor.BreakpointLineColor = 
 
                 editor.IndentBackColor  = (t.IndentBackColor .Name != "0") ? t.IndentBackColor  : editor.BackColor;
                 editor.LineNumberColor  = (t.LineNumberColor .Name != "0") ? t.LineNumberColor  : Color.FromArgb(150, editor.ForeColor);
                 editor.PaddingBackColor = (t.PaddingBackColor.Name != "0") ? t.PaddingBackColor : Color.FromArgb(150, editor.BackColor);
+                if (t.LineHighlight.Name != "0")
+                    editor.ChangedLineColor = t.LineHighlight;
 
                 editor.SyntaxHighlighter.StyleTheme = t;
                 editor.RefreshTheme();
@@ -168,7 +171,7 @@ namespace HMSEditorNS {
                 SetTheme(editor.Editor, name);
                 Theme t = Dict[name];
                 editor.Editor.CurrentLineColor = t.LineHighlight;
-                editor.Editor.ChangedLineColor = t.ChangedLines;
+                //editor.Editor.ChangedLineColor = t.ChangedLines;
 
                 //Color c1 = MixColor(0.5, t.KeywordStyle.GetRTF().ForeColor, t.StringStyle.GetRTF().ForeColor);
                 HmsToolTip.ColorBackgrnd = MediaColor(0xF0, t.Background);
@@ -176,8 +179,7 @@ namespace HMSEditorNS {
                 //editor.PopupMenu.ForeColor = t.Foreground;
 
                 // Для тёмных тем цвет изменённых строк меняем тоже на более тёмный
-                uint icol = (uint)editor.Editor.IndentBackColor.ToArgb() & 0xFFFFFF;
-                if (icol < 0x808080) editor.Editor.ChangedLineColor = ToColor("#024A02");
+                //if (editor.Editor.IndentBackColor.GetBrightness() < 0.5) editor.Editor.ChangedLineColor = ToColor("#024A02");
 
                 editor.btnMarkChangedLines_Click(null, EventArgs.Empty);
             }

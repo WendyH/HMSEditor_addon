@@ -72,11 +72,11 @@ namespace FastColoredTextBoxNS {
         public bool DebugMode = false;
         public bool FormatCodeWhenPaste = false;
         public bool KeywordsToLowcase = false;
-        public int HmsDebugLine = -1;
-        public int HmsDebugChar = -1;
-        public ErrorStyle ErrorStyle = new ErrorStyle();
-        public TextStyle StringStyle = null;
-        public TextStyle CommentStyle = null;
+        public int  HmsDebugLine = -1;
+        public int  HmsDebugChar = -1;
+        public ErrorStyle ErrorStyle   = new ErrorStyle();
+        public TextStyle  StringStyle  = null;
+        public TextStyle  CommentStyle = null;
         private Brush debugColor = new SolidBrush(Color.FromArgb(100, 250, 11, 11));
         public  bool CheckKeywordsRegister = false;
         public  bool SelectionAfterFind    = false;
@@ -92,7 +92,7 @@ namespace FastColoredTextBoxNS {
         private const int SB_ENDSCROLL = 0x8;
         public readonly List<LineInfo> LineInfos = new List<LineInfo>();
         private readonly Range selection;
-        private readonly Timer timer = new Timer();
+        private readonly Timer timer  = new Timer();
         private readonly Timer timer2 = new Timer();
         private readonly Timer timer3 = new Timer();
         private readonly List<VisualMarker> visibleMarkers = new List<VisualMarker>();
@@ -938,6 +938,8 @@ namespace FastColoredTextBoxNS {
         }
 
         private SelectionStyle _selectionStyle;
+        public bool ShowInvisibleCharsInSelection;
+        public InvisibleCharsRenderer InvisibleCharsStyle;
 
         /// <summary>
         /// Style for rendering Selection area
@@ -5159,7 +5161,7 @@ namespace FastColoredTextBoxNS {
 
         private void DrawFoldingLines(PaintEventArgs e, int startLine, int endLine) {
             e.Graphics.SmoothingMode = SmoothingMode.None;
-            using (var pen = new Pen(Color.FromArgb(200, ServiceLinesColor)) { DashStyle = DashStyle.Dot })
+            using (var pen = new Pen(Color.FromArgb(BackColor.GetBrightness() > 0.5 ? 180 : 40, ServiceLinesColor)) { DashStyle = DashStyle.Dot })
                 foreach (var iLine in foldingPairs)
                     if (iLine.Key < endLine && iLine.Value > startLine) {
                         Line line = lines[iLine.Key];
@@ -5229,6 +5231,8 @@ namespace FastColoredTextBoxNS {
                 textRange = Selection.GetIntersectionWith(textRange);
                 if (textRange != null) {
                     SelectionStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange);
+                    if (ShowInvisibleCharsInSelection)
+                        InvisibleCharsStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange, true);
                 }
             }
         }
@@ -7069,8 +7073,8 @@ window.status = ""#print"";
                     originalFont.Dispose();*/
 
                 TextSource?.Dispose();
-
                 ToolTip?.Dispose();
+                InvisibleCharsStyle?.Dispose();
             }
             base.Dispose(disposing);
         }

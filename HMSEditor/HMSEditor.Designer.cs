@@ -13,7 +13,6 @@
             if (disposing && (components != null)) {
                 components.Dispose();
                 MouseTimer.Dispose();
-                InvisibleCharsStyle?.Dispose();
                 SameWordsStyle     ?.Dispose();
                 MouseTimer         ?.Dispose();
               //WorkerHighlighter  ?.Dispose();
@@ -22,7 +21,6 @@
                 if (PopupMenu != null && !PopupMenu.IsDisposed) PopupMenu.Dispose();
                 if (ValueForm != null && !ValueForm.IsDisposed) ValueForm.Close();
             }
-            InvisibleCharsStyle = null;
             SameWordsStyle      = null;
             PopupMenu           = null;
             MouseTimer          = null;
@@ -99,6 +97,7 @@
             this.btnHighlightCurrentLine = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowLineNumbers = new System.Windows.Forms.ToolStripMenuItem();
             this.btnInvisibleChars = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnInvisiblesInSelection = new System.Windows.Forms.ToolStripMenuItem();
             this.btnVerticalLineText = new System.Windows.Forms.ToolStripMenuItem();
             this.btnMarkChangedLines = new System.Windows.Forms.ToolStripMenuItem();
             this.btnBoldCaret = new System.Windows.Forms.ToolStripMenuItem();
@@ -634,6 +633,7 @@
             this.btnHighlightCurrentLine,
             this.btnShowLineNumbers,
             this.btnInvisibleChars,
+            this.btnInvisiblesInSelection,
             this.btnVerticalLineText,
             this.btnMarkChangedLines,
             this.btnBoldCaret,
@@ -689,6 +689,18 @@
             this.btnInvisibleChars.Text = "¶ Показывать непечатные символы";
             this.btnInvisibleChars.ToolTipText = "Отображать символы пробелов и переносов строк специальными символами";
             this.btnInvisibleChars.Click += new System.EventHandler(this.btnInvisibleChars_Click);
+            // 
+            // btnInvisiblesInSelection
+            // 
+            this.btnInvisiblesInSelection.Checked = true;
+            this.btnInvisiblesInSelection.CheckOnClick = true;
+            this.btnInvisiblesInSelection.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnInvisiblesInSelection.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnInvisiblesInSelection.Name = "btnInvisiblesInSelection";
+            this.btnInvisiblesInSelection.Size = new System.Drawing.Size(460, 22);
+            this.btnInvisiblesInSelection.Text = "• Показывать пробельные символы при выделении";
+            this.btnInvisiblesInSelection.ToolTipText = "Отображать символы пробелов специальными символами в выделенной области";
+            this.btnInvisiblesInSelection.Click += new System.EventHandler(this.btnInvisiblesInSelection_Click);
             // 
             // btnVerticalLineText
             // 
@@ -1265,5 +1277,6 @@
         private System.Windows.Forms.ToolStripMenuItem btnFormatCodeWhenPaste;
         private System.Windows.Forms.ToolStripMenuItem btnKeywordsToLowcase;
         private System.Windows.Forms.ToolStripMenuItem btnGetScriptDescriptions;
+        private System.Windows.Forms.ToolStripMenuItem  btnInvisiblesInSelection;
     }
 }

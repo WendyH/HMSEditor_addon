@@ -197,7 +197,6 @@ namespace HMSEditorNS {
 
         private System.Threading.Timer MouseTimer  = new System.Threading.Timer(MouseTimer_Task, null, Timeout.Infinite, Timeout.Infinite);
         public  Point       MouseLocation;
-        public  Style       InvisibleCharsStyle    = new InvisibleCharsRenderer(Pens.Gray);
         public  MarkerStyle SameWordsStyle         = new MarkerStyle(new SolidBrush(Color.FromArgb(33, Color.Gray)));
 
         public  AutocompleteMenu PopupMenu;
@@ -331,8 +330,8 @@ namespace HMSEditorNS {
         }
 
         public void HighlightInvisibleChars(bool flag) {
-            Editor.Range.ClearStyle(InvisibleCharsStyle);
-            if (flag) Editor.Range.SetStyle(InvisibleCharsStyle, @".$|.\r\n|\s");
+            Editor.Range.ClearStyle(Editor.InvisibleCharsStyle);
+            if (flag) Editor.Range.SetStyle(Editor.InvisibleCharsStyle, @".$|.\r\n|\s");
             Editor.Invalidate();
         }
 
@@ -631,6 +630,7 @@ namespace HMSEditorNS {
             btnUnderlinePascalKeywrd.Checked = Settings.Get("UnderlinePascalKeywords", section, btnUnderlinePascalKeywrd.Checked);
             btnKeywordsToLowcase    .Checked = Settings.Get("KeywordsToLowcase"      , section, btnKeywordsToLowcase    .Checked);
             btnGetScriptDescriptions.Checked = Settings.Get("GetScriptDescriptions"  , section, btnGetScriptDescriptions.Checked);
+            btnInvisiblesInSelection.Checked = Settings.Get("InvisiblesInSelection"  , section, btnInvisiblesInSelection.Checked);
 
             // Set to false deprecated settings
             btnCheckKeywordsRegister.Checked = false;
@@ -688,6 +688,7 @@ namespace HMSEditorNS {
             btnCheckNewVersionOnLoad_Click(null, EventArgs.Empty);
             btnFormatCodeWhenPaste_Click  (null, EventArgs.Empty);
             btnKeywordsToLowcase_Click    (null, EventArgs.Empty);
+            btnInvisiblesInSelection_Click(null, EventArgs.Empty);
 
             Editor.HotkeysMapping.InitDefault(); 
             string hotkeys = Settings.Get("Map", "AddonHotkeys", "");
@@ -757,6 +758,7 @@ namespace HMSEditorNS {
                 Settings.Set("FormatCodeWhenPaste"  ,btnFormatCodeWhenPaste  .Checked, section);
                 Settings.Set("KeywordsToLowcase"    ,btnKeywordsToLowcase    .Checked, section);
                 Settings.Set("GetScriptDescriptions",btnGetScriptDescriptions.Checked, section);
+                Settings.Set("InvisiblesInSelection",btnInvisiblesInSelection.Checked, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -977,7 +979,7 @@ namespace HMSEditorNS {
                 Editor.Focus();
             }
         }
-#endregion Function and procedures
+        #endregion Function and procedures
 
         #region Control Events
 
@@ -1477,6 +1479,11 @@ namespace HMSEditorNS {
 
         private void btnGetScriptDescriptions_Click(object sender, EventArgs e) {
             GetScriptDescrition = btnGetScriptDescriptions.Checked;
+        }
+
+        private void btnInvisiblesInSelection_Click(object sender, EventArgs e) {
+            Editor.ShowInvisibleCharsInSelection =  btnInvisiblesInSelection.Checked;
+            Editor.Invalidate();
         }
         #endregion Control Events
 
