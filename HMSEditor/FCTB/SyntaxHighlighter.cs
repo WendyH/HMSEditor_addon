@@ -47,7 +47,7 @@ namespace FastColoredTextBoxNS {
         //
         private readonly Dictionary<string, SyntaxDescriptor> descByXMLfileNames = new Dictionary<string, SyntaxDescriptor>();
 
-        #region REGEX FIELS
+        #region REGEX FIELDS
         private static Regex CPPStringAndCommentsRegex    = new Regex(@"""(?>(?:\\[^\r\n]|[^""\r\n])*)""?|'(?>(?:\\[^\r\n]|[^'\r\n])*)'?|(//.*|\/\*[\s\S]*?(\*\/|$))", RegexOptions.ExplicitCapture | RegexCompiledOption); // By WendyH
         private static Regex CSharpStringAndCommentsRegex = new Regex(@"
                             # Character definitions:
@@ -167,7 +167,7 @@ namespace FastColoredTextBoxNS {
         private Regex VBKeywordRegex;
         private Regex VBNumberRegex;
         private Regex VBStringRegex;
-        #endregion REGEX FIELS
+        #endregion REGEX FIELDS
 
         public static RegexOptions RegexCompiledOption {
             get {
@@ -1543,15 +1543,15 @@ namespace FastColoredTextBoxNS {
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionBAS);
 
             range.ClearFoldingMarkers();
-            range.SetFoldingMarkers(@"#Region\b", @"#End\s+Region\b", RegexOptions.IgnoreCase);
+            range.SetFoldingMarkers(@"#Region\b"                                           , @"#End\s+Region\b"                                  , RegexOptions.IgnoreCase);
             range.SetFoldingMarkers(@"\b(Class|Property|Enum|Structure|Interface)[ \t]+\S+", @"\bEnd (Class|Property|Enum|Structure|Interface)\b", RegexOptions.IgnoreCase);
-            range.SetFoldingMarkers(@"^\s*(?<range>While)[ \t]+\S+", @"^\s*(?<range>End While)\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            range.SetFoldingMarkers(@"\b(Sub|Function)[ \t]+[^\s']+", @"\bEnd (Sub|Function)\b", RegexOptions.IgnoreCase);
+            range.SetFoldingMarkers(@"^\s*(?<range>While)[ \t]+\S+"                        , @"^\s*(?<range>End While)\b"                        , RegexOptions.IgnoreCase | RegexOptions.Multiline);
             //this declared separately because Sub and Function can be unclosed
-            //range.SetFoldingMarkers(@"(\r|\n|^)[ \t]*(?<range>Get|Set)[ \t]*(\r|\n|$)", @"\bEnd (Get|Set)\b", RegexOptions.IgnoreCase);
-            //range.SetFoldingMarkers(@"^\s*(?<range>For|For\s+Each)\b", @"^\s*(?<range>Next)\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-            //range.SetFoldingMarkers(@"^\s*(?<range>Do)\b", @"^\s*(?<range>Loop)\b", RegexOptions.Multiline | RegexOptions.IgnoreCase);
-
+            range.SetFoldingMarkers(@"\b(Sub|Function)[ \t]+[^\s']+"                       , @"\bEnd (Sub|Function)\b"                           , RegexOptions.IgnoreCase);
+            range.SetFoldingMarkers(@"\bIF[ \t][^\n]+THEN\s*?$"                            , @"\bEND IF\b"                                       , RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            range.SetFoldingMarkers(@"(\r|\n|^)[ \t]*(?<range>Get|Set)[ \t]*(\r|\n|$)"     , @"\bEnd (Get|Set)\b"                                , RegexOptions.IgnoreCase);
+            range.SetFoldingMarkers(@"^\s*(?<range>For|For\s+Each)\b"                      , @"^\s*(?<range>Next)\b"                             , RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            range.SetFoldingMarkers(@"^\s*(?<range>Do)\b"                                  , @"^\s*(?<range>Loop)\b"                             , RegexOptions.IgnoreCase | RegexOptions.Multiline);
             timer?.Stop();
             if (bigText) {
                 HighlightSyntax2();
