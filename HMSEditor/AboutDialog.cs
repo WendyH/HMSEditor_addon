@@ -199,8 +199,7 @@ namespace HMSEditorNS {
             //btnUpdateTemplates.Enabled = false;
             //GitHub.DownloadFileCompleted   += DownloadReleaseCallback;
             //GitHub.DownloadProgressChanged += DownloadProgressCallback;
-
-            GitHub.DownloadLatestReleaseAsync(tmpFileRelease);
+            //GitHub.DownloadLatestReleaseAsync(tmpFileRelease);
         }
 
         private static bool DirIsWriteable(string dir) {
