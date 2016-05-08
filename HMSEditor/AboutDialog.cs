@@ -189,13 +189,16 @@ namespace HMSEditorNS {
         }
 
         private void btnUpdate_Click(object sender, EventArgs e) {
-            //progress.Show();
-            Refresh();
-            btnUpdateProgram.Text = Resources.AboutDialog_btnUpdate_Click_Идёт_загрузка___;
-            btnUpdateProgram  .Enabled = false;
-            btnUpdateTemplates.Enabled = false;
-            GitHub.DownloadFileCompleted   += DownloadReleaseCallback;
-            GitHub.DownloadProgressChanged += DownloadProgressCallback;
+
+            Process.Start(GitHub.ReleaseUrl);
+
+            ////progress.Show();
+            //Refresh();
+            //btnUpdateProgram.Text = Resources.AboutDialog_btnUpdate_Click_Идёт_загрузка___;
+            //btnUpdateProgram  .Enabled = false;
+            //btnUpdateTemplates.Enabled = false;
+            //GitHub.DownloadFileCompleted   += DownloadReleaseCallback;
+            //GitHub.DownloadProgressChanged += DownloadProgressCallback;
 
             GitHub.DownloadLatestReleaseAsync(tmpFileRelease);
         }

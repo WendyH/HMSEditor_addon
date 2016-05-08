@@ -153,7 +153,7 @@
             this.fastColoredTextBox1.Name = "fastColoredTextBox1";
             this.fastColoredTextBox1.Paddings = new System.Windows.Forms.Padding(0);
             this.fastColoredTextBox1.ReadOnly = true;
-            this.fastColoredTextBox1.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.fastColoredTextBox1.SelectionStyle = new FastColoredTextBoxNS.SelectionStyle(System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255))))));
             this.fastColoredTextBox1.SelectionHighlightingForLineBreaksEnabled = false;
             serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
             serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;

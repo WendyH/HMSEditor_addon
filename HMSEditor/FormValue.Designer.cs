@@ -359,7 +359,7 @@
             this.fastColoredTB.ReadOnly = true;
             this.fastColoredTB.RightBracket = '>';
             this.fastColoredTB.RightBracket2 = ')';
-            this.fastColoredTB.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
+            this.fastColoredTB.SelectionStyle = new FastColoredTextBoxNS.SelectionStyle(System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255))))));
             this.fastColoredTB.SelectionHighlightingForLineBreaksEnabled = false;
             serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
             serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;

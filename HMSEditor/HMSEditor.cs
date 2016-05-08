@@ -631,6 +631,7 @@ namespace HMSEditorNS {
             btnKeywordsToLowcase    .Checked = Settings.Get("KeywordsToLowcase"      , section, btnKeywordsToLowcase    .Checked);
             btnGetScriptDescriptions.Checked = Settings.Get("GetScriptDescriptions"  , section, btnGetScriptDescriptions.Checked);
             btnInvisiblesInSelection.Checked = Settings.Get("InvisiblesInSelection"  , section, btnInvisiblesInSelection.Checked);
+            btnSelectionBorder      .Checked = Settings.Get("SelectionWithBorders"   , section, btnSelectionBorder      .Checked);
 
             // Set to false deprecated settings
             btnCheckKeywordsRegister.Checked = false;
@@ -689,6 +690,7 @@ namespace HMSEditorNS {
             btnFormatCodeWhenPaste_Click  (null, EventArgs.Empty);
             btnKeywordsToLowcase_Click    (null, EventArgs.Empty);
             btnInvisiblesInSelection_Click(null, EventArgs.Empty);
+            btnSelectionBorder_Click      (null, EventArgs.Empty);
 
             Editor.HotkeysMapping.InitDefault(); 
             string hotkeys = Settings.Get("Map", "AddonHotkeys", "");
@@ -759,6 +761,7 @@ namespace HMSEditorNS {
                 Settings.Set("KeywordsToLowcase"    ,btnKeywordsToLowcase    .Checked, section);
                 Settings.Set("GetScriptDescriptions",btnGetScriptDescriptions.Checked, section);
                 Settings.Set("InvisiblesInSelection",btnInvisiblesInSelection.Checked, section);
+                Settings.Set("SelectionWithBorders ", btnSelectionBorder     .Checked, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -891,6 +894,7 @@ namespace HMSEditorNS {
             form.TextBox.Font      = Editor.Font;
             form.TextBox.ShowFoldingLines   = false;
             form.TextBox.ShowFoldingMarkers = false;
+            form.TextBox.SelectionWithBorders = Editor.SelectionWithBorders;
 
             Themes.SetTheme(form.TextBox, ThemeName);
             form.TextBox.DrawLineNumberFromInfo = true;
@@ -1028,6 +1032,10 @@ namespace HMSEditorNS {
         }
 
         private void Editor_SelectionChanged(object sender, EventArgs e) {
+            if (prevWord!="") {
+                prevWord = "";
+                Editor.Range.ClearStyle(SameWordsStyle);
+            }
             if (Editor.SelectionAfterFind) {
                 Editor.SelectionAfterFind = false;
                 return;
@@ -1206,8 +1214,10 @@ namespace HMSEditorNS {
         private void btnHighlightSameWords_Click(object sender, EventArgs e) {
             if (!btnHighlightSameWords.Checked)
                 Editor.Range.ClearStyle(SameWordsStyle);
-            else
+            else {
+                prevWord = "";
                 HighlightSameWords();
+            }
         }
 
         private void btnSetIntelliSense_Click(object sender, EventArgs e) {
@@ -1485,6 +1495,11 @@ namespace HMSEditorNS {
             Editor.ShowInvisibleCharsInSelection =  btnInvisiblesInSelection.Checked;
             Editor.Invalidate();
         }
+
+        private void btnSelectionBorder_Click(object sender, EventArgs e) {
+            Editor.SelectionWithBorders = btnSelectionBorder.Checked;
+            Editor.Invalidate();
+        }
         #endregion Control Events
 
         #region Smart IDE functions
@@ -1511,6 +1526,7 @@ namespace HMSEditorNS {
         private static Regex forbittenSameText = new Regex(@"\W+", RegexOptions.Compiled);
         private string prevWord = "";
         private void HighlightSameWords() {
+            if (Editor.YellowSelection) return;
             if (Editor.Selection.IsEmpty) {
                 Editor.Range.ClearStyle(SameWordsStyle);
                 prevWord = "";
@@ -1521,7 +1537,7 @@ namespace HMSEditorNS {
             if (text != Editor.Selection.Text) return;
             if (prevWord != text && !forbittenSameText.IsMatch(text)) {
                 Editor.Range.ClearStyle(SameWordsStyle);
-                Editor.Range.SetStyle(SameWordsStyle, "\\b" + text + "\\b", RegexOptions.Multiline);
+                Editor.Range.SetStyleExcludeSection(SameWordsStyle, "\\b" + text + "\\b", RegexOptions.Multiline);
                 prevWord = text;
             }
         }
@@ -2183,6 +2199,5 @@ namespace HMSEditorNS {
             } // foreach
 
         } // end AddTemplateItemsRecursive
-
     }
 }

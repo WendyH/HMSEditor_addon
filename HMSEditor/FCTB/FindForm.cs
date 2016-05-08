@@ -9,13 +9,14 @@ namespace FastColoredTextBoxNS
 {
     public partial class FindForm : Form
     {
+        int FoundCount = 0;
         bool firstSearch = true;
         Place startPlace;
         FastColoredTextBox tb;
         ToolTip tooltip1 = new ToolTip();
         ToolTip tooltip2 = new ToolTip();
         ToolTip tooltip3 = new ToolTip();
-        string MBCaption = "HMS Editor - Поиск";
+        string MBCaption = "HMS Editor: Поиск";
         Timer timer = new Timer();
 
         public FindForm(FastColoredTextBox tb)
@@ -44,7 +45,7 @@ namespace FastColoredTextBoxNS
 
         private void CheckCount() {
             if (!Visible) return;
-            int n = 0;
+            FoundCount = 0;
             try {
                 string pattern = tbFind.Text;
                 if (pattern!="") {
@@ -52,13 +53,13 @@ namespace FastColoredTextBoxNS
                     if (!cbRegex.Checked) pattern = Regex.Escape(pattern);
                     if (cbWholeWord.Checked) pattern = "\\b" + pattern + "\\b";
 
-                    n = tb.LightYellowSelect(pattern, opt);
+                    FoundCount = tb.LightYellowSelect(pattern, opt);
                 }
             }
             catch {
                 // ignored
             }
-            lblFound.Text = n.ToString();
+            lblFound.Text = FoundCount.ToString();
         }
 
         protected override void OnPaint(PaintEventArgs e) {
@@ -104,9 +105,12 @@ namespace FastColoredTextBoxNS
                     FindNext(pattern);
                     return;
                 }
-                MessageBox.Show("Совпадений не найдено", MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                firstSearch = true;
+                if (FoundCount == 0)
+                    MessageBox.Show("Поиск окончен.\r\nНо так и не удалось найти введённый текст :(", MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
             } catch (Exception ex) {
-                MessageBox.Show(ex.Message, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("К сажалению, произолша какая-то ошибка.\r\nБыло бы замечательно сообщить об этом автору.\r\n" + ex.Message, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

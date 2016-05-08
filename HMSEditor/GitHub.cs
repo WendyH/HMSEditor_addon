@@ -9,7 +9,7 @@ using whYamlParser;
 namespace HMSEditorNS {
     public static class GitHub {
         private static string giturl       = "https://api.github.com/repos/";
-        private static string ReleaseUrl   = "";
+        public  static string ReleaseUrl   = "";
 
         public static bool IsWinVistaOrHigher() {
             OperatingSystem OS = Environment.OSVersion;

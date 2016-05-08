@@ -63,11 +63,12 @@ namespace FastColoredTextBoxNS {
         // By WendyH
         public Regex RegexStringAndComments = null;
         public HmsToolTip ToolTip4Function = new HmsToolTip();
-        public SelectionStyle YellowSelectionStyle      = new SelectionStyle(new SolidBrush(Themes.ToColor("#E5C63BFF")), Brushes.Black);
-        public SelectionStyle LightYellowSelectionStyle = new SelectionStyle(new SolidBrush(Themes.ToColor("#FDFBACFF")), Brushes.Black);
-        public SelectionStyle GreenSelectionStyle       = new SelectionStyle(new SolidBrush(Themes.ToColor("#FFD2EEB0")), Brushes.Black);
-        public SelectionStyle BlueSelectionStyle        = new SelectionStyle(new SolidBrush(Themes.ToColor("#FFc6e3ff")), Brushes.Black);
+        public SelectionStyle YellowSelectionStyle      = new SelectionStyle(Themes.ToColor("#E5C63BFF"), Color.Black);
+        public SelectionStyle LightYellowSelectionStyle = new SelectionStyle(Themes.ToColor("#FDFBACFF"), Color.Black);
+        public SelectionStyle GreenSelectionStyle       = new SelectionStyle(Themes.ToColor("#FFD2EEB0"), Color.Black);
+        public SelectionStyle BlueSelectionStyle        = new SelectionStyle(Themes.ToColor("#FFc6e3ff"), Color.Black);
         private int[] FoundLines;
+        public bool SelectionWithBorders;
         public bool YellowSelection;
         public bool DebugMode = false;
         public bool FormatCodeWhenPaste = false;
@@ -90,16 +91,16 @@ namespace FastColoredTextBoxNS {
         private const int WM_HSCROLL = 0x114;
         private const int WM_VSCROLL = 0x115;
         private const int SB_ENDSCROLL = 0x8;
-        public readonly List<LineInfo> LineInfos = new List<LineInfo>();
+        public  readonly List<LineInfo> LineInfos = new List<LineInfo>();
         private readonly Range selection;
         private readonly Timer timer  = new Timer();
         private readonly Timer timer2 = new Timer();
         private readonly Timer timer3 = new Timer();
         private readonly List<VisualMarker> visibleMarkers = new List<VisualMarker>();
-        public int TextHeight;
-        public bool AllowInsertRemoveLines = true;
+        public  int  TextHeight;
+        public  bool AllowInsertRemoveLines = true;
+        public  bool BoldCaret { get { return _boldCaret; } set { _boldCaret = value; caretCreated = false; Invalidate(); } }
         private bool _boldCaret;
-        public bool BoldCaret { get { return _boldCaret; } set { _boldCaret = value; caretCreated = false; Invalidate(); } }
         private Brush backBrush;
         private Bookmarks bookmarks;
         private Bookmarks breakpoints; // By WendyH
@@ -149,7 +150,6 @@ namespace FastColoredTextBoxNS {
         private Range rightBracketPosition;
         private Range rightBracketPosition2;
         private bool scrollBars;
-        private Color selectionColor;
         private Color serviceLinesColor;
         private bool showFoldingLines;
         private bool showLineNumbers;
@@ -205,9 +205,9 @@ namespace FastColoredTextBoxNS {
             ShowLineNumbers = true;
             TabLength = 4;
             FoldedBlockStyle = new FoldedBlockStyle(Brushes.Gray, null, FontStyle.Regular);
-            SelectionColor = Color.Blue;
-            BracketsStyle = new MarkerStyle(new SolidBrush(Color.FromArgb(80, Color.DeepSkyBlue)));
-            BracketsStyle2 = new MarkerStyle(new SolidBrush(Color.FromArgb(80, Color.DeepSkyBlue)));
+            SelectionStyle = new SelectionStyle(Color.Blue);
+            BracketsStyle  = new MarkerStyle(new SolidBrush(Color.FromArgb(60, Color.DeepSkyBlue)));
+            BracketsStyle2 = new MarkerStyle(new SolidBrush(Color.FromArgb(60, Color.DeepSkyBlue)));
             DelayedEventsInterval = 100;
             DelayedTextChangedInterval = 100;
             AllowSeveralTextStyleDrawing = false;
@@ -291,8 +291,9 @@ namespace FastColoredTextBoxNS {
             int n = 0; Range.ClearStyle(LightYellowSelectionStyle);
             List<int> localLines = new List<int>();
             foreach (var r in Range.GetRanges(regex)) {
-                r.SetStyle(LightYellowSelectionStyle); n++;
+                r.SetStyle(LightYellowSelectionStyle);
                 localLines.Add(r.FromLine+1);
+                n++;
             }
             FoundLines = localLines.ToArray();
             UpdateScrollMarkers();
@@ -303,8 +304,9 @@ namespace FastColoredTextBoxNS {
             int n = 0; Range.ClearStyle(LightYellowSelectionStyle);
             List<int> LocalLines = new List<int>();
             foreach (var r in Range.GetRanges(pattern, opt)) {
-                r.SetStyle(LightYellowSelectionStyle); n++;
+                r.SetStyle(LightYellowSelectionStyle);
                 LocalLines.Add(r.FromLine + 1);
+                n++;
             }
             FoundLines = LocalLines.ToArray();
             UpdateScrollMarkers();
@@ -952,6 +954,7 @@ namespace FastColoredTextBoxNS {
             }
             set {
                 _selectionStyle = value;
+                Invalidate();
             }
         }
 
@@ -1606,22 +1609,6 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         [Browsable(false)]
         public Range Range => new Range(this, new Place(0, 0), new Place(lines[lines.Count - 1].Count, lines.Count - 1));
-
-        /// <summary>
-        /// Color of selected area
-        /// </summary>
-        [DefaultValue(typeof(Color), "Blue")]
-        [Description("Color of selected area.")]
-        public Color SelectionColor {
-            get { return selectionColor; }
-            set {
-                selectionColor = value;
-                if (selectionColor.A == 255)
-                    selectionColor = Color.FromArgb(60, selectionColor);
-                SelectionStyle = new SelectionStyle(new SolidBrush(selectionColor));
-                Invalidate();
-            }
-        }
 
         public override Cursor Cursor {
             get { return base.Cursor; }
@@ -4815,7 +4802,7 @@ namespace FastColoredTextBoxNS {
             DrawTextAreaBorder(e.Graphics);
             //
             int firstChar = (Math.Max(0, HorizontalScroll.Value - Paddings.Left)) / CharWidth;
-            int lastChar = (HorizontalScroll.Value + ClientSize.Width) / CharWidth;
+            int lastChar  = (HorizontalScroll.Value + ClientSize.Width) / CharWidth;
             //
             var x = LeftIndent + Paddings.Left - HorizontalScroll.Value;
             if (x < LeftIndent)
@@ -4941,9 +4928,8 @@ namespace FastColoredTextBoxNS {
 
             //draw column selection
             if (Selection.ColumnSelectionMode) {
-                var brush = SelectionStyle.BackgroundBrush as SolidBrush;
-                if (brush != null) {
-                    Color color = brush.Color;
+                Color color = SelectionStyle.Background;
+                if (color != Color.Transparent) {
                     Point p1 = PlaceToPoint(Selection.Start);
                     Point p2 = PlaceToPoint(Selection.End);
                     using (var pen = new Pen(color))
@@ -4955,18 +4941,13 @@ namespace FastColoredTextBoxNS {
             }
             //draw brackets highlighting
             if (BracketsStyle != null && leftBracketPosition != null && rightBracketPosition != null) {
-                BracketsStyle.Draw(e.Graphics, PlaceToPoint(leftBracketPosition.Start), leftBracketPosition);
-                BracketsStyle.Draw(e.Graphics, PlaceToPoint(rightBracketPosition.Start), rightBracketPosition);
+                BracketsStyle.DrawBracketMarker(e.Graphics, PlaceToPoint(leftBracketPosition .Start), leftBracketPosition );
+                BracketsStyle.DrawBracketMarker(e.Graphics, PlaceToPoint(rightBracketPosition.Start), rightBracketPosition);
             }
             if (BracketsStyle2 != null && leftBracketPosition2 != null && rightBracketPosition2 != null) {
-                BracketsStyle2.Draw(e.Graphics, PlaceToPoint(leftBracketPosition2.Start), leftBracketPosition2);
-                BracketsStyle2.Draw(e.Graphics, PlaceToPoint(rightBracketPosition2.Start), rightBracketPosition2);
+                BracketsStyle2.DrawBracketMarker(e.Graphics, PlaceToPoint(leftBracketPosition2 .Start), leftBracketPosition2 );
+                BracketsStyle2.DrawBracketMarker(e.Graphics, PlaceToPoint(rightBracketPosition2.Start), rightBracketPosition2);
             }
-            //if (BracketsStyle2 != null && leftBracketPosition3 != null && rightBracketPosition3 != null) { // By WendyH
-            //    BracketsStyle2.Draw(e.Graphics, PlaceToPoint(leftBracketPosition3.Start), leftBracketPosition3);
-            //    BracketsStyle2.Draw(e.Graphics, PlaceToPoint(rightBracketPosition3.Start), rightBracketPosition3);
-            //}
-            //
             e.Graphics.SmoothingMode = SmoothingMode.None;
             //draw folding indicator
             if (EnableFoldingIndicator) {
@@ -5197,13 +5178,33 @@ namespace FastColoredTextBoxNS {
 
             lastChar = Math.Min(to - from, lastChar);
 
-            gr.SmoothingMode = SmoothingMode.AntiAlias;
+            //draw selection BEFORE drawing text, if NOT set foreground color for text
+            if (SelectionStyle.Foreground == Color.Transparent) {
+                int lastCharSel = lastChar;
+                if (SelectionHighlightingForLineBreaksEnabled && iWordWrapLine == lineInfo.WordWrapStringsCount - 1) lastCharSel++;//draw selection for CR
+                if (!Selection.IsEmpty && lastCharSel >= firstChar) {
+                    gr.SmoothingMode = SmoothingMode.None;
+                    var textRange = new Range(this, from + firstChar, iLine, from + lastCharSel + 1, iLine);
+                    textRange = Selection.GetIntersectionWith(textRange);
+                    if (textRange != null) {
+                        if (SelectionWithBorders) {
+                            Range r = selection.Clone();
+                            r.Normalize();
+                            SelectionStyle?.Draw(gr, startX, from, y, textRange, r);
+                        } else {
+                            SelectionStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange);
+                        }
+                        if (ShowInvisibleCharsInSelection)
+                            InvisibleCharsStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange, true);
+                    }
+                }
+            }
 
+            gr.SmoothingMode = SmoothingMode.AntiAlias;
             //folded block ?
             if (lineInfo.VisibleState == VisibleState.StartOfHiddenBlock) {
                 //rendering by FoldedBlockStyle
-                FoldedBlockStyle.Draw(gr, new Point(startX + firstChar * CharWidth, y),
-                                      new Range(this, from + firstChar, iLine, from + lastChar + 1, iLine));
+                FoldedBlockStyle.Draw(gr, new Point(startX + firstChar * CharWidth, y), new Range(this, from + firstChar, iLine, from + lastChar + 1, iLine));
             } else {
                 //render by custom styles
                 StyleIndex currentStyleIndex = StyleIndex.None;
@@ -5223,16 +5224,25 @@ namespace FastColoredTextBoxNS {
                                new Range(this, from + iLastFlushedChar + 1, iLine, from + lastChar + 1, iLine));
             }
 
-            //draw selection
-            if (SelectionHighlightingForLineBreaksEnabled && iWordWrapLine == lineInfo.WordWrapStringsCount - 1) lastChar++;//draw selection for CR
-            if (!Selection.IsEmpty && lastChar >= firstChar) {
-                gr.SmoothingMode = SmoothingMode.None;
-                var textRange = new Range(this, from + firstChar, iLine, from + lastChar + 1, iLine);
-                textRange = Selection.GetIntersectionWith(textRange);
-                if (textRange != null) {
-                    SelectionStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange);
-                    if (ShowInvisibleCharsInSelection)
-                        InvisibleCharsStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange, true);
+            //draw selection after drawing text (if set foreground color for text)
+            if (SelectionStyle.Foreground != Color.Transparent) {
+                int lastCharSel = lastChar;
+                if (SelectionHighlightingForLineBreaksEnabled && iWordWrapLine == lineInfo.WordWrapStringsCount - 1) lastCharSel++;//draw selection for CR
+                if (!Selection.IsEmpty && lastCharSel >= firstChar) {
+                    gr.SmoothingMode = SmoothingMode.None;
+                    var textRange = new Range(this, from + firstChar, iLine, from + lastCharSel + 1, iLine);
+                    textRange = Selection.GetIntersectionWith(textRange);
+                    if (textRange != null) {
+                        if (SelectionWithBorders) {
+                            Range r = selection.Clone();
+                            r.Normalize();
+                            SelectionStyle?.Draw(gr, startX, from, y, textRange, r);
+                        } else {
+                            SelectionStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange);
+                        }
+                        if (ShowInvisibleCharsInSelection)
+                            InvisibleCharsStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange, true);
+                    }
                 }
             }
         }
@@ -6734,10 +6744,8 @@ namespace FastColoredTextBoxNS {
         }
 
         private void HighlightBrackets1(char LeftBracket1, char RightBracket1, ref Range leftBracketPosition1, ref Range rightBracketPosition1) {
-            if (!Selection.IsEmpty)
-                return;
-            if (LinesCount == 0)
-                return;
+            if (!Selection.IsEmpty) return;
+            if (LinesCount == 0) return;
             //
             Range oldLeftBracketPosition  = leftBracketPosition1;
             Range oldRightBracketPosition = rightBracketPosition1;
@@ -6784,6 +6792,7 @@ namespace FastColoredTextBoxNS {
             counter = 0;
             maxIterations = maxBracketSearchIterations;
             do {
+                if (range.IsStringOrComment) continue;
                 if (range.CharAfterStart == leftBracket ) counter++;
                 if (range.CharAfterStart == rightBracket) counter--;
                 if (counter == -1) {
@@ -6795,7 +6804,7 @@ namespace FastColoredTextBoxNS {
                 //
                 maxIterations--;
                 if (maxIterations <= 0) break;
-            } while (range.GoRightThroughFolded()); //move caret right
+            } while (range.GoRightThroughFolded(true)); //move caret right
 
             if (leftBracketPosition1 != null && rightBracketPosition1 != null)
                 return new Range(this, leftBracketPosition1.Start, rightBracketPosition1.End);
@@ -6804,10 +6813,9 @@ namespace FastColoredTextBoxNS {
         }
 
         private void HighlightBrackets2(char LeftBracket1, char RightBracket1, ref Range leftBracketPosition1, ref Range rightBracketPosition1) {
-            if (!Selection.IsEmpty)
-                return;
-            if (LinesCount == 0)
-                return;
+            if (!Selection.IsEmpty) return;
+            if (LinesCount == 0) return;
+            if (Selection.IsStringOrCommentBefore()) return;
             //
             Range oldLeftBracketPosition  = leftBracketPosition1;
             Range oldRightBracketPosition = rightBracketPosition1;

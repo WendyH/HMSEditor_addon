@@ -14,6 +14,7 @@ namespace FastColoredTextBoxNS {
 
         public void Draw(Graphics gr, Point position, Range range, bool withoutEnd) {
             var tb = range.tb;
+            gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighSpeed;
             using (Brush brush = new SolidBrush(pen.Color))
                 foreach (var place in range) {
                     switch (tb[place].c) {

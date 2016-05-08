@@ -313,37 +313,219 @@ namespace FastColoredTextBoxNS
     /// </summary>
     public class SelectionStyle : Style
     {
-        public Brush BackgroundBrush { get; set;}
-        public Brush ForegroundBrush { get; }
+        public Color Background { get; }
+        public Color Foreground { get; }
+        public Color Border     { get; }
 
-        public SelectionStyle(Brush backgroundBrush, Brush foregroundBrush = null)
-        {
-            IsExportable    = false;
-            BackgroundBrush = backgroundBrush;
-            ForegroundBrush = foregroundBrush;
+        public SelectionStyle(Color background)
+            : this(background, Color.Transparent, Color.Transparent) {
         }
 
-        public override void Draw(Graphics gr, Point position, Range range)
-        {
+        public SelectionStyle(Color background, Color foreground)
+            : this(background, foreground, Color.Transparent) {
+        }
+
+        public SelectionStyle(Color background, Color foreground, Color border) {
+            IsExportable = false;
+            Foreground   = foreground;
+            Background   = background;
+            Border       = border == Color.Transparent ? Color.FromArgb(245, Background) : border;
+        }
+
+        public override void Draw(Graphics gr, Point position, Range range) {
+            if (range.Start == range.End) return;
+            if (range.tb.SelectionWithBorders) {
+                //Point position = new Point(startX + (range.Start.iChar - from) * charW, 1 + y);
+                int startX = (position.X - (range.Start.iChar * range.tb.CharWidth));
+                Draw(gr, startX, 0, position.Y, range, range);
+                return;
+            }
             //draw background
-            if (BackgroundBrush != null)
-            {
+            if (Background != Color.Transparent) {
                 gr.SmoothingMode = SmoothingMode.None;
                 var rect = new Rectangle(position.X, position.Y, (range.End.iChar - range.Start.iChar) * range.tb.CharWidth, range.tb.CharHeight);
-                if (rect.Width == 0)
-                    return;
-                gr.FillRectangle(BackgroundBrush, rect);
-                //
-                if (ForegroundBrush != null)
-                {
-                    //draw text
-                    gr.SmoothingMode = SmoothingMode.AntiAlias;
-                    gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
-                    var r = new Range(range.tb, range.Start.iChar, range.Start.iLine,
-                                      Math.Min(range.tb[range.End.iLine].Count, range.End.iChar), range.End.iLine);
-                    using (var style = new TextStyle(ForegroundBrush, null, FontStyle.Regular))
-                        style.Draw(gr, new Point(position.X, position.Y - 1), r);
+                if (rect.Width <= 0) return;
+                using (var brush = new SolidBrush(Color.FromArgb(Background.A - 20, Background))) {
+                    gr.FillRectangle(brush, rect);
                 }
+            }
+            if (Foreground != Color.Transparent) {
+                //draw text
+                gr.SmoothingMode = SmoothingMode.AntiAlias;
+                gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                var r = new Range(range.tb, range.Start.iChar, range.Start.iLine, Math.Min(range.tb[range.End.iLine].Count, range.End.iChar), range.End.iLine);
+                using (var brush = new SolidBrush(Foreground)) {
+                    using (var style = new TextStyle(brush, null, FontStyle.Regular)) {
+                        style.Draw(gr, new Point(position.X, position.Y - 1), r);
+                    }
+                }
+            }
+        }
+
+        public void Draw(Graphics gr, int startX, int from, int y, Range range, Range selection) {
+            if (range.Start == range.End) return;
+            int charW = range.tb.CharWidth;
+            int charH = range.tb.CharHeight;
+            Point position = new Point(startX + (range.Start.iChar - from) * charW, y);
+            //draw background
+            if (Background != Color.Transparent) {
+                gr.SmoothingMode = SmoothingMode.None;
+                using (var brush = new SolidBrush(Color.FromArgb(Background.A - 20, Background))) {
+                    // Calculate previous and next lines selection rectangles
+                    Rectangle rectPrev = new Rectangle();
+                    Rectangle rectNext = new Rectangle();
+
+                    int iLine = range.Start.iLine;
+                    int startChar = iLine == selection.Start.iLine ? selection.Start.iChar : 0;
+                    int lastChar  = iLine == selection.End.iLine   ? selection.End  .iChar : selection.tb.Lines[iLine].Length + 1;
+                    Rectangle rectBord = new Rectangle(startX + startChar * charW, position.Y, (lastChar - startChar) * charW, charH);
+
+                    int prevLine = range.Start.iLine - 1;
+                    if (prevLine >= selection.Start.iLine) {
+                        startChar = 0;
+                        if (prevLine == selection.Start.iLine)
+                            startChar = selection.Start.iChar;
+                        rectPrev = new Rectangle(startX + startChar * charW, position.Y - charH, (selection.tb.Lines[prevLine].Length + 1 - startChar) * charW, charH);
+                    }
+                    int nextLine = range.End.iLine + 1;
+                    if (nextLine <= selection.End.iLine) {
+                        lastChar = nextLine == selection.End.iLine ? selection.End.iChar : selection.tb.Lines[nextLine].Length + 1;
+                        rectNext = new Rectangle(startX, position.Y + charH, lastChar * charW, charH);
+                    }
+
+                    // draw border
+                    using (Pen pen = new Pen(Border)) {
+                        gr.SmoothingMode = SmoothingMode.HighSpeed;
+                        GraphicsPath path4Fill = new GraphicsPath();
+                        GraphicsPath path = GetRoundedPath1(rectBord, rectPrev, rectNext, ref path4Fill);
+
+                        path4Fill.CloseAllFigures();
+                        gr.FillPath(brush, path4Fill);
+
+                        gr.DrawPath(pen, path);
+                        gr.SmoothingMode = SmoothingMode.None;
+                    }
+                }
+            }
+
+            if (Foreground != Color.Transparent) {
+                //draw text
+                gr.SmoothingMode = SmoothingMode.AntiAlias;
+                gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                var r = new Range(range.tb, range.Start.iChar, range.Start.iLine, Math.Min(range.tb[range.End.iLine].Count, range.End.iChar), range.End.iLine);
+                using (var brush = new SolidBrush(Foreground)) {
+                    using (var style = new TextStyle(brush, null, FontStyle.Regular)) {
+                        style.Draw(gr, new Point(position.X, position.Y), r);
+                    }
+                }
+            }
+        }
+
+        private GraphicsPath GetRoundedPath1(Rectangle rect, Rectangle rectPrev, Rectangle rectNext, ref GraphicsPath path4Fill) {
+            int r = 3; int d = r * 2;
+            Rectangle arc = new Rectangle(rect.Location, new Size(d, d));
+            GraphicsPath path4Bord = new GraphicsPath();
+
+            if (rectNext.Width >0 && rect.Left > rectNext.Left) {
+                arc.X = rect.Left - d;
+                arc.Y = rect.Bottom - d;
+                var p = new GraphicsPath();
+                p.AddArc(arc, 0, 90);
+                p.Reverse();
+                path4Bord.AddPath(p, true);
+                path4Fill.AddPath(p, true);
+            }
+
+            Point pLeftBottom = new Point(rect.Left, rect.Bottom - r);
+            Point pLeftTop    = new Point(rect.Left, rect.Top    + r);
+
+            if (rectNext.Width!=0 && rectNext.Left == rect.Left)
+                pLeftBottom = new Point(rect.Left, rect.Bottom);
+
+            if (rectPrev.Width!=0 && rectPrev.Left == rect.Left)
+                pLeftTop    = new Point(rect.Left, rect.Top   );
+
+            path4Bord.AddLine(pLeftBottom, pLeftTop);
+            path4Fill.AddLine(pLeftBottom, pLeftTop);
+            if (rectPrev.IsEmpty) {
+                // This is first line
+                arc.X = rect.Left;
+                arc.Y = rect.Top;
+                path4Bord.AddArc(arc, 180, 90);
+                path4Fill.AddArc(arc, 180, 90);
+                arc.X = rect.Right - d;
+                path4Bord.AddArc(arc, 270, 90);
+                path4Fill.AddArc(arc, 270, 90);
+                NextLinePath(ref path4Bord, ref path4Fill, rect, rectNext, arc, d);
+            } else {
+                // This is no first line
+                if (rect.Left < rectPrev.Left) {
+                    path4Bord.AddArc(arc, 180, 90);
+                    path4Fill.AddArc(arc, 180, 90);
+                    path4Bord.StartFigure();
+                    path4Bord.AddLine(rect.Left + r, rect.Top, rectPrev.Left - r, rect.Top);
+                    path4Fill.AddLine(rect.Left + r, rect.Top, rectPrev.Left - r, rect.Top);
+                }
+                if (rect.Right > rectPrev.Right) {
+                    path4Bord.StartFigure();
+                    path4Bord.AddLine(rectPrev.Right + r, rect.Top, rect.Right - d, rect.Top);
+                    path4Fill.AddLine(rectPrev.Right + r, rect.Top, rect.Right - d, rect.Top);
+                    arc.X = rect.Right - d;
+                    arc.Y = rect.Top;
+                    path4Bord.AddArc(arc, 270, 90);
+                    path4Fill.AddArc(arc, 270, 90);
+                    NextLinePath(ref path4Bord, ref path4Fill, rect, rectNext, arc, d);
+                } else if (rect.Right < rectPrev.Right) {
+                    path4Bord.StartFigure();
+                    arc.Y = rect.Top;
+                    arc.X = rect.Right;
+                    var p = new GraphicsPath();
+                    p.AddArc(arc, 180, 90);
+                    p.Reverse();
+                    path4Bord.AddPath(p, false);
+                    path4Fill.AddPath(p, true);
+                    path4Bord.AddLine(rect.Right, rect.Top + r, rect.Right, rect.Bottom - r);
+                    path4Fill.AddLine(rect.Right, rect.Top + r, rect.Right, rect.Bottom - r);
+                    arc.X = rect.Right - d;
+                    arc.Y = rect.Bottom;
+                    NextLinePath(ref path4Bord, ref path4Fill, rect, rectNext, arc, d);
+                } else {
+                    path4Bord.StartFigure();
+                    path4Bord.AddLine(rect.Right, rect.Top, rect.Right, rect.Bottom - d);
+                    path4Fill.AddLine(rect.Right, rect.Top, rect.Right, rect.Bottom - d);
+                    arc.X = rect.Right - d;
+                    arc.Y = rect.Bottom;
+                    NextLinePath(ref path4Bord, ref path4Fill, rect, rectNext, arc, d);
+                }
+            }
+            return path4Bord;
+        }
+
+        private void NextLinePath(ref GraphicsPath path4Bord, ref GraphicsPath path4Fill, Rectangle rect, Rectangle rectNext, Rectangle arc, int d) {
+            if (rectNext.Width == 0) {
+                arc.Y = rect.Bottom - d;
+                path4Bord.AddArc(arc, 0, 90);
+                path4Fill.AddArc(arc, 0, 90);
+                arc.X = rect.Left;
+                path4Bord.AddArc(arc, 90, 90);
+                path4Fill.AddArc(arc, 90, 90);
+            } else if (rectNext.Right > rect.Right) {
+                arc.X = rect.Right;
+                arc.Y = rect.Bottom - d;
+                var p2 = new GraphicsPath();
+                p2.AddArc(arc, 90, 90);
+                p2.Reverse();
+                path4Bord.AddPath(p2, true);
+                path4Fill.AddPath(p2, true);
+            } else if (rectNext.Right < rect.Right) {
+                arc.Y = rect.Bottom - d;
+                path4Bord.AddArc(arc, 0, 90);
+                path4Fill.AddArc(arc, 0, 90);
+                path4Bord.AddLines(new Point[] { new Point(rectNext.Right + d / 2, rect.Bottom) });
+                path4Fill.AddLines(new Point[] { new Point(rectNext.Right + d / 2, rect.Bottom) });
+            } else {
+                path4Bord.AddLines(new Point[] { new Point(rect.Right, rect.Bottom) });
+                path4Fill.AddLines(new Point[] { new Point(rect.Right, rect.Bottom) });
             }
         }
     }
@@ -354,24 +536,42 @@ namespace FastColoredTextBoxNS
     /// </summary>
     public class MarkerStyle : Style
     {
-        public Brush BackgroundBrush{get;set;}
+        public Brush BackgroundBrush { get; }
+        public Color Border { get; }
 
         public MarkerStyle(Brush backgroundBrush)
         {
             BackgroundBrush = backgroundBrush;
             IsExportable = true;
+            SolidBrush b = backgroundBrush as SolidBrush;
+            if (b != null)
+                Border = Color.FromArgb(145, b.Color);
         }
 
-        public override void Draw(Graphics gr, Point position, Range range)
-        {
+        public void DrawBracketMarker(Graphics gr, Point position, Range range) {
+            Rectangle rect = new Rectangle(position.X, position.Y+ range.tb.CharHeight - 1, (range.End.iChar - range.Start.iChar) * range.tb.CharWidth, 1);
+            if (rect.Width == 0) return;
+            gr.FillRectangle(new SolidBrush(Color.FromArgb(150, range.tb.ForeColor)), rect);
+        }
+
+        public void Draw(Graphics gr, Point position, Range range, bool withBorder) {
+            Rectangle rect = new Rectangle(position.X, position.Y, (range.End.iChar - range.Start.iChar) * range.tb.CharWidth, range.tb.CharHeight);
             //draw background
-            if (BackgroundBrush != null)
-            {
-                Rectangle rect = new Rectangle(position.X, position.Y, (range.End.iChar - range.Start.iChar) * range.tb.CharWidth, range.tb.CharHeight);
-                if (rect.Width == 0)
-                    return;
+            if (BackgroundBrush != null) {
+                if (rect.Width == 0) return;
                 gr.FillRectangle(BackgroundBrush, rect);
             }
+            // draw border
+            if (withBorder && Border != Color.Transparent && range.tb.SelectionWithBorders) {
+                using (Pen pen = new Pen(Border)) {
+                    GraphicsPath path = GetRoundedRect(rect);
+                    gr.DrawPath(pen, path);
+                }
+            }
+        }
+
+        public override void Draw(Graphics gr, Point position, Range range) {
+            Draw(gr, position, range, true);
         }
 
         public override string GetCSS()
@@ -387,6 +587,21 @@ namespace FastColoredTextBoxNS
             }
 
             return result;
+        }
+
+        private GraphicsPath GetRoundedRect(Rectangle baseRect) {
+            int diameter = 6;
+            RectangleF arc = new Rectangle(baseRect.Location, new Size(diameter, diameter));
+            GraphicsPath path = new GraphicsPath();
+            path.AddArc(arc, 180, 90); // top left arc 
+            arc.X = baseRect.Right  - diameter;
+            path.AddArc(arc, 270, 90); // top right arc 
+            arc.Y = baseRect.Bottom - diameter;
+            path.AddArc(arc,   0, 90); // bottom right arc 
+            arc.X = baseRect.Left;
+            path.AddArc(arc,  90, 90); // bottom left arc
+            path.CloseFigure();
+            return path;
         }
     }
 

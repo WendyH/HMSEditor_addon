@@ -12,12 +12,13 @@ namespace FastColoredTextBoxNS
     public partial class ReplaceForm : Form
     {
         FastColoredTextBox tb;
+        int     FoundCount  = 0;
         bool    firstSearch = true;
         Place   startPlace;
         ToolTip tooltip1  = new ToolTip();
         ToolTip tooltip2  = new ToolTip();
         ToolTip tooltip3  = new ToolTip();
-        string  MBCaption = "HMS Editor - Поиск и замена";
+        string  MBCaption = "HMS Editor: Поиск и замена";
         Timer   timer     = new Timer();
 
         public ReplaceForm(FastColoredTextBox tb)
@@ -46,7 +47,7 @@ namespace FastColoredTextBoxNS
 
         private void CheckCount() {
             if (!Visible) return;
-            int n = 0;
+            FoundCount = 0;
             try {
                 string pattern = tbFind.Text;
                 if (pattern != "") {
@@ -54,15 +55,15 @@ namespace FastColoredTextBoxNS
                     if (!cbRegex.Checked) pattern = Regex.Escape(pattern);
                     if (cbWholeWord.Checked) pattern = "\\b" + pattern + "\\b";
 
-                    n = tb.LightYellowSelect(pattern, opt);
+                    FoundCount = tb.LightYellowSelect(pattern, opt);
                 }
             }
             catch {
                 // ignored
             }
-            btnReplace   .Enabled = (n > 0);
-            btnReplaceAll.Enabled = (n > 0);
-            lblFound.Text = n.ToString();
+            btnReplace   .Enabled = (FoundCount > 0);
+            btnReplaceAll.Enabled = (FoundCount > 0);
+            lblFound.Text = FoundCount.ToString();
         }
 
         protected override void OnMouseDown(MouseEventArgs mea) {
@@ -83,8 +84,12 @@ namespace FastColoredTextBoxNS
         {
             try
             {
-                if (!Find(tbFind.Text))
-                    MessageBox.Show(Resources.ReplaceForm_btFindNext_Click_+tbFind.Text, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                if (!Find(tbFind.Text)) {
+                    if (FoundCount == 0)
+                        MessageBox.Show("К сожалению, ничего найдено не было.\r\n:(", MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    else
+                        MessageBox.Show(Resources.ReplaceForm_btFindNext_Click_, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
             } catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -233,7 +238,7 @@ namespace FastColoredTextBoxNS
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("К сажалению, произолша какая-то ошибка.\r\nБыло бы замечательно сообщить об этом автору.\r\n"+ex.Message, MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             tb.Selection.EndUpdate();
         }

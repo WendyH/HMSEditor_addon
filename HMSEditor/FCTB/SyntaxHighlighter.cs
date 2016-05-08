@@ -843,7 +843,7 @@ namespace FastColoredTextBoxNS {
             range.tb.RightBracket  = ')';
             range.tb.LeftBracket2  = '{';
             range.tb.RightBracket2 = '}';
-            range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy2;
+            range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
 
             range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
             range.ClearStyle(StringStyle, CommentStyle, NumberStyle, AttributeStyle, ClassNameStyle, KeywordStyle);
@@ -1161,7 +1161,7 @@ namespace FastColoredTextBoxNS {
             range.tb.RightBracket  = ')';
             range.tb.LeftBracket2  = '{';
             range.tb.RightBracket2 = '}';
-            range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy2;
+            range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
             //clear style of changed range
             range.ClearStyle(StringStyle, CommentStyle, NumberStyle, VariableStyle, KeywordStyle, KeywordStyle2, KeywordStyle3);
 
@@ -1198,7 +1198,7 @@ namespace FastColoredTextBoxNS {
             range.tb.RightBracket  = ')';
             range.tb.LeftBracket2  = '{';
             range.tb.RightBracket2 = '}';
-            range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy2;
+            range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
             range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);";
 
             range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle);
@@ -1341,17 +1341,17 @@ namespace FastColoredTextBoxNS {
             range.tb.CommentPrefix = "#";
             range.tb.LeftBracket   = '(';
             range.tb.RightBracket  = ')';
-            range.tb.LeftBracket2  = '\x0';
-            range.tb.RightBracket2 = '\x0';
+            range.tb.LeftBracket2  = '{';
+            range.tb.RightBracket2 = '}';
             range.ClearStyle(StringStyle, CommentStyle, NumberStyle, KeywordStyle, FunctionsStyle, TagBracketStyle, VariableStyle, ConstantsStyle);
             if (YAMLStringRegex == null) InitYAMLRegex();
             range.SetStylesStringsAndComments(YAMLStringRegex, StringStyle, CommentStyle);
 
             range.SetStyle(NumberStyle    , YAMLNumberRegex      );
-            range.SetStyle(ConstantsStyle , HMS.RegexHmsConstants);
             range.SetStyle(TagBracketStyle, YAMLBreaketsRegex    );
             range.SetStyle(KeywordStyle   , YAMLKeywordRegex     );
             range.SetStyle(FunctionsStyle , YAMLObjectNameRegex  );
+            range.SetStyle(ConstantsStyle , HMS.RegexHmsConstants);
 
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers(@"^[\s-]*?[\w-]+\s*?:", "[IDENT]", RegexOptions.Multiline); // Allow to collapse block
@@ -1365,8 +1365,8 @@ namespace FastColoredTextBoxNS {
             range.tb.CommentPrefix = "//";
             range.tb.LeftBracket   = '(';
             range.tb.RightBracket  = ')';
-            range.tb.LeftBracket2  = '\x0';
-            range.tb.RightBracket2 = '\x0';
+            range.tb.LeftBracket2  = '[';
+            range.tb.RightBracket2 = ']';
             range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
             range.tb.AutoIndentCharsPatterns   = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
             if (PascalScriptStringRegex == null) InitPascalScriptRegex();
@@ -1412,7 +1412,7 @@ namespace FastColoredTextBoxNS {
             range.tb.RightBracket  = ')';
             range.tb.LeftBracket2  = '{';
             range.tb.RightBracket2 = '}';
-            range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy2;
+            range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
             range.tb.AutoIndentCharsPatterns   = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
             if (CPPScriptKeywordRegex == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
@@ -1485,7 +1485,7 @@ namespace FastColoredTextBoxNS {
             range.tb.RightBracket  = ')';
             range.tb.LeftBracket2  = '{';
             range.tb.RightBracket2 = '}';
-            range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy2;
+            range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
             range.tb.AutoIndentCharsPatterns   = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);";
             if (JScriptNumberRegex     == null) InitJScriptRegex();
             if (HmsJScriptKeywordRegex == null) InitHmsJScriptRegex();
@@ -1527,8 +1527,8 @@ namespace FastColoredTextBoxNS {
             range.tb.CommentPrefix = "'";
             range.tb.LeftBracket   = '(';
             range.tb.RightBracket  = ')';
-            range.tb.LeftBracket2  = '\x0';
-            range.tb.RightBracket2 = '\x0';
+            range.tb.LeftBracket2  = '[';
+            range.tb.RightBracket2 = ']';
             range.tb.AutoIndentCharsPatterns = @"^\s*[\w\.\(\)]+\s*(?<range>=)\s*(?<range>.+)";
             if (VBStringRegex            == null) InitVBRegex();
             if (BasicScriptKeywordRegex1 == null) InitBasicScriptRegex();

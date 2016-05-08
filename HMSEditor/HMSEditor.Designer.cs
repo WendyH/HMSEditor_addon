@@ -97,6 +97,7 @@
             this.btnHighlightCurrentLine = new System.Windows.Forms.ToolStripMenuItem();
             this.btnShowLineNumbers = new System.Windows.Forms.ToolStripMenuItem();
             this.btnInvisibleChars = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnSelectionBorder = new System.Windows.Forms.ToolStripMenuItem();
             this.btnInvisiblesInSelection = new System.Windows.Forms.ToolStripMenuItem();
             this.btnVerticalLineText = new System.Windows.Forms.ToolStripMenuItem();
             this.btnMarkChangedLines = new System.Windows.Forms.ToolStripMenuItem();
@@ -633,6 +634,7 @@
             this.btnHighlightCurrentLine,
             this.btnShowLineNumbers,
             this.btnInvisibleChars,
+            this.btnSelectionBorder,
             this.btnInvisiblesInSelection,
             this.btnVerticalLineText,
             this.btnMarkChangedLines,
@@ -689,6 +691,18 @@
             this.btnInvisibleChars.Text = "¶ Показывать непечатные символы";
             this.btnInvisibleChars.ToolTipText = "Отображать символы пробелов и переносов строк специальными символами";
             this.btnInvisibleChars.Click += new System.EventHandler(this.btnInvisibleChars_Click);
+            // 
+            // btnSelectionBorder
+            // 
+            this.btnSelectionBorder.Checked = true;
+            this.btnSelectionBorder.CheckOnClick = true;
+            this.btnSelectionBorder.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.btnSelectionBorder.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnSelectionBorder.Name = "btnSelectionBorder";
+            this.btnSelectionBorder.Size = new System.Drawing.Size(460, 22);
+            this.btnSelectionBorder.Text = "Выделение в стиле Sublime Text";
+            this.btnSelectionBorder.ToolTipText = "Скруглять углы и рисовать границу выделения";
+            this.btnSelectionBorder.Click += new System.EventHandler(this.btnSelectionBorder_Click);
             // 
             // btnInvisiblesInSelection
             // 
@@ -1129,7 +1143,6 @@
             this.Editor.Name = "Editor";
             this.Editor.Paddings = new System.Windows.Forms.Padding(0);
             this.Editor.RightBracket = ')';
-            this.Editor.SelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255)))));
             serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
             serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
             serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
@@ -1278,5 +1291,6 @@
         private System.Windows.Forms.ToolStripMenuItem btnKeywordsToLowcase;
         private System.Windows.Forms.ToolStripMenuItem btnGetScriptDescriptions;
         private System.Windows.Forms.ToolStripMenuItem  btnInvisiblesInSelection;
+        private System.Windows.Forms.ToolStripMenuItem btnSelectionBorder;
     }
 }

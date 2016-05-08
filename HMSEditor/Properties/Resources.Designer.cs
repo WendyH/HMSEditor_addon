@@ -503,9 +503,8 @@ namespace HMSEditorNS.Properties {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Указанный текст не найден: 
-        ///
-        ///.
+        ///   Ищет локализованную строку, похожую на К сожалению, дальнейший поиск не дал результатов.
+        ///:(.
         /// </summary>
         internal static string ReplaceForm_btFindNext_Click_ {
             get {

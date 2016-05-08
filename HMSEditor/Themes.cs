@@ -18,8 +18,10 @@ namespace HMSEditorNS {
         public Color Invisibles    = Color.Gray;
         public Color LineHighlight = Color.FromArgb(100, 210, 210, 255);
         public Color ChangedLines  = Color.FromArgb(255, 152, 251, 152);
-        public Color Selection     = Color.FromArgb(60, 0, 0, 255);
-        
+        public Color Selection       = Color.FromArgb(60, 0, 0, 255);
+        public Color SelectionBorder = Color.FromArgb(60, 0, 0, 255);
+        public Color SelectionForegr = Color.Transparent;
+
         public Color IndentBackColor;
         public Color LineNumberColor;
         public Color PaddingBackColor;
@@ -63,7 +65,6 @@ namespace HMSEditorNS {
 
         public static void LoadFromXml(string file) {
             Theme t = new Theme();
-
             YamlObject plist = PlistParser.LoadFromFile(file);
             string themeName = plist["name"];
             if (themeName == "") return;
@@ -74,13 +75,16 @@ namespace HMSEditorNS {
                 for (int i = 0; i < scope.Length; i++) scope[i] = scope[i].ToLower().Trim();
                 YamlObject settings = item.GetObject("settings");
                 if ((name=="") && (item["scope"]=="") && (settings.Count > 0)) {
-                    t.Background     = ToColor(settings["background"   ]);
-                    t.Caret          = ToColor(settings["caret"        ]);
-                    t.Foreground     = ToColor(settings["foreground"   ]);
-                    t.Invisibles     = ToColor(settings["invisibles"   ]);
-                    t.LineHighlight  = ToColor(settings["lineHighlight"]);
-                    t.Selection      = ToColor(settings["selection"    ]);
-                    t.InvisibleStyle = ToStyle(settings["invisibles"   ]);
+                    t.Background      = ToColor(settings["background"     ]);
+                    t.Caret           = ToColor(settings["caret"          ]);
+                    t.Foreground      = ToColor(settings["foreground"     ]);
+                    t.Invisibles      = ToColor(settings["invisibles"     ]);
+                    t.LineHighlight   = ToColor(settings["lineHighlight"  ]);
+                    t.InvisibleStyle  = ToStyle(settings["invisibles"     ]);
+                    t.Selection       = ToColor(settings["selection"      ]);
+                    t.SelectionBorder = ToColor(settings["selectionBorder"]);
+                    t.SelectionForegr = ToColor(settings["selectionForeground"]);
+                    if (t.Selection == Color.Transparent) t.Selection = ToColor(settings["selectionBackground"]);
                     continue;
                 }
 
@@ -128,9 +132,12 @@ namespace HMSEditorNS {
                 editor.CaretColor = t.Caret;
                 editor.ForeColor  = t.Foreground;
 
-                editor.SelectionColor  = t.Selection;
-                editor.PaddingBackColor= t.Background;
-                editor.InvisibleCharsStyle = new InvisibleCharsRenderer(new Pen(t.Invisibles, 2));
+                editor.SelectionStyle   = new SelectionStyle(t.Selection, t.SelectionForegr, t.SelectionBorder);
+                editor.PaddingBackColor = t.Background;
+                if (t.SelectionForegr!=Color.Transparent)
+                    editor.InvisibleCharsStyle = new InvisibleCharsRenderer(new Pen(Color.FromArgb(128, t.SelectionForegr), 2));
+                else
+                    editor.InvisibleCharsStyle = new InvisibleCharsRenderer(new Pen(Color.FromArgb(75, t.Foreground), 2));
                 //editor.BreakpointLineColor = 
 
                 editor.IndentBackColor  = (t.IndentBackColor .Name != "0") ? t.IndentBackColor  : editor.BackColor;
@@ -231,6 +238,8 @@ namespace HMSEditorNS {
                 tt.LineHighlight   = ToColor(tini.Get("LineHighlight"  , section, ""));
                 tt.ChangedLines    = ToColor(tini.Get("ChangedLines"   , section, ""));
                 tt.Selection       = ToColor(tini.Get("Selection"      , section, ""));
+                tt.SelectionBorder = ToColor(tini.Get("SelectionBorder", section, ""));
+                tt.SelectionForegr = ToColor(tini.Get("SelectionForegr", section, ""));
                 tt.LineNumberColor = ToColor(tini.Get("LineNumberColor", section, ""));
                 tt.IndentBackColor = ToColor(tini.Get("IndentBackColor", section, ""));
 
@@ -266,6 +275,8 @@ namespace HMSEditorNS {
                 sb.AppendLine("LineHighlight="     + ColorToString(tt.LineHighlight));
                 sb.AppendLine("ChangedLines="      + ColorToString(tt.ChangedLines));
                 sb.AppendLine("Selection="         + ColorToString(tt.Selection));
+                sb.AppendLine("SelectionBorder="   + ColorToString(tt.SelectionBorder));
+                sb.AppendLine("SelectionForegr="   + ColorToString(tt.SelectionForegr));
                 sb.AppendLine("LineNumberColor="   + ColorToString(tt.LineNumberColor));
                 sb.AppendLine("IndentBackColor="   + ColorToString(tt.IndentBackColor));
 
@@ -337,8 +348,7 @@ namespace HMSEditorNS {
         }
 
         public static Color ToColor(string val) {
-            if (string.IsNullOrEmpty(val)) return Color.Transparent;
-
+            if (string.IsNullOrEmpty(val) || val == "null") return Color.Transparent;
             if (val.Length == 9) {
                 string aval = val.Substring(7, 2);
                 val = "#" + aval + val.Substring(1, 6);

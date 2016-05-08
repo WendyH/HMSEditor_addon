@@ -116,7 +116,7 @@ namespace FastColoredTextBoxNS {
             r1.Normalize();
             r2.Normalize();
             Place newStart = r1.Start > r2.Start ? r1.Start : r2.Start;
-            Place newEnd = r1.End < r2.End ? r1.End : r2.End;
+            Place newEnd   = r1.End   < r2.End   ? r1.End   : r2.End;
             if (newEnd < newStart)
                 return new Range(tb, start, start);
             return tb.GetRange(newStart, newEnd);
@@ -700,6 +700,21 @@ namespace FastColoredTextBoxNS {
                 foreach (var range in GetRanges(regex))
                     range.SetStyle(styleLayer);
             //
+            tb.Invalidate();
+        }
+
+        /// <summary>
+        /// Set style for given regex pattern exclude selectrion region
+        /// </summary>
+        public void SetStyleExcludeSection(Style style, string regexPattern, RegexOptions options) {
+            //search code for style
+            StyleIndex layer = ToStyleIndex(tb.GetOrSetStyleLayerIndex(style));
+            if (Math.Abs(Start.iLine - End.iLine) > 1000) options |= SyntaxHighlighter.RegexCompiledOption;
+            Place p = tb.Selection.Start;
+            foreach (var range in GetRanges(regexPattern, options)) {
+                if (range.Start == p || range.End == p) continue;
+                range.SetStyle(layer);
+            }
             tb.Invalidate();
         }
 
