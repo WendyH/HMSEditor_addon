@@ -765,7 +765,7 @@ namespace HMSEditorNS {
                 Settings.Set("KeywordsToLowcase"    ,btnKeywordsToLowcase    .Checked, section);
                 Settings.Set("GetScriptDescriptions",btnGetScriptDescriptions.Checked, section);
                 Settings.Set("InvisiblesInSelection",btnInvisiblesInSelection.Checked, section);
-                Settings.Set("SelectionWithBorders ", btnSelectionBorder     .Checked, section);
+                Settings.Set("SelectionWithBorders" , btnSelectionBorder     .Checked, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);

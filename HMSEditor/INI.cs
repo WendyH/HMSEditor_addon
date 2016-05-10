@@ -124,10 +124,12 @@ namespace HMSEditorNS {
         /// <param name="value">Value of the settings</param>
         /// <param name="section">Section name (optional)</param>
         public void Set(string name, string value, string section = "") {
+            name = name.Trim();
             bool isFoundSection = false;
             bool isFoundKey = false;
             string currentSection = "";
             int lastLineOfSection = 0;
+            int lastLineOfKey     = 0;
             for (int i = 0; i < lines.Count; i++) {
                 string line = RegexComment.Replace(lines[i], "");
                 if (line.Trim().Length == 0) continue;   // Skip empty lines and comments
@@ -141,10 +143,21 @@ namespace HMSEditorNS {
                 Match m = Regex.Match(line, @"^(.*?)=");
                 if (!m.Success) continue;
                 string key = m.Groups[1].Value.Trim();
+
                 if (key == name) {
                     isFoundKey = true;
+                    lastLineOfKey = i;
                     lines[i]   = m.Value + " " + value;
                     break;
+                }
+            }
+
+            if (isFoundKey) {
+                // delete dublicates
+                for (int i=lines.Count-1; i > lastLineOfKey; i--) {
+                    string key = Regex.Match(lines[i], @"^(.*?)=").Groups[1].Value.Trim().ToLower();
+                    if (key == name.ToLower())
+                        lines.RemoveAt(i);
                 }
             }
 
