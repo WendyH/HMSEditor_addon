@@ -11,9 +11,9 @@
         /// <param name="disposing">истинно, если управляемый ресурс должен быть удален; иначе ложно.</param>
         protected override void Dispose(bool disposing) {
             if (disposing && (components != null)) {
-                components.Dispose();
-                MouseTimer.Dispose();
-                SameWordsStyle     ?.Dispose();
+                components    .Dispose();
+                MouseTimer    .Dispose();
+                SameWordsStyle.Dispose();
                 MouseTimer         ?.Dispose();
               //WorkerHighlighter  ?.Dispose();
                 WorkerCheckSyntax  ?.Dispose();

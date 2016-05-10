@@ -738,8 +738,6 @@ namespace FastColoredTextBoxNS
                 if (ProcessKey(e.KeyCode, e.Modifiers))
                     e.Handled = true;
 
-            Console.WriteLine("!!!!!!!!!!! e.Handled="+ e.Handled);
-
             if (box == null) return;
 
             if (Menu.TempNotShow) {

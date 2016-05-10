@@ -757,7 +757,6 @@ namespace FastColoredTextBoxNS {
         public void SetStyle(StyleIndex styleIndex) {
             //set code to chars
             lock (obj4LockLines) {
-                if (IsStringOrComment) return;
                 int fromLine = Math.Min(End.iLine, Start.iLine);
                 int toLine   = Math.Max(End.iLine, Start.iLine);
                 int fromChar = FromX;
@@ -820,6 +819,8 @@ namespace FastColoredTextBoxNS {
             string text;
             List<Place> charIndexToPlace;
             GetText(out text, out charIndexToPlace);
+            MultilineComments mc = tb.MultilineComments;
+            mc.ClearRange(this);
             foreach (Match m in regex.Matches(text)) {
                 Range r = new Range(tb);
                 //try get 'range' group, otherwise use group 0
@@ -830,9 +831,18 @@ namespace FastColoredTextBoxNS {
                 r.End   = charIndexToPlace[group.Index + group.Length];
                 if (ch == '"' || (singlequote && ch == '\''))
                     r.SetStyle(layer1);
-                else
-                    r.SetStyle(layer2);
+                else {
+                    if (m.Groups["mc"].Success) {
+                        mc.AddStart(r);
+                        if (m.Groups["mcend"].Success)
+                            mc.AddEnd(r);
+                    } else if (m.Groups["mcend2"].Success)
+                        mc.AddEnd(r);
+                    else
+                        r.SetStyle(layer2);
+                }
             }
+            mc.SortIndex();
         }
 
         public void SetStylesAll(Regex regex, params Style[] styles) {
@@ -916,11 +926,13 @@ namespace FastColoredTextBoxNS {
             get {
                 // when is typing and other thread check range - need additional checks
                 if ((tb.Lines.Count <= Start.iLine) || (tb[Start.iLine].Count <= Start.iChar)) return false;
+                if (Start.iLine < 0 || Start.iChar < 0) return false;
                 try {
                     Char c = tb[Start.iLine][Start.iChar];
                     var si1 = ToStyleIndex(tb.GetStyleIndex(tb.SyntaxHighlighter.StringStyle));
                     var si2 = ToStyleIndex(tb.GetStyleIndex(tb.SyntaxHighlighter.CommentStyle));
                     if ((c.style & si1) != 0 || (c.style & si2) != 0) return true;
+                    return (tb.MultilineComments.IsComment(start.iLine, start.iChar));
                 }
                 catch {
                     // ignored

@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define debug
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -48,7 +50,7 @@ namespace FastColoredTextBoxNS {
         private readonly Dictionary<string, SyntaxDescriptor> descByXMLfileNames = new Dictionary<string, SyntaxDescriptor>();
 
         #region REGEX FIELDS
-        private static Regex CPPStringAndCommentsRegex    = new Regex(@"""(?>(?:\\[^\r\n]|[^""\r\n])*)""?|'(?>(?:\\[^\r\n]|[^'\r\n])*)'?|(//.*|\/\*[\s\S]*?(\*\/|$))", RegexOptions.ExplicitCapture | RegexCompiledOption); // By WendyH
+        private static Regex CPPStringAndCommentsRegex    = new Regex(@"""(?>(?:\\[^\r\n]|[^""\r\n])*)""?|'(?>(?:\\[^\r\n]|[^'\r\n])*)'?|(//.*)|(?<mc>\/\*[\s\S]*?((?<mcend>\*\/)|$))|(?<mcend2>\*\/)", RegexOptions.ExplicitCapture | RegexCompiledOption); // By WendyH
         private static Regex CSharpStringAndCommentsRegex = new Regex(@"
                             # Character definitions:
                             '
@@ -198,7 +200,8 @@ namespace FastColoredTextBoxNS {
             BlueBoldStyle   .Dispose();
             BlueStyle       .Dispose();
             BlackStyle      .Dispose();
-            timer?          .Dispose();
+            if (timer      != null) timer     .Dispose();
+            if (timerPart2 != null) timerPart2.Dispose();
             currentRange = null;
         }
 
@@ -208,7 +211,10 @@ namespace FastColoredTextBoxNS {
         /// Highlights syntax for given language
         /// </summary>
         public void HighlightSyntax(Language language, Range range) {
-            currentRange    = range;
+#if debug
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+#endif
+            currentRange = range;
             currentLanguage = language;
             switch (language) {
                 case Language.CSharp: CSharpSyntaxHighlight (range); break;
@@ -228,6 +234,9 @@ namespace FastColoredTextBoxNS {
                 case Language.Custom      : break;
                 // By WendyH > -------------------------------------------------------
             }
+#if debug
+            Console.WriteLine("OnSyntaxHighlight: " + sw.ElapsedMilliseconds);
+#endif
         }
 
         /// <summary>
@@ -1306,7 +1315,7 @@ namespace FastColoredTextBoxNS {
         public void InitPascalScriptRegex() {
             if (HMS.ClassesString.Length > 2)
                 HmsClasses = HMS.ClassesString.Substring(1, HMS.ClassesString.Length - 2);
-            PascalScriptStringRegex = new Regex(@"""([^""\r])*""?|'([^'\r])*'?|(//.*|\{[\s\S]*?(\}|$))", RegexCompiledOption);
+            PascalScriptStringRegex = new Regex(@"""([^""\r])*""?|'([^'\r])*'?|//.*|(?<mc>\{[\s\S]*?((?<mcend>\})|$))|(?<mcend2>\})", RegexCompiledOption);
             PascalScriptNumberRegex = new Regex(@"\b\d+[\.]?\d*([eE]\-?\d+)?[lLdDfF]?\b|\b0x[a-fA-F\d]+\b", RegexCompiledOption);
             string keywords = "PROGRAM|USES|CONST|VAR|ARRAY|NOT|IN|IS|OR|XOR|DIV|MOD|AND|SHL|SHR|BREAK|CONTINUE|EXIT|BEGIN|END|IF|THEN|ELSE|CASE|OF|REPEAT|UNTIL|WHILE|DO|FOR|TO|DOWNTO|TRY|FINALLY|EXCEPT|WITH|FUNCTION|PROCEDURE";
             PascalScriptKeywordRegex1  = new Regex(@"\b(" + hmsCommonTypes + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
@@ -1372,11 +1381,8 @@ namespace FastColoredTextBoxNS {
             if (PascalScriptStringRegex == null) InitPascalScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            Range fullRange = range.tb.Range;
-            fullRange.ClearStyle(StringStyle, CommentStyle);
-            fullRange.SetStylesStringsAndComments(PascalScriptStringRegex, StringStyle, CommentStyle);
-            range.ClearStyle(NumberStyle, DeclFunctionStyle);
-
+            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle);
+            range.SetStylesStringsAndComments(PascalScriptStringRegex, StringStyle, CommentStyle);
             range.SetStyle(NumberStyle      , PascalScriptNumberRegex);
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionPAS   );
 
@@ -1417,11 +1423,8 @@ namespace FastColoredTextBoxNS {
             if (CPPScriptKeywordRegex == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            Range fullRange = range.tb.Range;
-            fullRange.ClearStyle(StringStyle, CommentStyle);
-            fullRange.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
-            range.ClearStyle(NumberStyle, DeclFunctionStyle, ConstantsStyle);
-
+            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle);
+            range.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
             range.SetStyle(NumberStyle      , CSharpNumberRegex    );
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP );
 
@@ -1492,10 +1495,8 @@ namespace FastColoredTextBoxNS {
             if (CPPClassNameRegex      == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            Range fullRange = range.tb.Range;
-            fullRange.ClearStyle(StringStyle, CommentStyle);
-            fullRange.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
-            range.ClearStyle(NumberStyle, DeclFunctionStyle);
+            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle);
+            range.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
             range.SetStyle(NumberStyle      , JScriptNumberRegex  );
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP);
 
@@ -1535,10 +1536,8 @@ namespace FastColoredTextBoxNS {
             if (CPPClassNameRegex        == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            Range fullRange = range.tb.Range;
-            fullRange.ClearStyle(StringStyle, CommentStyle);
-            fullRange.SetStylesStringsAndComments(VBStringRegex, StringStyle, CommentStyle, false);
-            range.ClearStyle(NumberStyle, DeclFunctionStyle);
+            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle);
+            range.SetStylesStringsAndComments(VBStringRegex, StringStyle, CommentStyle, false);
             range.SetStyle(NumberStyle      , VBNumberRegex);
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionBAS);
 

@@ -149,6 +149,7 @@
     <Compile Include="FCTB\Char.cs" />
     <Compile Include="FCTB\CommandManager.cs" />
     <Compile Include="FCTB\Commands.cs" />
+    <Compile Include="FCTB\MultilineCommentsInfo.cs" />
     <Compile Include="FlatButton.cs">
       <SubType>Component</SubType>
     </Compile>

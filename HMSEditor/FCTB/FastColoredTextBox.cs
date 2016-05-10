@@ -10,7 +10,7 @@
 //
 //  Copyright (C) Pavel Torgashov, 2011-2015. 
 
-#define debug
+//#define debug
 
 
 // -------------------------------------------------------------------------------
@@ -48,6 +48,7 @@ namespace FastColoredTextBoxNS {
     /// Fast colored textbox
     /// </summary>
     public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
+        static public int RoundedCornersRadius = 3;
         new FlatScrollbar VerticalScroll   = new FlatScrollbar();
         new FlatScrollbar HorizontalScroll = new FlatScrollbar(true );
 
@@ -78,6 +79,7 @@ namespace FastColoredTextBoxNS {
         public ErrorStyle ErrorStyle   = new ErrorStyle();
         public TextStyle  StringStyle  = null;
         public TextStyle  CommentStyle = null;
+        public MultilineComments MultilineComments = new MultilineComments();
         private Brush debugColor = new SolidBrush(Color.FromArgb(100, 250, 11, 11));
         public  bool CheckKeywordsRegister = false;
         public  bool SelectionAfterFind    = false;
@@ -2084,11 +2086,13 @@ namespace FastColoredTextBoxNS {
         }
 
         private void ts_LineRemoved(object sender, LineRemovedEventArgs e) {
+            MultilineComments.LinesRemoved(e.Index, e.Count);
             LineInfos.RemoveRange(e.Index, e.Count);
             OnLineRemoved(e.Index, e.Count, e.RemovedLineUniqueIds);
         }
 
         private void ts_LineInserted(object sender, LineInsertedEventArgs e) {
+            MultilineComments.LinesInserted(e.Index, e.Count);
             VisibleState newState = VisibleState.Visible;
             if (e.Index >= 0 && e.Index < LineInfos.Count && LineInfos[e.Index].VisibleState == VisibleState.Hidden)
                 newState = VisibleState.Hidden;
@@ -5200,6 +5204,8 @@ namespace FastColoredTextBoxNS {
                 }
             }
 
+            StyleIndex CommentStyleIndex = Range.ToStyleIndex(GetStyleIndex(SyntaxHighlighter.CommentStyle));
+
             gr.SmoothingMode = SmoothingMode.AntiAlias;
             //folded block ?
             if (lineInfo.VisibleState == VisibleState.StartOfHiddenBlock) {
@@ -5212,6 +5218,9 @@ namespace FastColoredTextBoxNS {
 
                 for (int iChar = firstChar; iChar <= lastChar; iChar++) {
                     StyleIndex style = line[from + iChar].style;
+                    if (MultilineComments.IsComment(iLine, from + iChar)) {
+                        style = CommentStyleIndex;
+                    }
                     if (currentStyleIndex != style) {
                         FlushRendering(gr, currentStyleIndex,
                                        new Point(startX + (iLastFlushedChar + 1) * CharWidth, y),
@@ -5254,7 +5263,7 @@ namespace FastColoredTextBoxNS {
                 for (int i = 0; i < Styles.Length; i++) {
                     if (Styles[i] != null && ((int)styleIndex & mask) != 0) {
                         Style style = Styles[i];
-                        bool isTextStyle = style is TextStyle;
+                        bool isTextStyle  = style is TextStyle;
                         hasSelectionStyle = style is SelectionStyle;
                         if (!hasTextStyle || !isTextStyle || AllowSeveralTextStyleDrawing) {
                             //cancelling secondary rendering by TextStyle
@@ -5778,7 +5787,7 @@ namespace FastColoredTextBoxNS {
         /// Fires TextChanged event
         /// </summary>
         private void OnTextChanged(TextChangedEventArgs args) {
-           args.ChangedRange.Normalize();
+            args.ChangedRange.Normalize();
             //
             if (updating > 0) {
                 if (updatingRange == null)
@@ -6906,9 +6915,7 @@ namespace FastColoredTextBoxNS {
 #if debug
             Stopwatch sw = Stopwatch.StartNew();
 #endif
-
             Range range;
-
             switch (HighlightingRangeType) {
                 case HighlightingRangeType.VisibleRange: range = VisibleRange.GetUnionWith(args.ChangedRange); break;
                 case HighlightingRangeType.AllTextRange: range = Range; break;

@@ -176,7 +176,7 @@ namespace HMSEditorNS {
         private uint   OldTextHash;
 
         public  IHmsScriptFrame  HmsScriptFrame;
-        public  IntPtr           PtrScriptFrame;
+        private IntPtr           PtrScriptFrame;
         private HmsScriptMode    HmsScriptMode ;
         private BackgroundWorker WorkerCheckSyntax = new BackgroundWorker();
 
@@ -646,6 +646,10 @@ namespace HMSEditorNS {
             } else if (btnToolStripMenuItemFONT.Checked) { 
                 btnToolStripMenuItemFONT_Click(null, new EventArgs());
             }
+
+            int val;
+            if (int.TryParse(Settings.Get("RoundedCornersRadius", section, FastColoredTextBox.RoundedCornersRadius.ToString()), out val))
+                FastColoredTextBox.RoundedCornersRadius = val;
 
             var sVal = Settings.Get("Zoom", section, "100"); 
             Editor.Zoom = Int32.Parse(sVal);

@@ -422,7 +422,7 @@ namespace FastColoredTextBoxNS
         }
 
         private GraphicsPath GetRoundedPath1(Rectangle rect, Rectangle rectPrev, Rectangle rectNext, ref GraphicsPath path4Fill) {
-            int r = 3; int d = r * 2;
+            int r = FastColoredTextBox.RoundedCornersRadius; int d = r * 2;
             Rectangle arc = new Rectangle(rect.Location, new Size(d, d));
             GraphicsPath path4Bord = new GraphicsPath();
 
@@ -590,7 +590,7 @@ namespace FastColoredTextBoxNS
         }
 
         private GraphicsPath GetRoundedRect(Rectangle baseRect) {
-            int diameter = 6;
+            int diameter = FastColoredTextBox.RoundedCornersRadius * 2;
             RectangleF arc = new Rectangle(baseRect.Location, new Size(diameter, diameter));
             GraphicsPath path = new GraphicsPath();
             path.AddArc(arc, 180, 90); // top left arc 
