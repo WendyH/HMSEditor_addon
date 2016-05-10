@@ -66,8 +66,9 @@ namespace HMSEditorNS {
         public static void LoadFromXml(string file) {
             Theme t = new Theme();
             YamlObject plist = PlistParser.LoadFromFile(file);
-            string themeName = plist["name"];
-            if (themeName == "") return;
+            //string themeName = plist["name"];
+            //if (themeName == "") return;
+            string themeName = Path.GetFileNameWithoutExtension(file);
             YamlObject list = plist.GetObject("settings");
             foreach (YamlObject item in list) {
                 string     name     = item["name" ];
@@ -131,6 +132,7 @@ namespace HMSEditorNS {
                 editor.BackColor  = t.Background;
                 editor.CaretColor = t.Caret;
                 editor.ForeColor  = t.Foreground;
+                editor.CaretCreated = false;
 
                 editor.SelectionStyle   = new SelectionStyle(t.Selection, t.SelectionForegr, t.SelectionBorder);
                 editor.PaddingBackColor = t.Background;

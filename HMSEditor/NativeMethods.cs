@@ -47,7 +47,7 @@ namespace HMSEditorNS {
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
         [DllImport("User32")]
-        public static extern bool CreateCaret(IntPtr hWnd, int hBitmap, int nWidth, int nHeight);
+        public static extern bool CreateCaret(IntPtr hWnd, IntPtr hBitmap, int nWidth, int nHeight);
 
         [DllImport("User32")]
         public static extern bool SetCaretPos(int x, int y);

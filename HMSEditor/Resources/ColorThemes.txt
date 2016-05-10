@@ -468,7 +468,7 @@ PunctuationStyle={fore:#9128b1;}
 
 [Oceanic Next]
 Background=#1B2B34
-Caret=#C0C5CE
+Caret=#FFFFFF
 Foreground=#CDD3DE
 Invisibles=#65737E
 LineHighlight=#65737E55

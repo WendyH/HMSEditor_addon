@@ -1335,8 +1335,8 @@ namespace FastColoredTextBoxNS {
         }
 
         void InitYAMLRegex() {
-            YAMLStringRegex     = new Regex(@"""(\\""|[^""\r])*""|'(\\'|[^'\r])*'|(#.*|\/\*[\s\S]*?\*\/)", RegexCompiledOption);
-            YAMLNumberRegex     = new Regex(@"\b\d+[\.]?\d*([eE]\-?\d+)?\b", RegexCompiledOption);
+            YAMLStringRegex     = new Regex(@"""(\\""|[^""\r])*""|'(\\'|[^'\r])*'|#.*|(?<mc>\/\*[\s\S]*?((?<mcend>\*\/)|$))|(?<mcend2>\*\/)", RegexCompiledOption);
+            YAMLNumberRegex     = new Regex(@"[^%]\b(?<range>\d+[\.]?\d*([eE]\-?\d+)?)\b", RegexCompiledOption);
             YAMLKeywordRegex    = new Regex(@"\b(true|false|null)\b"       , RegexCompiledOption);
             YAMLObjectNameRegex = new Regex(@"(?:^|{|,)[\s-]*?(?<range>[\w-]+)\s*?:", RegexCompiledOption | RegexOptions.Multiline);
             YAMLBreaketsRegex   = new Regex(@"[{},]", RegexCompiledOption);
@@ -1362,8 +1362,8 @@ namespace FastColoredTextBoxNS {
             range.SetStyle(FunctionsStyle , YAMLObjectNameRegex  );
             range.SetStyle(ConstantsStyle , HMS.RegexHmsConstants);
 
-            range.ClearFoldingMarkers();
-            range.SetFoldingMarkers(@"^[\s-]*?[\w-]+\s*?:", "[IDENT]", RegexOptions.Multiline); // Allow to collapse block
+            //range.ClearFoldingMarkers();
+            //range.SetFoldingMarkers(@"^[\s-]*?[\w-]+\s*?:", "[IDENT]", RegexOptions.Multiline); // Allow to collapse block
         }
 
         /// <summary>

@@ -395,12 +395,12 @@ namespace FastColoredTextBoxNS
 
                     // draw border
                     using (Pen pen = new Pen(Border)) {
-                        gr.SmoothingMode = SmoothingMode.HighQuality;
+                        gr.SmoothingMode = SmoothingMode.None;
                         GraphicsPath path4Fill = new GraphicsPath();
-                        //rectBord.Height++;
                         GraphicsPath path = GetRoundedPath1(rectBord, rectPrev, rectNext, ref path4Fill, charW);
                         path4Fill.CloseAllFigures();
                         gr.FillPath(brush, path4Fill);
+                        gr.SmoothingMode = FastColoredTextBox.RoundedCornersRadius > 3 ? SmoothingMode.HighQuality : SmoothingMode.None;
                         gr.DrawPath(pen, path);
                         gr.SmoothingMode = SmoothingMode.None;
                     }
@@ -438,7 +438,7 @@ namespace FastColoredTextBoxNS
                 p.Reverse();
                 path4Bord.AddPath(p, true);
                 var p2 = new GraphicsPath();
-                arc.Y++; p2.AddArc(arc, 0, 90); arc.Y--;
+                p2.AddArc(arc, 0, 90);
                 p2.Reverse();
                 path4Fill.AddPath(p2, true);
             }
@@ -453,7 +453,7 @@ namespace FastColoredTextBoxNS
                 pLeftTop    = new Point(rect.Left, rect.Top   );
 
             path4Bord.AddLine(pLeftBottom, pLeftTop);
-            path4Fill.AddLine(new Point(pLeftBottom.X, pLeftBottom.Y+1), pLeftTop);
+            path4Fill.AddLine(new Point(pLeftBottom.X, pLeftBottom.Y), pLeftTop);
             if (rectPrev.IsEmpty) {
                 // This is first line
                 arc.X = rect.Left;
@@ -518,14 +518,14 @@ namespace FastColoredTextBoxNS
                         arc.Height = d;
                     }
                     path4Bord.AddLine(rect.Right, rect.Top + r, rect.Right, rect.Bottom - r);
-                    path4Fill.AddLine(rect.Right, rect.Top + r, rect.Right, rect.Bottom - r + 1);
+                    path4Fill.AddLine(rect.Right, rect.Top + r, rect.Right, rect.Bottom - r);
                     arc.X = rect.Right - d;
                     arc.Y = rect.Bottom;
                     NextLinePath(ref path4Bord, ref path4Fill, rect, rectNext, arc, d, charW);
                 } else {
                     path4Bord.StartFigure();
                     path4Bord.AddLine(rect.Right, rect.Top, rect.Right, rect.Bottom - d);
-                    path4Fill.AddLine(rect.Right, rect.Top, rect.Right, rect.Bottom - d + 1);
+                    path4Fill.AddLine(rect.Right, rect.Top, rect.Right, rect.Bottom - d);
                     arc.X = rect.Right - d;
                     arc.Y = rect.Bottom;
                     NextLinePath(ref path4Bord, ref path4Fill, rect, rectNext, arc, d, charW);
@@ -540,10 +540,10 @@ namespace FastColoredTextBoxNS
                 arc.X = rect.Right  - d;
                 arc.Y = rect.Bottom - d;
                 path4Bord.AddArc(arc, 0, 90);
-                arc.Y++; path4Fill.AddArc(arc, 0, 90); arc.Y--;
+                path4Fill.AddArc(arc, 0, 90);
                 arc.X = rect.Left;
                 path4Bord.AddArc(arc, 90, 90);
-                arc.Y++; path4Fill.AddArc(arc, 90, 90); arc.Y--;
+                path4Fill.AddArc(arc, 90, 90);
             } else if (rectNext.Right > rect.Right) {
                 if (d > (rectNext.Right - rect.Right)) {
                     d = charW;
@@ -556,10 +556,7 @@ namespace FastColoredTextBoxNS
                 p1.AddArc(arc, 90, 90);
                 p1.Reverse();
                 path4Bord.AddPath(p1, true);
-                var p2 = new GraphicsPath();
-                arc.Y++; p2.AddArc(arc, 90, 90); arc.Y--;
-                p2.Reverse();
-                path4Fill.AddPath(p2, true);
+                path4Fill.AddPath(p1, true);
             } else if (rectNext.Right < rect.Right) {
                 if (d > (rect.Right - rectNext.Right)) {
                     d = charW;
@@ -569,9 +566,9 @@ namespace FastColoredTextBoxNS
                 arc.X = rect.Right  - d;
                 arc.Y = rect.Bottom - d;
                 path4Bord.AddArc(arc, 0, 90);
-                arc.Y++; path4Fill.AddArc(arc, 0, 90); arc.Y--;
+                path4Fill.AddArc(arc, 0, 90);
                 path4Bord.AddLines(new Point[] { new Point(rectNext.Right + d / 2, rect.Bottom) });
-                path4Fill.AddLines(new Point[] { new Point(rectNext.Right + d / 2, rect.Bottom+1) });
+                path4Fill.AddLines(new Point[] { new Point(rectNext.Right + d / 2, rect.Bottom) });
             } else {
                 path4Bord.AddLines(new Point[] { new Point(rect.Right, rect.Bottom) });
                 path4Fill.AddLines(new Point[] { new Point(rect.Right, rect.Bottom+1) });

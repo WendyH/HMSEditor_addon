@@ -41,6 +41,7 @@ using HMSEditorNS;
 // ReSharper disable once RedundantUsingDirective
 using System.Diagnostics;
 using NativeMethods = HMSEditorNS.NativeMethods;
+using System.Drawing.Imaging;
 
 // ReSharper disable once CheckNamespace
 namespace FastColoredTextBoxNS {
@@ -84,7 +85,7 @@ namespace FastColoredTextBoxNS {
         public  bool CheckKeywordsRegister = false;
         public  bool SelectionAfterFind    = false;
         public  bool freez;
-
+        private Bitmap caretBitmap;
         internal const int minLeftIndent = 8;
         private const int maxBracketSearchIterations = 1000;
         private const int maxLinesForFolding = 3000;
@@ -101,7 +102,7 @@ namespace FastColoredTextBoxNS {
         private readonly List<VisualMarker> visibleMarkers = new List<VisualMarker>();
         public  int       TextHeight;
         public  bool      AllowInsertRemoveLines = true;
-        public  bool      BoldCaret { get { return _boldCaret; } set { _boldCaret = value; caretCreated = false; Invalidate(); } }
+        public  bool      BoldCaret { get { return _boldCaret; } set { _boldCaret = value; CaretCreated = false; Invalidate(); } }
         private bool     _boldCaret;
         private Brush     backBrush;
         private Bookmarks bookmarks;
@@ -1040,7 +1041,7 @@ namespace FastColoredTextBoxNS {
             }
             set {
                 isReplaceMode = value;
-                caretCreated = false; // By WendyH
+                CaretCreated = false; // By WendyH
             }
         }
 
@@ -2650,6 +2651,36 @@ namespace FastColoredTextBoxNS {
         }
 
         // < By WendyH -------------------------
+        [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
+        public void CreateCaretBitmap() {
+            if (CaretColor == Color.Black) {
+                caretBitmap = null;
+                return;
+            }
+            int caretHeight = CharHeight;
+            int carWidth = (IsReplaceMode || WideCaret) ? CharWidth : (CharWidth / 4);
+            if (_boldCaret) carWidth++;
+            var b = new Bitmap(carWidth, caretHeight, PixelFormat.Format8bppIndexed);
+            ColorPalette ncp = b.Palette;
+            Color c = CaretColor;
+            float bright = CaretColor.GetBrightness();
+            if (bright < 1) {
+                int v = 255 - Math.Max(c.R, Math.Max(c.G, c.B));
+                c = Themes.MediaColor(255 - (v / 3), c);
+            }
+            for (int i = 0; i < 256; i++)
+                ncp.Entries[i] = c;
+            b.Palette = ncp;
+            Rectangle  BoundsRect = new Rectangle(0, 0, carWidth, caretHeight);
+            BitmapData bmpData    = b.LockBits(BoundsRect, ImageLockMode.WriteOnly, b.PixelFormat);
+            IntPtr     ptr        = bmpData.Scan0;
+            int        bytes      = bmpData.Stride * b.Height;
+            var        rgbValues  = new byte[bytes];
+            Marshal.Copy(rgbValues, 0, ptr, bytes);
+            b.UnlockBits(bmpData);
+            caretBitmap = b;
+        }
+
         public void UpdateText(string text) {
             if ((text == null) || (text == Text)) return;
             if (text == "\r") text = "\n";
@@ -4995,9 +5026,13 @@ namespace FastColoredTextBoxNS {
 
                 if (CaretBlinking) 
                     if (prevCaretRect != caretRect || !ShowScrollBars) {
-                        if (!caretCreated) {
-                            caretCreated = true;
-                            NativeMethods.CreateCaret(Handle, 0, carWidth, caretHeight + 1);
+                        if (!CaretCreated) {
+                            CaretCreated = true;
+                            CreateCaretBitmap();
+                            if (caretBitmap!=null)
+                                NativeMethods.CreateCaret(Handle, caretBitmap.GetHbitmap(), carWidth, caretHeight + 1);
+                            else
+                                NativeMethods.CreateCaret(Handle, IntPtr.Zero, carWidth, caretHeight + 1);
                             NativeMethods.ShowCaret(Handle);
                         } else if (DebugMode) {
                             //NativeMethods.CreateCaret(Handle, 0, carWidth, caretHeight + 1);
@@ -5013,7 +5048,7 @@ namespace FastColoredTextBoxNS {
                 prevCaretRect = caretRect;
             } else {
                 NativeMethods.HideCaret(Handle);
-                caretCreated = false;
+                CaretCreated = false;
                 prevCaretRect = Rectangle.Empty;
             }
 
@@ -5043,7 +5078,7 @@ namespace FastColoredTextBoxNS {
             //
             base.OnPaint(e);
         }
-        private bool caretCreated;
+        public  bool CaretCreated;
         public  bool ReshowCaret;
         private void DrawMarkers(PaintEventArgs e, Pen servicePen) {
             foreach (VisualMarker m in visibleMarkers) {
@@ -5482,7 +5517,7 @@ namespace FastColoredTextBoxNS {
             get { return zoom; }
             set {
                 zoom = value;
-                caretCreated = false;
+                CaretCreated = false;
                 DoZoom(zoom / 100f);
                 OnZoomChanged();
             }
@@ -5928,7 +5963,7 @@ namespace FastColoredTextBoxNS {
         }
 
         protected override void OnGotFocus(EventArgs e) {
-            caretCreated = false; // By WendyH
+            CaretCreated = false; // By WendyH
             SetAsCurrentTB();
             base.OnGotFocus(e);
             Invalidate();
@@ -7078,7 +7113,7 @@ window.status = ""#print"";
                 middleClickScrollingTimer.Dispose();
                 ErrorStyle.Dispose();
                 findForm?.Dispose();
-
+                caretBitmap?.Dispose();
                 replaceForm?.Dispose();
                 /*
                 if (Font != null)
