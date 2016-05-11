@@ -1264,8 +1264,12 @@ namespace FastColoredTextBoxNS {
         [Description("Background color.")]
         public override Color BackColor {
             get { return base.BackColor; }
-            set { base.BackColor = value; }
+            set {
+                base.BackColor = value;
+                ServiceLightColor = Color.FromArgb(value.GetBrightness() > 0.5 ? 180 : 40, ServiceLinesColor);
+            }
         }
+        private Color ServiceLightColor = Color.Silver;
 
         /// <summary>
         /// Background brush.
@@ -2653,7 +2657,7 @@ namespace FastColoredTextBoxNS {
         // < By WendyH -------------------------
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public void CreateCaretBitmap() {
-            if (CaretColor == Color.Black) {
+            if (CaretColor == Color.Black || CaretColor == Color.White) {
                 caretBitmap = null;
                 return;
             }
@@ -5181,7 +5185,7 @@ namespace FastColoredTextBoxNS {
 
         private void DrawFoldingLines(PaintEventArgs e, int startLine, int endLine) {
             e.Graphics.SmoothingMode = SmoothingMode.None;
-            using (var pen = new Pen(Color.FromArgb(BackColor.GetBrightness() > 0.5 ? 180 : 40, ServiceLinesColor)) { DashStyle = DashStyle.Dot })
+            using (var pen = new Pen(ServiceLightColor) { DashStyle = DashStyle.Dot })
                 foreach (var iLine in foldingPairs)
                     if (iLine.Key < endLine && iLine.Value > startLine) {
                         Line line = lines[iLine.Key];

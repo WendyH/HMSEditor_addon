@@ -423,7 +423,6 @@ namespace FastColoredTextBoxNS {
                 else if (start.iLine > 0)
                     start = new Place(tb[start.iLine - 1].Count, start.iLine - 1);
             }
-
             preferedPos = -1;
             end = start;
             OnSelectionChanged();
@@ -869,14 +868,29 @@ namespace FastColoredTextBoxNS {
                 }
             }
         }
-        // By WendyH > -------------------------------------
 
-        /// <summary>
-        /// Sets folding markers
-        /// </summary>
-        /// <param name="startFoldingPattern">Pattern for start folding line</param>
-        /// <param name="finishFoldingPattern">Pattern for finish folding line</param>
-        public void SetFoldingMarkers(string startFoldingPattern, string finishFoldingPattern) {
+        private int GetLineOfBeginingBracket(Range range) {
+            char LeftBracket = '(', RightBracket = ')';
+            int counter = 0, maxIterations = 500;
+            while (range.GoLeftThroughFolded(true)) {
+                if (range.CharAfterStart == LeftBracket ) counter++;
+                if (range.CharAfterStart == RightBracket) counter--;
+                if (counter == 0) {
+                    return range.start.iLine;
+                }
+                maxIterations--; if (maxIterations <= 0) break;
+            }
+            return -1;
+        }
+
+    // By WendyH > -------------------------------------
+
+    /// <summary>
+    /// Sets folding markers
+    /// </summary>
+    /// <param name="startFoldingPattern">Pattern for start folding line</param>
+    /// <param name="finishFoldingPattern">Pattern for finish folding line</param>
+    public void SetFoldingMarkers(string startFoldingPattern, string finishFoldingPattern) {
             SetFoldingMarkers(startFoldingPattern, finishFoldingPattern, SyntaxHighlighter.RegexCompiledOption);
         }
 
@@ -899,8 +913,23 @@ namespace FastColoredTextBoxNS {
             }
 
             lock (obj4LockLines) {
-                foreach (var range in GetRanges(startFoldingPattern, options, true))
-                    tb[range.Start.iLine].FoldingStartMarker = startFoldingPattern;
+                foreach (var range in GetRanges(startFoldingPattern, options, true)) {
+                    // By WendyH
+                    if (tb.Lines[range.Start.iLine].IndexOf(')')>0) {
+                        string line = tb.WithoutStringAndComments(tb.Lines[range.Start.iLine], true);
+                        int iChar = line.LastIndexOf(')')+1;
+                        if (iChar > 0) {
+                            int iLine = range.Start.iLine;
+                            Range r = new Range(tb, iChar, iLine, iChar, iLine);
+                            iLine = GetLineOfBeginingBracket(r);
+                            if (iLine >= 0)
+                                tb[iLine].FoldingStartMarker = startFoldingPattern;
+                        }
+
+                    } else {
+                        tb[range.Start.iLine].FoldingStartMarker = startFoldingPattern;
+                    }
+                }
 
                 foreach (var range in GetRanges(finishFoldingPattern, options, true)) {
                     if (tb[range.Start.iLine].FoldingStartMarker == startFoldingPattern) // By WendyH

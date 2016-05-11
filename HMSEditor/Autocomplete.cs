@@ -78,8 +78,9 @@ namespace HMSEditorNS {
         }
 
         public bool ContainsName(string name) {
+            if (string.IsNullOrEmpty(name)) return false;
             name = name.ToLower();
-            foreach (var o in this) if (o.MenuText.ToLower() == name) return true;
+            foreach (var o in this) if (o.MenuText!=null && o.MenuText.ToLower() == name) return true;
             return false;
         }
 

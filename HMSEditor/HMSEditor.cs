@@ -1546,7 +1546,7 @@ namespace HMSEditorNS {
             }
         }
 
-		private static Regex regexTextOfComment = new Regex(@"^\s*?//.*?(\w.*)");
+		private static Regex regexTextOfComment = new Regex(@"^\s*?//.*?(\w.*?)[\s-=/\*]*$");
 
         private void BuildFunctionList() {
             Functions.Clear();
@@ -1579,8 +1579,7 @@ namespace HMSEditorNS {
                     // check comment before procedure
                     int iLine = Editor.PositionToPlace(item.PositionStart).iLine;
                     if (iLine > 0) {
-                        Match matchComment = regexTextOfComment.Match(Editor.Lines[iLine-1]);
-                        if (matchComment.Success) item.Help = matchComment.Groups[1].Value;
+                        item.Help = regexTextOfComment.Match(Editor.Lines[iLine - 1]).Groups[1].Value;
                     }
                     // search end of procedure
                     if (startBlock.Length > 0) {

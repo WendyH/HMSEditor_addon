@@ -398,7 +398,7 @@ namespace FastColoredTextBoxNS {
         }
 
         private static bool isKeyWord(string word) {
-            return (HMS.HmsTypesString + HMS.KeywordsString).IndexOf("|" + word.ToLower() + "|", StringComparison.Ordinal) >= 0;
+            return (HMS.HmsTypesString).IndexOf("|" + word.ToLower() + "|", StringComparison.Ordinal) >= 0;
         }
 
         private static bool isClass(string word) {

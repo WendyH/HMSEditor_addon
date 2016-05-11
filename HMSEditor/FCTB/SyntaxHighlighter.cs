@@ -1381,7 +1381,7 @@ namespace FastColoredTextBoxNS {
             if (PascalScriptStringRegex == null) InitPascalScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle);
+            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, TypesStyle, PunctuationSyle);
             range.SetStylesStringsAndComments(PascalScriptStringRegex, StringStyle, CommentStyle);
             range.SetStyle(NumberStyle      , PascalScriptNumberRegex);
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionPAS   );
@@ -1398,7 +1398,6 @@ namespace FastColoredTextBoxNS {
             }
         }
         public void PascalScriptSyntaxHighlight2(Range range) {
-            range.ClearStyle(ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, TypesStyle, PunctuationSyle);
             range.SetStyle(ClassNameStyle , PascalScriptClassNameRegex);
             range.SetStyle(TypesStyle     , PascalScriptKeywordRegex1 );
             range.SetStyle(KeywordStyle   , PascalScriptKeywordRegex2 );
@@ -1423,7 +1422,7 @@ namespace FastColoredTextBoxNS {
             if (CPPScriptKeywordRegex == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle);
+            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, TypesStyle);
             range.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
             range.SetStyle(NumberStyle      , CSharpNumberRegex    );
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP );
@@ -1439,7 +1438,6 @@ namespace FastColoredTextBoxNS {
             }
         }
         public void CPPScriptSyntaxHighlight2(Range range) {
-            range.ClearStyle(ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle);
             range.SetStyle(ClassNameStyle , CPPClassNameRegex    );
             range.SetStyle(KeywordStyle   , CPPScriptKeywordRegex);
             range.SetStyle(TypesStyle     , CPPScriptTypesRegex  );
@@ -1495,7 +1493,7 @@ namespace FastColoredTextBoxNS {
             if (CPPClassNameRegex      == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle);
+            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, KeywordStyle, ClassNameStyle);
             range.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
             range.SetStyle(NumberStyle      , JScriptNumberRegex  );
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP);
@@ -1511,7 +1509,6 @@ namespace FastColoredTextBoxNS {
             }
         }
         public void HmsJScriptSyntaxHighlight2(Range range) {
-            range.ClearStyle(FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, KeywordStyle, ClassNameStyle);
             range.SetStyle(ClassNameStyle , CPPClassNameRegex     );
             range.SetStyle(KeywordStyle   , HmsJScriptKeywordRegex);
             range.SetStyle(FunctionsStyle , HMS.RegexHmsFunctions );
@@ -1536,7 +1533,7 @@ namespace FastColoredTextBoxNS {
             if (CPPClassNameRegex        == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle);
+            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, TypesStyle);
             range.SetStylesStringsAndComments(VBStringRegex, StringStyle, CommentStyle, false);
             range.SetStyle(NumberStyle      , VBNumberRegex);
             range.SetStyle(DeclFunctionStyle, regexDeclFunctionBAS);
@@ -1559,8 +1556,7 @@ namespace FastColoredTextBoxNS {
             }
         }
         public void BasicSyntaxHighlight2(Range range) {
-            range.ClearStyle(ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle);
-            range.SetStyle(ClassNameStyle , CPPClassNameRegex       );
+            range.SetStyle(ClassNameStyle , CPPClassNameRegex    );
             range.SetStyle(TypesStyle     , BasicScriptKeywordRegex1);
             range.SetStyle(KeywordStyle   , BasicScriptKeywordRegex2);
             range.SetStyle(FunctionsStyle , HMS.RegexHmsFunctions);
