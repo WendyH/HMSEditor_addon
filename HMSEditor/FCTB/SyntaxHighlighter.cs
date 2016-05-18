@@ -39,7 +39,6 @@ namespace FastColoredTextBoxNS {
         public string HmsClasses  = "";
         public string HmsKeywords = "";
         public Theme  StyleTheme  = null;
-        private Timer timer;
         const int MaxLenght4FastWork = 15000;
         // CONSTRUCTOR
         public SyntaxHighlighter() {
@@ -200,9 +199,7 @@ namespace FastColoredTextBoxNS {
             BlueBoldStyle   .Dispose();
             BlueStyle       .Dispose();
             BlackStyle      .Dispose();
-            if (timer      != null) timer     .Dispose();
-            if (timerPart2 != null) timerPart2.Dispose();
-            currentRange = null;
+            if (Worker4BigText != null) Worker4BigText.Dispose();
         }
 
         #endregion
@@ -214,8 +211,12 @@ namespace FastColoredTextBoxNS {
 #if debug
             System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
 #endif
-            currentRange = range;
             currentLanguage = language;
+            if (Worker4BigText == null) {
+                Worker4BigText = new BackgroundWorker();
+                Worker4BigText.DoWork             += Worker4BigText_DoWork;
+                Worker4BigText.RunWorkerCompleted += Worker4BigText_RunWorkerCompleted;
+            }
             switch (language) {
                 case Language.CSharp: CSharpSyntaxHighlight (range); break;
                 case Language.VB    : VBSyntaxHighlight     (range); break;
@@ -460,11 +461,12 @@ namespace FastColoredTextBoxNS {
 
         // By WendyH
         private int DetectStartOrEndBlock(string text, string startBlock, string endBlock) {
+            if (string.IsNullOrEmpty(text)) return 0;
             int result = 0;
             MatchCollection mc = Regex.Matches(text, "(" + startBlock + "|" + endBlock + ")", RegexOptions.IgnoreCase);
             foreach (Match m in mc) {
                 if (Regex.IsMatch(m.Value, startBlock, RegexOptions.IgnoreCase)) result++;
-                if (Regex.IsMatch(m.Value, endBlock, RegexOptions.IgnoreCase)) result--;
+                if (Regex.IsMatch(m.Value, endBlock  , RegexOptions.IgnoreCase)) result--;
             }
             return result;
         }
@@ -1390,9 +1392,8 @@ namespace FastColoredTextBoxNS {
             range.SetFoldingMarkers(@"\b(repeat)\b"   , @"\b(until)\b", RegexCompiledOption | RegexOptions.IgnoreCase); //allow to collapse brackets block
             range.SetFoldingMarkers(@"\b(begin|try)\b", @"\b(end)\b"  , RegexCompiledOption | RegexOptions.IgnoreCase); //allow to collapse brackets block
 
-            timer?.Stop();
             if (bigText) {
-                HighlightSyntax2();
+                Worker4BigText.RunWorkerAsync(new Syntax2StepArgs(currentLanguage, range));
             } else {
                 PascalScriptSyntaxHighlight2(range);
             }
@@ -1430,13 +1431,32 @@ namespace FastColoredTextBoxNS {
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers("{", "}"); //allow to collapse brackets block
 
-            timer?.Stop();
             if (bigText) {
-                HighlightSyntax2();
+                Worker4BigText.RunWorkerAsync(new Syntax2StepArgs(currentLanguage, range));
             } else {
                 CPPScriptSyntaxHighlight2(range);
             }
         }
+
+        private void Worker4BigText_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            if (e.Error != null || e.Cancelled) { HMSEditor.ActiveEditor.TB.ReadOnly = false; return; }
+            Syntax2StepArgs args = e.Result as Syntax2StepArgs;
+            if (args != null)
+                args.Range.tb.ReadOnly = false;
+                args.Range.tb.Invalidate();
+        }
+
+        private void Worker4BigText_DoWork(object sender, DoWorkEventArgs e) {
+            Syntax2StepArgs args = e.Argument as Syntax2StepArgs;
+            if (args != null) {
+                args.Range.tb.ReadOnly = true;
+                HighlightSyntax2Step(args.Language, args.Range);
+            }
+            e.Result = args;
+        }
+
+        BackgroundWorker Worker4BigText;
+
         public void CPPScriptSyntaxHighlight2(Range range) {
             range.SetStyle(ClassNameStyle , CPPClassNameRegex    );
             range.SetStyle(KeywordStyle   , CPPScriptKeywordRegex);
@@ -1447,23 +1467,7 @@ namespace FastColoredTextBoxNS {
             range.SetStyle(ConstantsStyle, HMS.RegexHmsConstants);
         }
 
-        private Range    currentRange;
         private Language currentLanguage;
-
-        public void HighlightSyntax2() {
-            if (timer == null) {
-                timer = new Timer();
-                timer.Tick += Timer_Tick;
-                timer.Interval = 150;
-            }
-            timer.Start();
-        }
-        Timer timerPart2 = new Timer();
-        private void Timer_Tick(object sender, EventArgs e) {
-            timer.Stop();
-            HighlightSyntax2Step(currentLanguage, currentRange);
-            currentRange?.tb.Invalidate();
-        }
 
         public void HighlightSyntax2Step(Language language, Range range) {
             switch (language) {
@@ -1501,9 +1505,8 @@ namespace FastColoredTextBoxNS {
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers("{", "}"); //allow to collapse brackets block
 
-            timer?.Stop();
             if (bigText) {
-                HighlightSyntax2();
+                Worker4BigText.RunWorkerAsync(new Syntax2StepArgs(currentLanguage, range));
             } else {
                 HmsJScriptSyntaxHighlight2(range);
             }
@@ -1548,9 +1551,9 @@ namespace FastColoredTextBoxNS {
             range.SetFoldingMarkers(@"(\r|\n|^)[ \t]*(?<range>Get|Set)[ \t]*(\r|\n|$)"     , @"\bEnd (Get|Set)\b"                                , RegexOptions.IgnoreCase);
             range.SetFoldingMarkers(@"^\s*(?<range>For|For\s+Each)\b"                      , @"^\s*(?<range>Next)\b"                             , RegexOptions.IgnoreCase | RegexOptions.Multiline);
             range.SetFoldingMarkers(@"^\s*(?<range>Do)\b"                                  , @"^\s*(?<range>Loop)\b"                             , RegexOptions.IgnoreCase | RegexOptions.Multiline);
-            timer?.Stop();
+
             if (bigText) {
-                HighlightSyntax2();
+                Worker4BigText.RunWorkerAsync(new Syntax2StepArgs(currentLanguage, range));
             } else {
                 BasicSyntaxHighlight2(range);
             }
@@ -1735,6 +1738,15 @@ namespace FastColoredTextBoxNS {
         }
         // > By WendyH ------------------------------
         #endregion
+    }
+
+    public class Syntax2StepArgs {
+        public Language Language;
+        public Range    Range;
+        public Syntax2StepArgs(Language lang, Range range) {
+            Language = lang;
+            Range    = range;
+        }
     }
 
     /// <summary>

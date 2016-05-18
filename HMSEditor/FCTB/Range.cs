@@ -22,6 +22,7 @@ namespace FastColoredTextBoxNS {
         // > By WendyH ---------------------------------
         List<Place> cachedCharIndexToPlace;
         int cachedTextVersion = -1;
+        int cachedShift = 0;
 
         /// <summary>
         /// Constructor
@@ -163,7 +164,7 @@ namespace FastColoredTextBoxNS {
             set {
                 end = start = value;
                 preferedPos = -1;
-                OnSelectionChanged();
+                    OnSelectionChanged();
             }
         }
 
@@ -176,7 +177,7 @@ namespace FastColoredTextBoxNS {
             }
             set {
                 end = value;
-                OnSelectionChanged();
+                    OnSelectionChanged();
             }
         }
 
@@ -190,65 +191,67 @@ namespace FastColoredTextBoxNS {
         public string Text {
             get {
                 if (ColumnSelectionMode)
-                    return Text_ColumnSelectionMode;
-
+                return Text_ColumnSelectionMode;
                 int fromLine = Math.Min(end.iLine, start.iLine);
-                int toLine = Math.Max(end.iLine, start.iLine);
+                int toLine   = Math.Max(end.iLine, start.iLine);
                 int fromChar = FromX;
-                int toChar = ToX;
+                int toChar   = ToX;
                 if (fromLine < 0) return null;
                 //
                 StringBuilder sb = new StringBuilder();
-                for (int y = fromLine; y <= toLine; y++) {
-                    int fromX = y == fromLine ? fromChar : 0;
-                    int toX = y == toLine ? Math.Min(tb[y].Count - 1, toChar - 1) : tb[y].Count - 1;
-                    for (int x = fromX; x <= toX; x++)
-                        sb.Append(tb[y][x].c);
-                    if (y != toLine && fromLine != toLine)
-                        sb.AppendLine();
+                lock (this) {
+                    for (int y = fromLine; y <= toLine; y++) {
+                        int fromX = y == fromLine ? fromChar : 0;
+                        int toX = y == toLine ? Math.Min(tb[y].Count - 1, toChar - 1) : tb[y].Count - 1;
+                        for (int x = fromX; x <= toX; x++)
+                            sb.Append(tb[y][x].c);
+                        if (y != toLine && fromLine != toLine)
+                            sb.AppendLine();
+                    }
                 }
                 return sb.ToString();
             }
         }
 
-        internal void GetText(out string text, out List<Place> charIndexToPlace, bool withoutStringAndComments = false) {
+        internal int GetText(out string text, out List<Place> charIndexToPlace) {
             //try get cached text
             if (tb.TextVersion == cachedTextVersion) {
-                text = withoutStringAndComments ? cachedTextWithoutStringsAndComments : cachedText;
+                text             = cachedText;
                 charIndexToPlace = cachedCharIndexToPlace;
-                return;
+                return cachedShift;
             }
             //
             int fromLine = Math.Min(end.iLine, start.iLine);
             int toLine   = Math.Max(end.iLine, start.iLine);
             int fromChar = FromX;
             int toChar   = ToX;
-
+            cachedShift  = tb.PlaceToPosition(new Place(fromChar, fromLine));
             StringBuilder sb = new StringBuilder((toLine - fromLine) * 50);
             charIndexToPlace = new List<Place>(sb.Capacity);
-            if (fromLine >= 0) {
-                for (int y = fromLine; y <= toLine; y++) {
-                    int fromX = y == fromLine ? fromChar : 0;
-                    int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
-                    for (int x = fromX; x <= toX; x++) {
-                        sb.Append(tb[y][x].c);
-                        charIndexToPlace.Add(new Place(x, y));
-                    }
-                    if (y != toLine && fromLine != toLine)
-                        foreach (char c in Environment.NewLine) {
-                            sb.Append(c);
-                            charIndexToPlace.Add(new Place(tb[y].Count/*???*/, y));
+            lock (tb.Lines) {
+                if (fromLine >= 0) {
+                    for (int y = fromLine; y <= toLine; y++) {
+                        int fromX = y == fromLine ? fromChar : 0;
+                        int toX   = y == toLine   ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
+                        for (int x = fromX; x <= toX; x++) {
+                            sb.Append(tb[y][x].c);
+                            charIndexToPlace.Add(new Place(x, y));
                         }
+                        if (y != toLine && fromLine != toLine)
+                            foreach (char c in Environment.NewLine) {
+                                sb.Append(c);
+                                charIndexToPlace.Add(new Place(tb[y].Count/*???*/, y));
+                            }
+                    }
                 }
+                charIndexToPlace.Add(End > Start ? End : Start);
             }
-            text = sb.ToString();
-            charIndexToPlace.Add(End > Start ? End : Start);
-            if (tb.RegexStringAndComments != null) cachedTextWithoutStringsAndComments = tb.WithoutStringAndComments(text, true);
-
             //caching
+            text                   = sb.ToString();
             cachedText             = text;
             cachedCharIndexToPlace = charIndexToPlace;
             cachedTextVersion      = tb.TextVersion;
+            return cachedShift;
         }
 
         /// <summary>
@@ -812,12 +815,12 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         public void SetStylesStringsAndComments(Regex regex, Style styleStrings, Style styleComments, bool singlequote = true) {
             tb.RegexStringAndComments = regex;
-            StyleIndex layer1 = ToStyleIndex(tb.GetOrSetStyleLayerIndex(styleStrings ));
+            StyleIndex layer1 = ToStyleIndex(tb.GetOrSetStyleLayerIndex(styleStrings));
             StyleIndex layer2 = ToStyleIndex(tb.GetOrSetStyleLayerIndex(styleComments));
             //get text
             string text;
             List<Place> charIndexToPlace;
-            GetText(out text, out charIndexToPlace);
+            int shift = GetText(out text, out charIndexToPlace);
             MultilineComments mc = tb.MultilineComments;
             mc.ClearRange(this);
             foreach (Match m in regex.Matches(text)) {
@@ -832,11 +835,11 @@ namespace FastColoredTextBoxNS {
                     r.SetStyle(layer1);
                 else {
                     if (m.Groups["mc"].Success) {
-                        mc.AddStart(r);
+                        mc.AddStart(shift + group.Index, r);
                         if (m.Groups["mcend"].Success)
-                            mc.AddEnd(r);
+                            mc.AddEnd(shift + group.Index + group.Length, r);
                     } else if (m.Groups["mcend2"].Success)
-                        mc.AddEnd(r);
+                        mc.AddEnd(shift + group.Index + group.Length, r);
                     else
                         r.SetStyle(layer2);
                 }
@@ -860,9 +863,6 @@ namespace FastColoredTextBoxNS {
                         r.Start = charIndexToPlace[group.Index];
                         r.End   = charIndexToPlace[group.Index + group.Length];
                         r.SetStyle(layer);
-                        //if (group.Value.StartsWith(tb.MassCommentPrefix)) {
-
-                        //}
                         break;
                     }
                 }
@@ -1029,6 +1029,11 @@ namespace FastColoredTextBoxNS {
             }
             tb.Invalidate();
         }
+
+        public bool InRange(Place place) {
+            return ((place >= start) && (place <= end));
+        }
+
         // By WendyH > -----------------------------------------
 
         /// <summary>
@@ -1053,18 +1058,20 @@ namespace FastColoredTextBoxNS {
             return GetRanges(regexPattern, RegexOptions.None);
         }
 
-        /// <summary>
-        /// Finds ranges for given regex pattern
-        /// </summary>
-        /// <param name="regexPattern">Regex pattern</param>
-        /// <param name="options"></param>
-        /// <param name="withoutStringAndComments"></param>
-        /// <returns>Enumeration of ranges</returns>
-        public IEnumerable<Range> GetRanges(string regexPattern, RegexOptions options, bool withoutStringAndComments = false) {
-            //get text
-            string text;
-            List<Place> charIndexToPlace;
-            GetText(out text, out charIndexToPlace, withoutStringAndComments); // By WendyH
+        // By WendyH
+        int cachedTextVersionWSC = -1;
+        public IEnumerable<Range> GetRanges(string regexPattern, RegexOptions options, bool withoutStringAndComments) {
+            string text; List<Place> charIndexToPlace;
+            //try get cached text
+            if (cachedTextVersionWSC >= 0 && cachedTextVersionWSC == cachedTextVersion) {
+                text             = cachedTextWithoutStringsAndComments;
+                charIndexToPlace = cachedCharIndexToPlace;
+            } else {
+                GetText(out text, out charIndexToPlace); // By WendyH
+                text = tb.WithoutStringAndComments(text, true);
+                cachedTextWithoutStringsAndComments = text;
+                cachedTextVersionWSC = cachedTextVersion;
+            }
             //create regex
             Regex regex = new Regex(regexPattern, options);
             //
@@ -1077,6 +1084,34 @@ namespace FastColoredTextBoxNS {
                 //
                 r.Start = charIndexToPlace[group.Index];
                 r.End = charIndexToPlace[group.Index + group.Length];
+                yield return r;
+            }
+        }
+
+        /// <summary>
+        /// Finds ranges for given regex pattern
+        /// </summary>
+        /// <param name="regexPattern">Regex pattern</param>
+        /// <param name="options"></param>
+        /// <param name="withoutStringAndComments"></param>
+        /// <returns>Enumeration of ranges</returns>
+        public IEnumerable<Range> GetRanges(string regexPattern, RegexOptions options) {
+            //get text
+            string text;
+            List<Place> charIndexToPlace;
+            GetText(out text, out charIndexToPlace);
+            //create regex
+            Regex regex = new Regex(regexPattern, options);
+            //
+            foreach (Match m in regex.Matches(text)) {
+                Range r = new Range(tb);
+                //try get 'range' group, otherwise use group 0
+                Group group = m.Groups["range"];
+                if (!group.Success)
+                    group = m.Groups[0];
+                //
+                r.Start = charIndexToPlace[group.Index];
+                r.End   = charIndexToPlace[group.Index + group.Length];
                 yield return r;
             }
         }

@@ -14,20 +14,16 @@
                 components    .Dispose();
                 MouseTimer    .Dispose();
                 SameWordsStyle.Dispose();
-                MouseTimer         ?.Dispose();
-              //WorkerHighlighter  ?.Dispose();
-                WorkerCheckSyntax  ?.Dispose();
-                WorkerCodeAnalysis ?.Dispose();
+                t.Dispose();
                 if (PopupMenu != null && !PopupMenu.IsDisposed) PopupMenu.Dispose();
                 if (ValueForm != null && !ValueForm.IsDisposed) ValueForm.Close();
+                CodeAnalysis.Stop();
             }
+            t = null;
             SameWordsStyle      = null;
             PopupMenu           = null;
             MouseTimer          = null;
             ValueForm           = null;
-          //WorkerHighlighter   = null;
-            WorkerCheckSyntax   = null;
-            WorkerCodeAnalysis  = null;
             base.Dispose(disposing);
         }
 
@@ -137,14 +133,14 @@
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.CheckPositionIsInParametersSequenceWorker = new System.ComponentModel.BackgroundWorker();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.Editor = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.TB = new FastColoredTextBoxNS.FastColoredTextBox();
             this.helpPanel1 = new HMSEditorNS.HelpPanel();
             this.contextMenuStrip1.SuspendLayout();
             this.tsMain.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Editor)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TB)).BeginInit();
             this.SuspendLayout();
             // 
             // contextMenuStrip1
@@ -1088,7 +1084,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.Editor);
+            this.splitContainer1.Panel1.Controls.Add(this.TB);
             // 
             // splitContainer1.Panel2
             // 
@@ -1101,9 +1097,9 @@
             // 
             // Editor
             // 
-            this.Editor.AllowDrop = false;
-            this.Editor.AutoCompleteBrackets = true;
-            this.Editor.AutoCompleteBracketsList = new char[] {
+            this.TB.AllowDrop = false;
+            this.TB.AutoCompleteBrackets = true;
+            this.TB.AutoCompleteBracketsList = new char[] {
         '(',
         ')',
         '{',
@@ -1114,57 +1110,57 @@
         '\"',
         '\'',
         '\''};
-            this.Editor.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);^\\s*(case|default)\\s*[^:]*(?<" +
+            this.TB.AutoIndentCharsPatterns = "^\\s*[\\w\\.]+(\\s\\w+)?\\s*(?<range>=)\\s*(?<range>[^;]+);^\\s*(case|default)\\s*[^:]*(?<" +
     "range>:)\\s*(?<range>[^;]+);";
-            this.Editor.AutoIndentExistingLines = false;
-            this.Editor.AutoScrollMinSize = new System.Drawing.Size(24, 15);
-            this.Editor.BackBrush = null;
-            this.Editor.BoldCaret = false;
-            this.Editor.BookmarkIcon = global::HMSEditorNS.Properties.Resources.togglebookmark;
-            this.Editor.BreakpointIcon = global::HMSEditorNS.Properties.Resources.breakpoint_x16;
-            this.Editor.BreakpointLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.Editor.ChangedLineColor = System.Drawing.Color.PaleGreen;
-            this.Editor.CharHeight = 15;
-            this.Editor.CharWidth = 7;
-            this.Editor.ContextMenuStrip = this.contextMenuStrip1;
-            this.Editor.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.Editor.DebugCurrentLineIcon = global::HMSEditorNS.Properties.Resources.RunningLine162;
-            this.Editor.DelayedEventsInterval = 600;
-            this.Editor.DelayedTextChangedInterval = 500;
-            this.Editor.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.Editor.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Editor.Font = new System.Drawing.Font("Consolas", 9.75F);
-            this.Editor.HighlightingRangeType = FastColoredTextBoxNS.HighlightingRangeType.VisibleRange;
-            this.Editor.Hotkeys = resources.GetString("Editor.Hotkeys");
-            this.Editor.IsReplaceMode = false;
-            this.Editor.LeftBracket = '(';
-            this.Editor.LeftPadding = 2;
-            this.Editor.Location = new System.Drawing.Point(0, 0);
-            this.Editor.Name = "Editor";
-            this.Editor.Paddings = new System.Windows.Forms.Padding(0);
-            this.Editor.RightBracket = ')';
+            this.TB.AutoIndentExistingLines = false;
+            this.TB.AutoScrollMinSize = new System.Drawing.Size(24, 15);
+            this.TB.BackBrush = null;
+            this.TB.BoldCaret = false;
+            this.TB.BookmarkIcon = global::HMSEditorNS.Properties.Resources.togglebookmark;
+            this.TB.BreakpointIcon = global::HMSEditorNS.Properties.Resources.breakpoint_x16;
+            this.TB.BreakpointLineColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.TB.ChangedLineColor = System.Drawing.Color.PaleGreen;
+            this.TB.CharHeight = 15;
+            this.TB.CharWidth = 7;
+            this.TB.ContextMenuStrip = this.contextMenuStrip1;
+            this.TB.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.TB.DebugCurrentLineIcon = global::HMSEditorNS.Properties.Resources.RunningLine162;
+            this.TB.DelayedEventsInterval = 800;
+            this.TB.DelayedTextChangedInterval = 500;
+            this.TB.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.TB.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TB.Font = new System.Drawing.Font("Consolas", 9.75F);
+            this.TB.HighlightingRangeType = FastColoredTextBoxNS.HighlightingRangeType.VisibleRange;
+            this.TB.Hotkeys = resources.GetString("Editor.Hotkeys");
+            this.TB.IsReplaceMode = false;
+            this.TB.LeftBracket = '(';
+            this.TB.LeftPadding = 2;
+            this.TB.Location = new System.Drawing.Point(0, 0);
+            this.TB.Name = "Editor";
+            this.TB.Paddings = new System.Windows.Forms.Padding(0);
+            this.TB.RightBracket = ')';
             serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
             serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
             serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
             serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
             serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
             serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
-            this.Editor.ServiceColors = serviceColors1;
-            this.Editor.ShowScrollBars = false;
-            this.Editor.Size = new System.Drawing.Size(672, 506);
-            this.Editor.TabIndex = 0;
-            this.Editor.TabLength = 2;
-            this.Editor.Zoom = 100;
-            this.Editor.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.Editor_TextChanged);
-            this.Editor.SelectionChanged += new System.EventHandler(this.Editor_SelectionChanged);
-            this.Editor.TextChangedDelayed += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.Editor_TextChangedDelayed);
-            this.Editor.SelectionChangedDelayed += new System.EventHandler(this.Editor_SelectionChangedDelayed);
-            this.Editor.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Editor_Scroll);
-            this.Editor.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Editor_KeyDown);
-            this.Editor.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseClick);
-            this.Editor.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseDoubleClick);
-            this.Editor.MouseLeave += new System.EventHandler(this.Editor_MouseLeave);
-            this.Editor.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseMove);
+            this.TB.ServiceColors = serviceColors1;
+            this.TB.ShowScrollBars = false;
+            this.TB.Size = new System.Drawing.Size(672, 506);
+            this.TB.TabIndex = 0;
+            this.TB.TabLength = 2;
+            this.TB.Zoom = 100;
+            this.TB.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.Editor_TextChanged);
+            this.TB.SelectionChanged += new System.EventHandler(this.Editor_SelectionChanged);
+            this.TB.TextChangedDelayed += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.Editor_TextChangedDelayed);
+            this.TB.SelectionChangedDelayed += new System.EventHandler(this.Editor_SelectionChangedDelayed);
+            this.TB.Scroll += new System.Windows.Forms.ScrollEventHandler(this.Editor_Scroll);
+            this.TB.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Editor_KeyDown);
+            this.TB.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseClick);
+            this.TB.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseDoubleClick);
+            this.TB.MouseLeave += new System.EventHandler(this.Editor_MouseLeave);
+            this.TB.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Editor_MouseMove);
             // 
             // helpPanel1
             // 
@@ -1188,13 +1184,13 @@
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.Editor)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TB)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-        public FastColoredTextBoxNS.FastColoredTextBox Editor;
+        public FastColoredTextBoxNS.FastColoredTextBox TB;
         private System.Windows.Forms.ToolStrip tsMain;
         private System.Windows.Forms.ToolStripButton btnNavigateBack;
         private System.Windows.Forms.ToolStripButton btnNavigateForward;

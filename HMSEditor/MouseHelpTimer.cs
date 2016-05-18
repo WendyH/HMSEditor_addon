@@ -44,26 +44,26 @@ namespace HMSEditorNS {
         /// </summary>
         /// <param name="ActiveHMSEditor">Активный (вызвавший) элемент HMSEditor</param>
         public static void Task(HMSEditor ActiveHMSEditor) {
-            if (ActiveHMSEditor.Locked) return;
+            if (CodeAnalysis.isBusy) return;
             try {
-                var    Editor  = ActiveHMSEditor.Editor;
+                var    TB      = ActiveHMSEditor.TB;
                 Point  point   = ActiveHMSEditor.MouseLocation;
-                int iStartLine = ActiveHMSEditor.Editor.YtoLineIndex();
-                int CharHeight = ActiveHMSEditor.Editor.CharHeight;
+                int iStartLine = ActiveHMSEditor.TB.YtoLineIndex();
+                int CharHeight = ActiveHMSEditor.TB.CharHeight;
                 int i = point.Y / CharHeight;
                 int iLine = iStartLine + i;
-                if (iLine >= Editor.Lines.Count) return;
-                Place place   = Editor.PointToPlace(point);
+                if (iLine >= TB.Lines.Count) return;
+                Place place   = TB.PointToPlace(point);
                 string line;
-                try {  line   = Editor.Lines[iLine]; } catch { return; }
+                try {  line   = TB.Lines[iLine]; } catch { return; }
                 if (line.Length <= place.iChar) return;
                 var value  = "";
                 var evalSelection = false;
                 string text;
-                if (Editor.DebugMode && (Editor.SelectedText.Length > 2)) {
-                    int posStart = Editor.PlaceToPosition(Editor.Selection.Start);
-                    int posEnd   = Editor.PlaceToPosition(Editor.Selection.End  );
-                    int posCur   = Editor.PlaceToPosition(place);
+                if (TB.DebugMode && (TB.SelectedText.Length > 2)) {
+                    int posStart = TB.PlaceToPosition(TB.Selection.Start);
+                    int posEnd   = TB.PlaceToPosition(TB.Selection.End  );
+                    int posCur   = TB.PlaceToPosition(place);
                     // Если указатель мыши в области виделения, то будем вычислять выдиление
                     if (posStart < posEnd) {
                         evalSelection = (posCur >= posStart) && (posCur <= posEnd  );
@@ -72,30 +72,30 @@ namespace HMSEditorNS {
                     }
                 }
                 if (evalSelection) {
-                    text = Editor.SelectedText.Trim();
+                    text = TB.SelectedText.Trim();
                     if (text.Length == 0) return;
                     // Внедряемся в поток - показываем вплывающее окно со значением
-                    Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
-                        Editor.ReshowCaret = true;
+                    TB.Invoke((System.Windows.Forms.MethodInvoker)delegate {
+                        TB.ReshowCaret = true;
                         value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
                         if (value.Length > MaxValueLength || HMSEditor.ActiveEditor.ValueForm.Visible) {
                             //value = value.Substring(0, MaxValueLength) + "...";
-                            HMSEditor.ActiveEditor.ValueForm.Show(Editor, text, value, text);
+                            HMSEditor.ActiveEditor.ValueForm.Show(TB, text, value, text);
                         } else {
-                            ActiveHMSEditor.ValueHint.ShowValue(Editor, text, value, point, text);
+                            ActiveHMSEditor.ValueHint.ShowValue(TB, text, value, point, text);
                         }
                     });
                     return;
 
                 }
-                Range r = new Range(Editor, place, place);
+                Range r = new Range(TB, place, place);
                 if (r.IsErrorPlace) {
                     // Показываем инофрмацию об ошибке через ToolTip
-                    Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
-                        var tip = Editor.ToolTip;
+                    TB.Invoke((System.Windows.Forms.MethodInvoker)delegate {
+                        var tip = TB.ToolTip;
                         tip.ToolTipTitle = "Ошибка синтаксиса"; 
-                        tip.Help = Editor.ErrorStyle.Message;
-                        tip.Show(" ", Editor, point, 10000);
+                        tip.Help = TB.ErrorStyle.Message;
+                        tip.Show(" ", TB, point, 10000);
                     });
                     return;
                 }
@@ -106,9 +106,9 @@ namespace HMSEditorNS {
                 if (text.Length == 0) return;
                 var item = ActiveHMSEditor.GetHMSItemByText(text);
                 if (!string.IsNullOrEmpty(item?.Text)) {
-                    point.Offset(0, Editor.CharHeight-4);
+                    point.Offset(0, TB.CharHeight-4);
                     // Если идёт отладка - проверяем, мы навели на переменную или свойство объекта?
-                    if (Editor.DebugMode && OK4Evaluate(item)) {
+                    if (TB.DebugMode && OK4Evaluate(item)) {
                         // проверяем, если это index свойство - то нудно вычислять значение с переданным индексом, поэтому дополняем значением [...]
                         if (item.ImageIndex == ImagesIndex.Enum) {
                             Match m = Regex.Match(line, text + @"\[.*?\]");
@@ -121,25 +121,25 @@ namespace HMSEditorNS {
                         string realExpression = text;
                         text = CheckTypeForToStringRules(item.Type, text);
                         // Внедряемся в поток - показываем вплывающее окно со значением
-                        Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
-                            Editor.ReshowCaret = true;
+                        TB.Invoke((System.Windows.Forms.MethodInvoker)delegate {
+                            TB.ReshowCaret = true;
                             value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
                             if (HMSEditor.ActiveEditor.ValueForm.Visible) {
-                                HMSEditor.ActiveEditor.ValueForm.Show(Editor, text, value, realExpression);
+                                HMSEditor.ActiveEditor.ValueForm.Show(TB, text, value, realExpression);
                             } else {
                                 if (value.Length > MaxValueLength) value = value.Substring(0, MaxValueLength) + "...";
-                                ActiveHMSEditor.ValueHint.ShowValue(Editor, text, value, point, realExpression);
+                                ActiveHMSEditor.ValueHint.ShowValue(TB, text, value, point, realExpression);
                             }
                         });
                         return;
                     }
                     // Показываем инофрмацию о функции или переменной через ToolTip
-                    Editor.Invoke((System.Windows.Forms.MethodInvoker)delegate {
-                        var tip = Editor.ToolTip;
+                    TB.Invoke((System.Windows.Forms.MethodInvoker)delegate {
+                        var tip = TB.ToolTip;
                         tip.ToolTipTitle = item.ToolTipTitle;
                         tip.Help         = item.Help;
                         tip.Value        = value;
-                        tip.Show(item.ToolTipText + " ", Editor, point, 10000);
+                        tip.Show(item.ToolTipText + " ", TB, point, 10000);
                         //ActiveHMSEditor.ValueForm.Show(Editor, item.ToolTipTitle, item.Help + " ");
                         //ActiveHMSEditor.ValueHint.ShowValue(Editor, item.ToolTipTitle, item.Help, point, "test");
                     });

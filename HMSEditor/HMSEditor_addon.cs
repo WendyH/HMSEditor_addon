@@ -213,7 +213,7 @@ namespace HmsAddons {
 
         public uint SetFocus() {
             if (EditBox != null) {
-                EditBox.Editor.Focus();
+                EditBox.TB.Focus();
                 return HRESULT.S_OK;
             }
             return HRESULT.E_UNEXPECTED;
@@ -222,7 +222,7 @@ namespace HmsAddons {
         public uint SetRunning(int aValue) {
             if (EditBox != null) {
                 EditBox.OnRunningStateChange(aValue < 0);
-                EditBox.Editor.Focus();
+                EditBox.TB.Focus();
             }
             return HRESULT.S_OK;
         }
@@ -235,10 +235,12 @@ namespace HmsAddons {
 
         public uint SetScriptText(ref object aText) {
             if (EditBox != null) {
+
                 EditBox.Text = (string)aText;
-                EditBox.Modified = false;
+                EditBox.Modified        = false;
                 EditBox.IsFirstActivate = true;
-                EditBox.Editor.ClearUndo();
+                EditBox.TB.ClearUndo();
+                //EditBox.TB.DelayedTextChangedInterval = ((string)aText).Length > 10000 ? 1200 : 500;
                 FirstSetPos = true;
                 return HRESULT.S_OK;
             }

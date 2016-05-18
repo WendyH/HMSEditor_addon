@@ -75,7 +75,7 @@ namespace HMSEditorNS {
         private void FormValue_KeyDown(object sender, KeyEventArgs e) {
             if ((e.KeyValue >= (int)Keys.F1) && (e.KeyValue <= (int)Keys.F12)) {
                 if (HMSEditor.ActiveEditor!=null) {
-                    NativeMethods.SendNotifyKey(HMSEditor.ActiveEditor.Editor.Handle, e.KeyValue);
+                    NativeMethods.SendNotifyKey(HMSEditor.ActiveEditor.TB.Handle, e.KeyValue);
                 }
                 e.Handled = true;
             }

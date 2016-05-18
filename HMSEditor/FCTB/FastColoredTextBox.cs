@@ -1266,7 +1266,7 @@ namespace FastColoredTextBoxNS {
             get { return base.BackColor; }
             set {
                 base.BackColor = value;
-                ServiceLightColor = Color.FromArgb(value.GetBrightness() > 0.5 ? 180 : 40, ServiceLinesColor);
+                ServiceLightColor = Color.FromArgb(value.GetBrightness() > 0.5 ? 140 : 32, ServiceLinesColor);
             }
         }
         private Color ServiceLightColor = Color.Silver;
@@ -1501,7 +1501,12 @@ namespace FastColoredTextBoxNS {
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public int SelectionStart {
-            get { return Math.Min(PlaceToPosition(Selection.Start), PlaceToPosition(Selection.End)); }
+            get {
+                if (Selection.Start <= Selection.End)
+                    return PlaceToPosition(Selection.Start);
+                else
+                    return PlaceToPosition(Selection.End);
+            }
             set { Selection.Start = PositionToPlace(value); }
         }
 
@@ -1610,12 +1615,25 @@ namespace FastColoredTextBoxNS {
         public bool RedoEnabled => lines.Manager.RedoEnabled;
 
         private int LeftIndentLine => LeftIndent - minLeftIndent / 2 - 3;
+        private Range fullRange;
 
         /// <summary>
         /// Range of all text
         /// </summary>
         [Browsable(false)]
-        public Range Range => new Range(this, new Place(0, 0), new Place(lines[lines.Count - 1].Count, lines.Count - 1));
+        public Range Range {
+            get {
+                Place theStart = new Place(0, 0);
+                Place theEnd   = (lines.Count == 0) ? theStart : new Place(lines[lines.Count - 1].Count, lines.Count - 1);
+                if (fullRange == null)
+                    fullRange = new Range(this, theStart, theEnd);
+                else {
+                    if (fullRange.Start != theStart) fullRange.Start = theStart;
+                    if (fullRange.End   != theEnd  ) fullRange.End   = theEnd;
+                }
+                return fullRange;
+            }
+        }
 
         public override Cursor Cursor {
             get { return base.Cursor; }
@@ -2091,13 +2109,13 @@ namespace FastColoredTextBoxNS {
         }
 
         private void ts_LineRemoved(object sender, LineRemovedEventArgs e) {
-            MultilineComments.LinesRemoved(e.Index, e.Count);
+            MultilineComments.LinesRemoved(this, e.Index, e.Count);
             LineInfos.RemoveRange(e.Index, e.Count);
             OnLineRemoved(e.Index, e.Count, e.RemovedLineUniqueIds);
         }
 
         private void ts_LineInserted(object sender, LineInsertedEventArgs e) {
-            MultilineComments.LinesInserted(e.Index, e.Count);
+            MultilineComments.LinesInserted(this, e.Index, e.Count);
             VisibleState newState = VisibleState.Visible;
             if (e.Index >= 0 && e.Index < LineInfos.Count && LineInfos[e.Index].VisibleState == VisibleState.Hidden)
                 newState = VisibleState.Hidden;
@@ -2559,19 +2577,22 @@ namespace FastColoredTextBoxNS {
 
             if (!string.IsNullOrEmpty(text)) {
                 BeginUpdate();
-                int st = SelectionStart;
-                Range r = Selection.Clone();
+                Place st = Selection.Start;
+                Range r  = Selection.Clone();
                 r.Normalize();
-                int ich = r.Start.iChar;
-                int ili = r.Start.iLine;
-                r.Start = new Place(0, ili);
-                r.End = new Place(ich, ili);
+                Range rangeBefore = r.Clone();
+                rangeBefore.Start = new Place(0, 0);
+                rangeBefore.End   = r.Start;
+                bool existTextBefore = Regex.IsMatch(rangeBefore.Text, @"[^\s\r\n]");
+                r.Start = new Place(0            , r.Start.iLine);
+                r.End   = new Place(r.Start.iChar, r.Start.iLine);
                 InsertText(text);
-                bool existTextBefore = Regex.IsMatch(r.Text, @"\S");
-                if (FormatCodeWhenPaste && !existTextBefore && language != Language.YAML && text.Length < 100000) {
+                bool existTextInLineBefore = Regex.IsMatch(r.Text, @"\S");
+                if (FormatCodeWhenPaste && existTextBefore && !existTextInLineBefore 
+                    && language != Language.YAML && text.Length < 30000) {
                     Place p = Selection.Start;
                     BeginAutoUndo();
-                    SelectionStart = st;
+                    Selection.Start = st;
                     SelectionLength = text.Length;
                     int charsShift  = DoAutoIndent();
                     SelectionLength = 0;
@@ -3868,7 +3889,6 @@ namespace FastColoredTextBoxNS {
         }
 
         // < By WendyH -----------------------------------
-        private MatchEvaluator evaluatorSameLines  = MatchReturnEmptyLines;
         private static string MatchReturnEmptyLines(Match m) { return Regex.Replace(m.Value, @"[^\n]", " "); }
         private static string MatchReturnSharpLines(Match m) { return Regex.Replace(m.Value, @"[^\n]", "#"); }
         /// <summary>
@@ -3876,13 +3896,15 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         public string WithoutStringAndComments(string txt, bool trimNotClosed = false) {
             if (RegexStringAndComments != null)
-                txt = RegexStringAndComments.Replace(txt, evaluatorSameLines);
-            if (trimNotClosed) txt = Regex.Replace(txt, "[\"'].*", "");
+                txt = RegexStringAndComments.Replace(txt, MatchReturnEmptyLines);
+            if (trimNotClosed) txt = Regex.Replace(txt, "[\"'].*", string.Empty);
             return txt;
         }
 
         public string FillStringAndComments(string txt) {
-            txt = RegexStringAndComments?.Replace(txt, MatchReturnSharpLines);
+            if (RegexStringAndComments != null)
+                txt = RegexStringAndComments.Replace(txt, MatchReturnSharpLines);
+            if (txt == null) return string.Empty;
             return txt;
         }
 
@@ -4785,7 +4807,6 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         protected override void OnPaint(PaintEventArgs e) {
             if (freez) return;
-            //if (ServiceColors == null) ServiceColors = new ServiceColors(); // By WendyH - WTF?? ServiceColors == null after contructor?
             if (needRecalc)
                 Recalc(); 
 
@@ -4801,7 +4822,7 @@ namespace FastColoredTextBoxNS {
             e.Graphics.SmoothingMode = SmoothingMode.None;
             //
             var servicePen  = new Pen(ServiceLinesColor);
-            var vertLinePen = new Pen(Color.FromArgb(52, ServiceLinesColor)); // By WendyH
+            var vertLinePen = new Pen(ServiceLightColor); // By WendyH
             Brush changedLineBrush    = new SolidBrush(ChangedLineColor);
             Brush indentBrush         = new SolidBrush(IndentBackColor);
             Brush paddingBrush        = new SolidBrush(PaddingBackColor);
@@ -5867,10 +5888,9 @@ namespace FastColoredTextBoxNS {
             needRiseTextChangedDelayed = true;
             ResetTimer(timer2);
             //
-            //OnSyntaxHighlight(args); // By WendyH
-            //
+            //OnSyntaxHighlight(args);
             SyntaxHighlighter.HighlightSyntax(Language, args.ChangedRange);
-
+            //
             TextChanged?.Invoke(this, args);
             //
             BindingTextChanged?.Invoke(this, EventArgs.Empty);

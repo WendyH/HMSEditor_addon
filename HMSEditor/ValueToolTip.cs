@@ -64,7 +64,7 @@ namespace HMSEditorNS {
 
         private void Btn_Click(object sender, EventArgs e) {
             if (HMSEditor.ActiveEditor != null) {
-                HMSEditor.ActiveEditor.ValueForm.Show(HMSEditor.ActiveEditor.Editor, Expression, ctl.Text, RealExpression);
+                HMSEditor.ActiveEditor.ValueForm.Show(HMSEditor.ActiveEditor.TB, Expression, ctl.Text, RealExpression);
                 Close();
             }
         }
@@ -199,7 +199,7 @@ namespace HMSEditorNS {
 
             if ((e.KeyValue >= (int)Keys.F1 && e.KeyValue <= (int)Keys.F12) && HMSEditor.ActiveEditor != null) {
                 e.Handled = true;
-                NativeMethods.SendNotifyKey(HMSEditor.ActiveEditor.Editor.Handle, (int)e.KeyCode);
+                NativeMethods.SendNotifyKey(HMSEditor.ActiveEditor.TB.Handle, (int)e.KeyCode);
                 return;
             }
             base.OnKeyDown(e);

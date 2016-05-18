@@ -6,7 +6,7 @@ namespace HMSEditorNS {
             var HmsScriptFrame = HMSEditor.ActiveEditor.HmsScriptFrame;
             object ob1 = "mpFilePath";
 
-            HmsScriptFrame.AddWatch(ref ob1);
+            //HmsScriptFrame.AddWatch(ref ob1);
 
             MessageBox.Show(@"Test ok - " + ob1);
         }
@@ -15,7 +15,7 @@ namespace HMSEditorNS {
             var HmsScriptFrame = HMSEditor.ActiveEditor.HmsScriptFrame;
             var ob1 = (object)"Нет скрипта";
 
-            HmsScriptFrame.ChangeScriptName(ref ob1);
+            //HmsScriptFrame.ChangeScriptName(ref ob1);
 
             MessageBox.Show(@"Test ok - " + ob1);
         }
@@ -23,7 +23,7 @@ namespace HMSEditorNS {
         public static void GenerateScriptDescriptions() {
             var HmsScriptFrame = HMSEditor.ActiveEditor.HmsScriptFrame;
             object ob1 = "";
-            HmsScriptFrame.GenerateScriptDescriptions(ref ob1);
+            //HmsScriptFrame.GenerateScriptDescriptions(ref ob1);
             string text = ob1.ToString();
             MessageBox.Show(@"Test ok - " + text.Substring(0, 50) + @"...");
         }
@@ -65,7 +65,7 @@ namespace HMSEditorNS {
             var HmsScriptFrame = HMSEditor.ActiveEditor.HmsScriptFrame;
             object expression = "mpFilePath";
             object result = "";
-            HmsScriptFrame.SolveExpression(ref expression, ref result);
+            //HmsScriptFrame.SolveExpression(ref expression, ref result);
             MessageBox.Show(@"Test ok - expression=" + expression + @" result=" + result);
         }
 

@@ -116,14 +116,16 @@ namespace HMSEditorNS {
         private static Regex regexTypeCPP     = new Regex(@"^(\w+)\s+\w+\s*?(\(|;|=|\.)" );
         private static Regex regexType        = new Regex(@":\s*?(\w+)"                  );
 
-        public  static Templates Templates    = new Templates();
-        private static BackgroundWorker Worker = new BackgroundWorker();
+        public  static Templates        Templates = new Templates();
+        private static BackgroundWorker Worker    = new BackgroundWorker();
 
         public static bool BaseInitialized;
 
         enum BackgraundTask { None = 0, PrepareFastDraw }
 
         private static void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            if (e.Error != null) { HMS.LogError(e.Error.ToString()); }
+            if (e.Cancelled) return;
             BackgraundTask taskType = BackgraundTask.None;
             if (e.Result != null) taskType = (BackgraundTask)e.Result;
             if (taskType == BackgraundTask.PrepareFastDraw) {
@@ -181,6 +183,21 @@ namespace HMSEditorNS {
             }
         }
 
+        public static void LogError(Exception e) {
+            string msg = e.ToString();
+            MessageBox.Show(msg);
+            if (File.Exists(ErrorLogFile)) {
+                FileInfo fileInfo = new FileInfo(ErrorLogFile);
+                // Если он такой большой, значит забытый и не нужный - удаляем, чтобы начать всё заного
+                if (fileInfo.Length > MaxLogSize)
+                    File.Delete(ErrorLogFile);
+            }
+            try {
+                File.AppendAllText(ErrorLogFile, $"{DateTime.Now.ToString(CultureInfo.CurrentCulture)} {msg}\n");
+            } catch {
+                // ignored
+            }
+        }
         /// <summary>
         /// Exctract file(s) from zip to specific path
         /// </summary>
@@ -244,7 +261,7 @@ namespace HMSEditorNS {
         }
 
         public static string GetVarTypeCPPFormat(string cmd) {
-            cmd = HMSEditor.regexExcludeWords.Replace(cmd, "");
+            cmd = CodeAnalysis.RegexExcludeWords.Replace(cmd, "");
             Match m = regexTypeCPP.Match(cmd);
             if (m.Success) return m.Groups[1].Value;
             return "";

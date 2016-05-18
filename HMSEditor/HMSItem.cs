@@ -11,9 +11,9 @@ namespace HMSEditorNS {
         public string  Value     = "";
         public bool    IsClass   = false;
         public List<string> Params = new List<string>();
-        public int PositionReal  = 0;
-        public int PositionStart = 0;
-        public int PositionEnd   = 0;
+        public int     PositionReal  = 0;
+        public int     PositionStart = 0;
+        public int     PositionEnd   = 0;
         public string  Filter    = "";
         public string  Rtf       = "";
         public bool    Enabled   = true;

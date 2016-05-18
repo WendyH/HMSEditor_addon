@@ -177,9 +177,9 @@ namespace HMSEditorNS {
 
         public static void SetTheme(HMSEditor editor, string name) {
             if (Dict.ContainsKey(name)) {
-                SetTheme(editor.Editor, name);
+                SetTheme(editor.TB, name);
                 Theme t = Dict[name];
-                editor.Editor.CurrentLineColor = t.LineHighlight;
+                editor.TB.CurrentLineColor = t.LineHighlight;
                 //editor.Editor.ChangedLineColor = t.ChangedLines;
 
                 //Color c1 = MixColor(0.5, t.KeywordStyle.GetRTF().ForeColor, t.StringStyle.GetRTF().ForeColor);

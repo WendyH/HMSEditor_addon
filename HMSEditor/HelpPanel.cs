@@ -32,11 +32,13 @@ namespace HMSEditorNS {
             flatListBox1.VerticalScroll.SmallChange = flatListBox1.ItemHeight;
             flatListBox1.Dock = DockStyle.Fill;
             DoubleBuffered = true;
-            worker.DoWork += Worker_DoWork;
+            worker.DoWork             += Worker_DoWork;
             worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
         }
 
         private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
+            if (e.Error != null) { HMS.LogError(e.Error.ToString()); return; }
+            if (e.Cancelled) return;
             flatListBox1.BeginUpdate();
             flatListBox1.Items.Clear();
             flatListBox1.Items.AddRange(visibleItems);

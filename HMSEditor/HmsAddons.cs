@@ -141,6 +141,7 @@ namespace HMSEditorNS {
 
     // Интерфейс программы, который предоставляется редактору
     [ComVisible(true), Guid("D31B4638-9764-4A9A-9F5A-B4D0B519F402")]
+    [InterfaceType(ComInterfaceType.InterfaceIsDual)]
     public interface IHmsScriptFrame {
         uint AddWatch(ref object aExpression);
 
