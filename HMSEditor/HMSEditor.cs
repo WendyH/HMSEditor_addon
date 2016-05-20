@@ -219,8 +219,12 @@ namespace HMSEditorNS {
 
         #region Fuctions and procedures
         public void OnRunningStateChange(bool running) {
-            DebugMode = running;
+            DebugMode    = running;
             RunLineRised = false;
+            if (!running) {
+                TB.HmsDebugChar = -1;
+                TB.HmsDebugLine = -1;
+            }
         }
 
         private void Editor_LostFocus(object sender, EventArgs e) {

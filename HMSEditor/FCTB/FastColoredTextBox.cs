@@ -2684,6 +2684,7 @@ namespace FastColoredTextBoxNS {
             }
             int caretHeight = CharHeight;
             int carWidth = (IsReplaceMode || WideCaret) ? CharWidth : (CharWidth / 4);
+            if (carWidth < 1) carWidth = 1;
             if (_boldCaret) carWidth++;
             var b = new Bitmap(carWidth, caretHeight, PixelFormat.Format8bppIndexed);
             ColorPalette ncp = b.Palette;
