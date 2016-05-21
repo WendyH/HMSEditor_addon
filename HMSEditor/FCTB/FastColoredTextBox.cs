@@ -283,12 +283,104 @@ namespace FastColoredTextBoxNS {
         }
 
         protected override void OnResize(EventArgs e) {
-            if (!VerticalScroll.Visible) VerticalScroll.Height = Height;
+            if (!VerticalScroll.Visible  ) VerticalScroll.Height  = Height;
             if (!HorizontalScroll.Visible) HorizontalScroll.Width = Width;
             base.OnResize(e);
         }
 
-        // By WendyH
+        // < By WendyH --------------------------------
+        private static string CachePath = Path.GetTempPath() + "hmsed" + Path.DirectorySeparatorChar;
+        public static int maxCacheFiles = 400;
+        public static int maxCacheSize  = 536870912; // 0.5 GB
+        public static int minCacheLines = 300;
+        private void SaveCache() {
+            if (lines.Count < minCacheLines) return;
+            List<FileInfo> list = new List<FileInfo>();
+            long allsize = 0;
+            try {
+                if (!Directory.Exists(CachePath)) Directory.CreateDirectory(CachePath);
+                // Control limits of cache ------------
+                foreach (string f in Directory.GetFiles(CachePath)) {
+                    var info = new FileInfo(f);
+                    list.Add(info);
+                    allsize += info.Length;
+                }
+                list.Sort((b, a) => a.CreationTime.CompareTo(b.CreationTime));
+                if (list.Count > maxCacheFiles) {
+                    for (int i = list.Count - 1; i >= maxCacheFiles; i--) {
+                        list[i].Delete();
+                    }
+                }
+                if (allsize > maxCacheSize) {
+                    allsize = 0;
+                    foreach(var info in list) {
+                        allsize += info.Length;
+                        if (allsize > maxCacheSize) {
+                            allsize -= info.Length;
+                            info.Delete();
+                        }
+                    }
+                }
+                // ------------------------------------
+                string hash = Murmur3.KnuthHash(Text);
+                string file = CachePath + hash;
+                using (var f = File.Create(file)) {
+                    foreach (Line l in lines) {
+                        f.Write(BitConverter.GetBytes(l.AutoIndentSpacesNeededCount), 0, 4);
+                        f.Write(BitConverter.GetBytes(l.LineIndent                 ), 0, 4);
+                        f.Write(BitConverter.GetBytes(l.NextLineIndent             ), 0, 4);
+                        foreach (Char ch in l) {
+                            f.Write(BitConverter.GetBytes(ch.c), 0, 2);
+#if Styles32
+                            f.Write(BitConverter.GetBytes((uint)ch.style), 0, 4);
+#else
+                            f.Write(BitConverter.GetBytes((ushort)ch.style), 0, 2);
+#endif
+                        }
+                        f.Write(BitConverter.GetBytes('\n'), 0, 2);
+                    }
+                }
+            } catch {
+                // ignored
+            }
+        }
+
+        private bool LoadCache(string text) {
+            byte[] buffer = new byte[4]; char c;
+            string hash = Murmur3.KnuthHash(text);
+            string file = CachePath + hash;
+            try {
+                if (File.Exists(file)) {
+                    using (var f = File.OpenRead(file)) {
+                        if (f.Length < 28) return false;
+                        lines.Clear();
+                        do {
+                            Line l = lines.CreateLine();
+                            f.Read(buffer, 0, 4); l.AutoIndentSpacesNeededCount = BitConverter.ToInt32(buffer, 0);
+                            f.Read(buffer, 0, 4); l.LineIndent                  = BitConverter.ToInt32(buffer, 0);
+                            f.Read(buffer, 0, 4); l.NextLineIndent              = BitConverter.ToInt32(buffer, 0);
+                            while ((f.Read(buffer, 0, 2)) > 0) {
+                                c = BitConverter.ToChar(buffer, 0); if (c == '\n') break;
+                                Char ch = new Char(c);
+#if Styles32
+                                f.Read(buffer, 0, 4); ch.style = (StyleIndex)BitConverter.ToInt32(buffer, 0);
+#else
+                                f.Read(buffer, 0, 2); ch.style = (StyleIndex)BitConverter.ToInt16(buffer, 0);
+#endif
+                                l.Add(ch);
+                            }
+                            lines.Add(l);
+                            
+                        } while (f.Position < f.Length - 4);
+                    }
+                    return true;
+                }
+            } catch {
+                // ignored
+            }
+            return false;
+        }
+
         public int LightYellowSelect(Regex regex) {
             if (regex.ToString().Length==0) { FoundLines = new int[0]; return 0; }
             int n = 0; Range.ClearStyle(LightYellowSelectionStyle);
@@ -327,6 +419,7 @@ namespace FastColoredTextBoxNS {
             freez = false;
             Invalidate();
         }
+        // > By WendyH --------------------------------
 
         private char[] autoCompleteBracketsList = { '(', ')', '{', '}', '[', ']', '"', '"', '\'', '\'' };
 
@@ -1433,7 +1526,7 @@ namespace FastColoredTextBoxNS {
             }
 
             set {
-                if (value == Text && value != "")
+                if (value == Text && value.Length != 0)
                     return;
 
                 SetAsCurrentTB();
@@ -1442,8 +1535,10 @@ namespace FastColoredTextBoxNS {
 
                 Selection.BeginUpdate();
                 try {
-                    Selection.SelectAll();
-                    InsertText(value);
+                    if (!LoadCache(value)) { 
+                        Selection.SelectAll();
+                        InsertText(value, false);
+                    }
                     GoHome();
                 } finally {
                     Selection.EndUpdate();
@@ -2650,7 +2745,7 @@ namespace FastColoredTextBoxNS {
         /// Clear buffer of styles
         /// </summary>
         public void ClearStylesBuffer() {
-            for (int i = 2; i < Styles.Length; i++)
+            for (int i = 1; i < Styles.Length; i++)
                 Styles[i] = null;
         }
 
@@ -4317,7 +4412,7 @@ namespace FastColoredTextBoxNS {
             return true;
         }
 
-        #region AutoIndentChars
+#region AutoIndentChars
 
         /// <summary>
         /// Enables AutoIndentChars mode
@@ -4474,7 +4569,7 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        #endregion 
+#endregion
         char wasAutocompleteBracketsInsertion = '\x0';
         private bool DoAutocompleteBrackets(char c) {
             if (AutoCompleteBrackets && !selection.IsStringOrCommentBefore()) {
@@ -7122,6 +7217,7 @@ window.status = ""#print"";
         }
 
         protected override void Dispose(bool disposing) {
+            SaveCache();
             if (disposing) {
                 SyntaxHighlighter?.Dispose();
                 bookmarks  .Dispose();
@@ -7377,7 +7473,7 @@ window.status = ""#print"";
             ClearUndo();
         }
 
-        #region Drag and drop
+#region Drag and drop
 
         private bool IsDragDrop { get; set; }
 
@@ -7578,9 +7674,9 @@ window.status = ""#print"";
             base.OnDragLeave(e);
         }
 
-        #endregion
+#endregion
 
-        #region MiddleClickScrolling
+#region MiddleClickScrolling
 
         private bool middleClickScrollingActivated;
         private Point middleClickScrollingOriginPoint;
@@ -7760,10 +7856,10 @@ window.status = ""#print"";
             g.FillPolygon(brush, points);
         }
 
-        #endregion
+#endregion
 
 
-        #region Nested type: LineYComparer
+#region Nested type: LineYComparer
 
         private class LineYComparer: IComparer<LineInfo> {
             private readonly int Y;
@@ -7772,7 +7868,7 @@ window.status = ""#print"";
                 this.Y = Y;
             }
 
-            #region IComparer<LineInfo> Members
+#region IComparer<LineInfo> Members
 
             public int Compare(LineInfo x, LineInfo y) {
                 if (x.startY == -10)
@@ -7781,10 +7877,10 @@ window.status = ""#print"";
                     return x.startY.CompareTo(Y);
             }
 
-            #endregion
+#endregion
         }
 
-        #endregion
+#endregion
     }
 
     public class PaintLineEventArgs: PaintEventArgs {

@@ -603,6 +603,12 @@ namespace HMSEditorNS {
             int val;
             if (int.TryParse(Settings.Get("RoundedCornersRadius", section, FastColoredTextBox.RoundedCornersRadius.ToString()), out val))
                 FastColoredTextBox.RoundedCornersRadius = val;
+            if (int.TryParse(Settings.Get("CacheMinLines", section, FastColoredTextBox.minCacheLines.ToString()), out val))
+                FastColoredTextBox.minCacheLines = val;
+            if (int.TryParse(Settings.Get("CacheMaxFiles", section, FastColoredTextBox.maxCacheFiles.ToString()), out val))
+                FastColoredTextBox.maxCacheFiles = val;
+            if (int.TryParse(Settings.Get("CacheMaxSize" , section, FastColoredTextBox.maxCacheSize .ToString()), out val))
+                FastColoredTextBox.maxCacheSize  = val;
 
             var sVal = Settings.Get("Zoom", section, "100"); 
             TB.Zoom = Int32.Parse(sVal);

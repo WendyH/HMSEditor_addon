@@ -264,6 +264,7 @@
     <Compile Include="INI.cs" />
     <Compile Include="InvisibleCharsRenderer.cs" />
     <Compile Include="MouseHelpTimer.cs" />
+    <Compile Include="MurMur3Hash.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="SnippetHMSItem.cs" />

@@ -235,7 +235,6 @@ namespace HmsAddons {
 
         public uint SetScriptText(ref object aText) {
             if (EditBox != null) {
-
                 EditBox.Text = (string)aText;
                 EditBox.Modified        = false;
                 EditBox.IsFirstActivate = true;

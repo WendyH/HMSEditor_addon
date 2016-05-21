@@ -132,7 +132,6 @@ namespace HMSEditorNS {
         */
 
         private static void WorkerFunctions_DoWork(object sender, DoWorkEventArgs e) {
-            e.Result = e.Argument; // if breaks by cancel
             CodeAnalysesArgs result = e.Argument as CodeAnalysesArgs;
             if (result == null) return;
 #if debug
