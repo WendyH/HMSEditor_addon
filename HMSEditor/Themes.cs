@@ -175,7 +175,7 @@ namespace HMSEditorNS {
             return Color.FromArgb(255, R, G, B);
         }
 
-        public static void SetTheme(HMSEditor editor, string name) {
+        public static void SetTheme(HMSEditor editor, string name, System.Windows.Forms.ToolStripItemCollection MenuItems) {
             if (Dict.ContainsKey(name)) {
                 SetTheme(editor.TB, name);
                 Theme t = Dict[name];
@@ -190,6 +190,10 @@ namespace HMSEditorNS {
                 // Для тёмных тем цвет изменённых строк меняем тоже на более тёмный
                 //if (editor.Editor.IndentBackColor.GetBrightness() < 0.5) editor.Editor.ChangedLineColor = ToColor("#024A02");
 
+                foreach (var i in MenuItems) {
+                    var b = i as System.Windows.Forms.ToolStripMenuItem;
+                    if (b != null) b.Checked = b.Text == name;
+                }
                 editor.btnMarkChangedLines_Click(null, EventArgs.Empty);
             }
         }

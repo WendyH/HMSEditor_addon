@@ -681,7 +681,7 @@ namespace FastColoredTextBoxNS {
         }
 
         // < By WendyH ------------------------------------------
-        public void InitStyleTheme() {
+        public void InitStyleTheme(Language lang) {
             if (StyleTheme != null) {
                 if (StyleTheme.StringStyle  != null) StringStyle  = StyleTheme.StringStyle;
                 if (StyleTheme.CommentStyle != null) CommentStyle = StyleTheme.CommentStyle;
@@ -699,9 +699,14 @@ namespace FastColoredTextBoxNS {
                 if (TypesStyle      == null) TypesStyle      = KeywordStyle;
                 if (ClassNameStyle  == null) ClassNameStyle  = TypesStyle;
                 if (PunctuationSyle == null) PunctuationSyle = KeywordStyle;
+                if (StyleTheme.Name == "Стандартная") {
+                    if (Array.IndexOf(clike, lang) >= 0) KeywordStyle = TypesStyle;
+                }
+
             }
         }
 
+        private Language[] clike = { Language.CPPScript, Language.JScript, Language.JS, Language.CSharp, Language.PHP };
         // > By WendyH ------------------------------------------
 
         public void InitStyleSchema(Language lang) {
@@ -836,7 +841,7 @@ namespace FastColoredTextBoxNS {
                     break;
                 // By WendyH > -------------------------------
             }
-            InitStyleTheme();
+            InitStyleTheme(lang);
             if ((lang == Language.PascalScript) && (KeywordStyle != null))
                 KeywordStyle = new TextStyle(((TextStyle)KeywordStyle).ForeBrush, ((TextStyle)KeywordStyle).BackgroundBrush, ((TextStyle)KeywordStyle).FontStyle | FontStyle.Bold | (AltPascalKeywordsHighlight ? FontStyle.Underline : FontStyle.Regular));
             if ((lang == Language.BasicScript) && (KeywordStyle != null))
@@ -1768,4 +1773,5 @@ namespace FastColoredTextBoxNS {
         BasicScript,
         JScript
     }
+
 }

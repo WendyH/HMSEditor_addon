@@ -293,8 +293,11 @@ namespace FastColoredTextBoxNS {
         public static int maxCacheFiles = 400;
         public static int maxCacheSize  = 536870912; // 0.5 GB
         public static int minCacheLines = 300;
+        public static int minCacheTextLength = 1000;
         private void SaveCache() {
             if (lines.Count < minCacheLines) return;
+            string text = Text;
+            if (text.Length < minCacheTextLength) return; // dont work with cache for small text
             List<FileInfo> list = new List<FileInfo>();
             long allsize = 0;
             try {
@@ -322,7 +325,7 @@ namespace FastColoredTextBoxNS {
                     }
                 }
                 // ------------------------------------
-                string hash = Murmur3.KnuthHash(Text);
+                string hash = Murmur3.KnuthHash(text);
                 string file = CachePath + hash;
                 using (var f = File.Create(file)) {
                     foreach (Line l in lines) {
@@ -340,12 +343,15 @@ namespace FastColoredTextBoxNS {
                         f.Write(BitConverter.GetBytes('\n'), 0, 2);
                     }
                 }
-            } catch {
+            } catch (Exception e) {
+                HMS.LogError(e.ToString());
                 // ignored
             }
         }
 
         private bool LoadCache(string text) {
+            if (string.IsNullOrEmpty(text)      ) return false;
+            if (text.Length < minCacheTextLength) return false; // dont work with cache for small text
             byte[] buffer = new byte[4]; char c;
             string hash = Murmur3.KnuthHash(text);
             string file = CachePath + hash;
@@ -375,8 +381,8 @@ namespace FastColoredTextBoxNS {
                     }
                     return true;
                 }
-            } catch {
-                // ignored
+            } catch (Exception e) {
+                HMS.LogError(e.ToString());
             }
             return false;
         }
@@ -1535,11 +1541,14 @@ namespace FastColoredTextBoxNS {
 
                 Selection.BeginUpdate();
                 try {
-                    if (!LoadCache(value)) { 
+                    if (!LoadCache(value)) {
                         Selection.SelectAll();
                         InsertText(value, false);
                     }
                     GoHome();
+                } catch (Exception e) {
+                    HMS.LogError(e);
+
                 } finally {
                     Selection.EndUpdate();
                 }

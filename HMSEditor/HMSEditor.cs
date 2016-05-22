@@ -41,7 +41,6 @@ namespace HMSEditorNS {
         // Constructor
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public HMSEditor(IntPtr aScriptFrame, int aScriptMode) {
-            ActiveEditor   = this;                // static field - current editor for static tasks
             PtrScriptFrame = aScriptFrame;
             if (PtrScriptFrame != IntPtr.Zero) {
                 HmsScriptFrame = (IHmsScriptFrame)System.Runtime.Remoting.Services.EnterpriseServicesHelper.WrapIUnknownWithComObject(PtrScriptFrame);
@@ -52,11 +51,12 @@ namespace HMSEditorNS {
             splitContainer1.Panel2Collapsed = true;
             TB.CurrentLineColor = Color.FromArgb(100, 210, 210, 255);
             TB.ChangedLineColor = Color.FromArgb(255, 152, 251, 152);
-            TB.LostFocus       += Editor_LostFocus; // for hiding all tooltipds when lost focus
-            helpPanel1.PanelClose  += HelpPanel1_PanelClose;
+            PopupMenu = new AutocompleteMenu(TB) { ImageList = imageList1, MinFragmentLength = 1 };
+            PopupMenu.InitSize = new Size(210, PopupMenu.Items.ItemHeight * MaxPopupItems);
+            PopupMenu.InitDefaultSize();
+            helpPanel1.PanelClose += HelpPanel1_PanelClose;
             helpPanel1.Init(imageList1, HmsScriptMode.ToString());
             CodeAnalysis.Init();
-            SetAutoCompleteMenu();
         }
 
         private void HelpPanel1_PanelClose(object sender, EventArgs e) {
@@ -74,6 +74,7 @@ namespace HMSEditorNS {
         bool CheckSyntaxIsBusy = false;
         public void AutoCheckSyntaxBackground() {
             if (CheckSyntaxIsBusy || PtrScriptFrame == IntPtr.Zero) return;
+            if (TB.IsDisposed || !TB.IsHandleCreated || !IsHandleCreated) return;
             CheckSyntaxIsBusy = true;
             t = new Timer(TimeoutCheckSyntax, null, 2000, Timeout.Infinite);
             var th = new Thread(() =>
@@ -118,7 +119,7 @@ namespace HMSEditorNS {
         public  bool   IsFirstActivate      = true;
         public  bool   WasCommaOrBracket;
         public  bool   NeedRecalcVars;
-        private string ThemeName            = "";
+        private string ThemeName            = "Стандартная";
         private uint   OldTextHash;
 
         public  IHmsScriptFrame  HmsScriptFrame;
@@ -225,12 +226,6 @@ namespace HMSEditorNS {
                 TB.HmsDebugChar = -1;
                 TB.HmsDebugLine = -1;
             }
-        }
-
-        private void Editor_LostFocus(object sender, EventArgs e) {
-            //if (!PopupMenu.Focused)
-                //HideAllToolTipsAndHints(); 
-            //if (ValueHint.IsShowing ) Editor.Focus();
         }
 
         private void HideAllToolTipsAndHints() {
@@ -623,13 +618,12 @@ namespace HMSEditorNS {
             TB.EnableFoldingIndicator  = btnShowFoldingIndicator .Checked;
             TB.HighlightCurrentLine    = btnHighlightCurrentLine .Checked;
 
-            int buildinThemes = Themes.Init();
-
-            ThemeName = Settings.Get("Theme"   , section, ThemeName);
             Filename  = Settings.Get("LastFile", section, Filename );
-
+            ThemeName = Settings.Get("Theme"   , section, ThemeName);
+            int countOfBuildinThemes = Themes.Init();
+            FillThemes(countOfBuildinThemes);
+            Themes.SetTheme(this, ThemeName, btnThemes.DropDownItems);
             HMS.LoadTemplates(); // Сначала загружаем шаблоны, какие есть
-            FillThemes(buildinThemes);
 
             // Need before the set ScriptLanguage!
             btnGetScriptDescriptions_Click(null, EventArgs.Empty);
@@ -675,15 +669,11 @@ namespace HMSEditorNS {
                 item.Tag = name;
                 item.Click += (o, a) => {
                     ThemeName = (string)item.Tag;
-                    Themes.SetTheme(this, ThemeName);
-                    foreach (var i in btnThemes.DropDownItems) {
-                        var b = i as ToolStripMenuItem;
-                        if (b!=null) b.Checked = b.Text == ThemeName;
-                    }
+                    Themes.SetTheme(this, ThemeName, btnThemes.DropDownItems);
                 };
                 if (name == ThemeName) {
                     item.Checked = true;
-                    Themes.SetTheme(this, name);
+                    Themes.SetTheme(this, name, btnThemes.DropDownItems);
                 }
             }
         }
@@ -1670,15 +1660,6 @@ namespace HMSEditorNS {
         }
 
         #endregion
-
-        private void SetAutoCompleteMenu() {
-            PopupMenu = new AutocompleteMenu(TB) {
-                ImageList = imageList1,
-                MinFragmentLength = 1
-            };
-            PopupMenu.InitSize = new Size(210, PopupMenu.Items.ItemHeight * MaxPopupItems);
-            PopupMenu.InitDefaultSize();
-        }
 
         public void CreateAutocomplete() {
             if (PopupMenu == null || PopupMenu.IsDisposed) return;

@@ -25,6 +25,7 @@ namespace FastColoredTextBoxNS {
         }
 
         private static UInt64 CalculateKnuthHash(string read) {
+            if (string.IsNullOrEmpty(read)) read = string.Empty;
             UInt64 hashedValue = 3074457345618258791ul;
             for (int i = 0; i < read.Length; i++) {
                 hashedValue += read[i];
