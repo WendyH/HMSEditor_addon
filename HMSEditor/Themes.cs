@@ -123,33 +123,33 @@ namespace HMSEditorNS {
             return ToStyle(fore, back, bold, ital, undl);
         }
 
-        public static void SetTheme(FastColoredTextBox editor, string name) {
+        public static void SetTheme(FastColoredTextBox tb, string name) {
             if (Dict.ContainsKey(name)) {
                 Theme t = Dict[name];
                 if ((t.ConstantsStyle == null) && (t.NumberStyle != null) && (name!="Стандартная"))
                     t.ConstantsStyle = ((TextStyle)t.NumberStyle).Clone(30);
 
-                editor.BackColor  = t.Background;
-                editor.CaretColor = t.Caret;
-                editor.ForeColor  = t.Foreground;
-                editor.CaretCreated = false;
+                tb.BackColor  = t.Background;
+                tb.CaretColor = t.Caret;
+                tb.ForeColor  = t.Foreground;
+                tb.CaretCreated = false;
 
-                editor.SelectionStyle   = new SelectionStyle(t.Selection, t.SelectionForegr, t.SelectionBorder);
-                editor.PaddingBackColor = t.Background;
+                tb.SelectionStyle   = new SelectionStyle(t.Selection, t.SelectionForegr, t.SelectionBorder);
+                tb.PaddingBackColor = t.Background;
                 if (t.SelectionForegr!=Color.Transparent)
-                    editor.InvisibleCharsStyle = new InvisibleCharsRenderer(new Pen(Color.FromArgb(128, t.SelectionForegr), 2));
+                    tb.InvisibleCharsStyle = new InvisibleCharsRenderer(new Pen(Color.FromArgb(128, t.SelectionForegr), 2));
                 else
-                    editor.InvisibleCharsStyle = new InvisibleCharsRenderer(new Pen(Color.FromArgb(75, t.Foreground), 2));
+                    tb.InvisibleCharsStyle = new InvisibleCharsRenderer(new Pen(Color.FromArgb(75, t.Foreground), 2));
                 //editor.BreakpointLineColor = 
 
-                editor.IndentBackColor  = (t.IndentBackColor .Name != "0") ? t.IndentBackColor  : editor.BackColor;
-                editor.LineNumberColor  = (t.LineNumberColor .Name != "0") ? t.LineNumberColor  : Color.FromArgb(150, editor.ForeColor);
-                editor.PaddingBackColor = (t.PaddingBackColor.Name != "0") ? t.PaddingBackColor : Color.FromArgb(150, editor.BackColor);
+                tb.IndentBackColor  = (t.IndentBackColor .Name != "0") ? t.IndentBackColor  : tb.BackColor;
+                tb.LineNumberColor  = (t.LineNumberColor .Name != "0") ? t.LineNumberColor  : Color.FromArgb(150, tb.ForeColor);
+                tb.PaddingBackColor = (t.PaddingBackColor.Name != "0") ? t.PaddingBackColor : Color.FromArgb(150, tb.BackColor);
                 if (t.LineHighlight.Name != "0")
-                    editor.ChangedLineColor = t.LineHighlight;
+                    tb.ChangedLineColor = t.LineHighlight;
 
-                editor.SyntaxHighlighter.StyleTheme = t;
-                editor.RefreshTheme();
+                tb.SyntaxHighlighter.StyleTheme = t;
+                tb.RefreshTheme();
             }
         }
 

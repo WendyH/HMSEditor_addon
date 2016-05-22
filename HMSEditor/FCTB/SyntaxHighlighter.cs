@@ -703,6 +703,8 @@ namespace FastColoredTextBoxNS {
                     if (Array.IndexOf(clike, lang) >= 0) KeywordStyle = TypesStyle;
                 }
 
+
+
             }
         }
 

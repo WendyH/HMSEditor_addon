@@ -294,6 +294,18 @@ namespace FastColoredTextBoxNS {
         public static int maxCacheSize  = 536870912; // 0.5 GB
         public static int minCacheLines = 300;
         public static int minCacheTextLength = 1000;
+        public void ClearCache() {
+            try {
+                if (!Directory.Exists(CachePath)) return;
+                foreach (string f in Directory.GetFiles(CachePath)) {
+                    var info = new FileInfo(f);
+                    info.Delete();
+                }
+            } catch (Exception e) {
+                HMS.LogError(e.ToString());
+            }
+        }
+
         private void SaveCache() {
             if (lines.Count < minCacheLines) return;
             string text = Text;
@@ -2754,7 +2766,7 @@ namespace FastColoredTextBoxNS {
         /// Clear buffer of styles
         /// </summary>
         public void ClearStylesBuffer() {
-            for (int i = 1; i < Styles.Length; i++)
+            for (int i = 0; i < Styles.Length; i++)
                 Styles[i] = null;
         }
 
@@ -7064,8 +7076,7 @@ namespace FastColoredTextBoxNS {
         // < By WendyH --------------------------------------------
         public void RefreshTheme() {
             Range.ClearStyle(StyleIndex.All);
-            for (int i = 2; i < Styles.Length; i++)
-                Styles[i] = null;
+            ClearStylesBuffer();
             DefaultStyle.RefreshColors(this);
             ((TextStyle)(SyntaxHighlighter.BoldStyle )).RefreshColors(this);
             ((TextStyle)(SyntaxHighlighter.BoldStyle2)).RefreshColors(this);

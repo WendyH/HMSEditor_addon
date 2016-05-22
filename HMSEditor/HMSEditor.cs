@@ -670,6 +670,7 @@ namespace HMSEditorNS {
                 item.Click += (o, a) => {
                     ThemeName = (string)item.Tag;
                     Themes.SetTheme(this, ThemeName, btnThemes.DropDownItems);
+                    TB.ClearCache();
                 };
                 if (name == ThemeName) {
                     item.Checked = true;
