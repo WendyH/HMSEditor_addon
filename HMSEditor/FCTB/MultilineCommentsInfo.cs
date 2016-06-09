@@ -17,6 +17,7 @@ namespace FastColoredTextBoxNS {
     }
 
     public class MultilineComments: List<MultilineCommentsInfo> {
+        public bool Unresponsive = false;
 
         public int ToIndex(int iLine, int iChar) {
             return (iLine << 16) + iChar;
@@ -60,7 +61,7 @@ namespace FastColoredTextBoxNS {
         }
 
         public void LinesInserted(FastColoredTextBox tb, int iLine, int count) {
-            if (Count < 1) return;
+            if (Unresponsive || Count < 1) return;
             iLine--;
             for (int i = Count - 1; i >= 0; i--) {
                 var item = this[i];

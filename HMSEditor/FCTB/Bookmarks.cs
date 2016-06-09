@@ -71,49 +71,46 @@ namespace FastColoredTextBoxNS
 
         protected virtual void tb_LineRemoved(object sender, LineRemovedEventArgs e)
         {
-            for(int i=0; i<Count; i++)
-            if (items[i].LineIndex >= e.Index)
-            {
-                if (items[i].LineIndex >= e.Index + e.Count)
-                {
-                    items[i].LineIndex = items[i].LineIndex - e.Count;
-                    continue;
+            bool needUpdateMarkers = false;
+            for (int i=0; i<Count; i++) {
+                if (items[i].LineIndex >= e.Index) {
+                    needUpdateMarkers = true;
+                    if (items[i].LineIndex >= e.Index + e.Count) {
+                        items[i].LineIndex = items[i].LineIndex - e.Count;
+                        continue;
+                    }
+
+                    var was = e.Index <= 0;
+                    foreach (var b in items)
+                        if (b.LineIndex == e.Index - 1)
+                            was = true;
+
+                    if (was) {
+                        items.RemoveAt(i);
+                        i--;
+                    } else {
+                        items[i].LineIndex = e.Index - 1;
+                    }
                 }
-
-                var was = e.Index <= 0;
-                foreach (var b in items)
-                    if (b.LineIndex == e.Index - 1)
-                        was = true;
-
-                if(was)
-                {
-                    items.RemoveAt(i);
-                    i--;
-                }else
-                    items[i].LineIndex = e.Index - 1;
-
-                //if (items[i].LineIndex == e.Index + e.Count - 1)
-                //{
-                //    items[i].LineIndex = items[i].LineIndex - e.Count;
-                //    continue;
-                //}
-                //
-                //items.RemoveAt(i);
-                //i--;
             }
+            if (needUpdateMarkers) tb.UpdateScrollMarkers();
         }
 
         protected virtual void tb_LineInserted(object sender, LineInsertedEventArgs e)
         {
+            bool needUpdateMarkers = false;
             for (int i = 0; i < Count; i++) {
                 if (items[i].LineIndex >= e.Index) {
+                    needUpdateMarkers = true;
                     items[i].LineIndex = items[i].LineIndex + e.Count;
 
                 } else if (items[i].LineIndex == e.Index - 1 && e.Count == 1) {
+                    needUpdateMarkers = true;
                     if (tb[e.Index - 1].StartSpacesCount == tb[e.Index - 1].Count)
                         items[i].LineIndex = items[i].LineIndex + e.Count;
                 }
             }
+            if (needUpdateMarkers) tb.UpdateScrollMarkers();
         }
 
         protected virtual void tb_LineRemoved4Breakpoints(object sender, LineRemovedEventArgs e) {
@@ -149,6 +146,7 @@ namespace FastColoredTextBoxNS
                     ActiveEditor.OffBreakpointInHms(oldIndex);
                     // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                     if (!was) ActiveEditor.SetBreakpointInHms(items[i].LineIndex);
+                    tb.UpdateScrollMarkers();
                 }
 
             }
@@ -173,6 +171,7 @@ namespace FastColoredTextBoxNS
                 if (needMoveBreakpointInHms && ActiveEditor != null) {
                     ActiveEditor.OffBreakpointInHms(oldIndex);
                     ActiveEditor.SetBreakpointInHms(items[i].LineIndex);
+                    tb.UpdateScrollMarkers();
                 }
             }
         }

@@ -680,14 +680,27 @@ namespace FastColoredTextBoxNS {
         }
 
         /// <summary>
+        /// Set style for given regex of declared functions with mark line as begin of Function
+        /// </summary>
+        public void SetFunct(Style style, Regex regex) {
+            if ((style == null) || (regex == null)) return; // By WendyH
+            //search code for style
+            StyleIndex layer = ToStyleIndex(tb.GetOrSetStyleLayerIndex(style));
+            foreach (var range in GetRanges(regex)) {
+                range.tb[range.Start.iLine].BeginOfFunction = true;
+                range.SetStyle(layer);
+            }
+        }
+
+        /// <summary>
         /// Set style for given regex
         /// </summary>
-        public void SetStyle(Style style, Regex regex, bool owerwrite = false) // parameter "owerwrite" added by WendyH
+        public void SetStyle(Style style, Regex regex)
         {
             if ((style==null) || (regex == null)) return; // By WendyH
             //search code for style
             StyleIndex layer = ToStyleIndex(tb.GetOrSetStyleLayerIndex(style));
-            SetStyle(layer, regex, owerwrite);
+            SetStyle(layer, regex);
         }
 
 
@@ -1222,6 +1235,17 @@ namespace FastColoredTextBoxNS {
         /// <summary>
         /// Clear styles of range
         /// </summary>
+        public void ClearStyleAndFuncBegin(params Style[] styles) {
+            try {
+                ClearStyle(tb.GetStyleIndexMask(styles), true);
+            } catch {
+                // ignored
+            }
+        }
+
+        /// <summary>
+        /// Clear styles of range
+        /// </summary>
         public void ClearStyle(params Style[] styles) {
             try {
                 ClearStyle(tb.GetStyleIndexMask(styles));
@@ -1234,7 +1258,7 @@ namespace FastColoredTextBoxNS {
         /// <summary>
         /// Clear styles of range
         /// </summary>
-        public void ClearStyle(StyleIndex styleIndex) {
+        public void ClearStyle(StyleIndex styleIndex, bool andFunct = false) {
             //set code to chars
             lock (obj4LockLines) {
                 int fromLine = Math.Min(End.iLine, Start.iLine);
@@ -1248,6 +1272,7 @@ namespace FastColoredTextBoxNS {
                     int fromX = y == fromLine ? fromChar : 0;
                     int toX = y == toLine ? Math.Min(toChar - 1, tb[y].Count - 1) : tb[y].Count - 1;
                     for (int x = fromX; x <= toX; x++) {
+                        if (andFunct) tb[y].BeginOfFunction = false; // By WendyH
                         Char c = tb[y][x];
                         c.style &= ~styleIndex;
                         changes |= (tb[y][x].style == c.style);

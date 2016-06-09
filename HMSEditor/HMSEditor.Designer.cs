@@ -102,6 +102,7 @@
             this.btnGetScriptDescriptions = new System.Windows.Forms.ToolStripMenuItem();
             this.btnCheckNewVersionOnLoad = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
+            this.btnShowBeginOfFunctions = new System.Windows.Forms.ToolStripMenuItem();
             this.btnHighlightSameWords = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSubMenuIntelliSense = new System.Windows.Forms.ToolStripMenuItem();
             this.btnSetIntelliSense = new System.Windows.Forms.ToolStripMenuItem();
@@ -639,6 +640,7 @@
             this.btnGetScriptDescriptions,
             this.btnCheckNewVersionOnLoad,
             this.toolStripSeparator12,
+            this.btnShowBeginOfFunctions,
             this.btnHighlightSameWords,
             this.toolStripSubMenuIntelliSense,
             this.toolStripSeparator11,
@@ -777,6 +779,17 @@
             // 
             this.toolStripSeparator12.Name = "toolStripSeparator12";
             this.toolStripSeparator12.Size = new System.Drawing.Size(457, 6);
+            // 
+            // btnShowBeginOfFunctions
+            // 
+            this.btnShowBeginOfFunctions.CheckOnClick = true;
+            this.btnShowBeginOfFunctions.Enabled = false;
+            this.btnShowBeginOfFunctions.Name = "btnShowBeginOfFunctions";
+            this.btnShowBeginOfFunctions.Size = new System.Drawing.Size(460, 22);
+            this.btnShowBeginOfFunctions.Text = "Показывать границы начала функций";
+            this.btnShowBeginOfFunctions.ToolTipText = "Подсвечивать начало функции";
+            this.btnShowBeginOfFunctions.Visible = false;
+            this.btnShowBeginOfFunctions.Click += new System.EventHandler(this.btnShowBeginOfFunctions_Click);
             // 
             // btnHighlightSameWords
             // 
@@ -1095,7 +1108,7 @@
             this.splitContainer1.TabIndex = 11;
             this.splitContainer1.DoubleClick += new System.EventHandler(this.splitContainer1_DoubleClick);
             // 
-            // Editor
+            // TB
             // 
             this.TB.AllowDrop = false;
             this.TB.AutoCompleteBrackets = true;
@@ -1131,12 +1144,12 @@
             this.TB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TB.Font = new System.Drawing.Font("Consolas", 9.75F);
             this.TB.HighlightingRangeType = FastColoredTextBoxNS.HighlightingRangeType.VisibleRange;
-            this.TB.Hotkeys = resources.GetString("Editor.Hotkeys");
+            this.TB.Hotkeys = resources.GetString("TB.Hotkeys");
             this.TB.IsReplaceMode = false;
             this.TB.LeftBracket = '(';
             this.TB.LeftPadding = 2;
             this.TB.Location = new System.Drawing.Point(0, 0);
-            this.TB.Name = "Editor";
+            this.TB.Name = "TB";
             this.TB.Paddings = new System.Windows.Forms.Padding(0);
             this.TB.RightBracket = ')';
             serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
@@ -1288,5 +1301,6 @@
         private System.Windows.Forms.ToolStripMenuItem btnGetScriptDescriptions;
         private System.Windows.Forms.ToolStripMenuItem  btnInvisiblesInSelection;
         private System.Windows.Forms.ToolStripMenuItem btnSelectionBorder;
+        private System.Windows.Forms.ToolStripMenuItem btnShowBeginOfFunctions;
     }
 }

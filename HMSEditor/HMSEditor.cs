@@ -66,17 +66,19 @@ namespace HMSEditorNS {
 
         private void TimeoutCheckSyntax(object state) {
             t?.Dispose();
-            MessageBox.Show("Произошел сбой при автоматической проверке синтаксиса.\nАвтор этого редактора не отказался бы получить любую информацию о произошедшем.\n:(");
+            HMS.LogError("Произошел сбой при автоматической проверке синтаксиса.\nАвтор этого редактора не отказался бы получить любую информацию о произошедшем.\n:(");
             TB.ClearErrorLines();
         }
 
         Timer t;
         bool CheckSyntaxIsBusy = false;
+        bool CheckSyntaxAgain  = false;
+
         public void AutoCheckSyntaxBackground() {
-            if (CheckSyntaxIsBusy || PtrScriptFrame == IntPtr.Zero) return;
-            if (TB.IsDisposed || !TB.IsHandleCreated || !IsHandleCreated) return;
+            if (PtrScriptFrame == IntPtr.Zero || TB.IsDisposed || !TB.IsHandleCreated || !IsHandleCreated) return;
+            if (CheckSyntaxIsBusy) { CheckSyntaxAgain = true; return; }
             CheckSyntaxIsBusy = true;
-            t = new Timer(TimeoutCheckSyntax, null, 2000, Timeout.Infinite);
+            t = new Timer(TimeoutCheckSyntax, null, 3000, Timeout.Infinite);
             var th = new Thread(() =>
             {
                 try {
@@ -100,8 +102,13 @@ namespace HMSEditorNS {
                             TB.SetErrorLines(args.ErrorChar, args.ErrorLine, args.ErrorMessage);
                         else
                             TB.ClearErrorLines();
+                        CheckSyntaxIsBusy = false;
+                        if (CheckSyntaxAgain) {
+                            CheckSyntaxAgain = false;
+                            AutoCheckSyntaxBackground();
+                        }
                     });
-                    CheckSyntaxIsBusy = false;
+
                 } catch (Exception e) {
                     TB.ClearErrorLines();
                     HMS.LogError(e.ToString());
@@ -580,10 +587,11 @@ namespace HMSEditorNS {
             btnGetScriptDescriptions.Checked = Settings.Get("GetScriptDescriptions"  , section, btnGetScriptDescriptions.Checked);
             btnInvisiblesInSelection.Checked = Settings.Get("InvisiblesInSelection"  , section, btnInvisiblesInSelection.Checked);
             btnSelectionBorder      .Checked = Settings.Get("SelectionWithBorders"   , section, btnSelectionBorder      .Checked);
-
+            btnShowBeginOfFunctions .Checked = Settings.Get("ShowBeginOfFunctions"   , section, btnShowBeginOfFunctions .Checked);
             // Set to false deprecated settings
             btnCheckKeywordsRegister.Checked = false;
 
+            TB.ShowBeginOfFunctions                         = btnShowBeginOfFunctions .Checked;
             TB.SyntaxHighlighter.AltPascalKeywordsHighlight = btnUnderlinePascalKeywrd.Checked;
             TB.SyntaxHighlighter.RedStringsHighlight        = btnRedStringsHighlight  .Checked;
              
@@ -608,13 +616,13 @@ namespace HMSEditorNS {
             var sVal = Settings.Get("Zoom", section, "100"); 
             TB.Zoom = Int32.Parse(sVal);
 
-            PopupMenu.OnlyCtrlSpace        = btnHints4CtrlSpace      .Checked;
-            PopupMenu.Enabled              = btnSetIntelliSense      .Checked;
+            PopupMenu.OnlyCtrlSpace    = btnHints4CtrlSpace      .Checked;
+            PopupMenu.Enabled          = btnSetIntelliSense      .Checked;
             TB.AutoCompleteBrackets    = btnAutoCompleteBrackets .Checked;
             TB.AutoIndent              = btnAutoIdent            .Checked;
             TB.AutoIndentExistingLines = btnAutoIdentLines       .Checked;
-            EnableFunctionToolTip          = btnIntelliSenseFunctions.Checked;
-            EnableEvaluateByMouse          = btnEvaluateByMouse      .Checked;
+            EnableFunctionToolTip      = btnIntelliSenseFunctions.Checked;
+            EnableEvaluateByMouse      = btnEvaluateByMouse      .Checked;
             TB.EnableFoldingIndicator  = btnShowFoldingIndicator .Checked;
             TB.HighlightCurrentLine    = btnHighlightCurrentLine .Checked;
 
@@ -716,6 +724,7 @@ namespace HMSEditorNS {
                 Settings.Set("GetScriptDescriptions",btnGetScriptDescriptions.Checked, section);
                 Settings.Set("InvisiblesInSelection",btnInvisiblesInSelection.Checked, section);
                 Settings.Set("SelectionWithBorders" , btnSelectionBorder     .Checked, section);
+                Settings.Set("ShowBeginOfFunctions" , btnShowBeginOfFunctions.Checked, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -1474,6 +1483,11 @@ namespace HMSEditorNS {
             TB.SelectionWithBorders = btnSelectionBorder.Checked;
             TB.Invalidate();
         }
+
+        private void btnShowBeginOfFunctions_Click(object sender, EventArgs e) {
+            TB.ShowBeginOfFunctions = btnShowBeginOfFunctions.Checked;
+            TB.Invalidate();
+        }
         #endregion Control Events
 
         #region Smart IDE functions
@@ -1865,5 +1879,6 @@ namespace HMSEditorNS {
             } // foreach
 
         } // end AddTemplateItemsRecursive
+
     }
 }

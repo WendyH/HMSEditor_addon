@@ -69,6 +69,7 @@ namespace FastColoredTextBoxNS {
         public SelectionStyle LightYellowSelectionStyle = new SelectionStyle(Themes.ToColor("#FDFBACFF"), Color.Black);
         public SelectionStyle GreenSelectionStyle       = new SelectionStyle(Themes.ToColor("#FFD2EEB0"), Color.Black);
         public SelectionStyle BlueSelectionStyle        = new SelectionStyle(Themes.ToColor("#FFc6e3ff"), Color.Black);
+        public bool ShowBeginOfFunctions = false;
         private int[] FoundLines;
         public bool SelectionWithBorders;
         public bool YellowSelection;
@@ -306,6 +307,8 @@ namespace FastColoredTextBoxNS {
             }
         }
 
+        string cacheSig = "HEDC";
+        short  cacheVer = 1;
         private void SaveCache() {
             if (lines.Count < minCacheLines) return;
             string text = Text;
@@ -337,9 +340,18 @@ namespace FastColoredTextBoxNS {
                     }
                 }
                 // ------------------------------------
-                string hash = Murmur3.KnuthHash(text);
+                string hash = CalculateKnuthHash(text);
                 string file = CachePath + hash;
                 using (var f = File.Create(file)) {
+                    f.Write(Encoding.ASCII.GetBytes(cacheSig), 0, 4);
+                    f.Write(BitConverter  .GetBytes(cacheVer), 0, 2);
+                    f.Write(BitConverter  .GetBytes(MultilineComments.Count), 0, 4);
+                    foreach (var item in MultilineComments) {
+                        f.Write(BitConverter.GetBytes(item.Position), 0, 4);
+                        f.Write(BitConverter.GetBytes(item.iLine   ), 0, 4);
+                        f.Write(BitConverter.GetBytes(item.iChar   ), 0, 4);
+                        f.Write(BitConverter.GetBytes(item.IsEnd   ), 0, 1);
+                    }
                     foreach (Line l in lines) {
                         f.Write(BitConverter.GetBytes(l.AutoIndentSpacesNeededCount), 0, 4);
                         f.Write(BitConverter.GetBytes(l.LineIndent                 ), 0, 4);
@@ -361,16 +373,35 @@ namespace FastColoredTextBoxNS {
             }
         }
 
+        // Load cashed text and styles from files
         private bool LoadCache(string text) {
             if (string.IsNullOrEmpty(text)      ) return false;
             if (text.Length < minCacheTextLength) return false; // dont work with cache for small text
             byte[] buffer = new byte[4]; char c;
-            string hash = Murmur3.KnuthHash(text);
+            string hash = CalculateKnuthHash(text);
             string file = CachePath + hash;
             try {
                 if (File.Exists(file)) {
                     using (var f = File.OpenRead(file)) {
-                        if (f.Length < 28) return false;
+                        if (f.Length < 60) return false;
+                        f.Read(buffer, 0, 4);
+                        string sig = Encoding.ASCII.GetString(buffer, 0, 4);
+                        if (sig != cacheSig) return false;
+                        f.Read(buffer, 0, 2);
+                        short ver = BitConverter.ToInt16(buffer, 0);
+                        if (ver != cacheVer) return false;
+                        f.Read(buffer, 0, 4);
+                        int massCommentsLength = BitConverter.ToInt32(buffer, 0);
+                        int iChar, iLine, position; bool isEnd;
+                        MultilineComments.Clear();
+                        MultilineComments.Unresponsive = true;
+                        for (int i = 0; i < massCommentsLength; i++) {
+                            f.Read(buffer, 0, 4); position = BitConverter.ToInt32  (buffer, 0);
+                            f.Read(buffer, 0, 4); iLine    = BitConverter.ToInt32  (buffer, 0);
+                            f.Read(buffer, 0, 4); iChar    = BitConverter.ToInt32  (buffer, 0);
+                            f.Read(buffer, 0, 1); isEnd    = BitConverter.ToBoolean(buffer, 0);
+                            MultilineComments.Add(new MultilineCommentsInfo(position, iLine, iChar, isEnd));
+                        }
                         lines.Clear();
                         do {
                             Line l = lines.CreateLine();
@@ -396,7 +427,18 @@ namespace FastColoredTextBoxNS {
             } catch (Exception e) {
                 HMS.LogError(e.ToString());
             }
+            MultilineComments.Unresponsive = false;
             return false;
+        }
+
+        private string CalculateKnuthHash(string text) {
+            if (text == null) text = string.Empty;
+            UInt64 hashedValue = 3074457345618258791ul;
+            for (int i = 0; i < text.Length; i++) {
+                hashedValue += text[i];
+                hashedValue *= 3074457345618258799ul;
+            }
+            return BitConverter.ToString(BitConverter.GetBytes(hashedValue)).Replace("-", "");
         }
 
         public int LightYellowSelect(Regex regex) {
@@ -4594,7 +4636,7 @@ namespace FastColoredTextBoxNS {
         char wasAutocompleteBracketsInsertion = '\x0';
         private bool DoAutocompleteBrackets(char c) {
             if (AutoCompleteBrackets && !selection.IsStringOrCommentBefore()) {
-                if (selection.Start.iChar < lines[selection.Start.iLine].Count) return false;
+                //if (selection.Start.iChar < lines[selection.Start.iLine].Count) return false;
                 if (Selection.IsStringOrComment) return false;
                 for (int i = 0; i < autoCompleteBracketsList.Length; i += 2) {
                     if (c == autoCompleteBracketsList[i]) {
@@ -4918,6 +4960,11 @@ namespace FastColoredTextBoxNS {
             return Color.FromArgb(c.A, R, G, B);
         }
 
+        public void SetBeginOfFunction(int iLine) {
+            if (iLine >= 0 && iLine < lines.Count)
+                lines[iLine].BeginOfFunction = true;
+        }
+
         //int dcount = 0;
         /// <summary>
         /// Draw control
@@ -5016,11 +5063,17 @@ namespace FastColoredTextBoxNS {
                 //
                 e.Graphics.SmoothingMode = SmoothingMode.None;
                 //draw line background
-                if (lineInfo.VisibleState == VisibleState.Visible)
+                if (lineInfo.VisibleState == VisibleState.Visible) {
+                    var rectb = new Rectangle(textAreaRect.Left, y, textAreaRect.Width, CharHeight * lineInfo.WordWrapStringsCount);
                     if (line.BackgroundBrush != null)
-                        e.Graphics.FillRectangle(line.BackgroundBrush,
-                                                 new Rectangle(textAreaRect.Left, y, textAreaRect.Width,
-                                                               CharHeight * lineInfo.WordWrapStringsCount));
+                        e.Graphics.FillRectangle(line.BackgroundBrush, rectb);
+                    if (ShowBeginOfFunctions && line.BeginOfFunction) {
+                        LinearGradientBrush BeginOfFunctionBrush;
+                        BeginOfFunctionBrush = new LinearGradientBrush(rectb, Color.FromArgb(64, _selectionStyle.Background), BackColor, LinearGradientMode.Vertical);
+                        //e.Graphics.DrawLine(new Pen(Color.FromArgb(128, _selectionStyle.Background)), rectb.X, rectb.Y, rectb.Right, rectb.Y);
+                        e.Graphics.FillRectangle(BeginOfFunctionBrush, rectb);
+                    }
+                }
                 //draw current line background
                 if (iLine == Selection.Start.iLine && Selection.IsEmpty) {
                     if (HighlightCurrentLine) {
@@ -5116,6 +5169,7 @@ namespace FastColoredTextBoxNS {
                                 Math.Max(p1.Y, p2.Y) + CharHeight));
                 }
             }
+            e.Graphics.SmoothingMode = SmoothingMode.None;
             //draw brackets highlighting
             if (BracketsStyle != null && leftBracketPosition != null && rightBracketPosition != null) {
                 BracketsStyle.DrawBracketMarker(e.Graphics, PlaceToPoint(leftBracketPosition .Start), leftBracketPosition );
@@ -5125,7 +5179,6 @@ namespace FastColoredTextBoxNS {
                 BracketsStyle2.DrawBracketMarker(e.Graphics, PlaceToPoint(leftBracketPosition2 .Start), leftBracketPosition2 );
                 BracketsStyle2.DrawBracketMarker(e.Graphics, PlaceToPoint(rightBracketPosition2.Start), rightBracketPosition2);
             }
-            e.Graphics.SmoothingMode = SmoothingMode.None;
             //draw folding indicator
             if (EnableFoldingIndicator) {
                 if ((startFoldingLine >= 0 || endFoldingLine >= 0) && (Selection.Start == Selection.End) && (endFoldingLine < LineInfos.Count)) {
@@ -5204,6 +5257,15 @@ namespace FastColoredTextBoxNS {
 
             if (middleClickScrollingActivated)
                 DrawMiddleClickScrolling(e.Graphics);
+
+            //e.Graphics.DrawLine(new Pen(Color.FromArgb(220, BackColor)), textAreaRect.Left, 0, textAreaRect.Width, 0);
+            //e.Graphics.DrawLine(new Pen(Color.FromArgb(150, BackColor)), textAreaRect.Left, 1, textAreaRect.Width, 1);
+            //e.Graphics.DrawLine(new Pen(Color.FromArgb(130, BackColor)), textAreaRect.Left, 2, textAreaRect.Width, 2);
+
+            //int bottom = (VerticalScroll.Visible ? ClientSize.Height - VerticalScroll.Height : ClientSize.Height) - 20;
+            //e.Graphics.DrawLine(new Pen(Color.FromArgb(128, BackColor)), textAreaRect.Left, bottom - 2, textAreaRect.Width, bottom - 2);
+            //e.Graphics.DrawLine(new Pen(Color.FromArgb(200, BackColor)), textAreaRect.Left, bottom - 1, textAreaRect.Width, bottom - 1);
+            //e.Graphics.DrawLine(new Pen(Color.FromArgb(250, BackColor)), textAreaRect.Left, bottom - 0, textAreaRect.Width, bottom - 0);
 
             //dispose resources
             servicePen.Dispose();

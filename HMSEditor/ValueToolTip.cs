@@ -225,20 +225,20 @@ namespace HMSEditorNS {
 
         public void ShowValue(Control control, string expr, string value, Point point, string realExpression) {
             if (value.Length == 0) value = "  ";
+            ctl.Text       = value;
             Expression     = expr;
             RealExpression = realExpression;
             Size textSize  = new Size(MaxSize.Width, MaxSize.Height);
             if (value.Length < 500)
                 textSize = TextRenderer.MeasureText(value, ctl.Font, MaxSize, TextFormatFlags.WordBreak | TextFormatFlags.ExternalLeading);
             textSize.Height += 8;
-            textSize.Width  += 8;
+            textSize.Width  += 12;
             if (textSize.Width >= (MaxSize.Width-50)) {
                 textSize.Height += 16;
                 textSize.Width  += 16;
             }
             ctl.ScrollBars = RichTextBoxScrollBars.None;
             if (textSize.Height > MaxSize.Height) { ctl.ScrollBars = RichTextBoxScrollBars.Vertical; }
-            ctl.Text = value;
             int h = 0, w = 0;
             bool btnEnable  = (value.Length > 200);
             BtnHost.Visible = btnEnable;

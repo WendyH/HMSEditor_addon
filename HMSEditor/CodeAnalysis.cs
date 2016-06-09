@@ -9,39 +9,40 @@ namespace HMSEditorNS {
     public static class CodeAnalysis {
         #region Regular Expressions Magnetic Field
         public static Regex RegexExcludeWords = new Regex(@"\b(for|if|else|return|true|false|while|do)\b", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-        public static Regex RegexPartOfLine = new Regex(@"\b(.*?\s.*?\s.*?)\b");
+        public static Regex RegexPartOfLine   = new Regex(@"\b(.*?\s.*?\s.*?)\b");
 
-        private static Regex regexProceduresCPP = new Regex(@"(?:^|[\n])\s*?(?<type>\w+)\s+(?<name>\w+)\s*?\(", RegexOptions.Singleline);
-        private static Regex regexProceduresPascal = new Regex(@"\b(?:procedure|function)\s+(?<name>\w+)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-        private static Regex regexProceduresBasic = new Regex(@"(?:^|[\n])\s*?sub\s+(?<name>\w+)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
-        private static Regex regexDetectProcedure = new Regex(@"\b(void|procedure)", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+        private static Regex regexProceduresCPP    = new Regex(@"(?:^|[\n])\s*?(?<type>\w+)\s+(?<name>\w+)\s*?\(", RegexOptions.Singleline);
+        private static Regex regexProceduresPascal = new Regex(@"\b(?:procedure|function)\s+(?<name>\w+)"        , RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        private static Regex regexProceduresBasic  = new Regex(@"(?:^|[\n])\s*?sub\s+(?<name>\w+)"               , RegexOptions.Singleline | RegexOptions.IgnoreCase);
+        private static Regex regexDetectProcedure  = new Regex(@"\b(void|procedure)"                             , RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
-        private static Regex regexSearchConstantsCPP = new Regex(@"#define\s+(\w+)(.*)");
+        private static Regex regexSearchConstantsCPP     = new Regex(@"#define\s+(\w+)(.*)");
         private static Regex regexSearchConstantsPascal1 = new Regex(@"\bconst\b(.*?)\b(var|procedure|function|begin)\b", RegexOptions.IgnoreCase | RegexOptions.Singleline);
         private static Regex regexSearchConstantsPascal2 = new Regex(@"([\w]+)\s*?=\s*?(.*?)[;\r\n]");
 
-        private static Regex regexSearchVarsCPP = new Regex(@"(?<type>\w+)\s+(?<vars>[^;{}]+)");
-        private static Regex regexSearchVarsJS = new Regex(@"(?<vars>\w+)\s*?=\s*?$?(?<type>[\w""']+)");
-        private static Regex regexSearchVarsPascal = new Regex(@"(?<vars>[\w ,]+):(?<type>[^=;\)]+)");
-        private static Regex regexSearchVarsBasic = new Regex(@"\bDIM\s+(?<vars>[\w ,]+)", RegexOptions.IgnoreCase);
+        private static Regex regexSearchVarsCPP       = new Regex(@"(?<type>\w+)\s+&?(?<vars>[^;{}]+)");
+        private static Regex regexSearchVarsJS        = new Regex(@"(?<vars>\w+)\s*?=\s*?$?(?<type>[\w""']+)");
+        private static Regex regexSearchVarsPascal    = new Regex(@"(?<vars>[\w ,]+):(?<type>[^=;\)]+)");
+        private static Regex regexSearchVarsBasic     = new Regex(@"\bDIM\s+(?<vars>[\w ,]+)", RegexOptions.IgnoreCase);
 
-        private static Regex regexTwoWords = new Regex(@"(\w+)\s+(\w+)\s*$");
-        private static Regex regexAssignment = new Regex(@"=[^,$]+");
-        private static Regex regexConstantKeys = new Regex(@"\b(var|const)\b", RegexOptions.IgnoreCase);
+        private static Regex regexTwoWords            = new Regex(@"(\w+)\s+&?(\w+)\s*$");
+        private static Regex regexAssignment          = new Regex(@"=[^,$]+");
+        private static Regex regexConstantKeys        = new Regex(@"\b(var|const)\b", RegexOptions.IgnoreCase);
         private static Regex regexNotValidCharsInVars = new Regex(@"[{}\(\[\]]");
         private static Regex regexExractConstantValue = new Regex(@"(""[^""]+""|'[^']+')");
 
-        public static Regex regexFoundOurFunction = new Regex(@"([\w\.]+)\s*?[\(\[](.*)$", RegexOptions.Singleline);
-        private static Regex regexTextOfComment = new Regex(@"^\s*?//.*?(\w.*?)[\s-=/\*]*$", RegexOptions.Multiline);
+        public  static Regex regexFoundOurFunction    = new Regex(@"([\w\.]+)\s*?[\(\[](.*)$"    , RegexOptions.Singleline);
+        private static Regex regexTextOfComment       = new Regex(@"^\s*?//.*?(\w.*?)[\s-=/\*]*$", RegexOptions.Multiline );
 
-        private static Regex regexIsNum = new Regex(@"(\d|\$)");
-        private static Regex regexIsStr = new Regex(@"(""|')");
+        private static Regex regexIsNum      = new Regex(@"(\d|\$)");
+        private static Regex regexIsStr      = new Regex(@"(""|')");
         private static Regex regexAllSymbols = new Regex(".");
         private static Regex regexLineBreaks = new Regex(@"[\r\n]");
 
         private static RegexOptions StdOpt = RegexOptions.Singleline | RegexOptions.IgnoreCase; // Стандартные флаги RegexOptions
         #endregion Regular Expressions magnetic filed
 
+        private static int    distanseBackward4Comments = 90;
         private static string RemoveLinebeaks(string text) { return regexLineBreaks.Replace(text, ""); }
         private static string ReturnSpaces(Match m) { return regexAllSymbols.Replace(m.Value, " "); }
         private static readonly MatchEvaluator evaluatorSpaces = ReturnSpaces;
@@ -72,23 +73,9 @@ namespace HMSEditorNS {
             lock (locker) {
                 if (WorkerVariables != null) {
                     WorkerVariables.CancelAsync();
-                    //if (WorkerVariables.IsBusy)
-                    //    System.Threading.Thread.Sleep(100);
-                    //if (WorkerVariables.IsBusy == true) {
-                    //    WorkerVariables.Abort();
-                    //    WorkerVariables.Dispose();
-                    //    WorkerVariables = null;
-                    //}
                 }
                 if (WorkerFunctions != null) {
                     WorkerFunctions.CancelAsync();
-                    //if (WorkerFunctions.IsBusy)
-                    //    System.Threading.Thread.Sleep(100);
-                    //if (WorkerFunctions.IsBusy == true) {
-                    //    WorkerFunctions.Abort();
-                    //    WorkerFunctions.Dispose();
-                    //    WorkerFunctions = null;
-                    //}
                 }
             }
         }
@@ -119,17 +106,11 @@ namespace HMSEditorNS {
             if (result.Editor != null) {
                 result.Editor.Functions = result.Functions;
                 result.Editor.PopupMenu.Items.SetVisibleFunctionsItems(result.Functions);
+                if (result.Functions.Count > 0)
+                    result.Editor.TB.SetBeginOfFunction(result.Editor.TB.PositionToPlace(result.Functions[result.Functions.Count-1].PositionStart).iLine);
             }
         }
 
-        /*
-        HMSEditor
-        Editor.Language
-        Text
-        indexToPlace
-        Functions
-        RegexStringAndComments
-        */
 
         private static void WorkerFunctions_DoWork(object sender, DoWorkEventArgs e) {
             CodeAnalysesArgs result = e.Argument as CodeAnalysesArgs;
@@ -179,8 +160,8 @@ namespace HMSEditorNS {
                     item.PositionStart = groupName.Index;
                     item.PositionEnd = item.PositionStart + groupName.Length;
                     // check comment before procedure
-                    if (m.Index > 90)
-                        item.Help = regexTextOfComment.Match(txt.Substring(m.Index - 90, 90)).Groups[1].Value;
+                    if (m.Index > distanseBackward4Comments)
+                        item.Help = regexTextOfComment.Match(txt.Substring(m.Index - distanseBackward4Comments, distanseBackward4Comments)).Groups[1].Value;
                     // search end of procedure
                     if (startBlock.Length > 0) {
                         var stack = new Stack<string>();
@@ -230,7 +211,7 @@ namespace HMSEditorNS {
                     item.Help = "Процедура, с которой начинается запуск скрипта";
                     item.ImageIndex = ImagesIndex.Procedure;
                     item.PositionStart = lastEndPosition + matchMainProc.Index;
-                    item.PositionEnd = txt.Length - 1;
+                    item.PositionEnd   = txt.Length - 1;
                     Functions.Add(item);
                     break;
                 }

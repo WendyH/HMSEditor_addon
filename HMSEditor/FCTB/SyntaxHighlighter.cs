@@ -49,7 +49,7 @@ namespace FastColoredTextBoxNS {
         private readonly Dictionary<string, SyntaxDescriptor> descByXMLfileNames = new Dictionary<string, SyntaxDescriptor>();
 
         #region REGEX FIELDS
-        private static Regex CPPStringAndCommentsRegex    = new Regex(@"""(?>(?:\\[^\r\n]|[^""\r\n])*)""?|'(?>(?:\\[^\r\n]|[^'\r\n])*)'?|(//.*)|(?<mc>\/\*[\s\S]*?((?<mcend>\*\/)|$))|(?<mcend2>\*\/)", RegexOptions.ExplicitCapture | RegexCompiledOption); // By WendyH
+        private static Regex CPPStringAndCommentsRegex    = new Regex(@"""(?>(?:\\[^\r\n]|[^""\r\n])*)""?|'(?>(?:\\[^\r\n]|[^'\r\n])*)'?|(//.*)|(?<mc>\/\*)|(?<mcend2>\*\/)", RegexOptions.ExplicitCapture | RegexCompiledOption); // By WendyH
         private static Regex CSharpStringAndCommentsRegex = new Regex(@"
                             # Character definitions:
                             '
@@ -1390,10 +1390,10 @@ namespace FastColoredTextBoxNS {
             if (PascalScriptStringRegex == null) InitPascalScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, TypesStyle, PunctuationSyle);
+            range.ClearStyleAndFuncBegin(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, TypesStyle, PunctuationSyle);
             range.SetStylesStringsAndComments(PascalScriptStringRegex, StringStyle, CommentStyle);
             range.SetStyle(NumberStyle      , PascalScriptNumberRegex);
-            range.SetStyle(DeclFunctionStyle, regexDeclFunctionPAS   );
+            range.SetFunct(DeclFunctionStyle, regexDeclFunctionPAS   );
 
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers(@"\b(repeat)\b"   , @"\b(until)\b", RegexCompiledOption | RegexOptions.IgnoreCase); //allow to collapse brackets block
@@ -1430,10 +1430,10 @@ namespace FastColoredTextBoxNS {
             if (CPPScriptKeywordRegex == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, TypesStyle);
+            range.ClearStyleAndFuncBegin(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, TypesStyle);
             range.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
             range.SetStyle(NumberStyle      , CSharpNumberRegex    );
-            range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP );
+            range.SetFunct(DeclFunctionStyle, regexDeclFunctionCPP );
 
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers("{", "}"); //allow to collapse brackets block
@@ -1448,9 +1448,10 @@ namespace FastColoredTextBoxNS {
         private void Worker4BigText_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
             if (e.Error != null || e.Cancelled) { HMSEditor.ActiveEditor.TB.ReadOnly = false; return; }
             Syntax2StepArgs args = e.Result as Syntax2StepArgs;
-            if (args != null)
+            if (args != null) {
                 args.Range.tb.ReadOnly = false;
                 args.Range.tb.Invalidate();
+            }
         }
 
         private void Worker4BigText_DoWork(object sender, DoWorkEventArgs e) {
@@ -1504,10 +1505,10 @@ namespace FastColoredTextBoxNS {
             if (CPPClassNameRegex      == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, KeywordStyle, ClassNameStyle);
+            range.ClearStyleAndFuncBegin(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, KeywordStyle, ClassNameStyle);
             range.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
             range.SetStyle(NumberStyle      , JScriptNumberRegex  );
-            range.SetStyle(DeclFunctionStyle, regexDeclFunctionCPP);
+            range.SetFunct(DeclFunctionStyle, regexDeclFunctionCPP);
 
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers("{", "}"); //allow to collapse brackets block
@@ -1543,10 +1544,10 @@ namespace FastColoredTextBoxNS {
             if (CPPClassNameRegex        == null) InitCPPScriptRegex();
             bool bigText = range.Text.Length > MaxLenght4FastWork;
 
-            range.ClearStyle(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, TypesStyle);
+            range.ClearStyleAndFuncBegin(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, TypesStyle);
             range.SetStylesStringsAndComments(VBStringRegex, StringStyle, CommentStyle, false);
             range.SetStyle(NumberStyle      , VBNumberRegex);
-            range.SetStyle(DeclFunctionStyle, regexDeclFunctionBAS);
+            range.SetFunct(DeclFunctionStyle, regexDeclFunctionBAS);
 
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers(@"#Region\b"                                           , @"#End\s+Region\b"                                  , RegexOptions.IgnoreCase);

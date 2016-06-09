@@ -14,10 +14,11 @@ namespace FastColoredTextBoxNS {
         protected List<Char> chars;
 
         // By WendyH < -------------------------------
-        public int LineIndent      { get; set; }
-        public int NextLineIndent  { get; set; }
-        public int LastVisitChar   { get; set; }
-        public int LineNo = 0;
+        public int  LineIndent      { get; set; }
+        public int  NextLineIndent  { get; set; }
+        public int  LastVisitChar   { get; set; }
+        public int  LineNo = 0;
+        public bool BeginOfFunction = false;
         // By WendyH > -------------------------------
         public string FoldingStartMarker { get; set; }
         public string FoldingEndMarker   { get; set; }

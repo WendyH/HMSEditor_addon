@@ -184,6 +184,7 @@ namespace HMSEditorNS {
 
                 //Color c1 = MixColor(0.5, t.KeywordStyle.GetRTF().ForeColor, t.StringStyle.GetRTF().ForeColor);
                 HmsToolTip.ColorBackgrnd = MediaColor(0xF0, t.Background);
+
                 //editor.PopupMenu.BackColor = t.Background;
                 //editor.PopupMenu.ForeColor = t.Foreground;
 

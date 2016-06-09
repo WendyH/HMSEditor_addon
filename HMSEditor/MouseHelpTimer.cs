@@ -44,7 +44,7 @@ namespace HMSEditorNS {
         /// </summary>
         /// <param name="ActiveHMSEditor">Активный (вызвавший) элемент HMSEditor</param>
         public static void Task(HMSEditor ActiveHMSEditor) {
-            if (CodeAnalysis.isBusy) return;
+            //if (CodeAnalysis.isBusy) return;
             try {
                 var    TB      = ActiveHMSEditor.TB;
                 Point  point   = ActiveHMSEditor.MouseLocation;
@@ -60,7 +60,7 @@ namespace HMSEditorNS {
                 var value  = "";
                 var evalSelection = false;
                 string text;
-                if (TB.DebugMode && (TB.SelectedText.Length > 2)) {
+                if (TB.DebugMode && (TB.Selection.Start != TB.Selection.End)) {
                     int posStart = TB.PlaceToPosition(TB.Selection.Start);
                     int posEnd   = TB.PlaceToPosition(TB.Selection.End  );
                     int posCur   = TB.PlaceToPosition(place);
@@ -99,7 +99,7 @@ namespace HMSEditorNS {
                     });
                     return;
                 }
-                if (r.IsStringOrComment) return;
+                //if (r.IsStringOrComment) return;
                 Range fragment = r.GetFragmentLookedLeft();
                 text = fragment.Text.Replace("#", "").Trim();
 

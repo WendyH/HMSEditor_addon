@@ -17,7 +17,7 @@ namespace FastColoredTextBoxNS {
     public sealed class HmsToolTip: ToolTip {
         #region Static computed field
         private static Regex regexPhrases        = new Regex(@"(.*?[,;]|.*?$)", RegexOptions.Multiline);
-        private static Regex regexWords          = new Regex(@"(<.*?>|[\w-_]+|[^\w-_<]+)");
+        private static Regex regexWords          = new Regex(@"(<.*?>|[\w-]+|[^\w-<]+)([\.,;]?)");
         private static Regex regexSplitFuncParam = new Regex("[,;]"       );
         private static Regex regexFunctionParams = new Regex(@"\(([^\)]+)");
         private static Size Margin        = new Size(6, 4);
@@ -332,7 +332,8 @@ namespace FastColoredTextBoxNS {
             for (int iline = 0; iline < lines.Length; iline++) {
                 MatchCollection mc = regexWords.Matches(lines[iline]);
                 foreach (Match m in mc) {
-                    string word = m.Groups[1].Value;
+                    string word  = m.Groups[1].Value;
+                    string word2 = m.Groups[2].Value;
                     if (word == "<t>" ) { font = FontTitle   ; color = colorText  ; continue; }
                     if (word == "<b>" ) { font = FontTextBold; continue; }
                     if (word == "</b>") { font = FontText    ; continue; }
@@ -353,11 +354,13 @@ namespace FastColoredTextBoxNS {
                         if      (!notColored && isKeyWord(word)) tb.AppendText(word, colorKeyword, font);
                         else if (!notColored && isClass  (word)) tb.AppendText(word, colorClass  , font);
                         else                                     tb.AppendText(word, color       , font);
+                        tb.AppendText(word2, color, font);
                         continue;
                     }
-                    wordSize = TextRenderer.MeasureText(g, word, font, MaxSize, tf);
+                    wordSize = TextRenderer.MeasureText(g, word+word2, font, MaxSize, tf);
                     maxWidth = Math.Max(maxWidth, point.X+wordSize.Width);
                     if (wordSize.Width > (bounds.Width - point.X - Margin.Width)) { point.X = Margin.Width; point.Y += prevHeight; word = word.TrimStart(); }
+                    if (word.Length == 0) continue;
                     if (word == "<hr>") {
                         float y = point.Y + prevHeight + 2;
                         if (!notShow) g.DrawLine(Pens.Gray, Margin.Width, y, bounds.Width - Margin.Width, y);
@@ -369,6 +372,11 @@ namespace FastColoredTextBoxNS {
                         if      (!notColored && isKeyWord(word)) DrawText(g, word, font, point, colorKeyword, words);
                         else if (!notColored && isClass  (word)) DrawText(g, word, font, point, colorClass  , words);
                         else                                     DrawText(g, word, font, point, color       , words);
+                        if (word2.Length > 0) {
+                            point.X += wordSize.Width - 4;
+                            DrawText(g, word2, font, point, color, words);
+                            point.X -= wordSize.Width - 4;
+                        }
                     }
                     point.X   += wordSize.Width;
                     prevHeight = wordSize.Height;
@@ -398,7 +406,7 @@ namespace FastColoredTextBoxNS {
         }
 
         private static bool isKeyWord(string word) {
-            return (HMS.HmsTypesString).IndexOf("|" + word.ToLower() + "|", StringComparison.Ordinal) >= 0;
+            return (HMS.HmsTypesString+"const|var|").IndexOf("|" + word.ToLower() + "|", StringComparison.Ordinal) >= 0;
         }
 
         private static bool isClass(string word) {

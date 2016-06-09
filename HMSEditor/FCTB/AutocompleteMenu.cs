@@ -405,7 +405,7 @@ namespace FastColoredTextBoxNS
                 timer.Stop();
                 return;
             }
-
+            if (e.KeyChar == ',') Menu.AfterComplete = false;
             if (Menu.Visible && !backspaceORdel)
                 DoAutocomplete(false);
             else
@@ -542,7 +542,7 @@ namespace FastColoredTextBoxNS
 
         internal void DoAutocomplete(bool forced) {
             if (tb.IsDisposed) return;
-            if (!Menu.Enabled || !Enabled) { Menu.Close(); return; }
+            if (!Menu.Enabled || !Enabled    ) { Menu.Close(); return; }
             if (!forced && Menu.AfterComplete) { Menu.AfterComplete = false; return; }
             visibleItems.Clear();
             FocussedItemIndex = 0;
@@ -980,12 +980,16 @@ namespace FastColoredTextBoxNS
             switch (keyData)
             {
                 case Keys.Down:
+                    if (FocussedItemIndex >= (visibleItems.Count-1))
+                        FocussedItemIndex = -1;
                     SelectNext(+1);
                     return true;
                 case Keys.PageDown:
                     SelectNext(+10);
                     return true;
                 case Keys.Up:
+                    if (FocussedItemIndex == 0)
+                        FocussedItemIndex = visibleItems.Count;
                     SelectNext(-1);
                     return true;
                 case Keys.PageUp:
