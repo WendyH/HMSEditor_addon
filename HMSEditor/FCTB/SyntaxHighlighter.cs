@@ -49,7 +49,7 @@ namespace FastColoredTextBoxNS {
         private readonly Dictionary<string, SyntaxDescriptor> descByXMLfileNames = new Dictionary<string, SyntaxDescriptor>();
 
         #region REGEX FIELDS
-        private static Regex CPPStringAndCommentsRegex    = new Regex(@"""(?>(?:\\[^\r\n]|[^""\r\n])*)""?|'(?>(?:\\[^\r\n]|[^'\r\n])*)'?|(//.*)|(?<mc>\/\*)|(?<mcend2>\*\/)", RegexOptions.ExplicitCapture | RegexCompiledOption); // By WendyH
+        private static Regex CPPStringAndCommentsRegex    = new Regex(@"""(?>(?:\\[^\r\n]|[^""\r\n])*)""?|'(?>(?:\\[^\r\n]|[^'\r\n])*)'?|(//.*)|(?<mc>\/\*[\s\S]*?((?<mcend>\*\/)|$))|(?<mcend2>\*\/)", RegexOptions.ExplicitCapture | RegexCompiledOption); // By WendyH
         private static Regex CSharpStringAndCommentsRegex = new Regex(@"
                             # Character definitions:
                             '
@@ -1316,7 +1316,7 @@ namespace FastColoredTextBoxNS {
         void InitCPPScriptRegex() {
             if (HMS.ClassesString.Length > 2)
                 HmsClasses = HMS.ClassesString.Substring(1, HMS.ClassesString.Length - 2);
-            CPPScriptKeywordRegex = new Regex(@"\b(include|define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is)\b", RegexCompiledOption | RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            CPPScriptKeywordRegex = new Regex(@"(\b(new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is)|^\s*?#include|^\s*?#define)\b", RegexCompiledOption | RegexOptions.IgnoreCase | RegexOptions.Multiline);
             CPPScriptTypesRegex   = new Regex(@"\b(byte|word|longint|Cardinal|TColor|Real|Single|Double|Extended|Currency|TDate|TTime|TDateTime|Char|String|Pointer|Variant|Array|bool|float|int|long|void)\b", RegexCompiledOption | RegexOptions.IgnoreCase | RegexOptions.Multiline);
             CPPClassNameRegex     = new Regex(@"\b(" + HmsClasses + @")\b", RegexCompiledOption | RegexOptions.IgnoreCase);
         }

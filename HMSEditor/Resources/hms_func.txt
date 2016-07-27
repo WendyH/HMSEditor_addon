@@ -874,7 +874,7 @@ HmsCalculateThumbnailDimension(aImageWidth, aImageHeight, aDestWidth, aDestHeigh
 HmsClientID: String| (?)
 HmsConvertColor(aColor: Integer): String|Возвращает строковое представление цвета дополнения
   aColor - значение цвета
-HmsCreateDualPipe(var aReadPipeName, aWritePipeName: String; aBufferSize: Integer = 0; aCloseOnExit: Boolean = True): Boolean|Создание pipe-каналов для записи, чтение транскодированных данных
+HmsCreateDualPipe(var aReadPipeName, aWritePipeName: String; aBufferSize: Integer = 0; aCloseOnExit: Boolean = True): Boolean|Создание двух pipe-каналов. Один для записи исходных данных, другой для чтения транскодированных данных.
   aReadPipeName - pipe-канал для чтения данных
   aWritePipeName - pipe-канал для записи данных
   aBufferSize - размер буфера. Необязательный параметр.

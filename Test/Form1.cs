@@ -88,7 +88,7 @@ namespace test {
 
                             Form1_Resize(null, EventArgs.Empty);
 
-                            string file = @"D:\tesst2.cpp";
+                            string file = @"D:\test.pas";
                             if (File.Exists(file)) {
                                 string text = File.ReadAllText(file);
                                 MethodInfo method3 = typeScriptEditor.GetMethod("SetScriptText");

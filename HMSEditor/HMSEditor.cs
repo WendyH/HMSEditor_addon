@@ -66,7 +66,7 @@ namespace HMSEditorNS {
 
         private void TimeoutCheckSyntax(object state) {
             t?.Dispose();
-            HMS.LogError("Произошел сбой при автоматической проверке синтаксиса.\nАвтор этого редактора не отказался бы получить любую информацию о произошедшем.\n:(");
+            //HMS.LogError("Произошел сбой при автоматической проверке синтаксиса.\nАвтор этого редактора не отказался бы получить любую информацию о произошедшем.\n:(");
             TB.ClearErrorLines();
         }
 
@@ -79,12 +79,12 @@ namespace HMSEditorNS {
             if (CheckSyntaxIsBusy) { CheckSyntaxAgain = true; return; }
             CheckSyntaxIsBusy = true;
             t = new Timer(TimeoutCheckSyntax, null, 3000, Timeout.Infinite);
+            object objScriptName   = new BStrWrapper(ScriptLanguage);
+            object objScriptText   = new BStrWrapper(TB.Text);
+            object objErrorMessage = new BStrWrapper("");
             var th = new Thread(() =>
             {
                 try {
-                    object objScriptName   = new BStrWrapper(ScriptLanguage);
-                    object objScriptText   = new BStrWrapper(TB.Text);
-                    object objErrorMessage = new BStrWrapper("");
                     int nErrorLine = 0;
                     int nErrorChar = 0;
                     int nResult    = 0;
@@ -105,7 +105,7 @@ namespace HMSEditorNS {
                         CheckSyntaxIsBusy = false;
                         if (CheckSyntaxAgain) {
                             CheckSyntaxAgain = false;
-                            AutoCheckSyntaxBackground();
+                            //AutoCheckSyntaxBackground();
                         }
                     });
 

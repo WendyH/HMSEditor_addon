@@ -117,7 +117,7 @@ mpAudioStreamList: String|Список аудио-дорожек
 mpAudioStreamNo: Integer|Номер аудио-дорожки
 mpAudioStreams: Integer|Количество аудио-дорожек
 mpAuthor: String|Автор
-mpBdItem: Boolean
+mpBdItem: Boolean|Флаг, определяющий, что это элемент Blu-ray образа
 mpBitsPerSample: Integer|Количество бит на семпл (8, 16, 24, 32)
 mpChannels: Integer|Количество каналов
 mpCodecLevel: Variant|Уровень для кодека
@@ -143,9 +143,9 @@ mpFileDate: String|Дата файла
 mpFileName: String|Имя файла
 mpFileSize: Variant|Размер файла
 mpFileType: String|Тип файла
-mpFrameRate: Extended
+mpFrameRate: Extended|Кадровая частота
 mpGenre: String|Жанр
-mpHeight: Integer|Высота
+mpHeight: Integer|Высота кадра
 mpInternetItem: Boolean|Флаг, определяющий, что это интернет-элемент (интернет-телевидение или интернет-радио)
 mpIsoItem: Boolean|Флаг, определяющий, что это элемент ISO
 mpItemID: String|Уникальный идентификатор элемента
@@ -204,7 +204,7 @@ mpTranscodingProfile: String|Профиль транскодирования
 mpVideoBitRate: Integer|Видео битрейт
 mpVideoCodec: String|Видео кодек
 mpVideoSelected: String|Выбранная видео-дорожка
-mpWidth: Integer|Ширина
+mpWidth: Integer|Ширина кадра
 
 * [Параметры настройки]
 cfgAudioPlaylistMimeType: Variant
