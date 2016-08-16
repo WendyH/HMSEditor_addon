@@ -2880,6 +2880,11 @@ namespace FastColoredTextBoxNS {
         }
 
         // < By WendyH -------------------------
+        public void MoveVerticalScrollThumb(int y) {
+            VerticalScroll.SetThumbY(y);
+            Invalidate();
+        }
+
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public void CreateCaretBitmap() {
             if (CaretColor == Color.Black || CaretColor == Color.White) {

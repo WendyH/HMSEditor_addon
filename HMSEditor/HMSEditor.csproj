@@ -281,12 +281,6 @@
     <Compile Include="Templates.cs" />
     <Compile Include="testpanel.cs" />
     <Compile Include="Themes.cs" />
-    <Compile Include="DiffScrollbar.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="DiffScrollbar.Designer.cs">
-      <DependentUpon>DiffScrollbar.cs</DependentUpon>
-    </Compile>
     <Compile Include="DiffControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -364,9 +358,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="DiffScrollbar.resx">
-      <DependentUpon>DiffScrollbar.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="DiffControl.resx">
       <DependentUpon>DiffControl.cs</DependentUpon>
     </EmbeddedResource>

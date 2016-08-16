@@ -18,8 +18,8 @@ namespace HMSEditorNS {
         }
 
         protected override void OnShown(EventArgs e) {
-            //Compare();
             base.OnShown(e);
+            diffControl1.Compare();
         }
 
     }

@@ -29,12 +29,11 @@
             // 
             // diffControl1
             // 
-            this.diffControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.diffControl1.Location = new System.Drawing.Point(12, 12);
+            this.diffControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.diffControl1.Language = FastColoredTextBoxNS.Language.Custom;
+            this.diffControl1.Location = new System.Drawing.Point(0, 0);
             this.diffControl1.Name = "diffControl1";
-            this.diffControl1.Size = new System.Drawing.Size(848, 463);
+            this.diffControl1.Size = new System.Drawing.Size(872, 487);
             this.diffControl1.TabIndex = 0;
             // 
             // FormDiff

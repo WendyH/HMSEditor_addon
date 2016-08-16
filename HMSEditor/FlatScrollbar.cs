@@ -332,6 +332,24 @@ namespace FastColoredTextBoxNS {
             base.OnMouseLeave(e);
         }
 
+        public void SetThumbY(int y) {
+            int realRange = Maximum - Minimum;
+            int allowRange = TrackSize - ThumbSize;
+
+            if ((allowRange > 0) && (realRange > 0)) {
+                ThumbTop = y - ClickPoint;
+                ThumbTop = Math.Max(0, Math.Min(allowRange, ThumbTop));
+                _value = (int)(ThumbTop / (float)allowRange * Maximum);
+                if (AlignByLines)
+                    _value = (int)(Math.Ceiling(1d * _value / SmallChange) * SmallChange);
+                _value = Math.Max(Minimum, Math.Min(Maximum, _value));
+
+                Invalidate();
+                Application.DoEvents();
+                ValueChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
         private void MoveThumb(int y) {
             int realRange  = Maximum - Minimum;
             int allowRange = TrackSize - ThumbSize;
