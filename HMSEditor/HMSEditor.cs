@@ -128,7 +128,7 @@ namespace HMSEditorNS {
         public  bool   NeedRecalcVars;
         private string ThemeName            = "Стандартная";
         private uint   OldTextHash;
-
+        private string FirstText = "";
         public  IHmsScriptFrame  HmsScriptFrame;
         private IntPtr           PtrScriptFrame;
         private HmsScriptMode    HmsScriptMode ;
@@ -227,13 +227,10 @@ namespace HMSEditorNS {
 
         #region Fuctions and procedures
         private void ShowDiff() {
-            FormDiff form = new FormDiff();
-            form.TB1.Language = TB.Language;
-            form.TB2.Language = TB.Language;
-            Themes.SetTheme(form.TB1, "Стандартная");
-            Themes.SetTheme(form.TB2, "Стандартная");
+            FormDiff form = new FormDiff(TB.Language);
+            //string cliptext = Clipboard.GetText();
             form.File1 = Filename;
-            form.Text1 = Clipboard.GetText(); 
+            form.Text1 = FirstText;
             form.Text2 = TB.Text;
             form.ShowDialog();
         }
@@ -512,6 +509,14 @@ namespace HMSEditorNS {
         }
 
         public void ClearUndo() {
+            TB.ClearUndo();
+        }
+
+        public void SetText(string text) {
+            FirstText = text;
+            Text      = text;
+            Modified  = false;
+            IsFirstActivate = true;
             TB.ClearUndo();
         }
 

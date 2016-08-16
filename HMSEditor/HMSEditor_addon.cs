@@ -235,11 +235,7 @@ namespace HmsAddons {
 
         public uint SetScriptText(ref object aText) {
             if (EditBox != null) {
-                EditBox.Text = (string)aText;
-                EditBox.Modified        = false;
-                EditBox.IsFirstActivate = true;
-                EditBox.TB.ClearUndo();
-                //EditBox.TB.DelayedTextChangedInterval = ((string)aText).Length > 10000 ? 1200 : 500;
+                EditBox.SetText((string)aText);
                 FirstSetPos = true;
                 return HRESULT.S_OK;
             }

@@ -13,7 +13,8 @@ namespace FastColoredTextBoxNS {
         public int       ErrorLine   = 0;
         public int       CurrentLine = 0;
 
-        public bool  NoValChangeEvent= false;
+        public bool  ShowIfVisible   = true;
+        public bool  NoEvent4Value   = false;
         public bool  ShowChanedLines = false;
         public bool  AlignByLines    = false;
         public Color ChannelColor    = Color.WhiteSmoke;
@@ -75,6 +76,11 @@ namespace FastColoredTextBoxNS {
 
         public event EventHandler ValueChanged;
 
+        public void SetValue(int val) {
+            _value = val;
+            Invalidate();
+        }
+
         public int Value {
             get { return _value; }
             set {
@@ -89,10 +95,10 @@ namespace FastColoredTextBoxNS {
                     ThumbTop = (int)(_value / (float)realRange * (TrackSize - ThumbSize));
                 else
                     ThumbTop = 0;
-                if (!NoValChangeEvent) 
+                Application.DoEvents();
+                if (!NoEvent4Value)
                     ValueChanged?.Invoke(this, EventArgs.Empty);
                 Invalidate();
-                Application.DoEvents();
             }
         }
 
@@ -157,7 +163,7 @@ namespace FastColoredTextBoxNS {
             ThumbTop = (int)(TrackSize * k - ((float)ThumbSize / 2));
             ThumbTop = Math.Max(0, ThumbTop);
             ThumbTop = Math.Min(TrackSize - ThumbSize, ThumbTop);
-            if (!Visible && ((ThumbSize < TrackSize) && (Maximum >  Minimum))) Visible = true;
+            if (!Visible && ((ThumbSize < TrackSize) && (Maximum >  Minimum))) Visible = ShowIfVisible;
             if ( Visible && ((ThumbSize > TrackSize) || (Maximum <= Minimum))) Visible = false;
             Invalidate();
         }

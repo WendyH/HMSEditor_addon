@@ -1446,10 +1446,9 @@ namespace FastColoredTextBoxNS {
         }
 
         private void Worker4BigText_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
-            if (e.Error != null || e.Cancelled) { HMSEditor.ActiveEditor.TB.ReadOnly = false; return; }
+            if (e.Error != null || e.Cancelled) return;
             Syntax2StepArgs args = e.Result as Syntax2StepArgs;
             if (args != null) {
-                args.Range.tb.ReadOnly = false;
                 args.Range.tb.Invalidate();
             }
         }
@@ -1457,7 +1456,6 @@ namespace FastColoredTextBoxNS {
         private void Worker4BigText_DoWork(object sender, DoWorkEventArgs e) {
             Syntax2StepArgs args = e.Argument as Syntax2StepArgs;
             if (args != null) {
-                args.Range.tb.ReadOnly = true;
                 HighlightSyntax2Step(args.Language, args.Range);
             }
             e.Result = args;

@@ -63,9 +63,11 @@ namespace FastColoredTextBoxNS {
         public bool ShowChangedLinesOnScrollbar { get { return VerticalScroll.ShowChanedLines; } set { VerticalScroll.ShowChanedLines = value; } }
         public bool HighlightCurrentLine = false;
         public bool HighlightChangedLine = false;
+        public bool VerticalScrollVisible   { get { return VerticalScroll  .ShowIfVisible; } set { VerticalScroll  .ShowIfVisible = value; if (!value) VerticalScroll  .Visible = false; } }
+        public bool HorizontalScrollVisible { get { return HorizontalScroll.ShowIfVisible; } set { HorizontalScroll.ShowIfVisible = value; if (!value) HorizontalScroll.Visible = false; } }
         // By WendyH
-        public Regex RegexStringAndComments = null;
-        public HmsToolTip ToolTip4Function = new HmsToolTip();
+        public Regex          RegexStringAndComments = null;
+        public HmsToolTip     ToolTip4Function       = new HmsToolTip();
         public SelectionStyle YellowSelectionStyle      = new SelectionStyle(Themes.ToColor("#E5C63BFF"), Color.Black);
         public SelectionStyle LightYellowSelectionStyle = new SelectionStyle(Themes.ToColor("#FDFBACFF"), Color.Black);
         public SelectionStyle GreenSelectionStyle       = new SelectionStyle(Themes.ToColor("#FFD2EEB0"), Color.Black);
@@ -278,24 +280,24 @@ namespace FastColoredTextBoxNS {
         }
 
         private void HorizontalScroll_Scroll(object sender, EventArgs e) {
-            HorizontalScrollValueChange?.Invoke(this, e);
             Invalidate();
+            HorizontalScrollValueChanged?.Invoke(this, e);
         }
 
         private void VerticalScroll_Scroll(object sender, EventArgs e) {
-            VerticalScrollValueChange?.Invoke(this, e);
             Invalidate();
+            VerticalScrollValueChanged?.Invoke(this, e);
         }
 
         protected override void OnResize(EventArgs e) {
-            if (!VerticalScroll.Visible  ) VerticalScroll.Height  = Height;
+            if (!VerticalScroll  .Visible) VerticalScroll.Height  = Height;
             if (!HorizontalScroll.Visible) HorizontalScroll.Width = Width;
             base.OnResize(e);
         }
 
         // < By WendyH --------------------------------
-        public EventHandler VerticalScrollValueChange;
-        public EventHandler HorizontalScrollValueChange;
+        public event EventHandler VerticalScrollValueChanged;
+        public event EventHandler HorizontalScrollValueChanged;
 
         private static string CachePath = Path.GetTempPath() + "hmsed" + Path.DirectorySeparatorChar;
         public static int maxCacheFiles = 400;
@@ -339,7 +341,6 @@ namespace FastColoredTextBoxNS {
                 for (int i = 0; i < len; i++) {
                     line.Add(new Char(insertedText[i]));
                 }
-                line.Add(new Char('\n'));
                 if (color != Color.LightGray) {
                     line.LineNo = ++lineNo;
                 }
@@ -4194,13 +4195,13 @@ namespace FastColoredTextBoxNS {
         }
 
         public void SetVerticalScrollValueNoEvent(int value) {
-            VerticalScroll.NoValChangeEvent = true;
-            VerticalScroll.Value = value;
-            VerticalScroll.NoValChangeEvent = false;
+            VerticalScroll.SetValue(value);
+            Invalidate();
         }
 
         public void SetVerticalScrollValue(int value) {
             VerticalScroll.Value = value;
+            Invalidate();
         }
 
         public int GetMaximumScrollValue() {

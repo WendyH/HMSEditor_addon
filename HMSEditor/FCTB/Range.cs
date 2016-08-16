@@ -201,6 +201,7 @@ namespace FastColoredTextBoxNS {
                 StringBuilder sb = new StringBuilder();
                 lock (this) {
                     for (int y = fromLine; y <= toLine; y++) {
+                        if (tb[y].Unavaliable) continue;
                         int fromX = y == fromLine ? fromChar : 0;
                         int toX = y == toLine ? Math.Min(tb[y].Count - 1, toChar - 1) : tb[y].Count - 1;
                         for (int x = fromX; x <= toX; x++)

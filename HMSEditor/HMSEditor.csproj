@@ -287,6 +287,12 @@
     <Compile Include="DiffScrollbar.Designer.cs">
       <DependentUpon>DiffScrollbar.cs</DependentUpon>
     </Compile>
+    <Compile Include="DiffControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DiffControl.Designer.cs">
+      <DependentUpon>DiffControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Utils\HtmlRemoval.cs" />
     <Compile Include="Utils\JsonHelper.cs" />
     <Compile Include="Utils\Plist.cs" />
@@ -360,6 +366,9 @@
     </Compile>
     <EmbeddedResource Include="DiffScrollbar.resx">
       <DependentUpon>DiffScrollbar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DiffControl.resx">
+      <DependentUpon>DiffControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ValueHintControl.resx">
       <DependentUpon>ValueHintControl.cs</DependentUpon>
