@@ -310,9 +310,9 @@ namespace HMSEditorNS {
 
             result.NeedRecalcVars = false;
             result.LocalVars.Clear();
-
             if ((itemFunction != null) && (itemFunction.Type != "MainProcedure")) {
                 string context = result.Text.Substring(itemFunction.PositionStart, itemFunction.PositionEnd - itemFunction.PositionStart);
+                context = result.Editor.TB.WithoutStringAndComments(context);
                 if (WorkerVariables.CancellationPending) { e.Cancel = true; return; }
                 if (context.Length > 0) GetVariables(e, result, context, itemFunction.PositionStart, result.LocalVars, result.Variables);
                 if (itemFunction.Kind == DefKind.Function) {

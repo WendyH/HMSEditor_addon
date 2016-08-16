@@ -459,6 +459,21 @@ namespace FastColoredTextBoxNS
             return item;
         }
 
+        internal void FillClassMemberItems(string namePart, string className, int deep = 0) {
+            if (deep > 9) return;
+            HMSClassInfo classInfo = HMS.HmsClasses[className];  // variable founded - search type in classes
+            if (!string.IsNullOrEmpty(classInfo.Name)) {
+                foreach (HMSItem childItem in classInfo.MemberItems) {
+                    if (childItem.MenuText.ToLower().StartsWith(namePart)) {
+                        childItem.Parent = Menu;
+                        visibleItems.Add(childItem);
+                    }
+                }
+            }
+            if (!string.IsNullOrEmpty(classInfo.Type))
+                FillClassMemberItems(namePart, classInfo.Type, deep+1);
+        }
+
         internal void SetVisibleMethods(string text) {
             string  part;
             HMSItem item = GetHMSItemByText(text, out part, true);
@@ -469,9 +484,7 @@ namespace FastColoredTextBoxNS
                     if (!string.IsNullOrEmpty(info.Name))
                         foreach (HMSItem childItem in info.StaticItems) if (childItem.MenuText.ToLower().StartsWith(part)) { childItem.Parent = Menu; visibleItems.Add(childItem); }
                 } else {
-                    info = HMS.HmsClasses[item.Type];  // variable founded - search type in classes
-                    if (!string.IsNullOrEmpty(info.Name))
-                        foreach (HMSItem childItem in info.MemberItems) if (childItem.MenuText.ToLower().StartsWith(part)) { childItem.Parent = Menu; visibleItems.Add(childItem); }
+                    FillClassMemberItems(part, item.Type);
                 }
             }
         }
@@ -575,12 +588,22 @@ namespace FastColoredTextBoxNS
             bool doNotGetFromSourceItems = false; bool showTypes = false;
             if (text.Length == 0) {
                 if (tb.ToolTip4Function.Visible && (HMS.CurrentParamType.Length > 0)) {
-                    if (HMS.CurrentParamType == "boolean") { visibleItems.AddRange(HMS.ItemsBoolean); doNotGetFromSourceItems = true; Menu.Fragment = fragment; }
-                    else if (HMS.HmsTypes.ContainsName(HMS.CurrentParamType)) {
+                    if (HMS.CurrentParamType == "boolean") { visibleItems.AddRange(HMS.ItemsBoolean); doNotGetFromSourceItems = true; Menu.Fragment = fragment; } else if (HMS.HmsTypes.ContainsName(HMS.CurrentParamType)) {
                         HMSClassInfo info = HMS.HmsTypes[HMS.CurrentParamType];
                         visibleItems.AddRange(info.MemberItems);
                         doNotGetFromSourceItems = true;
                         Menu.Fragment = fragment;
+                    }
+                } else if (wordBefore.ToLower() == "new") {
+                    string wordClass = Regex.Match(fragmentBefore.Text, @"(\w+)\s+(\w+)\s*?=\s*?new", RegexOptions.RightToLeft | RegexOptions.IgnoreCase).Groups[1].Value;
+                    if (wordClass.Length > 0) {
+                        HMSItem item = HMS.ItemsClass.GetItemOrNull(wordClass);
+                        if (item != null) {
+                            visibleItems.Add(item);
+                            doNotGetFromSourceItems = true;
+                            forced = true;
+                            showTypes = true;
+                        }
                     }
                 } else {
                     if (tb.Selection.GetVariableForEqual(Menu.SearchPattern, out text)) {

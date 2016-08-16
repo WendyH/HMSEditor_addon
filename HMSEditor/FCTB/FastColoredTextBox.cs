@@ -50,8 +50,8 @@ namespace FastColoredTextBoxNS {
     /// </summary>
     public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
         static public int RoundedCornersRadius = 3;
-        new FlatScrollbar VerticalScroll   = new FlatScrollbar();
-        new FlatScrollbar HorizontalScroll = new FlatScrollbar(true );
+        new FlatScrollbar VerticalScroll   = null;
+        new FlatScrollbar HorizontalScroll = new FlatScrollbar(true);
 
         new Size ClientSize {
             get {
@@ -60,6 +60,7 @@ namespace FastColoredTextBoxNS {
                 return new Size(w, h);
             }
         }
+        public bool ShowChangedLinesOnScrollbar { get { return VerticalScroll.ShowChanedLines; } set { VerticalScroll.ShowChanedLines = value; } }
         public bool HighlightCurrentLine = false;
         public bool HighlightChangedLine = false;
         // By WendyH
@@ -173,7 +174,8 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public FastColoredTextBox() {
-            ServiceColors = new ServiceColors();
+            VerticalScroll = new FlatScrollbar(this);
+            ServiceColors  = new ServiceColors();
             //register type provider
             TypeDescriptionProvider prov = TypeDescriptor.GetProvider(GetType());
             var fieldInfo = prov.GetType().GetField("Provider", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -276,10 +278,12 @@ namespace FastColoredTextBoxNS {
         }
 
         private void HorizontalScroll_Scroll(object sender, EventArgs e) {
+            HorizontalScrollValueChange?.Invoke(this, e);
             Invalidate();
         }
 
         private void VerticalScroll_Scroll(object sender, EventArgs e) {
+            VerticalScrollValueChange?.Invoke(this, e);
             Invalidate();
         }
 
@@ -290,6 +294,9 @@ namespace FastColoredTextBoxNS {
         }
 
         // < By WendyH --------------------------------
+        public EventHandler VerticalScrollValueChange;
+        public EventHandler HorizontalScrollValueChange;
+
         private static string CachePath = Path.GetTempPath() + "hmsed" + Path.DirectorySeparatorChar;
         public static int maxCacheFiles = 400;
         public static int maxCacheSize  = 536870912; // 0.5 GB
@@ -305,6 +312,42 @@ namespace FastColoredTextBoxNS {
             } catch (Exception e) {
                 HMS.LogError(e.ToString());
             }
+        }
+
+
+        public string GetNumeredText() {
+            StringBuilder sb = new StringBuilder();
+            foreach(Line line in TextSource) {
+                if (line.LineNo > 0)
+                    sb.AppendLine(line.Text);
+            }
+            return sb.ToString();
+        }
+        public void ClearAllLines() {
+            Clear();
+            TextSource.Clear();
+        }
+        public void AddUnavaliableLine() {
+            int inr = -1;
+            Line line = AddLine("", Color.LightGray, ref inr);
+            line.Unavaliable = true;
+        }
+        public Line AddLine(string insertedText, Color color, ref int lineNo) {
+            Line line = TextSource.CreateLine();
+            lock (Lines) {
+                int  len  = insertedText.Length;
+                for (int i = 0; i < len; i++) {
+                    line.Add(new Char(insertedText[i]));
+                }
+                line.Add(new Char('\n'));
+                if (color != Color.LightGray) {
+                    line.LineNo = ++lineNo;
+                }
+                if (color != Color.Transparent)
+                    line.BackgroundBrush = new SolidBrush(color);
+                TextSource.Add(line);
+            }
+            return line;
         }
 
         string cacheSig = "HEDC";
@@ -428,6 +471,7 @@ namespace FastColoredTextBoxNS {
                 HMS.LogError(e.ToString());
             }
             MultilineComments.Unresponsive = false;
+            ShowChangedLinesOnScrollbar = (LinesCount > 20);
             return false;
         }
 
@@ -1606,6 +1650,7 @@ namespace FastColoredTextBoxNS {
                 } finally {
                     Selection.EndUpdate();
                 }
+                ShowChangedLinesOnScrollbar = (LinesCount > 20);
             }
         }
 
@@ -2930,6 +2975,13 @@ namespace FastColoredTextBoxNS {
             //
             Invalidate();
         }
+
+        public string GetLine(Place place) {
+            string line = "";
+            try { line = Lines[place.iLine]; } catch { }
+            if (line.Length <= place.iChar) line = "";
+            return line;
+        }
         // > By WendyH -------------------------
 
         /// <summary>
@@ -4141,6 +4193,12 @@ namespace FastColoredTextBoxNS {
             Invalidate();
         }
 
+        public void SetVerticalScrollValueNoEvent(int value) {
+            VerticalScroll.NoValChangeEvent = true;
+            VerticalScroll.Value = value;
+            VerticalScroll.NoValChangeEvent = false;
+        }
+
         public void SetVerticalScrollValue(int value) {
             VerticalScroll.Value = value;
         }
@@ -4636,7 +4694,8 @@ namespace FastColoredTextBoxNS {
         char wasAutocompleteBracketsInsertion = '\x0';
         private bool DoAutocompleteBrackets(char c) {
             if (AutoCompleteBrackets && !selection.IsStringOrCommentBefore()) {
-                //if (selection.Start.iChar < lines[selection.Start.iLine].Count) return false;
+                char chAfter = Selection.CharAfterStart;
+                if (chAfter != '\n' && chAfter != ' ') return false;
                 if (Selection.IsStringOrComment) return false;
                 for (int i = 0; i < autoCompleteBracketsList.Length; i += 2) {
                     if (c == autoCompleteBracketsList[i]) {
@@ -4671,7 +4730,8 @@ namespace FastColoredTextBoxNS {
                 Selection.GoLeft();
                 Selection.EndUpdate();
             } else
-                InsertText(left + SelectedText + right);
+                InsertText(left + "" + right);
+              //InsertText(left + SelectedText + right);
 
         }
 
@@ -5118,7 +5178,7 @@ namespace FastColoredTextBoxNS {
                 //draw line number
                 if (ShowLineNumbers) {
                     string lineNumText = (iLine + lineNumberStartValue).ToString();
-                    if (DrawLineNumberFromInfo) lineNumText = line.LineNo.ToString(); // By WendyH
+                    if (DrawLineNumberFromInfo) lineNumText = line.LineNo > 0 ? line.LineNo.ToString() : ""; // By WendyH
                     using (var lineNumberBrush = new SolidBrush(LineNumberColor))
                         e.Graphics.DrawString(lineNumText, Font, lineNumberBrush,
                                               new RectangleF(-10, y, LeftIndent - minLeftIndent - 2 + 10, CharHeight),
@@ -6105,6 +6165,20 @@ namespace FastColoredTextBoxNS {
 #if debug
             var sw = Stopwatch.StartNew();
 #endif
+            int iLine = Selection.Start.iLine;
+            Line line = TextSource[iLine];
+            if (line.Unavaliable && iLine > 0) {
+                while (iLine > 0) {
+                    iLine--;
+                    line = TextSource[iLine];
+                    if (!line.Unavaliable) {
+                        Selection.Start = new Place(0, iLine);
+                        break;
+                    }
+                }
+                DoCaretVisible();
+                return;
+            }
             VerticalScroll.CurrentLine = Selection.Start.iLine + 1;
             VerticalScroll.Invalidate();
             //find folding markers for highlighting

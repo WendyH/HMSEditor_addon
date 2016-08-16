@@ -19,6 +19,7 @@ namespace FastColoredTextBoxNS {
         public int  LastVisitChar   { get; set; }
         public int  LineNo = 0;
         public bool BeginOfFunction = false;
+        public bool Unavaliable     = false;
         // By WendyH > -------------------------------
         public string FoldingStartMarker { get; set; }
         public string FoldingEndMarker   { get; set; }

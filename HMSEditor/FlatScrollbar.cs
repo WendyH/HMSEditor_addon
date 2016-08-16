@@ -13,6 +13,8 @@ namespace FastColoredTextBoxNS {
         public int       ErrorLine   = 0;
         public int       CurrentLine = 0;
 
+        public bool  NoValChangeEvent= false;
+        public bool  ShowChanedLines = false;
         public bool  AlignByLines    = false;
         public Color ChannelColor    = Color.WhiteSmoke;
         public Color ThumbColor      = Color.DarkGray;
@@ -20,6 +22,7 @@ namespace FastColoredTextBoxNS {
         public Color ArrowColor      = Color.DarkGray;
         public Color ArrowHoverColor = Color.CornflowerBlue;
         public Color FoundColor      = HMSEditorNS.Themes.ToColor("#E5C63BFF");
+        public Color ChangedColor    = Color.FromArgb(108, 226, 108);
         public int   ThumbSize;
         public int   TrackSize;
 
@@ -27,6 +30,8 @@ namespace FastColoredTextBoxNS {
         public int LargeChange     = 10;
         public int SmallChange     = 1;
         public int ArrowAreaSize   = 16;
+
+        private FastColoredTextBox tb;
 
         private bool _isHorizontal;
         public bool IsHorizontal {
@@ -84,8 +89,8 @@ namespace FastColoredTextBoxNS {
                     ThumbTop = (int)(_value / (float)realRange * (TrackSize - ThumbSize));
                 else
                     ThumbTop = 0;
-
-                ValueChanged?.Invoke(this, EventArgs.Empty);
+                if (!NoValChangeEvent) 
+                    ValueChanged?.Invoke(this, EventArgs.Empty);
                 Invalidate();
                 Application.DoEvents();
             }
@@ -94,6 +99,10 @@ namespace FastColoredTextBoxNS {
         protected int FirstRepeatInterval = 600;
         protected int NextRepeatInterval  = 150;
         protected int NextRepeatCount;
+
+        public FlatScrollbar(FastColoredTextBox fctb): this(false) {
+            this.tb = fctb;
+        }
 
         public FlatScrollbar(bool isHorisontal=false) {
             InitializeComponent();
@@ -227,7 +236,12 @@ namespace FastColoredTextBoxNS {
             if (ErrorLine   > 0) DrawRectByLine(g, ErrorLine  , Color.OrangeRed     , 9, 5, 5);
             foreach (int iLine in Bookmarks  ) DrawRectByLine(g, iLine, Color.LightSkyBlue, 4, 7, 4);
             foreach (int iLine in Breakpoints) DrawRectByLine(g, iLine, Color.IndianRed, 0, 7, 4);
-            foreach (int iLine in FoundLines ) DrawRectByLine(g, iLine, FoundColor    , 2, 12, 3);
+            foreach (int iLine in FoundLines ) DrawRectByLine(g, iLine, FoundColor     , 2, 12, 3);
+            if (ShowChanedLines && tb != null) {
+                int count = tb.LinesCount;
+                for (int i = 0; i < count; i++)
+                    if (tb[i].IsChanged) DrawRectByLine(g, i + 1, ChangedColor, 1, 4, 3);
+            }
         }
 
         private void DrawRectByLine(Graphics g, int iLine, Color color, int x, int width, int height) {

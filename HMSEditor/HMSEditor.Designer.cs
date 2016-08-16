@@ -136,6 +136,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.TB = new FastColoredTextBoxNS.FastColoredTextBox();
             this.helpPanel1 = new HMSEditorNS.HelpPanel();
+            this.toolStripButtonCompare = new System.Windows.Forms.ToolStripButton();
             this.contextMenuStrip1.SuspendLayout();
             this.tsMain.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -396,6 +397,7 @@
             this.btnGoTo,
             this.toolStripSeparator7,
             this.toolStripDropDownButtonSettings,
+            this.toolStripButtonCompare,
             this.btnSprav,
             this.labelVersion,
             this.labelNewVersion});
@@ -1062,7 +1064,7 @@
             // 
             this.labelNewVersion.IsLink = true;
             this.labelNewVersion.Name = "labelNewVersion";
-            this.labelNewVersion.Size = new System.Drawing.Size(109, 22);
+            this.labelNewVersion.Size = new System.Drawing.Size(109, 15);
             this.labelNewVersion.Text = "Есть новая версия!";
             this.labelNewVersion.Visible = false;
             this.labelNewVersion.Click += new System.EventHandler(this.labelNewVersion_Click);
@@ -1159,6 +1161,7 @@
             serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
             serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
             this.TB.ServiceColors = serviceColors1;
+            this.TB.ShowChangedLinesOnScrollbar = false;
             this.TB.ShowScrollBars = false;
             this.TB.Size = new System.Drawing.Size(672, 506);
             this.TB.TabIndex = 0;
@@ -1183,6 +1186,18 @@
             this.helpPanel1.Size = new System.Drawing.Size(295, 498);
             this.helpPanel1.SplitterDistance = 263;
             this.helpPanel1.TabIndex = 0;
+            // 
+            // toolStripButtonCompare
+            // 
+            this.toolStripButtonCompare.CheckOnClick = true;
+            this.toolStripButtonCompare.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonCompare.Image = global::HMSEditorNS.Properties.Resources.Compare_13153;
+            this.toolStripButtonCompare.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonCompare.Name = "toolStripButtonCompare";
+            this.toolStripButtonCompare.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonCompare.Text = "Сравнение";
+            this.toolStripButtonCompare.ToolTipText = "Сравнение исходных текстов";
+            this.toolStripButtonCompare.Click += new System.EventHandler(this.toolStripButtonCompare_Click);
             // 
             // HMSEditor
             // 
@@ -1302,5 +1317,6 @@
         private System.Windows.Forms.ToolStripMenuItem  btnInvisiblesInSelection;
         private System.Windows.Forms.ToolStripMenuItem btnSelectionBorder;
         private System.Windows.Forms.ToolStripMenuItem btnShowBeginOfFunctions;
+        private System.Windows.Forms.ToolStripButton toolStripButtonCompare;
     }
 }

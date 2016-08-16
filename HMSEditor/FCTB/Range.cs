@@ -1044,7 +1044,10 @@ namespace FastColoredTextBoxNS {
         }
 
         public bool InRange(Place place) {
-            return ((place >= start) && (place <= end));
+            if (Start > End)
+                return ((place >= end) && (place <= start));
+            else
+                return ((place >= start) && (place <= end));
         }
 
         // By WendyH > -----------------------------------------
@@ -1496,6 +1499,47 @@ namespace FastColoredTextBoxNS {
         }
 
         private static Regex regexLookLeft  = new Regex(@"[#\w\.]");
+        private static Regex regexLookRight = new Regex(@"[#\w]");
+
+        /// <summary>
+        /// Get fragment of text around the place for evaluate in debugging mode
+        /// </summary>
+        /// <returns>Range of found fragment</returns>
+        public Range GetFragmentAroundThePlace(Place place) {
+            Range r = new Range(tb) {Start = place};
+            Stack<int> stack1 = new Stack<int>();
+            Stack<int> stack2 = new Stack<int>();
+            bool lastGood = true;
+            while (r.GoLeftThroughFolded()) {
+                lastGood = false;
+                char ch = r.CharAfterStart;
+                // we go back - begin with ] nad ) and finish with [ and (
+                if      (ch == ']') { stack1.Push(1); }
+                else if (ch == '[') { if (stack1.Count > 0) { stack1.Pop(); continue; } else break; }
+                else if (ch == ')') { stack2.Push(1); }
+                else if (ch == '(') { if (stack2.Count > 0) { stack2.Pop(); continue; } else break; }
+                if (stack1.Count + stack2.Count > 0) continue;
+                if (!regexLookLeft.IsMatch(ch.ToString())) break;
+                lastGood = true;
+            }
+            if (!lastGood) r.GoRightThroughFolded();
+            Place startFragment = r.Start;
+
+            r.Start = place;
+            //go right, check symbols
+            while (r.GoRightThroughFolded()) {
+                char ch = r.CharAfterStart;
+                if      (ch == '[') { stack1.Push(1); }
+                else if (ch == ']') { if (stack1.Count > 0) { stack1.Pop(); continue; } else break; }
+                else if (ch == '(') { stack2.Push(1); }
+                else if (ch == ')') { if (stack2.Count > 0) { stack2.Pop(); continue; } else break; }
+                if (stack1.Count + stack2.Count > 0) continue;
+                if (!regexLookRight.IsMatch(ch.ToString())) break;
+            }
+            Place endFragment = r.Start;
+
+            return new Range(tb, startFragment, endFragment);
+        }
 
         /// <summary>
         /// Get fragment of text around Start place with looking to left

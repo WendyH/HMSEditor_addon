@@ -21,12 +21,18 @@ namespace HMSEditorNS {
         /// <param name="type">Тип переменной</param>
         /// <param name="text">Часть текста (имя меременной, свойства)</param>
         /// <returns></returns>
-        private static string CheckTypeForToStringRules(string type, string text) {
+        private static string CheckTypeForToStringRules(HMSItem item, string text) {
+            if ((text.EndsWith("]") || text.EndsWith(")")) && item.ImageIndex != ImagesIndex.Enum) return text;
+            string type = item.Type;
             var info = HMS.HmsClasses[type];
             if (info.MemberItems.ContainsName("SaveToString") && type.ToLower()!="tbitmap32") return text + ".SaveToString";
             if (info.MemberItems.ContainsName("Text")) return text + ".Text";
-            if (type == "THmsScriptMediaItem")
-                return "Str("+text+ ")+\" (Тип: THmsScriptMediaItem)\"#13#10+\"mpiTitle=\"+" + text + "[mpiTitle]+#13#10+\"mpiFilePath=\"+" + text + "[mpiFilePath]+#13#10+\"mpiThumbnail=\"+Str(" + text + "[mpiThumbnail])+#13#10+\"mpiTimeLength=\"+Str(" + text + "[mpiTimeLength])+#13#10+\"mpiCreateDate=\"+Str(" + text + "[mpiCreateDate])";
+            switch (type) {
+                case "THmsScriptMediaItem":
+                    return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: THmsScriptMediaItem)\"#13#10+\"mpiTitle=\"+" + text + ".Properties[mpiTitle]+#13#10+\"mpiFilePath=\"+" + text + ".Properties[mpiFilePath]+#13#10+\"mpiThumbnail=\"+Str(" + text + ".Properties[mpiThumbnail])+#13#10+\"mpiTimeLength=\"+Str(" + text + ".Properties[mpiTimeLength])+#13#10+\"mpiCreateDate=\"+Str(" + text + ".Properties[mpiCreateDate])";
+                case "TRegExpr":
+                    return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: TRegExpr)\"#13#10+\"Match(0)=\"+" + text + ".Match(0)+#13#10+\"Match(1)=\"+" + text + ".Match(1)+#13#10+\"Match(2)=\"+" + text + ".Match(2)+#13#10+\"Match(3)=\"+" + text + ".Match(3)";
+            }
             return text;
         }
 
@@ -39,111 +45,90 @@ namespace HMSEditorNS {
             return success;
         }
 
+        private static string SafeEval(HMSEditor activeEditor, string expression) {
+            string value = "";
+            System.Windows.Forms.MethodInvoker action = delegate {
+                value = activeEditor.EvalVariableValue(expression);
+            };
+            if (activeEditor.InvokeRequired)
+                activeEditor.Invoke(action);
+            else
+                action();
+            return value;
+        }
+
+        private static void ShowValue(FastColoredTextBox tb, Point point, string expression, string realExpression) {
+            System.Windows.Forms.MethodInvoker action = delegate {
+                point.Offset(0, tb.CharHeight - 4);
+                tb.ReshowCaret = true;
+                var activeEditor = HMSEditor.ActiveEditor;
+                if (activeEditor != null) {
+                    string value = activeEditor.EvalVariableValue(expression);
+                    if (value.Length > MaxValueLength || activeEditor.ValueForm.Visible) {
+                        //value = value.Substring(0, MaxValueLength) + "...";
+                        activeEditor.ValueForm.Show(tb, expression, value, realExpression);
+                    } else {
+                        activeEditor.ValueHint.ShowValue(tb, expression, value, point, realExpression);
+                    }
+                }
+            };
+            if (tb.InvokeRequired) tb.Invoke(action);
+            else action();
+        }
+
+        private static void ShowToolTip(FastColoredTextBox tb, Point point, string title, string text, string value, string help) {
+            // Показываем инофрмацию о функции или переменной через ToolTip
+            System.Windows.Forms.MethodInvoker action = delegate {
+                var tip = tb.ToolTip;
+                tip.ToolTipTitle = title;
+                tip.Help = help;
+                tip.Value = value;
+                tip.Show(text + " ", tb, point, 10000);
+            };
+            if (tb.InvokeRequired) tb.Invoke(action);
+            else action();
+        }
+
         /// <summary>
         /// Статическая процедура, вызываемая из MouseTimer_Task по срабатыванию MouseTimer для отображения подсказки при наведении мышкой на часть текста
         /// </summary>
         /// <param name="ActiveHMSEditor">Активный (вызвавший) элемент HMSEditor</param>
         public static void Task(HMSEditor ActiveHMSEditor) {
-            //if (CodeAnalysis.isBusy) return;
+            var    TB    = ActiveHMSEditor.TB;
+            Point  point = ActiveHMSEditor.MouseLocation;
+            bool   debugMode  = TB.DebugMode;
+            string expression = "";
             try {
-                var    TB      = ActiveHMSEditor.TB;
-                Point  point   = ActiveHMSEditor.MouseLocation;
-                int iStartLine = ActiveHMSEditor.TB.YtoLineIndex();
-                int CharHeight = ActiveHMSEditor.TB.CharHeight;
-                int i = point.Y / CharHeight;
-                int iLine = iStartLine + i;
-                if (iLine >= TB.Lines.Count) return;
-                Place place   = TB.PointToPlace(point);
-                string line;
-                try {  line   = TB.Lines[iLine]; } catch { return; }
-                if (line.Length <= place.iChar) return;
-                var value  = "";
-                var evalSelection = false;
-                string text;
-                if (TB.DebugMode && (TB.Selection.Start != TB.Selection.End)) {
-                    int posStart = TB.PlaceToPosition(TB.Selection.Start);
-                    int posEnd   = TB.PlaceToPosition(TB.Selection.End  );
-                    int posCur   = TB.PlaceToPosition(place);
-                    // Если указатель мыши в области виделения, то будем вычислять выдиление
-                    if (posStart < posEnd) {
-                        evalSelection = (posCur >= posStart) && (posCur <= posEnd  );
-                    } else {
-                        evalSelection = (posCur >= posEnd  ) && (posCur <= posStart);
-                    }
-                }
-                if (evalSelection) {
-                    text = TB.SelectedText.Trim();
-                    if (text.Length == 0) return;
-                    // Внедряемся в поток - показываем вплывающее окно со значением
-                    TB.Invoke((System.Windows.Forms.MethodInvoker)delegate {
-                        TB.ReshowCaret = true;
-                        value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
-                        if (value.Length > MaxValueLength || HMSEditor.ActiveEditor.ValueForm.Visible) {
-                            //value = value.Substring(0, MaxValueLength) + "...";
-                            HMSEditor.ActiveEditor.ValueForm.Show(TB, text, value, text);
-                        } else {
-                            ActiveHMSEditor.ValueHint.ShowValue(TB, text, value, point, text);
-                        }
-                    });
-                    return;
-
-                }
+                Place place = TB.PointToPlace(point);
                 Range r = new Range(TB, place, place);
                 if (r.IsErrorPlace) {
                     // Показываем инофрмацию об ошибке через ToolTip
-                    TB.Invoke((System.Windows.Forms.MethodInvoker)delegate {
-                        var tip = TB.ToolTip;
-                        tip.ToolTipTitle = "Ошибка синтаксиса"; 
-                        tip.Help = TB.ErrorStyle.Message;
-                        tip.Show(" ", TB, point, 10000);
-                    });
+                    ShowToolTip(TB, point, "Ошибка синтаксиса", "", "", TB.ErrorStyle.Message);
                     return;
                 }
-                //if (r.IsStringOrComment) return;
-                Range fragment = r.GetFragmentLookedLeft();
-                text = fragment.Text.Replace("#", "").Trim();
-
-                if (text.Length == 0) return;
-                var item = ActiveHMSEditor.GetHMSItemByText(text);
-                if (!string.IsNullOrEmpty(item?.Text)) {
-                    point.Offset(0, TB.CharHeight-4);
+                if (debugMode && (TB.Selection.Start != TB.Selection.End) && TB.Selection.InRange(place)) {
+                    expression = TB.SelectedText.Trim();
+                }
+                if (expression.Length == 0) {
+                    expression = r.GetFragmentAroundThePlace(place).Text.Replace("#", "").Trim();
+                }
+                if (expression.Length == 0)
+                    return;
+                var item = ActiveHMSEditor.GetHMSItemByText(expression);
+                if (item != null) {
                     // Если идёт отладка - проверяем, мы навели на переменную или свойство объекта?
-                    if (TB.DebugMode && OK4Evaluate(item)) {
-                        // проверяем, если это index свойство - то нудно вычислять значение с переданным индексом, поэтому дополняем значением [...]
-                        if (item.ImageIndex == ImagesIndex.Enum) {
-                            Match m = Regex.Match(line, text + @"\[.*?\]");
-                            if (m.Success) text = m.Value;
-                        } else if (item.ImageIndex == ImagesIndex.Function) {
-                            Match m = Regex.Match(line, text + @"\(.*?\)");
-                            if (m.Success) text = m.Value;
-                        }
+                    if (debugMode && OK4Evaluate(item)) {
                         // Проверяем тип объекта класса, может быть удобней представить в виде текста? (TStrings или TJsonObject)
-                        string realExpression = text;
-                        text = CheckTypeForToStringRules(item.Type, text);
-                        // Внедряемся в поток - показываем вплывающее окно со значением
-                        TB.Invoke((System.Windows.Forms.MethodInvoker)delegate {
-                            TB.ReshowCaret = true;
-                            value = ActiveHMSEditor.EvalVariableValue(text); // Вычсиление выражения
-                            if (HMSEditor.ActiveEditor.ValueForm.Visible) {
-                                HMSEditor.ActiveEditor.ValueForm.Show(TB, text, value, realExpression);
-                            } else {
-                                if (value.Length > MaxValueLength) value = value.Substring(0, MaxValueLength) + "...";
-                                ActiveHMSEditor.ValueHint.ShowValue(TB, text, value, point, realExpression);
-                            }
-                        });
+                        string realExpression = expression;
+                        expression = CheckTypeForToStringRules(item, expression);
+                        ShowValue(TB, point, expression, realExpression);
                         return;
                     }
-                    // Показываем инофрмацию о функции или переменной через ToolTip
-                    TB.Invoke((System.Windows.Forms.MethodInvoker)delegate {
-                        var tip = TB.ToolTip;
-                        tip.ToolTipTitle = item.ToolTipTitle;
-                        tip.Help         = item.Help;
-                        tip.Value        = value;
-                        tip.Show(item.ToolTipText + " ", TB, point, 10000);
-                        //ActiveHMSEditor.ValueForm.Show(Editor, item.ToolTipTitle, item.Help + " ");
-                        //ActiveHMSEditor.ValueHint.ShowValue(Editor, item.ToolTipTitle, item.Help, point, "test");
-                    });
+                    ShowToolTip(TB, point, item.ToolTipTitle, item.ToolTipText, "", item.Help);
+                } else if (debugMode && !HMS.WordIsKeyword(expression)) {
+                    ShowValue(TB, point, expression, expression);
                 }
+
             } catch (Exception e) {
                 HMS.LogError(e.ToString());
             }

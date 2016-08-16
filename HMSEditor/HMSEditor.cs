@@ -226,6 +226,18 @@ namespace HMSEditorNS {
         public int TextLength => Text.Length;
 
         #region Fuctions and procedures
+        private void ShowDiff() {
+            FormDiff form = new FormDiff();
+            form.TB1.Language = TB.Language;
+            form.TB2.Language = TB.Language;
+            Themes.SetTheme(form.TB1, "Стандартная");
+            Themes.SetTheme(form.TB2, "Стандартная");
+            form.File1 = Filename;
+            form.Text1 = Clipboard.GetText(); 
+            form.Text2 = TB.Text;
+            form.ShowDialog();
+        }
+
         public void OnRunningStateChange(bool running) {
             DebugMode    = running;
             RunLineRised = false;
@@ -969,6 +981,7 @@ namespace HMSEditorNS {
         private void Editor_KeyDown(object sender, KeyEventArgs e) {
             if      (e.KeyCode == Keys.F11   ) tsMain.Visible = !tsMain.Visible;
             else if (e.KeyCode == Keys.F12   ) GotoDefinition();
+            else if (e.KeyCode == Keys.F1    ) ShowDiff();
             else if (e.KeyCode == Keys.F2    ) RenameVariable();
             else if (e.KeyCode == Keys.Escape) {
                 TB.findForm?.Hide();
@@ -1389,7 +1402,7 @@ namespace HMSEditorNS {
                     MouseLocation = e.Location;
                     ActiveEditor = this;
                     if (ValueHint.Visible) ValueHint.Visible = false;
-                    MouseTimer.Change(800, Timeout.Infinite); // Show help tooltip from mouse cursor
+                    MouseTimer.Change(DebugMode ? 450 : 800, Timeout.Infinite); // Show help tooltip from mouse cursor
                 }
             }
         }
@@ -1439,6 +1452,10 @@ namespace HMSEditorNS {
 
         private void btnSprav_Click(object sender, EventArgs e) {
             splitContainer1.Panel2Collapsed = !btnSprav.Checked;
+        }
+
+        private void toolStripButtonCompare_Click(object sender, EventArgs e) {
+            ShowDiff();
         }
 
         private void splitContainer1_DoubleClick(object sender, EventArgs e) {

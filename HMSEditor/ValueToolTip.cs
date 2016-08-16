@@ -13,7 +13,7 @@ namespace HMSEditorNS {
         private RichTextBox ctl = new RichTextBox();
         private Size   MaxSize  = new Size(500, 400);
         private Timer  timer    = new Timer();
-        private Size   MouseDX  = new Size(30, 30);
+        private Size   MouseDX  = new Size(20, 20);
         private Button Btn      = new Button();
         public string  Expression     = "";
         public string  RealExpression = "";
