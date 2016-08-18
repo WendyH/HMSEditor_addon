@@ -27,10 +27,9 @@ namespace HMSEditorNS {
             Properties.Settings.Default.FormDiffWindowPosition = DesktopBounds;
             Properties.Settings.Default.FormDiffFile1 = File1;
             Properties.Settings.Default.FormDiffFile2 = File2;
+            Properties.Settings.Default.FormDiffFilterIndex = diffControl1.FilterIndex;
             Properties.Settings.Default.Save();
         }
-
-
 
         private void FormDiff_Load(object sender, EventArgs e) {
             var rect = Properties.Settings.Default.FormDiffWindowPosition;
@@ -46,6 +45,12 @@ namespace HMSEditorNS {
                 }
             File1 = Properties.Settings.Default.FormDiffFile1;
             File2 = Properties.Settings.Default.FormDiffFile2;
+            diffControl1.FilterIndex = Properties.Settings.Default.FormDiffFilterIndex;
+        }
+
+        private void FormDiff_KeyDown(object sender, KeyEventArgs e) {
+            if (e.KeyCode == Keys.Escape)
+                Close();
         }
     }
 }

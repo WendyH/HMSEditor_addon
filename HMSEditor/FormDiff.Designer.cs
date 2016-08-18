@@ -43,10 +43,12 @@
             this.ClientSize = new System.Drawing.Size(872, 487);
             this.Controls.Add(this.diffControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.KeyPreview = true;
             this.Name = "FormDiff";
             this.Text = "Сравнение исходного кода";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormDiff_FormClosing);
             this.Load += new System.EventHandler(this.FormDiff_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormDiff_KeyDown);
             this.ResumeLayout(false);
 
         }

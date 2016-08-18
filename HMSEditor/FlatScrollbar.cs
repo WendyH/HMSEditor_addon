@@ -77,7 +77,12 @@ namespace FastColoredTextBoxNS {
         public event EventHandler ValueChanged;
 
         public void SetValue(int val) {
-            _value = val;
+            _value = Math.Max(Minimum, Math.Min(Maximum, val));
+            int realRange = Maximum - Minimum;
+            if (realRange > 0)
+                ThumbTop = (int)(_value / (float)realRange * (TrackSize - ThumbSize));
+            else
+                ThumbTop = 0;
             Invalidate();
         }
 
@@ -350,7 +355,14 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        private void MoveThumb(int y) {
+        public void SetThumbIsDown(int x, bool isSet) {
+            if (isSet) {
+                ClickPoint = x - ThumbTop;
+            }
+            ThumbIsDown = isSet;
+        }
+
+        public void MoveThumb(int y) {
             int realRange  = Maximum - Minimum;
             int allowRange = TrackSize - ThumbSize;
 

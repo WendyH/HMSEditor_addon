@@ -20,7 +20,8 @@ namespace HMSEditorNS {
 
         public Language Language { get { return tb1.Language; } set { tb1.Language = value; tb2.Language = value; } }
 
-        private int FilterIndex = 1;
+        public int FilterIndex = 2;
+
         private List<int> GreenLines1 = new List<int>();
         private List<int> GreenLines2 = new List<int>();
         private List<int> RedLines1   = new List<int>();
@@ -282,8 +283,8 @@ namespace HMSEditorNS {
                 tb2.ClearAllLines();
 
                 int i;
-                LineCount1 = 1;
-                LineCount2 = 1;
+                LineCount1 = 0;
+                LineCount2 = 0;
                 foreach (DiffResultSpan drs in rep) {
                     switch (drs.Status) {
                         case DiffResultSpanStatus.DeleteSource:
@@ -368,29 +369,17 @@ namespace HMSEditorNS {
         }
 
         bool ThumbIsDown;
-        private void SetScrollByMouseY(int mx, int my) {
-            int x1, x2, y, w, h;
-            GetBoundsBars(out x1, out x2, out y, out w, out h);
-            int halfgap = (x2 - x1 - w) / 2;
-            Rectangle rectBar1 = new Rectangle(x1, y, w + halfgap, h);
-            Rectangle rectBar2 = new Rectangle(x2 - halfgap, y, w + halfgap, h);
-            if        (rectBar1.Contains(mx, my)) {
-                double kbar = ((double)(my - y - bar1vis) / h);
-                tb1.SetVerticalScrollKoef(kbar);
-            } else if (rectBar2.Contains(mx, my)) {
-                double kbar = ((double)(my - y - bar2vis) / h);
-                tb2.SetVerticalScrollKoef(kbar);
-            }
-        }
-
+        int tbnum = 0;
         protected override void OnMouseDown(MouseEventArgs e) {
             int x1, x2, y, w, h;
             GetBoundsBars(out x1, out x2, out y, out w, out h);
             Rectangle rectBars = new Rectangle(x1, y, x2 - x1 + w, h);
             if (rectBars.Contains(e.X, e.Y)) {
                 if (h > 0) {
+                    Rectangle rectBar1 = new Rectangle(x1, y, w + (x2 - x1 - w) / 2, h);
+                    tbnum = rectBar1.Contains(e.X, e.Y) ? 0 : 1;
+                    GoToLineByY(e.Y);
                     ThumbIsDown = true;
-                    SetScrollByMouseY(e.X, e.Y);
                 }
             }
             base.OnMouseDown(e);
@@ -409,9 +398,22 @@ namespace HMSEditorNS {
             base.OnMouseLeave(e);
         }
 
+        private void GoToLineByY(int my) {
+            int x1, x2, y, w, h;
+            GetBoundsBars(out x1, out x2, out y, out w, out h);
+            if (tbnum == 0) {
+                int i = (int)Math.Round((float)(my - y) * LineCount1 / h);
+                tb1.NavigateToLineNum(i);
+            } else {
+                int i = (int)Math.Round((float)(my - y) * LineCount2 / h);
+                tb2.NavigateToLineNum(i);
+            }
+            Invalidate();
+        }
+
         protected override void OnMouseMove(MouseEventArgs e) {
             if (ThumbIsDown) {
-                SetScrollByMouseY(e.X, e.Y);
+                GoToLineByY(e.Y);
             }
             base.OnMouseMove(e);
         }

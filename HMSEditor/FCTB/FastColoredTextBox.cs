@@ -2880,8 +2880,41 @@ namespace FastColoredTextBoxNS {
         }
 
         // < By WendyH -------------------------
-        public void MoveVerticalScrollThumb(int y) {
-            VerticalScroll.SetThumbY(y);
+        public void NavigateToLineNum(int num) {
+            for (int i = 0; i < LinesCount; i++) {
+                if (lines[i].LineNo == num) {
+                    DoLineVisible(i);
+                    break;
+                }
+            }
+        }
+
+        public void DoLineVisible(int iLine) {
+            Point car  = PlaceToPoint(new Place(0, iLine));
+            car.Offset(-CharWidth, -ClientSize.Height / 2);
+
+            Rectangle rect = new Rectangle(car, new Size(1, ClientSize.Height));
+
+            int v = VerticalScroll.Value;
+
+            if (rect.Bottom > ClientSize.Height)
+                v += rect.Bottom - ClientSize.Height;
+            else if (rect.Top < 0)
+                v += rect.Top;
+
+            if (VerticalScroll.Visible || !ShowScrollBars)
+                VerticalScroll.Value = v;
+
+            Invalidate();
+        }
+
+        public void SetVerticalScrollThumbIsDown(int y, bool isSet) {
+            VerticalScroll.SetThumbIsDown(y, isSet);
+            Invalidate();
+        }
+
+        public void VerticalScrollMoveThumb(int y) {
+            VerticalScroll.MoveThumb(y);
             Invalidate();
         }
 
