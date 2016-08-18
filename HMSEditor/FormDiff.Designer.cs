@@ -45,6 +45,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormDiff";
             this.Text = "Сравнение исходного кода";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormDiff_FormClosing);
+            this.Load += new System.EventHandler(this.FormDiff_Load);
             this.ResumeLayout(false);
 
         }

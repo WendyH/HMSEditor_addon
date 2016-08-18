@@ -4209,6 +4209,10 @@ namespace FastColoredTextBoxNS {
             Invalidate();
         }
 
+        public void SetVerticalScrollKoef(double value) {
+            VerticalScroll.SetValueByKoef(value);
+        }
+
         public int GetMaximumScrollValue() {
             return VerticalScroll.Maximum;
         }

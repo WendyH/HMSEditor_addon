@@ -368,7 +368,11 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        private int Y2Value(int y) {
+        public void SetValueByKoef(double k) {
+            Value  = (int)Math.Round((Maximum - Minimum) * k) + Minimum;
+        }
+
+        public int Y2Value(int y) {
             y = Math.Max(0, Math.Min(Height, y));
             float k = y / (float)Height;
             int val = (int)((Maximum - (float)Minimum) * k) + Minimum;

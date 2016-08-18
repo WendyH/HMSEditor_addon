@@ -53,14 +53,19 @@ namespace HMSEditorNS {
             Invalidate();
         }
 
+        private void GetBoundsBars(out int x1, out int x2, out int y, out int w, out int h) {
+            Padding pad = new Padding(10, 5, 10, 5);
+            w = 16;
+            h = Height - pad.Top - pad.Bottom;
+            y = pad.Top;
+            x2 = Width - w - pad.Right;
+            x1 = x2 - w - 10;
+        }
+
         protected override void OnPaint(PaintEventArgs e) {
             Graphics g = e.Graphics;
-            Padding pad = new Padding(10, 5, 10, 5);
-            int w = 16;
-            int h = Height - pad.Top - pad.Bottom;
-            int y = pad.Top;
-            int x2 = Width - w - pad.Right;
-            int x1 = x2 - w - 10;
+            int x1, x2, y, w, h;
+            GetBoundsBars(out x1, out x2, out y, out w, out h);
             Rectangle rect1 = new Rectangle(x1, y, w, h);
             Rectangle rect2 = new Rectangle(x2, y, w, h);
 
@@ -94,23 +99,26 @@ namespace HMSEditorNS {
                     g.FillRectangle(brushRed, x2, ye, w, we2 + 1);
                 }
             }
+            if (LineCount1 > 0 && LineCount2 > 0) {
+                int iLineTop, iLineBot;
+                GetTopAndBottomLineNums(tb1, out iLineTop, out iLineBot);
 
-            int iLineTop, iLineBot;
-            GetTopAndBottomLineNums(tb1, out iLineTop, out iLineBot);
+                int y1top = y + (int)Math.Round((double)h * iLineTop / LineCount1);
+                int y1bot = y + (int)Math.Round((double)h * iLineBot / LineCount1);
 
-            int y1top = y + (int)Math.Round((double)h * iLineTop / LineCount1);
-            int y1bot = y + (int)Math.Round((double)h * iLineBot / LineCount1);
+                GetTopAndBottomLineNums(tb2, out iLineTop, out iLineBot);
 
-            GetTopAndBottomLineNums(tb2, out iLineTop, out iLineBot);
+                int y2top = y + (int)Math.Round((double)h * iLineTop / LineCount2);
+                int y2bot = y + (int)Math.Round((double)h * iLineBot / LineCount2);
 
-            int y2top = y + (int)Math.Round((double)h * iLineTop / LineCount2);
-            int y2bot = y + (int)Math.Round((double)h * iLineBot / LineCount2);
+                bar1vis = (y1bot - y1top) / 2;
+                bar2vis = (y2bot - y2top) / 2;
+                GraphicsPath path = GetVisionPath(new Rectangle(x1 - 4, y1top, w + 8, y1bot - y1top), new Rectangle(x2 - 4, y2top, w + 8, y2bot - y2top), 5);
 
-            GraphicsPath path = GetVisionPath(new Rectangle(x1 - 4, y1top, w + 8, y1bot - y1top), new Rectangle(x2 - 4, y2top, w + 8, y2bot - y2top), 5);
+                g.SmoothingMode = SmoothingMode.HighQuality;
+                g.DrawPath(penVis, path);
+            }
 
-            g.SmoothingMode = SmoothingMode.HighQuality;
-            g.DrawPath(penVis, path);
-            
             brushBack .Dispose();
             brushGreen.Dispose();
             brushRed  .Dispose();
@@ -118,7 +126,8 @@ namespace HMSEditorNS {
 
             base.OnPaint(e);
         }
-
+        int bar1vis = 0;
+        int bar2vis = 0;
         public static GraphicsPath GetVisionPath(Rectangle bounds1, Rectangle bounds2, int radius) {
             int diameter = radius * 2;
             Size         size = new Size(diameter, diameter);
@@ -273,8 +282,8 @@ namespace HMSEditorNS {
                 tb2.ClearAllLines();
 
                 int i;
-                LineCount1 = 0;
-                LineCount2 = 0;
+                LineCount1 = 1;
+                LineCount2 = 1;
                 foreach (DiffResultSpan drs in rep) {
                     switch (drs.Status) {
                         case DiffResultSpanStatus.DeleteSource:
@@ -359,15 +368,31 @@ namespace HMSEditorNS {
         }
 
         bool ThumbIsDown;
-        Cursor oldCursor;
-        int oldVS = 0;
-        int oldY = 0;
+        private void SetScrollByMouseY(int mx, int my) {
+            int x1, x2, y, w, h;
+            GetBoundsBars(out x1, out x2, out y, out w, out h);
+            int halfgap = (x2 - x1 - w) / 2;
+            Rectangle rectBar1 = new Rectangle(x1, y, w + halfgap, h);
+            Rectangle rectBar2 = new Rectangle(x2 - halfgap, y, w + halfgap, h);
+            if        (rectBar1.Contains(mx, my)) {
+                double kbar = ((double)(my - y - bar1vis) / h);
+                tb1.SetVerticalScrollKoef(kbar);
+            } else if (rectBar2.Contains(mx, my)) {
+                double kbar = ((double)(my - y - bar2vis) / h);
+                tb2.SetVerticalScrollKoef(kbar);
+            }
+        }
 
         protected override void OnMouseDown(MouseEventArgs e) {
-            ThumbIsDown = true;
-            tb2.SetVerticalScrollValue(e.Y);
-            oldVS = e.Y;
-            oldY = e.Y;
+            int x1, x2, y, w, h;
+            GetBoundsBars(out x1, out x2, out y, out w, out h);
+            Rectangle rectBars = new Rectangle(x1, y, x2 - x1 + w, h);
+            if (rectBars.Contains(e.X, e.Y)) {
+                if (h > 0) {
+                    ThumbIsDown = true;
+                    SetScrollByMouseY(e.X, e.Y);
+                }
+            }
             base.OnMouseDown(e);
         }
 
@@ -377,21 +402,16 @@ namespace HMSEditorNS {
         }
 
         protected override void OnMouseEnter(EventArgs e) {
-            oldCursor = Cursor;
-            Cursor = Cursors.Hand;
             base.OnMouseEnter(e);
         }
 
         protected override void OnMouseLeave(EventArgs e) {
-            Cursor = oldCursor;
             base.OnMouseLeave(e);
         }
 
         protected override void OnMouseMove(MouseEventArgs e) {
             if (ThumbIsDown) {
-                int dy = e.Y - oldY;
-                tb2.SetVerticalScrollValue(oldVS + dy);
-                Invalidate();
+                SetScrollByMouseY(e.X, e.Y);
             }
             base.OnMouseMove(e);
         }

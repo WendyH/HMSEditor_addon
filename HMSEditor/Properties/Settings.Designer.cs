@@ -22,5 +22,53 @@ namespace HMSEditorNS.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FormDiffMaximized {
+            get {
+                return ((bool)(this["FormDiffMaximized"]));
+            }
+            set {
+                this["FormDiffMaximized"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0, 0, 0")]
+        public global::System.Drawing.Rectangle FormDiffWindowPosition {
+            get {
+                return ((global::System.Drawing.Rectangle)(this["FormDiffWindowPosition"]));
+            }
+            set {
+                this["FormDiffWindowPosition"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FormDiffFile1 {
+            get {
+                return ((string)(this["FormDiffFile1"]));
+            }
+            set {
+                this["FormDiffFile1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string FormDiffFile2 {
+            get {
+                return ((string)(this["FormDiffFile2"]));
+            }
+            set {
+                this["FormDiffFile2"] = value;
+            }
+        }
     }
 }

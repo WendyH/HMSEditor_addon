@@ -229,7 +229,7 @@ namespace HMSEditorNS {
         private void ShowDiff() {
             FormDiff form = new FormDiff(TB.Language);
             //string cliptext = Clipboard.GetText();
-            form.File1 = Filename;
+            //form.File1 = Filename;
             form.Text1 = FirstText;
             form.Text2 = TB.Text;
             form.ShowDialog();
