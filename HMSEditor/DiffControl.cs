@@ -41,7 +41,19 @@ namespace HMSEditorNS {
             PrepareTB(tb2);
             tb1.VerticalScrollValueChanged += Tb1_VerticalScrollValueChanged;
             tb2.VerticalScrollValueChanged += Tb2_VerticalScrollValueChanged;
+            tb1.HorizontalScrollValueChanged += Tb1_HorizontalScrollValueChanged;
+            tb2.HorizontalScrollValueChanged += Tb2_HorizontalScrollValueChanged;
             tb1.VerticalScrollVisible = false;
+        }
+
+        private void Tb1_HorizontalScrollValueChanged(object sender, EventArgs e) {
+            tb2.SetHorizontalScrollValueNoEvent(tb1.GetHorizontalScrollValue());
+            Invalidate();
+        }
+
+        private void Tb2_HorizontalScrollValueChanged(object sender, EventArgs e) {
+            tb1.SetHorizontalScrollValueNoEvent(tb2.GetHorizontalScrollValue());
+            Invalidate();
         }
 
         private void Tb2_VerticalScrollValueChanged(object sender, EventArgs e) {
@@ -238,7 +250,7 @@ namespace HMSEditorNS {
                 if (tb == tb1) {
                     foreach (Range rr in RangesRed) {
                         Range withTextRange = rr.GetIntersectionWith(textRange);
-                        if (withTextRange != null) {
+                        if (withTextRange != null && withTextRange.Start != withTextRange.End) {
                             Range r = rr.Clone();
                             r.Normalize();
                             tb.StyleDiffRed?.Draw(gr, x, 0, y, withTextRange, r);
@@ -247,7 +259,7 @@ namespace HMSEditorNS {
                 } else {
                     foreach (Range rr in RangesGreen) {
                         Range withTextRange = rr.GetIntersectionWith(textRange);
-                        if (withTextRange != null) {
+                        if (withTextRange != null && withTextRange.Start != withTextRange.End) {
                             Range r = rr.Clone();
                             r.Normalize();
                             tb.StyleDiffGreen?.Draw(gr, x, 0, y, withTextRange, r);
@@ -342,6 +354,8 @@ namespace HMSEditorNS {
                                 tb2.AddUnavaliableLine();
                                 RedLines1.Add(drs.SourceIndex + i);
                                 DiffChars(line1, "");
+                                if (line1.Length == 0)
+                                    SetRangeStyle(tb1, 0, 0, true);
                             }
                             break;
                         case DiffResultSpanStatus.NoChange:
@@ -357,6 +371,8 @@ namespace HMSEditorNS {
                                 tb2.AddLine(line2, green, ref LineCount2);
                                 GreenLines2.Add(drs.DestIndex + i);
                                 DiffChars("", line2);
+                                if (line2.Length == 0)
+                                    SetRangeStyle(tb2, 0, 0, false);
                             }
                             break;
                         case DiffResultSpanStatus.Replace:
@@ -430,7 +446,7 @@ namespace HMSEditorNS {
                 if (RangesGreen.Count > 0) {
                     Range pr = RangesGreen[RangesGreen.Count - 1];
                     int plen = tb.Lines[pr.End.iLine].Length;
-                    if ((pr.End >= r.Start) || (pr.End.iLine == iLine - 1 && pr.End.iChar == plen)) {
+                    if ((pr.End >= r.Start) || (pr.End.iLine == iLine - 1 && pr.End.iChar >= plen)) {
                         RangesGreen.Remove(pr);
                         r = new Range(tb, pr.Start, r.End);
                     }

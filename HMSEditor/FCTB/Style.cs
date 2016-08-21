@@ -391,19 +391,19 @@ namespace FastColoredTextBoxNS
                     int iLine = range.Start.iLine;
                     int startChar = iLine == selection.Start.iLine ? selection.Start.iChar : 0;
                     int lastChar  = iLine == selection.End.iLine   ? selection.End  .iChar : selection.tb.Lines[iLine].Length + 1;
-                    Rectangle rectBord = new Rectangle(startX + startChar * charW, position.Y, (lastChar - startChar) * charW, charH);
+                    Rectangle rectBord = new Rectangle(startX + startChar * charW - 1, position.Y, (lastChar - startChar) * charW + 1, charH);
 
                     int prevLine = range.Start.iLine - 1;
                     if (prevLine >= selection.Start.iLine) {
                         startChar = 0;
                         if (prevLine == selection.Start.iLine)
                             startChar = selection.Start.iChar;
-                        rectPrev = new Rectangle(startX + startChar * charW, position.Y - charH, (selection.tb.Lines[prevLine].Length + 1 - startChar) * charW, charH);
+                        rectPrev = new Rectangle(startX + startChar * charW - 1, position.Y - charH, (selection.tb.Lines[prevLine].Length + 1 - startChar) * charW + 1, charH);
                     }
                     int nextLine = range.End.iLine + 1;
                     if (nextLine <= selection.End.iLine) {
                         lastChar = nextLine == selection.End.iLine ? selection.End.iChar : selection.tb.Lines[nextLine].Length + 1;
-                        rectNext = new Rectangle(startX, position.Y + charH, lastChar * charW, charH);
+                        rectNext = new Rectangle(startX - 1, position.Y + charH, lastChar * charW + 1, charH);
                     }
 
                     // draw border

@@ -73,8 +73,8 @@ namespace FastColoredTextBoxNS {
         public SelectionStyle GreenSelectionStyle       = new SelectionStyle(Themes.ToColor("#FFD2EEB0"), Color.Black);
         public SelectionStyle BlueSelectionStyle        = new SelectionStyle(Themes.ToColor("#FFc6e3ff"), Color.Black);
 
-        public SelectionStyle StyleDiffRed   = new SelectionStyle(Color.Red  , 1);
-        public SelectionStyle StyleDiffGreen = new SelectionStyle(Color.Green, 1);
+        public SelectionStyle StyleDiffRed   = new SelectionStyle(Color.Red  , 2);
+        public SelectionStyle StyleDiffGreen = new SelectionStyle(Color.Green, 2);
 
         public bool ShowBeginOfFunctions = false;
         private int[] FoundLines;
@@ -4238,6 +4238,11 @@ namespace FastColoredTextBoxNS {
 
         public void SetVerticalScrollValueNoEvent(int value) {
             VerticalScroll.SetValue(value);
+            Invalidate();
+        }
+
+        public void SetHorizontalScrollValueNoEvent(int value) {
+            HorizontalScroll.SetValue(value);
             Invalidate();
         }
 
