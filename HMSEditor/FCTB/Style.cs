@@ -316,6 +316,9 @@ namespace FastColoredTextBoxNS
         public Color Background { get; }
         public Color Foreground { get; }
         public Color Border     { get; }
+        public float BorderWidth = 1;
+        public int   RoundedCornersRadius = 3;
+        public bool  BorderOnly  = false;
 
         public SelectionStyle(Color background)
             : this(background, Color.Transparent, Color.Transparent) {
@@ -330,6 +333,15 @@ namespace FastColoredTextBoxNS
             Foreground   = foreground;
             Background   = background;
             Border       = border == Color.Transparent ? Color.FromArgb(245, Background) : border;
+        }
+
+        public SelectionStyle(Color borderColor, float borderWidth) {
+            IsExportable = false;
+            Foreground   = Color.Transparent;
+            Background   = Color.Transparent;
+            Border       = borderColor;
+            BorderWidth  = borderWidth;
+            BorderOnly   = true;
         }
 
         public override void Draw(Graphics gr, Point position, Range range) {
@@ -368,9 +380,10 @@ namespace FastColoredTextBoxNS
             int charH = range.tb.CharHeight;
             Point position = new Point(startX + (range.Start.iChar - from) * charW, y);
             //draw background
-            if (Background != Color.Transparent) {
+            if (Background != Color.Transparent || BorderOnly) {
                 gr.SmoothingMode = SmoothingMode.None;
-                using (var brush = new SolidBrush(Color.FromArgb(Background.A - 20, Background))) {
+                int alpha = Background.A > 20 ? Background.A - 20 : Background.A;
+                using (var brush = new SolidBrush(Color.FromArgb(alpha, Background))) {
                     // Calculate previous and next lines selection rectangles
                     Rectangle rectPrev = new Rectangle();
                     Rectangle rectNext = new Rectangle();
@@ -394,20 +407,20 @@ namespace FastColoredTextBoxNS
                     }
 
                     // draw border
-                    using (Pen pen = new Pen(Border)) {
+                    using (Pen pen = new Pen(Border, BorderWidth)) {
                         gr.SmoothingMode = SmoothingMode.None;
                         GraphicsPath path4Fill = new GraphicsPath();
                         GraphicsPath path = GetRoundedPath1(rectBord, rectPrev, rectNext, ref path4Fill, charW);
                         path4Fill.CloseAllFigures();
-                        gr.FillPath(brush, path4Fill);
-                        gr.SmoothingMode = FastColoredTextBox.RoundedCornersRadius > 3 ? SmoothingMode.HighQuality : SmoothingMode.None;
+                        if (!BorderOnly) gr.FillPath(brush, path4Fill);
+                        gr.SmoothingMode = RoundedCornersRadius > 3 || BorderOnly ? SmoothingMode.HighQuality : SmoothingMode.None;
                         gr.DrawPath(pen, path);
                         gr.SmoothingMode = SmoothingMode.None;
                     }
                 }
             }
 
-            if (Foreground != Color.Transparent) {
+            if (Foreground != Color.Transparent && !BorderOnly) {
                 //draw text
                 gr.SmoothingMode = SmoothingMode.AntiAlias;
                 gr.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
@@ -421,7 +434,7 @@ namespace FastColoredTextBoxNS
         }
 
         private GraphicsPath GetRoundedPath1(Rectangle rect, Rectangle rectPrev, Rectangle rectNext, ref GraphicsPath path4Fill, int charW) {
-            int r = FastColoredTextBox.RoundedCornersRadius; int d = r * 2;
+            int r = RoundedCornersRadius; int d = r * 2;
             Rectangle arc = new Rectangle(rect.Location, new Size(d, d));
             GraphicsPath path4Bord = new GraphicsPath();
             if (d > rect.Height) {
@@ -610,7 +623,7 @@ namespace FastColoredTextBoxNS
             // draw border
             if (withBorder && Border != Color.Transparent && range.tb.SelectionWithBorders) {
                 using (Pen pen = new Pen(Border)) {
-                    GraphicsPath path = GetRoundedRect(rect);
+                    GraphicsPath path = GetRoundedRect(rect, range.tb.RoundedCornersRadius);
                     gr.DrawPath(pen, path);
                 }
             }
@@ -635,8 +648,8 @@ namespace FastColoredTextBoxNS
             return result;
         }
 
-        private GraphicsPath GetRoundedRect(Rectangle baseRect) {
-            int diameter = FastColoredTextBox.RoundedCornersRadius * 2;
+        private GraphicsPath GetRoundedRect(Rectangle baseRect, int radius) {
+            int diameter = radius * 2;
             RectangleF arc = new Rectangle(baseRect.Location, new Size(diameter, diameter));
             GraphicsPath path = new GraphicsPath();
             path.AddArc(arc, 180, 90); // top left arc 

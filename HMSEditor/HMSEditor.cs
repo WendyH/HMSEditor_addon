@@ -232,6 +232,10 @@ namespace HMSEditorNS {
             //form.File1 = Filename;
             form.Text1 = FirstText;
             form.Text2 = TB.Text;
+
+            form.Text1 = File.ReadAllText(@"D:\file1.cpp");
+            form.Text2 = File.ReadAllText(@"D:\file2.cpp");
+
             form.ShowDialog();
         }
 
@@ -621,8 +625,8 @@ namespace HMSEditorNS {
             }
 
             int val;
-            if (int.TryParse(Settings.Get("RoundedCornersRadius", section, FastColoredTextBox.RoundedCornersRadius.ToString()), out val))
-                FastColoredTextBox.RoundedCornersRadius = val;
+            if (int.TryParse(Settings.Get("RoundedCornersRadius", section, TB.RoundedCornersRadius.ToString()), out val))
+                TB.RoundedCornersRadius = val;
             if (int.TryParse(Settings.Get("CacheMinLines", section, FastColoredTextBox.minCacheLines.ToString()), out val))
                 FastColoredTextBox.minCacheLines = val;
             if (int.TryParse(Settings.Get("CacheMaxFiles", section, FastColoredTextBox.maxCacheFiles.ToString()), out val))

@@ -169,10 +169,10 @@ namespace DifferenceEngine
 		private int _length;
 		private DiffResultSpanStatus _status;
 
-		public int DestIndex {get{return _destIndex;}}
-		public int SourceIndex {get{return _sourceIndex;}}
-		public int Length {get{return _length;}}
-		public DiffResultSpanStatus Status {get{return _status;}}
+		public int DestIndex   { get { return _destIndex;   } }
+		public int SourceIndex { get { return _sourceIndex; } }
+		public int Length      { get { return _length     ; } }
+		public DiffResultSpanStatus Status { get { return _status; } }
 		
 		protected DiffResultSpan(
 			DiffResultSpanStatus status,

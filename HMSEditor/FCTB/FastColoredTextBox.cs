@@ -49,7 +49,6 @@ namespace FastColoredTextBoxNS {
     /// Fast colored textbox
     /// </summary>
     public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
-        static public int RoundedCornersRadius = 3;
         new FlatScrollbar VerticalScroll   = null;
         new FlatScrollbar HorizontalScroll = new FlatScrollbar(true);
 
@@ -63,6 +62,7 @@ namespace FastColoredTextBoxNS {
         public bool ShowChangedLinesOnScrollbar { get { return VerticalScroll.ShowChanedLines; } set { VerticalScroll.ShowChanedLines = value; } }
         public bool HighlightCurrentLine = false;
         public bool HighlightChangedLine = false;
+        public int  RoundedCornersRadius = 3;
         public bool VerticalScrollVisible   { get { return VerticalScroll  .ShowIfVisible; } set { VerticalScroll  .ShowIfVisible = value; if (!value) VerticalScroll  .Visible = false; } }
         public bool HorizontalScrollVisible { get { return HorizontalScroll.ShowIfVisible; } set { HorizontalScroll.ShowIfVisible = value; if (!value) HorizontalScroll.Visible = false; } }
         // By WendyH
@@ -72,6 +72,10 @@ namespace FastColoredTextBoxNS {
         public SelectionStyle LightYellowSelectionStyle = new SelectionStyle(Themes.ToColor("#FDFBACFF"), Color.Black);
         public SelectionStyle GreenSelectionStyle       = new SelectionStyle(Themes.ToColor("#FFD2EEB0"), Color.Black);
         public SelectionStyle BlueSelectionStyle        = new SelectionStyle(Themes.ToColor("#FFc6e3ff"), Color.Black);
+
+        public SelectionStyle StyleDiffRed   = new SelectionStyle(Color.Red  , 1);
+        public SelectionStyle StyleDiffGreen = new SelectionStyle(Color.Green, 1);
+
         public bool ShowBeginOfFunctions = false;
         private int[] FoundLines;
         public bool SelectionWithBorders;
@@ -331,7 +335,7 @@ namespace FastColoredTextBoxNS {
         }
         public void AddUnavaliableLine() {
             int inr = -1;
-            Line line = AddLine("", Color.LightGray, ref inr);
+            Line line = AddLine("", Color.FromArgb(80, Color.Gray), ref inr);
             line.Unavaliable = true;
         }
         public Line AddLine(string insertedText, Color color, ref int lineNo) {
@@ -4254,6 +4258,10 @@ namespace FastColoredTextBoxNS {
             return VerticalScroll.Value;
         }
 
+        public int GetHorizontalScrollValue() {
+            return HorizontalScroll.Value;
+        }
+
         public void ClearErrorLines() {
             Range.ClearStyle(ErrorStyle);
             VerticalScroll.ErrorLine = 0;
@@ -7258,6 +7266,15 @@ namespace FastColoredTextBoxNS {
             ClearStylesBuffer();
             DefaultStyle.RefreshColors(this);
             ((TextStyle)(SyntaxHighlighter.BoldStyle )).RefreshColors(this);
+            ((TextStyle)(SyntaxHighlighter.BoldStyle2)).RefreshColors(this);
+            SyntaxHighlighter.InitStyleSchema(Language);
+            OnSyntaxHighlight(new TextChangedEventArgs(Range));
+            Refresh();
+        }
+
+        public void RefreshThemeWithoutClear() {
+            DefaultStyle.RefreshColors(this);
+            ((TextStyle)(SyntaxHighlighter.BoldStyle)).RefreshColors(this);
             ((TextStyle)(SyntaxHighlighter.BoldStyle2)).RefreshColors(this);
             SyntaxHighlighter.InitStyleSchema(Language);
             OnSyntaxHighlight(new TextChangedEventArgs(Range));

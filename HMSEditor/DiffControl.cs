@@ -24,14 +24,14 @@ namespace HMSEditorNS {
 
         private List<int> GreenLines1 = new List<int>();
         private List<int> GreenLines2 = new List<int>();
-        private List<int> RedLines1   = new List<int>();
-        private List<int> RedLines2   = new List<int>();
+        private List<int> RedLines1 = new List<int>();
+        private List<int> RedLines2 = new List<int>();
         private int LineCount1 = 0;
         private int LineCount2 = 0;
 
         Color ColorBackLines  = Color.FromArgb(230, 231, 232);
         Color ColorRedLines   = Color.FromArgb(255, 102, 102);
-        Color ColorGreenLines = Color.FromArgb(118, 146, 60 );
+        Color ColorGreenLines = Color.FromArgb(118, 146,  60);
         Color ColorVision     = Color.FromArgb(121, 121, 121);
 
         public DiffControl() {
@@ -73,13 +73,13 @@ namespace HMSEditorNS {
             Brush brushBack  = new SolidBrush(ColorBackLines);
             Brush brushGreen = new SolidBrush(ColorGreenLines);
             Brush brushRed   = new SolidBrush(ColorRedLines);
-            Pen   penVis     = new Pen(ColorVision, 3);
+            Pen penVis = new Pen(ColorVision, 3);
 
             g.FillRectangle(brushBack, rect1);
             g.FillRectangle(brushBack, rect2);
             if (LineCount1 > 0) {
                 int we1 = (int)Math.Round((double)h / LineCount1);
-                foreach(int iLine in GreenLines1) {
+                foreach (int iLine in GreenLines1) {
                     int ye = y + (int)Math.Round((double)h * iLine / LineCount1);
                     g.FillRectangle(brushGreen, x1, ye, w, we1 + 1);
                 }
@@ -112,27 +112,24 @@ namespace HMSEditorNS {
                 int y2top = y + (int)Math.Round((double)h * iLineTop / LineCount2);
                 int y2bot = y + (int)Math.Round((double)h * iLineBot / LineCount2);
 
-                bar1vis = (y1bot - y1top) / 2;
-                bar2vis = (y2bot - y2top) / 2;
                 GraphicsPath path = GetVisionPath(new Rectangle(x1 - 4, y1top, w + 8, y1bot - y1top), new Rectangle(x2 - 4, y2top, w + 8, y2bot - y2top), 5);
 
                 g.SmoothingMode = SmoothingMode.HighQuality;
                 g.DrawPath(penVis, path);
             }
 
-            brushBack .Dispose();
+            brushBack.Dispose();
             brushGreen.Dispose();
-            brushRed  .Dispose();
-            penVis    .Dispose();
+            brushRed.Dispose();
+            penVis.Dispose();
 
             base.OnPaint(e);
         }
-        int bar1vis = 0;
-        int bar2vis = 0;
+
         public static GraphicsPath GetVisionPath(Rectangle bounds1, Rectangle bounds2, int radius) {
             int diameter = radius * 2;
-            Size         size = new Size(diameter, diameter);
-            Rectangle    arc  = new Rectangle(bounds1.Location, size);
+            Size size = new Size(diameter, diameter);
+            Rectangle arc = new Rectangle(bounds1.Location, size);
             GraphicsPath path = new GraphicsPath();
 
             if (radius == 0) {
@@ -146,15 +143,15 @@ namespace HMSEditorNS {
             path.StartFigure();
             arc.Y = bounds1.Bottom - diameter;
             arc.X = bounds1.Left;
-            path.AddArc(arc,  90, 90); // bottom left arc 
+            path.AddArc(arc, 90, 90); // bottom left arc 
             path.StartFigure();
             path.AddLine(bounds1.X + radius, bounds1.Bottom, bounds1.Right, bounds1.Bottom);
 
             path.AddLine(bounds2.X, bounds2.Bottom, bounds2.Right - radius, bounds2.Bottom);
-            arc.X = bounds2.Right  - diameter;
+            arc.X = bounds2.Right - diameter;
             arc.Y = bounds2.Bottom - diameter;
             path.StartFigure();
-            path.AddArc(arc,   0, 90); // bottom right arc  
+            path.AddArc(arc, 0, 90); // bottom right arc  
 
             path.StartFigure();
             path.AddLine(bounds2.Right, bounds2.Bottom - radius + 2, bounds2.Right, bounds2.Y + radius);
@@ -192,15 +189,74 @@ namespace HMSEditorNS {
         }
 
         private void PrepareTB(FastColoredTextBox tb) {
-            tb.ShowBeginOfFunctions        = false;
+            tb.ShowBeginOfFunctions   = false;
             tb.ShowChangedLinesOnScrollbar = false;
-            tb.ShowFoldingLines            = false;
-            tb.EnableFoldingIndicator      = false;
-            tb.ShowFoldingMarkers          = false;
-            tb.DrawLineNumberFromInfo      = true;
+            tb.ShowFoldingLines       = false;
+            tb.EnableFoldingIndicator = false;
+            tb.ShowFoldingMarkers     = false;
+            tb.DrawLineNumberFromInfo = true;
             tb.ShowInvisibleCharsInSelection = true;
-            tb.SelectionWithBorders = true;
+            tb.SelectionWithBorders   = true;
+            tb.AllowSeveralTextStyleDrawing = false;
+            //tb.Font = new System.Drawing.Font("Monospace", 10f); // in linux
             Themes.SetTheme(tb, "Стандартная");
+            tb.Paint += Tb_Paint;
+        }
+
+        private void Tb_Paint(object sender, PaintEventArgs e) {
+            FastColoredTextBox tb = sender as FastColoredTextBox;
+            if (tb == null) return;
+            int startLine = tb.YtoLineIndex();
+            int vertScrolValue = tb.GetVerticalScrollValue();
+            int horzScrolValue = tb.GetHorizontalScrollValue();
+            int iLine;
+            int CharHeight = tb.CharHeight;
+            int CharWidth  = tb.CharWidth;
+
+            int firstChar = (Math.Max(0, horzScrolValue - tb.Paddings.Left)) / CharWidth;
+            int lastChar  = (horzScrolValue + ClientSize.Width) / CharWidth;
+            int x = tb.LeftIndent + tb.Paddings.Left - horzScrolValue;
+            if (x < tb.LeftIndent) firstChar++;
+
+            for (iLine = startLine; iLine < tb.LinesCount; iLine++) {
+                Graphics gr       = e.Graphics;
+                Line     line     = tb[iLine];
+                LineInfo lineInfo = tb.LineInfos[iLine];
+
+                if (lineInfo.startY > vertScrolValue + ClientSize.Height)
+                    break;
+                if (lineInfo.startY + lineInfo.WordWrapStringsCount * CharHeight < vertScrolValue)
+                    continue;
+                if (lineInfo.VisibleState == VisibleState.Hidden)
+                    continue;
+
+                int y = lineInfo.startY - vertScrolValue;
+
+                gr.SmoothingMode = SmoothingMode.None;
+                Range textRange = new Range(tb, firstChar, iLine, lastChar + 1, iLine);
+
+                if (tb == tb1) {
+                    foreach (Range rr in RangesRed) {
+                        Range withTextRange = rr.GetIntersectionWith(textRange);
+                        if (withTextRange != null) {
+                            Range r = rr.Clone();
+                            r.Normalize();
+                            tb.StyleDiffRed?.Draw(gr, x, 0, y, withTextRange, r);
+                        }
+                    }
+                } else {
+                    foreach (Range rr in RangesGreen) {
+                        Range withTextRange = rr.GetIntersectionWith(textRange);
+                        if (withTextRange != null) {
+                            Range r = rr.Clone();
+                            r.Normalize();
+                            tb.StyleDiffGreen?.Draw(gr, x, 0, y, withTextRange, r);
+                        }
+                    }
+                }
+
+            }
+//            base.OnPaint(e);
         }
 
         private string FileDialogFilter() {
@@ -219,12 +275,12 @@ namespace HMSEditorNS {
             OpenFileDialog fileFialog = new OpenFileDialog();
             if (filename.Length > 0) {
                 fileFialog.InitialDirectory = Path.GetDirectoryName(filename);
-                fileFialog.FileName         = Path.GetFileName(filename);
+                fileFialog.FileName = Path.GetFileName(filename);
             }
-            fileFialog.Filter           = FileDialogFilter();
-            fileFialog.FilterIndex      = FilterIndex;
+            fileFialog.Filter = FileDialogFilter();
+            fileFialog.FilterIndex = FilterIndex;
             fileFialog.RestoreDirectory = true;
-            fileFialog.Title            = @"Выбор файла скрипта";
+            fileFialog.Title = @"Выбор файла скрипта";
             if (fileFialog.ShowDialog() == DialogResult.OK) {
                 filename = fileFialog.FileName;
                 if (File.Exists(filename)) {
@@ -257,23 +313,15 @@ namespace HMSEditorNS {
             return success;
         }
 
-        DiffList_TextFile sLF = new DiffList_TextFile();
-        DiffList_TextFile dLF = new DiffList_TextFile();
-
         public void Compare() {
-
-            sLF.LoadText(Text1);
-            dLF.LoadText(Text2);
-
+            RangesGreen.Clear();
+            RangesRed.Clear();
             try {
-                double time = 0;
-                DiffEngine de = new DiffEngine();
-                time = de.ProcessDiff(sLF, dLF, DiffEngineLevel.Medium);
-
-                ArrayList rep = de.DiffReport();
+                DiffEngine de = new DiffEngine(Text1, Text2);
+                ArrayList rep = de.ProcessDiff(DiffEngineLevel.Medium);
 
                 Color red   = Color.FromArgb(100, Color.Red);
-                Color green = Color.FromArgb(80, Color.Green);
+                Color green = Color.FromArgb( 80, Color.Green);
 
                 GreenLines1.Clear();
                 GreenLines2.Clear();
@@ -289,45 +337,107 @@ namespace HMSEditorNS {
                     switch (drs.Status) {
                         case DiffResultSpanStatus.DeleteSource:
                             for (i = 0; i < drs.Length; i++) {
-                                tb1.AddLine(((TextLine)sLF.GetByIndex(drs.SourceIndex + i)).Line, red, ref LineCount1);
+                                string line1 = de.GetSrcLineByIndex(drs.SourceIndex + i);
+                                tb1.AddLine(line1, red, ref LineCount1);
                                 tb2.AddUnavaliableLine();
                                 RedLines1.Add(drs.SourceIndex + i);
+                                DiffChars(line1, "");
                             }
                             break;
                         case DiffResultSpanStatus.NoChange:
                             for (i = 0; i < drs.Length; i++) {
-                                tb1.AddLine(((TextLine)sLF.GetByIndex(drs.SourceIndex + i)).Line, Color.Transparent, ref LineCount1);
-                                tb2.AddLine(((TextLine)dLF.GetByIndex(drs.DestIndex   + i)).Line, Color.Transparent, ref LineCount2);
+                                tb1.AddLine(de.GetSrcLineByIndex(drs.SourceIndex + i), Color.Transparent, ref LineCount1);
+                                tb2.AddLine(de.GetDstLineByIndex(drs.DestIndex + i), Color.Transparent, ref LineCount2);
                             }
                             break;
                         case DiffResultSpanStatus.AddDestination:
                             for (i = 0; i < drs.Length; i++) {
+                                string line2 = de.GetDstLineByIndex(drs.DestIndex + i);
                                 tb1.AddUnavaliableLine();
-                                tb2.AddLine(((TextLine)dLF.GetByIndex(drs.DestIndex + i)).Line, green, ref LineCount2);
+                                tb2.AddLine(line2, green, ref LineCount2);
                                 GreenLines2.Add(drs.DestIndex + i);
+                                DiffChars("", line2);
                             }
                             break;
                         case DiffResultSpanStatus.Replace:
                             for (i = 0; i < drs.Length; i++) {
-                                tb1.AddLine(((TextLine)sLF.GetByIndex(drs.SourceIndex + i)).Line, red  , ref LineCount1);
-                                tb2.AddLine(((TextLine)dLF.GetByIndex(drs.DestIndex   + i)).Line, green, ref LineCount2);
-                                RedLines1  .Add(drs.SourceIndex + i);
-                                GreenLines2.Add(drs.DestIndex   + i);
+                                string line1 = de.GetSrcLineByIndex(drs.SourceIndex + i);
+                                string line2 = de.GetDstLineByIndex(drs.DestIndex + i);
+                                tb1.AddLine(line1, red, ref LineCount1);
+                                tb2.AddLine(line2, green, ref LineCount2);
+                                RedLines1.Add(drs.SourceIndex + i);
+                                GreenLines2.Add(drs.DestIndex + i);
+
+                                DiffChars(line1, line2);
+
                             }
                             break;
                     }
 
                 }
+
                 tb1.NeedRecalc(true);
                 tb2.NeedRecalc(true);
-                tb1.RefreshTheme();
-                tb2.RefreshTheme();
+                tb1.OnSyntaxHighlight(new TextChangedEventArgs(tb1.Range));
+                tb2.OnSyntaxHighlight(new TextChangedEventArgs(tb2.Range));
 
             } catch (Exception ex) {
                 HMS.LogError(ex);
             }
             Invalidate();
 
+        }
+
+        private void DiffChars(string line1, string line2) {
+            var del = new DiffEngine(line1, line2, true);
+            ArrayList res = del.ProcessDiff(DiffEngineLevel.FastImperfect);
+            foreach (DiffResultSpan drs in res) {
+                switch (drs.Status) {
+                    case DiffResultSpanStatus.DeleteSource:
+                        SetRangeStyle(tb1, drs.SourceIndex, drs.SourceIndex + drs.Length, true);
+                        break;
+
+                    case DiffResultSpanStatus.AddDestination:
+                        SetRangeStyle(tb2, drs.DestIndex, drs.DestIndex + drs.Length, false);
+                        break;
+
+                    case DiffResultSpanStatus.Replace:
+                        SetRangeStyle(tb1, drs.SourceIndex, drs.SourceIndex + drs.Length, true);
+                        SetRangeStyle(tb2, drs.DestIndex, drs.DestIndex + drs.Length, false);
+                        break;
+                }
+
+            }
+
+        }
+        List<Range> RangesGreen = new List<Range>();
+        List<Range> RangesRed   = new List<Range>();
+
+        private Range SetRangeStyle(FastColoredTextBox tb, int iChar1, int iChar2, bool isRed) {
+            int iLine = tb.LinesCount - 1;
+            Range r   = new Range(tb, iChar1, iLine, iChar2, iLine);
+            if (isRed) {
+                if (RangesRed.Count > 0) {
+                    Range pr = RangesRed[RangesRed.Count - 1];
+                    int plen = tb.Lines[pr.End.iLine].Length;
+                    if ((pr.End >= r.Start) || (pr.End.iLine == iLine - 1 && pr.End.iChar == plen)) {
+                        RangesRed.Remove(pr);
+                        r = new Range(tb, pr.Start, r.End);
+                    }
+                }
+                RangesRed.Add(r);
+            } else {
+                if (RangesGreen.Count > 0) {
+                    Range pr = RangesGreen[RangesGreen.Count - 1];
+                    int plen = tb.Lines[pr.End.iLine].Length;
+                    if ((pr.End >= r.Start) || (pr.End.iLine == iLine - 1 && pr.End.iChar == plen)) {
+                        RangesGreen.Remove(pr);
+                        r = new Range(tb, pr.Start, r.End);
+                    }
+                }
+                RangesGreen.Add(r);
+            }
+            return r;
         }
 
         private void toolStripMenuItemLoad1_Click(object sender, EventArgs e) {
