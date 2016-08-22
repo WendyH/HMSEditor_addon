@@ -13,6 +13,7 @@ namespace FastColoredTextBoxNS {
         public int       ErrorLine   = 0;
         public int       CurrentLine = 0;
 
+        public bool  Refreshable     = true;
         public bool  ShowIfVisible   = true;
         public bool  NoEvent4Value   = false;
         public bool  ShowChangedLines= false;
@@ -83,7 +84,10 @@ namespace FastColoredTextBoxNS {
                 ThumbTop = (int)(_value / (float)realRange * (TrackSize - ThumbSize));
             else
                 ThumbTop = 0;
-            Invalidate();
+            if (Refreshable) {
+                if (tb != null) tb.Refresh();
+                else Refresh();
+            }
         }
 
         public int Value {
@@ -103,8 +107,10 @@ namespace FastColoredTextBoxNS {
                 //Application.DoEvents();
                 if (!NoEvent4Value)
                     ValueChanged?.Invoke(this, EventArgs.Empty);
-                if (tb != null) tb.Refresh();
-                else Refresh();
+                if (Refreshable) {
+                    if (tb != null) tb.Refresh();
+                    else Refresh();
+                }
             }
         }
 
@@ -353,8 +359,10 @@ namespace FastColoredTextBoxNS {
                 //Invalidate();
                 //Application.DoEvents();
                 ValueChanged?.Invoke(this, EventArgs.Empty);
-                if (tb != null) tb.Refresh();
-                else Refresh();
+                if (Refreshable) {
+                    if (tb != null) tb.Refresh();
+                    else Refresh();
+                }
             }
         }
 
@@ -380,8 +388,10 @@ namespace FastColoredTextBoxNS {
                 //Invalidate();
                 //Application.DoEvents();
                 ValueChanged?.Invoke(this, EventArgs.Empty);
-                if (tb != null) tb.Refresh();
-                else Refresh();
+                if (Refreshable) {
+                    if (tb != null) tb.Refresh();
+                    else Refresh();
+                }
             }
         }
 

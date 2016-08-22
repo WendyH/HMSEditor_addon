@@ -222,6 +222,8 @@ namespace HMSEditorNS {
             tb.AllowSeveralTextStyleDrawing = false;
             tb.AllowInsertRemoveLines = false;
             tb.ReadOnly = true;
+            tb.SetScrollbarsNotRefreshable();
+            tb.OffAlignByLines();
             //tb.Font = new System.Drawing.Font("Monospace", 10f); // in linux
             Themes.SetTheme(tb, "Стандартная");
             tb.Paint += Tb_Paint;

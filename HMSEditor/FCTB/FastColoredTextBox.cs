@@ -303,6 +303,10 @@ namespace FastColoredTextBoxNS {
         public event EventHandler VerticalScrollValueChanged;
         public event EventHandler HorizontalScrollValueChanged;
 
+        public void OffAlignByLines() {
+            VerticalScroll.AlignByLines = false;
+        }
+
         private static string CachePath = Path.GetTempPath() + "hmsed" + Path.DirectorySeparatorChar;
         public static int maxCacheFiles = 400;
         public static int maxCacheSize  = 536870912; // 0.5 GB
@@ -5844,6 +5848,11 @@ namespace FastColoredTextBoxNS {
                 DoZoom(zoom / 100f);
                 OnZoomChanged();
             }
+        }
+
+        public void SetScrollbarsNotRefreshable() {
+            VerticalScroll.Refreshable = false;
+            HorizontalScroll.Refreshable = false;
         }
 
         public void SetZoomWithoutEvent(int value) {

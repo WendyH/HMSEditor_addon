@@ -230,8 +230,8 @@ namespace HMSEditorNS {
             FormDiff form = new FormDiff(TB.Language);
             form.Text1 = FirstText;
             form.Text2 = TB.Text;
-            form.Text1 = File.ReadAllText(@"D:\file1.cpp");
-            form.Text2 = File.ReadAllText(@"D:\file2.cpp");
+            //form.Text1 = File.ReadAllText(@"D:\file1.cpp");
+            //form.Text2 = File.ReadAllText(@"D:\file2.cpp");
             form.ShowDialog();
         }
 
