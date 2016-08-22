@@ -15,7 +15,7 @@ namespace FastColoredTextBoxNS {
 
         public bool  ShowIfVisible   = true;
         public bool  NoEvent4Value   = false;
-        public bool  ShowChanedLines = false;
+        public bool  ShowChangedLines= false;
         public bool  AlignByLines    = false;
         public Color ChannelColor    = Color.WhiteSmoke;
         public Color ThumbColor      = Color.DarkGray;
@@ -100,10 +100,11 @@ namespace FastColoredTextBoxNS {
                     ThumbTop = (int)(_value / (float)realRange * (TrackSize - ThumbSize));
                 else
                     ThumbTop = 0;
-                Application.DoEvents();
+                //Application.DoEvents();
                 if (!NoEvent4Value)
                     ValueChanged?.Invoke(this, EventArgs.Empty);
-                Invalidate();
+                if (tb != null) tb.Refresh();
+                else Refresh();
             }
         }
 
@@ -111,7 +112,7 @@ namespace FastColoredTextBoxNS {
         protected int NextRepeatInterval  = 150;
         protected int NextRepeatCount;
 
-        public FlatScrollbar(FastColoredTextBox fctb): this(false) {
+        public FlatScrollbar(FastColoredTextBox fctb, bool isHorisontal) : this(isHorisontal) {
             this.tb = fctb;
         }
 
@@ -246,9 +247,9 @@ namespace FastColoredTextBoxNS {
             if (CurrentLine > 0) DrawRectByLine(g, CurrentLine, Color.CornflowerBlue, 0, Width, 3);
             if (ErrorLine   > 0) DrawRectByLine(g, ErrorLine  , Color.OrangeRed     , 9, 5, 5);
             foreach (int iLine in Bookmarks  ) DrawRectByLine(g, iLine, Color.LightSkyBlue, 4, 7, 4);
-            foreach (int iLine in Breakpoints) DrawRectByLine(g, iLine, Color.IndianRed, 0, 7, 4);
+            foreach (int iLine in Breakpoints) DrawRectByLine(g, iLine, Color.IndianRed, 0, 10, 4);
             foreach (int iLine in FoundLines ) DrawRectByLine(g, iLine, FoundColor     , 2, 12, 3);
-            if (ShowChanedLines && tb != null) {
+            if (ShowChangedLines && tb != null) {
                 int count = tb.LinesCount;
                 for (int i = 0; i < count; i++)
                     if (tb[i].IsChanged) DrawRectByLine(g, i + 1, ChangedColor, 1, 4, 3);
@@ -349,9 +350,11 @@ namespace FastColoredTextBoxNS {
                     _value = (int)(Math.Ceiling(1d * _value / SmallChange) * SmallChange);
                 _value = Math.Max(Minimum, Math.Min(Maximum, _value));
 
-                Invalidate();
-                Application.DoEvents();
+                //Invalidate();
+                //Application.DoEvents();
                 ValueChanged?.Invoke(this, EventArgs.Empty);
+                if (tb != null) tb.Refresh();
+                else Refresh();
             }
         }
 
@@ -374,9 +377,11 @@ namespace FastColoredTextBoxNS {
                     _value = (int)(Math.Ceiling(1d * _value / SmallChange) * SmallChange);
                 _value = Math.Max(Minimum, Math.Min(Maximum, _value));
 
-                Invalidate();
-                Application.DoEvents();
+                //Invalidate();
+                //Application.DoEvents();
                 ValueChanged?.Invoke(this, EventArgs.Empty);
+                if (tb != null) tb.Refresh();
+                else Refresh();
             }
         }
 
@@ -410,7 +415,7 @@ namespace FastColoredTextBoxNS {
                 arrowDownRect = new Rectangle(new Point(ArrowAreaSize + TrackSize, 1), new Size(ArrowAreaSize, Height));
             } else {
                 arrowUpRect   = new Rectangle(new Point(1, 0), new Size(Width, ArrowAreaSize));
-                thumbRect     = new Rectangle(new Point(1, ThumbTop + ArrowAreaSize), new Size(Width, ThumbSize));
+                thumbRect     = new Rectangle(new Point(1, ThumbTop + ArrowAreaSize ), new Size(Width, ThumbSize));
                 arrowDownRect = new Rectangle(new Point(1, ArrowAreaSize + TrackSize), new Size(Width, ArrowAreaSize));
             }
 

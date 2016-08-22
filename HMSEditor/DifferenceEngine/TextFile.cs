@@ -31,6 +31,7 @@ namespace DifferenceEngine {
 
         public DiffList_TextFile(string text, bool byChars) {
             _lines = new ArrayList();
+            if (string.IsNullOrEmpty(text)) return;
             if (byChars) {
                 foreach (char ch in text.ToCharArray())
                     _lines.Add(new TextLine(ch.ToString()));

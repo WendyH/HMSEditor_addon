@@ -29,10 +29,10 @@ namespace HMSEditorNS {
         private int LineCount1 = 0;
         private int LineCount2 = 0;
 
-        Color ColorBackLines  = Color.FromArgb(230, 231, 232);
-        Color ColorRedLines   = Color.FromArgb(255, 102, 102);
-        Color ColorGreenLines = Color.FromArgb(118, 146,  60);
-        Color ColorVision     = Color.FromArgb(121, 121, 121);
+        Color ColorBackLines = Color.FromArgb(230, 231, 232);
+        Color ColorRedLines = Color.FromArgb(255, 102, 102);
+        Color ColorGreenLines = Color.FromArgb(118, 146, 60);
+        Color ColorVision = Color.FromArgb(111, 111, 111);
 
         public DiffControl() {
             SetStyle(ControlStyles.ResizeRedraw | ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
@@ -43,27 +43,37 @@ namespace HMSEditorNS {
             tb2.VerticalScrollValueChanged += Tb2_VerticalScrollValueChanged;
             tb1.HorizontalScrollValueChanged += Tb1_HorizontalScrollValueChanged;
             tb2.HorizontalScrollValueChanged += Tb2_HorizontalScrollValueChanged;
+            tb1.ZoomChanged += Tb1_ZoomChanged;
+            tb2.ZoomChanged += Tb2_ZoomChanged;
             tb1.VerticalScrollVisible = false;
+        }
+
+        private void Tb1_ZoomChanged(object sender, EventArgs e) {
+            tb2.SetZoomWithoutEvent(tb1.Zoom);
+        }
+
+        private void Tb2_ZoomChanged(object sender, EventArgs e) {
+            tb1.SetZoomWithoutEvent(tb2.Zoom);
         }
 
         private void Tb1_HorizontalScrollValueChanged(object sender, EventArgs e) {
             tb2.SetHorizontalScrollValueNoEvent(tb1.GetHorizontalScrollValue());
-            Invalidate();
+            Refresh();
         }
 
         private void Tb2_HorizontalScrollValueChanged(object sender, EventArgs e) {
             tb1.SetHorizontalScrollValueNoEvent(tb2.GetHorizontalScrollValue());
-            Invalidate();
+            Refresh();
         }
 
         private void Tb2_VerticalScrollValueChanged(object sender, EventArgs e) {
             tb1.SetVerticalScrollValueNoEvent(tb2.GetVerticalScrollValue());
-            Invalidate();
+            Refresh();
         }
 
         private void Tb1_VerticalScrollValueChanged(object sender, EventArgs e) {
             tb2.SetVerticalScrollValueNoEvent(tb1.GetVerticalScrollValue());
-            Invalidate();
+            Refresh();
         }
 
         private void GetBoundsBars(out int x1, out int x2, out int y, out int w, out int h) {
@@ -82,9 +92,9 @@ namespace HMSEditorNS {
             Rectangle rect1 = new Rectangle(x1, y, w, h);
             Rectangle rect2 = new Rectangle(x2, y, w, h);
 
-            Brush brushBack  = new SolidBrush(ColorBackLines);
+            Brush brushBack = new SolidBrush(ColorBackLines);
             Brush brushGreen = new SolidBrush(ColorGreenLines);
-            Brush brushRed   = new SolidBrush(ColorRedLines);
+            Brush brushRed = new SolidBrush(ColorRedLines);
             Pen penVis = new Pen(ColorVision, 3);
 
             g.FillRectangle(brushBack, rect1);
@@ -201,15 +211,17 @@ namespace HMSEditorNS {
         }
 
         private void PrepareTB(FastColoredTextBox tb) {
-            tb.ShowBeginOfFunctions   = false;
+            tb.ShowBeginOfFunctions = false;
             tb.ShowChangedLinesOnScrollbar = false;
-            tb.ShowFoldingLines       = false;
+            tb.ShowFoldingLines = false;
             tb.EnableFoldingIndicator = false;
-            tb.ShowFoldingMarkers     = false;
+            tb.ShowFoldingMarkers = false;
             tb.DrawLineNumberFromInfo = true;
             tb.ShowInvisibleCharsInSelection = true;
-            tb.SelectionWithBorders   = true;
+            tb.SelectionWithBorders = true;
             tb.AllowSeveralTextStyleDrawing = false;
+            tb.AllowInsertRemoveLines = false;
+            tb.ReadOnly = true;
             //tb.Font = new System.Drawing.Font("Monospace", 10f); // in linux
             Themes.SetTheme(tb, "Стандартная");
             tb.Paint += Tb_Paint;
@@ -218,57 +230,59 @@ namespace HMSEditorNS {
         private void Tb_Paint(object sender, PaintEventArgs e) {
             FastColoredTextBox tb = sender as FastColoredTextBox;
             if (tb == null) return;
-            int startLine = tb.YtoLineIndex();
-            int vertScrolValue = tb.GetVerticalScrollValue();
-            int horzScrolValue = tb.GetHorizontalScrollValue();
-            int iLine;
-            int CharHeight = tb.CharHeight;
-            int CharWidth  = tb.CharWidth;
 
-            int firstChar = (Math.Max(0, horzScrolValue - tb.Paddings.Left)) / CharWidth;
-            int lastChar  = (horzScrolValue + ClientSize.Width) / CharWidth;
-            int x = tb.LeftIndent + tb.Paddings.Left - horzScrolValue;
-            if (x < tb.LeftIndent) firstChar++;
+            lock (tb.Lines) {
+                int startLine = tb.YtoLineIndex();
+                int vertScrolValue = tb.GetVerticalScrollValue();
+                int horzScrolValue = tb.GetHorizontalScrollValue();
+                int iLine;
+                int CharHeight = tb.CharHeight;
+                int CharWidth = tb.CharWidth;
 
-            for (iLine = startLine; iLine < tb.LinesCount; iLine++) {
-                Graphics gr       = e.Graphics;
-                Line     line     = tb[iLine];
-                LineInfo lineInfo = tb.LineInfos[iLine];
+                int firstChar = (Math.Max(0, horzScrolValue - tb.Paddings.Left)) / CharWidth;
+                int lastChar = (horzScrolValue + ClientSize.Width) / CharWidth;
+                int x = tb.LeftIndent + tb.Paddings.Left - horzScrolValue;
+                if (x < tb.LeftIndent) firstChar++;
 
-                if (lineInfo.startY > vertScrolValue + ClientSize.Height)
-                    break;
-                if (lineInfo.startY + lineInfo.WordWrapStringsCount * CharHeight < vertScrolValue)
-                    continue;
-                if (lineInfo.VisibleState == VisibleState.Hidden)
-                    continue;
+                for (iLine = startLine; iLine < tb.LinesCount; iLine++) {
+                    Graphics gr = e.Graphics;
+                    Line line = tb[iLine];
+                    LineInfo lineInfo = tb.LineInfos[iLine];
 
-                int y = lineInfo.startY - vertScrolValue;
+                    if (lineInfo.startY > vertScrolValue + ClientSize.Height)
+                        break;
+                    if (lineInfo.startY + lineInfo.WordWrapStringsCount * CharHeight < vertScrolValue)
+                        continue;
+                    if (lineInfo.VisibleState == VisibleState.Hidden)
+                        continue;
 
-                gr.SmoothingMode = SmoothingMode.None;
-                Range textRange = new Range(tb, firstChar, iLine, lastChar + 1, iLine);
+                    int y = lineInfo.startY - vertScrolValue;
 
-                if (tb == tb1) {
-                    foreach (Range rr in RangesRed) {
-                        Range withTextRange = rr.GetIntersectionWith(textRange);
-                        if (withTextRange != null && withTextRange.Start != withTextRange.End) {
-                            Range r = rr.Clone();
-                            r.Normalize();
-                            tb.StyleDiffRed?.Draw(gr, x, 0, y, withTextRange, r);
+                    gr.SmoothingMode = SmoothingMode.None;
+                    Range textRange = new Range(tb, firstChar, iLine, lastChar + 1, iLine);
+
+                    if (tb == tb1) {
+                        foreach (Range rr in RangesRed) {
+                            Range withTextRange = rr.GetIntersectionWith(textRange);
+                            if (withTextRange != null && withTextRange.Start != withTextRange.End) {
+                                Range r = rr.Clone();
+                                r.Normalize();
+                                tb.StyleDiffRed?.Draw(gr, x, 0, y, withTextRange, r);
+                            }
+                        }
+                    } else {
+                        foreach (Range rr in RangesGreen) {
+                            Range withTextRange = rr.GetIntersectionWith(textRange);
+                            if (withTextRange != null && withTextRange.Start != withTextRange.End) {
+                                Range r = rr.Clone();
+                                r.Normalize();
+                                tb.StyleDiffGreen?.Draw(gr, x, 0, y, withTextRange, r);
+                            }
                         }
                     }
-                } else {
-                    foreach (Range rr in RangesGreen) {
-                        Range withTextRange = rr.GetIntersectionWith(textRange);
-                        if (withTextRange != null && withTextRange.Start != withTextRange.End) {
-                            Range r = rr.Clone();
-                            r.Normalize();
-                            tb.StyleDiffGreen?.Draw(gr, x, 0, y, withTextRange, r);
-                        }
-                    }
+
                 }
-
             }
-//            base.OnPaint(e);
         }
 
         private string FileDialogFilter() {
@@ -308,13 +322,13 @@ namespace HMSEditorNS {
                     }
                     if (m.Success) {
                         if (MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
-                            text = HttpUtility.HtmlDecode(m.Groups[1].Value);
+                            text = HttpUtility.HtmlDecode(m.Groups[1].Value).Replace("&apos;", "'");
                             switch (m.Groups[2].Value) {
-                                case "C++Script"   : Language = Language.CPPScript   ; break;
+                                case "C++Script": Language = Language.CPPScript; break;
                                 case "PascalScript": Language = Language.PascalScript; break;
-                                case "BasicScript" : Language = Language.BasicScript ; break;
-                                case "JScript"     : Language = Language.JScript     ; break;
-                                default            : Language = Language.YAML        ; break;
+                                case "BasicScript": Language = Language.BasicScript; break;
+                                case "JScript": Language = Language.JScript; break;
+                                default: Language = Language.YAML; break;
                             }
                         }
                     }
@@ -332,64 +346,65 @@ namespace HMSEditorNS {
                 DiffEngine de = new DiffEngine(Text1, Text2);
                 ArrayList rep = de.ProcessDiff(DiffEngineLevel.Medium);
 
-                Color red   = Color.FromArgb(100, Color.Red);
-                Color green = Color.FromArgb( 80, Color.Green);
+                Color red = Color.FromArgb(100, Color.Red);
+                Color green = Color.FromArgb(80, Color.Green);
 
                 GreenLines1.Clear();
                 GreenLines2.Clear();
                 RedLines1.Clear();
                 RedLines2.Clear();
-                tb1.ClearAllLines();
-                tb2.ClearAllLines();
 
-                int i;
-                LineCount1 = 0;
-                LineCount2 = 0;
-                foreach (DiffResultSpan drs in rep) {
-                    switch (drs.Status) {
-                        case DiffResultSpanStatus.DeleteSource:
-                            for (i = 0; i < drs.Length; i++) {
-                                string line1 = de.GetSrcLineByIndex(drs.SourceIndex + i);
-                                tb1.AddLine(line1, red, ref LineCount1);
-                                tb2.AddUnavaliableLine();
-                                RedLines1.Add(drs.SourceIndex + i);
-                                DiffChars(line1, "");
-                                if (line1.Length == 0)
-                                    SetRangeStyle(tb1, 0, 0, true);
+                lock (tb1.Lines) {
+                    lock (tb2.Lines) {
+                        tb1.Clear();
+                        tb2.Clear();
+                        int i;
+                        LineCount1 = 0;
+                        LineCount2 = 0;
+                        foreach (DiffResultSpan drs in rep) {
+                            switch (drs.Status) {
+                                case DiffResultSpanStatus.DeleteSource:
+                                    for (i = 0; i < drs.Length; i++) {
+                                        string line1 = de.GetSrcLineByIndex(drs.SourceIndex + i);
+                                        tb1.AddLine(line1, red, ref LineCount1);
+                                        tb2.AddUnavaliableLine();
+                                        RedLines1.Add(drs.SourceIndex + i);
+                                        DiffChars(line1, "");
+                                        if (line1.Length == 0)
+                                            SetRangeStyle(tb1, 0, 0, true);
+                                    }
+                                    break;
+                                case DiffResultSpanStatus.NoChange:
+                                    for (i = 0; i < drs.Length; i++) {
+                                        tb1.AddLine(de.GetSrcLineByIndex(drs.SourceIndex + i), Color.Transparent, ref LineCount1);
+                                        tb2.AddLine(de.GetDstLineByIndex(drs.DestIndex + i), Color.Transparent, ref LineCount2);
+                                    }
+                                    break;
+                                case DiffResultSpanStatus.AddDestination:
+                                    for (i = 0; i < drs.Length; i++) {
+                                        string line2 = de.GetDstLineByIndex(drs.DestIndex + i);
+                                        tb1.AddUnavaliableLine();
+                                        tb2.AddLine(line2, green, ref LineCount2);
+                                        GreenLines2.Add(drs.DestIndex + i);
+                                        DiffChars("", line2);
+                                        if (line2.Length == 0)
+                                            SetRangeStyle(tb2, 0, 0, false);
+                                    }
+                                    break;
+                                case DiffResultSpanStatus.Replace:
+                                    for (i = 0; i < drs.Length; i++) {
+                                        string line1 = de.GetSrcLineByIndex(drs.SourceIndex + i);
+                                        string line2 = de.GetDstLineByIndex(drs.DestIndex + i);
+                                        tb1.AddLine(line1, red, ref LineCount1);
+                                        tb2.AddLine(line2, green, ref LineCount2);
+                                        RedLines1.Add(drs.SourceIndex + i);
+                                        GreenLines2.Add(drs.DestIndex + i);
+                                        DiffChars(line1, line2);
+                                    }
+                                    break;
                             }
-                            break;
-                        case DiffResultSpanStatus.NoChange:
-                            for (i = 0; i < drs.Length; i++) {
-                                tb1.AddLine(de.GetSrcLineByIndex(drs.SourceIndex + i), Color.Transparent, ref LineCount1);
-                                tb2.AddLine(de.GetDstLineByIndex(drs.DestIndex + i), Color.Transparent, ref LineCount2);
-                            }
-                            break;
-                        case DiffResultSpanStatus.AddDestination:
-                            for (i = 0; i < drs.Length; i++) {
-                                string line2 = de.GetDstLineByIndex(drs.DestIndex + i);
-                                tb1.AddUnavaliableLine();
-                                tb2.AddLine(line2, green, ref LineCount2);
-                                GreenLines2.Add(drs.DestIndex + i);
-                                DiffChars("", line2);
-                                if (line2.Length == 0)
-                                    SetRangeStyle(tb2, 0, 0, false);
-                            }
-                            break;
-                        case DiffResultSpanStatus.Replace:
-                            for (i = 0; i < drs.Length; i++) {
-                                string line1 = de.GetSrcLineByIndex(drs.SourceIndex + i);
-                                string line2 = de.GetDstLineByIndex(drs.DestIndex + i);
-                                tb1.AddLine(line1, red, ref LineCount1);
-                                tb2.AddLine(line2, green, ref LineCount2);
-                                RedLines1.Add(drs.SourceIndex + i);
-                                GreenLines2.Add(drs.DestIndex + i);
-
-                                DiffChars(line1, line2);
-
-                            }
-                            break;
+                        }
                     }
-
                 }
 
                 tb1.NeedRecalc(true);
@@ -427,11 +442,11 @@ namespace HMSEditorNS {
 
         }
         List<Range> RangesGreen = new List<Range>();
-        List<Range> RangesRed   = new List<Range>();
+        List<Range> RangesRed = new List<Range>();
 
         private Range SetRangeStyle(FastColoredTextBox tb, int iChar1, int iChar2, bool isRed) {
             int iLine = tb.LinesCount - 1;
-            Range r   = new Range(tb, iChar1, iLine, iChar2, iLine);
+            Range r = new Range(tb, iChar1, iLine, iChar2, iLine);
             if (isRed) {
                 if (RangesRed.Count > 0) {
                     Range pr = RangesRed[RangesRed.Count - 1];
@@ -544,5 +559,35 @@ namespace HMSEditorNS {
             base.OnMouseMove(e);
         }
 
+        private bool ItsTb1(object sender) {
+            ToolStripItem item = sender as ToolStripItem;
+            if (item != null) {
+                ToolStrip ts = item.GetCurrentParent();
+                if (ts.Bounds.IntersectsWith(tb1.RectangleToScreen(tb1.Bounds)))
+                    return true;
+            }
+            return false;
+        }
+
+        private void ToolStripMenuItemSelectAll_Click(object sender, EventArgs e) {
+            if (ItsTb1(sender))
+                tb1.SelectAll();
+            else
+                tb2.SelectAll();
+        }
+
+        private void ToolStripMenuItemCopy_Click(object sender, EventArgs e) {
+            if (ItsTb1(sender))
+                tb1.Copy();
+            else
+                tb2.Copy();
+        }
+
+        private void ToolStripMenuItemZoom100_Click(object sender, EventArgs e) {
+            if (ItsTb1(sender))
+                tb1.Zoom = 100;
+            else
+                tb2.Zoom = 100;
+        }
     }
 }

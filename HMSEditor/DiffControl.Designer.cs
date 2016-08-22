@@ -23,6 +23,7 @@
         /// содержимое этого метода с помощью редактора кода.
         /// </summary>
         private void InitializeComponent() {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DiffControl));
             FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
             FastColoredTextBoxNS.ServiceColors serviceColors2 = new FastColoredTextBoxNS.ServiceColors();
@@ -35,6 +36,11 @@
             this.menuStrip2 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItemLoad2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemInsert2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ToolStripMenuItemSelectAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItemCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolStripMenuItemZoom100 = new System.Windows.Forms.ToolStripMenuItem();
             this.tb1 = new FastColoredTextBoxNS.FastColoredTextBox();
             this.tb2 = new FastColoredTextBoxNS.FastColoredTextBox();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -42,6 +48,7 @@
             this.splitContainer1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.menuStrip2.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tb1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb2)).BeginInit();
             this.SuspendLayout();
@@ -152,6 +159,45 @@
             this.toolStripMenuItemInsert2.Text = "Вставить из буфера обмена";
             this.toolStripMenuItemInsert2.Click += new System.EventHandler(this.toolStripMenuItemInsert2_Click);
             // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItemSelectAll,
+            this.ToolStripMenuItemCopy,
+            this.toolStripSeparator10,
+            this.ToolStripMenuItemZoom100});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(191, 98);
+            // 
+            // ToolStripMenuItemSelectAll
+            // 
+            this.ToolStripMenuItemSelectAll.Name = "ToolStripMenuItemSelectAll";
+            this.ToolStripMenuItemSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.ToolStripMenuItemSelectAll.Size = new System.Drawing.Size(190, 22);
+            this.ToolStripMenuItemSelectAll.Text = "Выделить всё";
+            this.ToolStripMenuItemSelectAll.Click += new System.EventHandler(this.ToolStripMenuItemSelectAll_Click);
+            // 
+            // ToolStripMenuItemCopy
+            // 
+            this.ToolStripMenuItemCopy.Image = global::HMSEditorNS.Properties.Resources.Copy_6524;
+            this.ToolStripMenuItemCopy.Name = "ToolStripMenuItemCopy";
+            this.ToolStripMenuItemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.ToolStripMenuItemCopy.Size = new System.Drawing.Size(190, 22);
+            this.ToolStripMenuItemCopy.Text = "Копировать";
+            this.ToolStripMenuItemCopy.Click += new System.EventHandler(this.ToolStripMenuItemCopy_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(187, 6);
+            // 
+            // ToolStripMenuItemZoom100
+            // 
+            this.ToolStripMenuItemZoom100.Name = "ToolStripMenuItemZoom100";
+            this.ToolStripMenuItemZoom100.Size = new System.Drawing.Size(190, 22);
+            this.ToolStripMenuItemZoom100.Text = "Zoom 100%";
+            this.ToolStripMenuItemZoom100.Click += new System.EventHandler(this.ToolStripMenuItemZoom100_Click);
+            // 
             // tb1
             // 
             this.tb1.AutoCompleteBracketsList = new char[] {
@@ -174,6 +220,7 @@
             this.tb1.BreakpointLineColor = System.Drawing.Color.Empty;
             this.tb1.CharHeight = 15;
             this.tb1.CharWidth = 7;
+            this.tb1.ContextMenuStrip = this.contextMenuStrip1;
             this.tb1.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.tb1.DebugCurrentLineIcon = null;
             this.tb1.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
@@ -222,6 +269,7 @@
             this.tb2.BreakpointLineColor = System.Drawing.Color.Empty;
             this.tb2.CharHeight = 15;
             this.tb2.CharWidth = 7;
+            this.tb2.ContextMenuStrip = this.contextMenuStrip1;
             this.tb2.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.tb2.DebugCurrentLineIcon = null;
             this.tb2.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
@@ -265,6 +313,7 @@
             this.menuStrip1.PerformLayout();
             this.menuStrip2.ResumeLayout(false);
             this.menuStrip2.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.tb1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb2)).EndInit();
             this.ResumeLayout(false);
@@ -284,5 +333,10 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemInsert2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemSelectAll;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemCopy;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemZoom100;
     }
 }

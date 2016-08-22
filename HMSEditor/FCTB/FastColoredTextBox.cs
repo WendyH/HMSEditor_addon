@@ -49,8 +49,8 @@ namespace FastColoredTextBoxNS {
     /// Fast colored textbox
     /// </summary>
     public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
-        new FlatScrollbar VerticalScroll   = null;
-        new FlatScrollbar HorizontalScroll = new FlatScrollbar(true);
+        new FlatScrollbar VerticalScroll  ;
+        new FlatScrollbar HorizontalScroll;
 
         new Size ClientSize {
             get {
@@ -59,7 +59,7 @@ namespace FastColoredTextBoxNS {
                 return new Size(w, h);
             }
         }
-        public bool ShowChangedLinesOnScrollbar { get { return VerticalScroll.ShowChanedLines; } set { VerticalScroll.ShowChanedLines = value; } }
+        public bool ShowChangedLinesOnScrollbar { get { return VerticalScroll.ShowChangedLines; } set { VerticalScroll.ShowChangedLines = value; } }
         public bool HighlightCurrentLine = false;
         public bool HighlightChangedLine = false;
         public int  RoundedCornersRadius = 3;
@@ -115,6 +115,7 @@ namespace FastColoredTextBoxNS {
         private Brush     backBrush;
         private Bookmarks bookmarks;
         private Bookmarks breakpoints; // By WendyH
+        private bool      Cleared;  
         private bool      caretVisible;
         private Color     changedLineColor;
         private int       charHeight;
@@ -180,8 +181,9 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public FastColoredTextBox() {
-            VerticalScroll = new FlatScrollbar(this);
-            ServiceColors  = new ServiceColors();
+            VerticalScroll   = new FlatScrollbar(this, false);
+            HorizontalScroll = new FlatScrollbar(this, true );
+            ServiceColors    = new ServiceColors();
             //register type provider
             TypeDescriptionProvider prov = TypeDescriptor.GetProvider(GetType());
             var fieldInfo = prov.GetType().GetField("Provider", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -284,12 +286,10 @@ namespace FastColoredTextBoxNS {
         }
 
         private void HorizontalScroll_Scroll(object sender, EventArgs e) {
-            Invalidate();
             HorizontalScrollValueChanged?.Invoke(this, e);
         }
 
         private void VerticalScroll_Scroll(object sender, EventArgs e) {
-            Invalidate();
             VerticalScrollValueChanged?.Invoke(this, e);
         }
 
@@ -329,19 +329,17 @@ namespace FastColoredTextBoxNS {
             }
             return sb.ToString();
         }
-        public void ClearAllLines() {
-            Clear();
-            TextSource.Clear();
-        }
         public void AddUnavaliableLine() {
             int inr = -1;
             Line line = AddLine("", Color.FromArgb(80, Color.Gray), ref inr);
             line.Unavaliable = true;
         }
         public Line AddLine(string insertedText, Color color, ref int lineNo) {
-            Line line = TextSource.CreateLine();
+            Line line;
+            if (Cleared) line = TextSource[0];
+            else line = TextSource.CreateLine();
             lock (Lines) {
-                int  len  = insertedText.Length;
+                int  len = insertedText.Length;
                 for (int i = 0; i < len; i++) {
                     line.Add(new Char(insertedText[i]));
                 }
@@ -350,7 +348,9 @@ namespace FastColoredTextBoxNS {
                 }
                 if (color != Color.Transparent)
                     line.BackgroundBrush = new SolidBrush(color);
-                TextSource.Add(line);
+                if (!Cleared)
+                    TextSource.Add(line);
+                Cleared = false;
             }
             return line;
         }
@@ -2849,6 +2849,7 @@ namespace FastColoredTextBoxNS {
                 ClearSelected();
                 lines.Manager.ClearHistory();
                 Invalidate();
+                Cleared = true;
             } finally {
                 Selection.EndUpdate();
             }
@@ -3280,8 +3281,12 @@ namespace FastColoredTextBoxNS {
             //calc min left indent
             LeftIndent = LeftPadding;
             long maxLineNumber = LinesCount + lineNumberStartValue - 1;
-            if (DrawLineNumberFromInfo)
-                maxLineNumber = lines[LinesCount - 1].LineNo; // By WendyH
+            try {
+                if (DrawLineNumberFromInfo)
+                    maxLineNumber = lines[LinesCount - 1].LineNo; // By WendyH
+            } catch {
+                return;
+            }
             int charsForLineNumber = 2 + (maxLineNumber > 0 ? (int)Math.Log10(maxLineNumber) : 0);
 
             // If there are reserved character for line numbers: correct this
@@ -4238,12 +4243,10 @@ namespace FastColoredTextBoxNS {
 
         public void SetVerticalScrollValueNoEvent(int value) {
             VerticalScroll.SetValue(value);
-            Invalidate();
         }
 
         public void SetHorizontalScrollValueNoEvent(int value) {
             HorizontalScroll.SetValue(value);
-            Invalidate();
         }
 
         public void SetVerticalScrollValue(int value) {
@@ -5841,6 +5844,12 @@ namespace FastColoredTextBoxNS {
                 DoZoom(zoom / 100f);
                 OnZoomChanged();
             }
+        }
+
+        public void SetZoomWithoutEvent(int value) {
+            zoom = value;
+            CaretCreated = false;
+            DoZoom(zoom / 100f);
         }
 
         private void OnZoomChanged() {
