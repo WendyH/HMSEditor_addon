@@ -74,6 +74,37 @@ namespace HMSEditorNS {
             Refresh();
         }
 
+        public void FindNextDiff(FastColoredTextBox tb = null) {
+            if (tb == null) tb = tb2;
+            int oldLine = tb[tb.Selection.Start.iLine].LineNo - 1;
+            int newLine = oldLine;
+            List<int> list = tb == tb1 ? RedLines1 : GreenLines2;
+            foreach (var e in list) {
+                if (e > oldLine) {
+                    newLine = e;
+                    break;
+                }
+            }
+            if (oldLine != newLine)
+                tb.NavigateToLineNum(newLine + 1, true);
+            tb.Focus();
+        }
+
+        public void FindPrevDiff(FastColoredTextBox tb) {
+            int oldLine = tb[tb.Selection.Start.iLine].LineNo - 1;
+            int newLine = oldLine;
+            List<int> list = tb == tb1 ? RedLines1 : GreenLines2;
+            for (int i = list.Count - 1; i >= 0; i--) {
+                if (list[i] < oldLine) {
+                    newLine = list[i];
+                    break;
+                }
+            }
+            if (oldLine != newLine)
+                tb.NavigateToLineNum(newLine + 1, true);
+            tb.Focus();
+        }
+
         private void GetBoundsBars(out int x1, out int x2, out int y, out int w, out int h) {
             Padding pad = new Padding(10, 5, 10, 5);
             w = 16;
@@ -90,10 +121,10 @@ namespace HMSEditorNS {
             Rectangle rect1 = new Rectangle(x1, y, w, h);
             Rectangle rect2 = new Rectangle(x2, y, w, h);
 
-            Brush brushBack = new SolidBrush(ColorBackLines);
+            Brush brushBack  = new SolidBrush(ColorBackLines);
             Brush brushGreen = new SolidBrush(ColorGreenLines);
-            Brush brushRed = new SolidBrush(ColorRedLines);
-            Pen penVis = new Pen(ColorVision, 3);
+            Brush brushRed   = new SolidBrush(ColorRedLines);
+            Pen   penVis     = new Pen(ColorVision, 3);
 
             g.FillRectangle(brushBack, rect1);
             g.FillRectangle(brushBack, rect2);
@@ -130,18 +161,18 @@ namespace HMSEditorNS {
                 g.DrawPath(penVis, path);
             }
 
-            brushBack.Dispose();
+            brushBack .Dispose();
             brushGreen.Dispose();
             brushRed.Dispose();
-            penVis.Dispose();
+            penVis  .Dispose();
 
             base.OnPaint(e);
         }
 
         public static GraphicsPath GetVisionPath(Rectangle bounds1, Rectangle bounds2, int radius) {
             int diameter = radius * 2;
-            Size size = new Size(diameter, diameter);
-            Rectangle arc = new Rectangle(bounds1.Location, size);
+            Size         size = new Size(diameter, diameter);
+            Rectangle    arc  = new Rectangle(bounds1.Location, size);
             GraphicsPath path = new GraphicsPath();
 
             if (radius == 0) {
@@ -160,7 +191,7 @@ namespace HMSEditorNS {
             path.AddLine(bounds1.X + radius, bounds1.Bottom, bounds1.Right, bounds1.Bottom);
 
             path.AddLine(bounds2.X, bounds2.Bottom, bounds2.Right - radius, bounds2.Bottom);
-            arc.X = bounds2.Right - diameter;
+            arc.X = bounds2.Right  - diameter;
             arc.Y = bounds2.Bottom - diameter;
             path.StartFigure();
             path.AddArc(arc, 0, 90); // bottom right arc  
@@ -230,10 +261,10 @@ namespace HMSEditorNS {
                 int horzScrolValue = tb.GetHorizontalScrollValue();
                 int iLine;
                 int CharHeight = tb.CharHeight;
-                int CharWidth = tb.CharWidth;
+                int CharWidth  = tb.CharWidth;
 
                 int firstChar = (Math.Max(0, horzScrolValue - tb.Paddings.Left)) / CharWidth;
-                int lastChar = (horzScrolValue + ClientSize.Width) / CharWidth;
+                int lastChar  = (horzScrolValue + ClientSize.Width) / CharWidth;
                 int x = tb.LeftIndent + tb.Paddings.Left - horzScrolValue;
                 if (x < tb.LeftIndent) firstChar++;
 
@@ -317,11 +348,11 @@ namespace HMSEditorNS {
                         if (MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
                             text = HttpUtility.HtmlDecode(m.Groups[1].Value).Replace("&apos;", "'");
                             switch (m.Groups[2].Value) {
-                                case "C++Script": Language = Language.CPPScript; break;
+                                case "C++Script"   : Language = Language.CPPScript   ; break;
                                 case "PascalScript": Language = Language.PascalScript; break;
-                                case "BasicScript": Language = Language.BasicScript; break;
-                                case "JScript": Language = Language.JScript; break;
-                                default: Language = Language.YAML; break;
+                                case "BasicScript" : Language = Language.BasicScript ; break;
+                                case "JScript"     : Language = Language.JScript     ; break;
+                                default            : Language = Language.YAML        ; break;
                             }
                         }
                     }
@@ -339,8 +370,8 @@ namespace HMSEditorNS {
                 DiffEngine de = new DiffEngine(Text1, Text2);
                 ArrayList rep = de.ProcessDiff(DiffEngineLevel.Medium);
 
-                Color red = Color.FromArgb(100, Color.Red);
-                Color green = Color.FromArgb(80, Color.Green);
+                Color red   = Color.FromArgb(100, Color.Red  );
+                Color green = Color.FromArgb( 80, Color.Green);
 
                 GreenLines2.Clear();
                 RedLines1.Clear();
@@ -433,7 +464,7 @@ namespace HMSEditorNS {
 
         }
         List<Range> RangesGreen = new List<Range>();
-        List<Range> RangesRed = new List<Range>();
+        List<Range> RangesRed   = new List<Range>();
 
         private Range SetRangeStyle(FastColoredTextBox tb, int iChar1, int iChar2, bool isRed) {
             int iLine = tb.LinesCount - 1;
@@ -597,36 +628,6 @@ namespace HMSEditorNS {
 
         private void toolStripMenuItemNextDiff1_Click(object sender, EventArgs e) {
             FindNextDiff(tb1);
-        }
-
-        private void FindNextDiff(FastColoredTextBox tb) {
-            int oldLine = tb[tb.Selection.Start.iLine].LineNo - 1;
-            int newLine = oldLine;
-            List<int> list = tb == tb1 ? RedLines1 : GreenLines2;
-            foreach (var e in list) {
-                if (e > oldLine) {
-                    newLine = e;
-                    break;
-                }
-            }
-            if (oldLine != newLine)
-                tb.NavigateToLineNum(newLine+1, true);
-            tb.Focus();
-        }
-
-        private void FindPrevDiff(FastColoredTextBox tb) {
-            int oldLine = tb[tb.Selection.Start.iLine].LineNo - 1;
-            int newLine = oldLine;
-            List<int> list = tb == tb1 ? RedLines1 : GreenLines2;
-            for(int i=list.Count-1; i>=0; i--) {
-                if (list[i] < oldLine) {
-                    newLine = list[i];
-                    break;
-                }
-            }
-            if (oldLine != newLine)
-                tb.NavigateToLineNum(newLine+1, true);
-            tb.Focus();
         }
 
         private void toolStripMenuItemPrevDiff1_Click(object sender, EventArgs e) {
