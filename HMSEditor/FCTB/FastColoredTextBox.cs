@@ -49,12 +49,12 @@ namespace FastColoredTextBoxNS {
     /// Fast colored textbox
     /// </summary>
     public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
-        new FlatScrollbar VerticalScroll  ;
+        new FlatScrollbar VerticalScroll;
         new FlatScrollbar HorizontalScroll;
 
         new Size ClientSize {
             get {
-                int w = base.ClientSize.Width  - (VerticalScroll  .Visible ? VerticalScroll  .Width  : 0);
+                int w = base.ClientSize.Width - (VerticalScroll.Visible ? VerticalScroll.Width : 0);
                 int h = base.ClientSize.Height - (HorizontalScroll.Visible ? HorizontalScroll.Height : 0);
                 return new Size(w, h);
             }
@@ -62,7 +62,7 @@ namespace FastColoredTextBoxNS {
         public bool ShowChangedLinesOnScrollbar { get { return VerticalScroll.ShowChangedLines; } set { VerticalScroll.ShowChangedLines = value; } }
         public bool HighlightCurrentLine = false;
         public bool HighlightChangedLine = false;
-        public int  RoundedCornersRadius = 3;
+        public int  RoundedCornersRadius    { get; set; }
         public bool VerticalScrollVisible   { get { return VerticalScroll  .ShowIfVisible; } set { VerticalScroll  .ShowIfVisible = value; if (!value) VerticalScroll  .Visible = false; } }
         public bool HorizontalScrollVisible { get { return HorizontalScroll.ShowIfVisible; } set { HorizontalScroll.ShowIfVisible = value; if (!value) HorizontalScroll.Visible = false; } }
         // By WendyH
@@ -184,6 +184,7 @@ namespace FastColoredTextBoxNS {
             VerticalScroll   = new FlatScrollbar(this, false);
             HorizontalScroll = new FlatScrollbar(this, true );
             ServiceColors    = new ServiceColors();
+            RoundedCornersRadius = 3;
             //register type provider
             TypeDescriptionProvider prov = TypeDescriptor.GetProvider(GetType());
             var fieldInfo = prov.GetType().GetField("Provider", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -350,8 +351,7 @@ namespace FastColoredTextBoxNS {
                 if (color != Color.LightGray) {
                     line.LineNo = ++lineNo;
                 }
-                if (color != Color.Transparent)
-                    line.BackgroundBrush = new SolidBrush(color);
+                line.BackgroundBrush = new SolidBrush(color);
                 if (!Cleared)
                     TextSource.Add(line);
                 Cleared = false;
@@ -2889,9 +2889,11 @@ namespace FastColoredTextBoxNS {
         }
 
         // < By WendyH -------------------------
-        public void NavigateToLineNum(int num) {
+        public void NavigateToLineNum(int num, bool setSelection = false) {
             for (int i = 0; i < LinesCount; i++) {
                 if (lines[i].LineNo == num) {
+                    if (setSelection)
+                        Selection.Start = new Place(0, i);
                     DoLineVisible(i);
                     break;
                 }

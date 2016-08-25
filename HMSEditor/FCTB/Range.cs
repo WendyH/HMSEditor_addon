@@ -1532,8 +1532,8 @@ namespace FastColoredTextBoxNS {
                 char ch = r.CharAfterStart;
                 if      (ch == '[') { stack1.Push(1); }
                 else if (ch == ']') { if (stack1.Count > 0) { stack1.Pop(); continue; } else break; }
-                else if (ch == '(') { stack2.Push(1); }
-                else if (ch == ')') { if (stack2.Count > 0) { stack2.Pop(); continue; } else break; }
+                //else if (ch == '(') { stack2.Push(1); }
+                //else if (ch == ')') { if (stack2.Count > 0) { stack2.Pop(); continue; } else break; }
                 if (stack1.Count + stack2.Count > 0) continue;
                 if (!regexLookRight.IsMatch(ch.ToString())) break;
             }

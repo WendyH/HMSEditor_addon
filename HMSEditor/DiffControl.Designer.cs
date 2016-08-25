@@ -28,27 +28,40 @@
             FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
             FastColoredTextBoxNS.ServiceColors serviceColors2 = new FastColoredTextBoxNS.ServiceColors();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.ToolStripMenuItemSelectAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItemCopy = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolStripMenuItemFind = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItemGoTo = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolStripMenuItemZoom100 = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItemLoad1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemInsert1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemPrevDiff1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemNextDiff1 = new System.Windows.Forms.ToolStripMenuItem();
             this.label2 = new System.Windows.Forms.Label();
             this.menuStrip2 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItemLoad2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemInsert2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.ToolStripMenuItemSelectAll = new System.Windows.Forms.ToolStripMenuItem();
-            this.ToolStripMenuItemCopy = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator10 = new System.Windows.Forms.ToolStripSeparator();
-            this.ToolStripMenuItemZoom100 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemPrevDiff2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItemNextDiff2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tb1 = new FastColoredTextBoxNS.FastColoredTextBox();
             this.tb2 = new FastColoredTextBoxNS.FastColoredTextBox();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.menuStrip2.SuspendLayout();
-            this.contextMenuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tb1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb2)).BeginInit();
             this.SuspendLayout();
@@ -73,11 +86,74 @@
             this.splitContainer1.Panel2.Controls.Add(this.tb2);
             this.splitContainer1.Panel2.Controls.Add(this.label2);
             this.splitContainer1.Panel2.Controls.Add(this.menuStrip2);
-            this.splitContainer1.Size = new System.Drawing.Size(641, 380);
-            this.splitContainer1.SplitterDistance = 311;
+            this.splitContainer1.Size = new System.Drawing.Size(850, 452);
+            this.splitContainer1.SplitterDistance = 411;
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 1;
             this.splitContainer1.TabStop = false;
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItemSelectAll,
+            this.ToolStripMenuItemCopy,
+            this.toolStripSeparator1,
+            this.ToolStripMenuItemFind,
+            this.ToolStripMenuItemGoTo,
+            this.toolStripSeparator10,
+            this.ToolStripMenuItemZoom100});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.Size = new System.Drawing.Size(196, 126);
+            // 
+            // ToolStripMenuItemSelectAll
+            // 
+            this.ToolStripMenuItemSelectAll.Name = "ToolStripMenuItemSelectAll";
+            this.ToolStripMenuItemSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.ToolStripMenuItemSelectAll.Size = new System.Drawing.Size(195, 22);
+            this.ToolStripMenuItemSelectAll.Text = "Выделить всё";
+            this.ToolStripMenuItemSelectAll.Click += new System.EventHandler(this.ToolStripMenuItemSelectAll_Click);
+            // 
+            // ToolStripMenuItemCopy
+            // 
+            this.ToolStripMenuItemCopy.Image = global::HMSEditorNS.Properties.Resources.Copy_6524;
+            this.ToolStripMenuItemCopy.Name = "ToolStripMenuItemCopy";
+            this.ToolStripMenuItemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
+            this.ToolStripMenuItemCopy.Size = new System.Drawing.Size(195, 22);
+            this.ToolStripMenuItemCopy.Text = "Копировать";
+            this.ToolStripMenuItemCopy.Click += new System.EventHandler(this.ToolStripMenuItemCopy_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(192, 6);
+            // 
+            // ToolStripMenuItemFind
+            // 
+            this.ToolStripMenuItemFind.Image = global::HMSEditorNS.Properties.Resources.Find_5650;
+            this.ToolStripMenuItemFind.Name = "ToolStripMenuItemFind";
+            this.ToolStripMenuItemFind.Size = new System.Drawing.Size(195, 22);
+            this.ToolStripMenuItemFind.Text = "Найти";
+            this.ToolStripMenuItemFind.Click += new System.EventHandler(this.ToolStripMenuItemFind_Click);
+            // 
+            // ToolStripMenuItemGoTo
+            // 
+            this.ToolStripMenuItemGoTo.Image = global::HMSEditorNS.Properties.Resources.HistoricalInstructionPointer_16x;
+            this.ToolStripMenuItemGoTo.Name = "ToolStripMenuItemGoTo";
+            this.ToolStripMenuItemGoTo.Size = new System.Drawing.Size(195, 22);
+            this.ToolStripMenuItemGoTo.Text = "Перейти к строке №...";
+            this.ToolStripMenuItemGoTo.Click += new System.EventHandler(this.ToolStripMenuItemGoTo_Click);
+            // 
+            // toolStripSeparator10
+            // 
+            this.toolStripSeparator10.Name = "toolStripSeparator10";
+            this.toolStripSeparator10.Size = new System.Drawing.Size(192, 6);
+            // 
+            // ToolStripMenuItemZoom100
+            // 
+            this.ToolStripMenuItemZoom100.Name = "ToolStripMenuItemZoom100";
+            this.ToolStripMenuItemZoom100.Size = new System.Drawing.Size(195, 22);
+            this.ToolStripMenuItemZoom100.Text = "Zoom 100%";
+            this.ToolStripMenuItemZoom100.Click += new System.EventHandler(this.ToolStripMenuItemZoom100_Click);
             // 
             // label1
             // 
@@ -87,19 +163,20 @@
             this.label1.Location = new System.Drawing.Point(0, 24);
             this.label1.Name = "label1";
             this.label1.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this.label1.Size = new System.Drawing.Size(311, 19);
+            this.label1.Size = new System.Drawing.Size(411, 19);
             this.label1.TabIndex = 3;
             this.label1.Text = "Исходный текст:";
             // 
             // menuStrip1
             // 
-            this.menuStrip1.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemLoad1,
-            this.toolStripMenuItemInsert1});
+            this.toolStripMenuItemInsert1,
+            this.toolStripMenuItemPrevDiff1,
+            this.toolStripMenuItemNextDiff1});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(311, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(411, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -119,6 +196,26 @@
             this.toolStripMenuItemInsert1.Text = "Вставить из буфера обмена";
             this.toolStripMenuItemInsert1.Click += new System.EventHandler(this.toolStripMenuItemInsert1_Click);
             // 
+            // toolStripMenuItemPrevDiff1
+            // 
+            this.toolStripMenuItemPrevDiff1.AutoToolTip = true;
+            this.toolStripMenuItemPrevDiff1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripMenuItemPrevDiff1.Image = global::HMSEditorNS.Properties.Resources.FindPrevious_13244;
+            this.toolStripMenuItemPrevDiff1.Name = "toolStripMenuItemPrevDiff1";
+            this.toolStripMenuItemPrevDiff1.Size = new System.Drawing.Size(28, 20);
+            this.toolStripMenuItemPrevDiff1.ToolTipText = "Перейти к предыдущему отличию";
+            this.toolStripMenuItemPrevDiff1.Click += new System.EventHandler(this.toolStripMenuItemPrevDiff1_Click);
+            // 
+            // toolStripMenuItemNextDiff1
+            // 
+            this.toolStripMenuItemNextDiff1.AutoToolTip = true;
+            this.toolStripMenuItemNextDiff1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripMenuItemNextDiff1.Image = global::HMSEditorNS.Properties.Resources.FindNext_13243;
+            this.toolStripMenuItemNextDiff1.Name = "toolStripMenuItemNextDiff1";
+            this.toolStripMenuItemNextDiff1.Size = new System.Drawing.Size(28, 20);
+            this.toolStripMenuItemNextDiff1.ToolTipText = "Перейти к следующему отличию";
+            this.toolStripMenuItemNextDiff1.Click += new System.EventHandler(this.toolStripMenuItemNextDiff1_Click);
+            // 
             // label2
             // 
             this.label2.BackColor = System.Drawing.SystemColors.Control;
@@ -127,19 +224,20 @@
             this.label2.Location = new System.Drawing.Point(0, 24);
             this.label2.Name = "label2";
             this.label2.Padding = new System.Windows.Forms.Padding(0, 3, 0, 3);
-            this.label2.Size = new System.Drawing.Size(324, 19);
+            this.label2.Size = new System.Drawing.Size(433, 19);
             this.label2.TabIndex = 4;
             this.label2.Text = "Изменённый текст:";
             // 
             // menuStrip2
             // 
-            this.menuStrip2.BackColor = System.Drawing.SystemColors.AppWorkspace;
             this.menuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripMenuItemLoad2,
-            this.toolStripMenuItemInsert2});
+            this.toolStripMenuItemInsert2,
+            this.toolStripMenuItemPrevDiff2,
+            this.toolStripMenuItemNextDiff2});
             this.menuStrip2.Location = new System.Drawing.Point(0, 0);
             this.menuStrip2.Name = "menuStrip2";
-            this.menuStrip2.Size = new System.Drawing.Size(324, 24);
+            this.menuStrip2.Size = new System.Drawing.Size(433, 24);
             this.menuStrip2.TabIndex = 0;
             this.menuStrip2.Text = "menuStrip2";
             // 
@@ -159,44 +257,64 @@
             this.toolStripMenuItemInsert2.Text = "Вставить из буфера обмена";
             this.toolStripMenuItemInsert2.Click += new System.EventHandler(this.toolStripMenuItemInsert2_Click);
             // 
-            // contextMenuStrip1
+            // toolStripMenuItemPrevDiff2
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ToolStripMenuItemSelectAll,
-            this.ToolStripMenuItemCopy,
-            this.toolStripSeparator10,
-            this.ToolStripMenuItemZoom100});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(191, 98);
+            this.toolStripMenuItemPrevDiff2.AutoToolTip = true;
+            this.toolStripMenuItemPrevDiff2.Image = global::HMSEditorNS.Properties.Resources.FindPrevious_13244;
+            this.toolStripMenuItemPrevDiff2.Name = "toolStripMenuItemPrevDiff2";
+            this.toolStripMenuItemPrevDiff2.Size = new System.Drawing.Size(28, 20);
+            this.toolStripMenuItemPrevDiff2.ToolTipText = "Перейти к предыдущему отличию";
+            this.toolStripMenuItemPrevDiff2.Click += new System.EventHandler(this.toolStripMenuItemPrevDiff2_Click);
             // 
-            // ToolStripMenuItemSelectAll
+            // toolStripMenuItemNextDiff2
             // 
-            this.ToolStripMenuItemSelectAll.Name = "ToolStripMenuItemSelectAll";
-            this.ToolStripMenuItemSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.ToolStripMenuItemSelectAll.Size = new System.Drawing.Size(190, 22);
-            this.ToolStripMenuItemSelectAll.Text = "Выделить всё";
-            this.ToolStripMenuItemSelectAll.Click += new System.EventHandler(this.ToolStripMenuItemSelectAll_Click);
+            this.toolStripMenuItemNextDiff2.AutoToolTip = true;
+            this.toolStripMenuItemNextDiff2.Image = global::HMSEditorNS.Properties.Resources.FindNext_13243;
+            this.toolStripMenuItemNextDiff2.Name = "toolStripMenuItemNextDiff2";
+            this.toolStripMenuItemNextDiff2.Size = new System.Drawing.Size(28, 20);
+            this.toolStripMenuItemNextDiff2.ToolTipText = "Перейти к следующему отличию";
+            this.toolStripMenuItemNextDiff2.Click += new System.EventHandler(this.toolStripMenuItemNextDiff2_Click);
             // 
-            // ToolStripMenuItemCopy
+            // statusStrip1
             // 
-            this.ToolStripMenuItemCopy.Image = global::HMSEditorNS.Properties.Resources.Copy_6524;
-            this.ToolStripMenuItemCopy.Name = "ToolStripMenuItemCopy";
-            this.ToolStripMenuItemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.ToolStripMenuItemCopy.Size = new System.Drawing.Size(190, 22);
-            this.ToolStripMenuItemCopy.Text = "Копировать";
-            this.ToolStripMenuItemCopy.Click += new System.EventHandler(this.ToolStripMenuItemCopy_Click);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel3,
+            this.toolStripStatusLabel4,
+            this.toolStripStatusLabel1,
+            this.toolStripStatusLabel2});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 453);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(913, 23);
+            this.statusStrip1.TabIndex = 2;
+            this.statusStrip1.Text = "statusStrip1";
             // 
-            // toolStripSeparator10
+            // toolStripStatusLabel1
             // 
-            this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(187, 6);
+            this.toolStripStatusLabel1.BackColor = System.Drawing.Color.Green;
+            this.toolStripStatusLabel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(13, 15);
+            this.toolStripStatusLabel1.Text = "  ";
             // 
-            // ToolStripMenuItemZoom100
+            // toolStripStatusLabel2
             // 
-            this.ToolStripMenuItemZoom100.Name = "ToolStripMenuItemZoom100";
-            this.ToolStripMenuItemZoom100.Size = new System.Drawing.Size(190, 22);
-            this.ToolStripMenuItemZoom100.Text = "Zoom 100%";
-            this.ToolStripMenuItemZoom100.Click += new System.EventHandler(this.ToolStripMenuItemZoom100_Click);
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(68, 18);
+            this.toolStripStatusLabel2.Text = "Добавлено";
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.toolStripStatusLabel3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(13, 15);
+            this.toolStripStatusLabel3.Text = "  ";
+            // 
+            // toolStripStatusLabel4
+            // 
+            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(59, 18);
+            this.toolStripStatusLabel4.Text = "Удалено  ";
             // 
             // tb1
             // 
@@ -233,6 +351,7 @@
             this.tb1.Name = "tb1";
             this.tb1.Paddings = new System.Windows.Forms.Padding(0);
             this.tb1.ReadOnly = true;
+            this.tb1.RoundedCornersRadius = 3;
             serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
             serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
             serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
@@ -242,7 +361,7 @@
             this.tb1.ServiceColors = serviceColors1;
             this.tb1.ShowChangedLinesOnScrollbar = false;
             this.tb1.ShowScrollBars = false;
-            this.tb1.Size = new System.Drawing.Size(311, 337);
+            this.tb1.Size = new System.Drawing.Size(411, 409);
             this.tb1.TabIndex = 1;
             this.tb1.VerticalScrollVisible = true;
             this.tb1.Zoom = 100;
@@ -282,6 +401,7 @@
             this.tb2.Name = "tb2";
             this.tb2.Paddings = new System.Windows.Forms.Padding(0);
             this.tb2.ReadOnly = true;
+            this.tb2.RoundedCornersRadius = 3;
             serviceColors2.CollapseMarkerBackColor = System.Drawing.Color.White;
             serviceColors2.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
             serviceColors2.CollapseMarkerForeColor = System.Drawing.Color.Silver;
@@ -291,7 +411,7 @@
             this.tb2.ServiceColors = serviceColors2;
             this.tb2.ShowChangedLinesOnScrollbar = false;
             this.tb2.ShowScrollBars = false;
-            this.tb2.Size = new System.Drawing.Size(324, 337);
+            this.tb2.Size = new System.Drawing.Size(433, 409);
             this.tb2.TabIndex = 2;
             this.tb2.VerticalScrollVisible = true;
             this.tb2.Zoom = 100;
@@ -301,22 +421,26 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.statusStrip1);
             this.Name = "DiffControl";
-            this.Size = new System.Drawing.Size(704, 380);
+            this.Size = new System.Drawing.Size(913, 476);
             this.Load += new System.EventHandler(this.DiffControl_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             this.splitContainer1.ResumeLayout(false);
+            this.contextMenuStrip1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.menuStrip2.ResumeLayout(false);
             this.menuStrip2.PerformLayout();
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tb1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tb2)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -338,5 +462,17 @@
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemCopy;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator10;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemZoom100;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemFind;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemGoTo;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemPrevDiff1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemNextDiff1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemPrevDiff2;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemNextDiff2;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
     }
 }

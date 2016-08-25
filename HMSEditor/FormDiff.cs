@@ -17,8 +17,7 @@ namespace HMSEditorNS {
             diffControl1.Language = lang;
         }
 
-        protected override void OnShown(EventArgs e) {
-            base.OnShown(e);
+        public void Compare() {
             diffControl1.Compare();
         }
 

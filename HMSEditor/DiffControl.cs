@@ -22,10 +22,8 @@ namespace HMSEditorNS {
 
         public int FilterIndex = 2;
 
-        private List<int> GreenLines1 = new List<int>();
         private List<int> GreenLines2 = new List<int>();
-        private List<int> RedLines1 = new List<int>();
-        private List<int> RedLines2 = new List<int>();
+        private List<int> RedLines1   = new List<int>();
         private int LineCount1 = 0;
         private int LineCount2 = 0;
 
@@ -79,7 +77,7 @@ namespace HMSEditorNS {
         private void GetBoundsBars(out int x1, out int x2, out int y, out int w, out int h) {
             Padding pad = new Padding(10, 5, 10, 5);
             w = 16;
-            h = Height - pad.Top - pad.Bottom;
+            h = Height - pad.Top - pad.Bottom - statusStrip1.Height;
             y = pad.Top;
             x2 = Width - w - pad.Right;
             x1 = x2 - w - 10;
@@ -101,10 +99,6 @@ namespace HMSEditorNS {
             g.FillRectangle(brushBack, rect2);
             if (LineCount1 > 0) {
                 int we1 = (int)Math.Round((double)h / LineCount1);
-                foreach (int iLine in GreenLines1) {
-                    int ye = y + (int)Math.Round((double)h * iLine / LineCount1);
-                    g.FillRectangle(brushGreen, x1, ye, w, we1 + 1);
-                }
                 foreach (int iLine in RedLines1) {
                     int ye = y + (int)Math.Round((double)h * iLine / LineCount1);
                     g.FillRectangle(brushRed, x1, ye, w, we1 + 1);
@@ -116,10 +110,6 @@ namespace HMSEditorNS {
                 foreach (int iLine in GreenLines2) {
                     int ye = y + (int)Math.Round((double)h * iLine / LineCount2);
                     g.FillRectangle(brushGreen, x2, ye, w, we2 + 1);
-                }
-                foreach (int iLine in RedLines2) {
-                    int ye = y + (int)Math.Round((double)h * iLine / LineCount2);
-                    g.FillRectangle(brushRed, x2, ye, w, we2 + 1);
                 }
             }
             if (LineCount1 > 0 && LineCount2 > 0) {
@@ -211,6 +201,7 @@ namespace HMSEditorNS {
         }
 
         private void PrepareTB(FastColoredTextBox tb) {
+            tb.BoldCaret = true;
             tb.ShowBeginOfFunctions = false;
             tb.ShowChangedLinesOnScrollbar = false;
             tb.ShowFoldingLines = false;
@@ -351,10 +342,8 @@ namespace HMSEditorNS {
                 Color red = Color.FromArgb(100, Color.Red);
                 Color green = Color.FromArgb(80, Color.Green);
 
-                GreenLines1.Clear();
                 GreenLines2.Clear();
                 RedLines1.Clear();
-                RedLines2.Clear();
 
                 lock (tb1.Lines) {
                     lock (tb2.Lines) {
@@ -590,6 +579,66 @@ namespace HMSEditorNS {
                 tb1.Zoom = 100;
             else
                 tb2.Zoom = 100;
+        }
+
+        private void ToolStripMenuItemFind_Click(object sender, EventArgs e) {
+            if (ItsTb1(sender))
+                tb1.ShowFindDialog();
+            else
+                tb2.ShowFindDialog();
+        }
+
+        private void ToolStripMenuItemGoTo_Click(object sender, EventArgs e) {
+            if (ItsTb1(sender))
+                tb1.ShowGoToDialog();
+            else
+                tb2.ShowGoToDialog();
+        }
+
+        private void toolStripMenuItemNextDiff1_Click(object sender, EventArgs e) {
+            FindNextDiff(tb1);
+        }
+
+        private void FindNextDiff(FastColoredTextBox tb) {
+            int oldLine = tb[tb.Selection.Start.iLine].LineNo - 1;
+            int newLine = oldLine;
+            List<int> list = tb == tb1 ? RedLines1 : GreenLines2;
+            foreach (var e in list) {
+                if (e > oldLine) {
+                    newLine = e;
+                    break;
+                }
+            }
+            if (oldLine != newLine)
+                tb.NavigateToLineNum(newLine+1, true);
+            tb.Focus();
+        }
+
+        private void FindPrevDiff(FastColoredTextBox tb) {
+            int oldLine = tb[tb.Selection.Start.iLine].LineNo - 1;
+            int newLine = oldLine;
+            List<int> list = tb == tb1 ? RedLines1 : GreenLines2;
+            for(int i=list.Count-1; i>=0; i--) {
+                if (list[i] < oldLine) {
+                    newLine = list[i];
+                    break;
+                }
+            }
+            if (oldLine != newLine)
+                tb.NavigateToLineNum(newLine+1, true);
+            tb.Focus();
+        }
+
+        private void toolStripMenuItemPrevDiff1_Click(object sender, EventArgs e) {
+            FindPrevDiff(tb1);
+        }
+
+        private void toolStripMenuItemPrevDiff2_Click(object sender, EventArgs e) {
+            FindPrevDiff(tb2);
+        }
+
+        private void toolStripMenuItemNextDiff2_Click(object sender, EventArgs e) {
+            FindNextDiff(tb2);
         }
     }
 }

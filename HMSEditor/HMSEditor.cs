@@ -232,6 +232,7 @@ namespace HMSEditorNS {
             form.Text2 = TB.Text;
             //form.Text1 = File.ReadAllText(@"D:\file1.cpp");
             //form.Text2 = File.ReadAllText(@"D:\file2.cpp");
+            form.Compare();
             form.ShowDialog();
         }
 
@@ -984,12 +985,17 @@ namespace HMSEditorNS {
         #region Control Events
 
         private void Editor_KeyDown(object sender, KeyEventArgs e) {
-            if      (e.KeyCode == Keys.F11   ) tsMain.Visible = !tsMain.Visible;
-            else if (e.KeyCode == Keys.F12   ) GotoDefinition();
-            else if (e.KeyCode == Keys.F1    ) ShowDiff();
-            else if (e.KeyCode == Keys.F2    ) RenameVariable();
+            if      (e.KeyCode == Keys.F10) btnAbout_Click(null, EventArgs.Empty);
+            else if (e.KeyCode == Keys.F11) tsMain.Visible = !tsMain.Visible;
+            else if (e.KeyCode == Keys.F12) GotoDefinition();
+            else if (e.KeyCode == Keys.F1 ) ShowDiff();
+            else if (e.KeyCode == Keys.F2 ) RenameVariable();
+            else if (e.KeyCode == Keys.F5 ) ToggleBreakpoint();
+            else if (e.KeyCode == Keys.F7 ) EvaluateDialog();
+            else if (e.KeyCode == Keys.F8 ) RunLine();
+            else if (e.KeyCode == Keys.F9 ) RunScript();
             else if (e.KeyCode == Keys.Escape) {
-                TB.findForm?.Hide();
+                TB.findForm   ?.Hide();
                 TB.replaceForm?.Hide();
                 HideAllToolTipsAndHints();
                 PopupMenu.TempNotShow = true;
@@ -1020,12 +1026,6 @@ namespace HMSEditorNS {
             } else if (e.KeyCode == Keys.Oemcomma || (e.Shift && e.KeyCode == Keys.D9)) {
                 if (!TB.Selection.IsStringOrComment) WasCommaOrBracket = true;
             }
-
-            if      (e.KeyCode == Keys.F5) ToggleBreakpoint();
-            else if (e.KeyCode == Keys.F7) EvaluateDialog();
-            else if (e.KeyCode == Keys.F8) RunLine();
-            else if (e.KeyCode == Keys.F9) RunScript();
-
         }
 
         private void Editor_SelectionChanged(object sender, EventArgs e) {
@@ -1577,7 +1577,7 @@ namespace HMSEditorNS {
             HMSItem      item = null;
             HMSClassInfo info = new HMSClassInfo();
             
-            string[] names = text.ToLower().Split('.');
+            string[] names = TB.WithoutStringAndComments(text, true).ToLower().Split('.');
             int count = 0; partAfterDot = "";
             foreach (string word in names) {
                 string name = HMS.GetTextWithoutBrackets(word);
