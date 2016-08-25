@@ -519,6 +519,7 @@ namespace HMSEditorNS {
             Modified  = false;
             IsFirstActivate = true;
             TB.ClearUndo();
+            TB.ShowChangedLinesOnScrollbar = (TB.LinesCount > 20);
         }
 
         public void RestorePosition() {
@@ -1023,6 +1024,10 @@ namespace HMSEditorNS {
                 else if (e.KeyCode == Keys.D7) TB.GotoBookmarkByName("7");
                 else if (e.KeyCode == Keys.D8) TB.GotoBookmarkByName("8");
                 else if (e.KeyCode == Keys.D9) TB.GotoBookmarkByName("9");
+                else if (e.KeyCode == Keys.O ) OpenFile();
+                else if (e.KeyCode == Keys.S ) SaveFile();
+                else if (e.KeyCode == Keys.P ) Print();
+
             } else if (e.KeyCode == Keys.Oemcomma || (e.Shift && e.KeyCode == Keys.D9)) {
                 if (!TB.Selection.IsStringOrComment) WasCommaOrBracket = true;
             }

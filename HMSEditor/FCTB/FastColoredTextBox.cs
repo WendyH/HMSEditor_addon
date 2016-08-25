@@ -480,7 +480,6 @@ namespace FastColoredTextBoxNS {
                 HMS.LogError(e.ToString());
             }
             MultilineComments.Unresponsive = false;
-            ShowChangedLinesOnScrollbar = (LinesCount > 20);
             return false;
         }
 
@@ -1659,7 +1658,6 @@ namespace FastColoredTextBoxNS {
                 } finally {
                     Selection.EndUpdate();
                 }
-                ShowChangedLinesOnScrollbar = (LinesCount > 20);
             }
         }
 

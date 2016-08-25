@@ -123,6 +123,14 @@ namespace HMSEditorNS {
 
         enum BackgraundTask { None = 0, PrepareFastDraw }
 
+        public static void Msg(string msg) {
+            MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        public static void Err(string msg) {
+            MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
         private static void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
             if (e.Error != null) { HMS.LogError(e.Error.ToString()); }
             if (e.Cancelled) return;

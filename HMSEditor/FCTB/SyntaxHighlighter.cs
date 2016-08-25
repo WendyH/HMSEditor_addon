@@ -1399,7 +1399,7 @@ namespace FastColoredTextBoxNS {
             range.SetFoldingMarkers(@"\b(repeat)\b"   , @"\b(until)\b", RegexCompiledOption | RegexOptions.IgnoreCase); //allow to collapse brackets block
             range.SetFoldingMarkers(@"\b(begin|try)\b", @"\b(end)\b"  , RegexCompiledOption | RegexOptions.IgnoreCase); //allow to collapse brackets block
 
-            if (bigText) {
+            if (bigText && !Worker4BigText.IsBusy) {
                 Worker4BigText.RunWorkerAsync(new Syntax2StepArgs(currentLanguage, range));
             } else {
                 PascalScriptSyntaxHighlight2(range);
@@ -1438,7 +1438,7 @@ namespace FastColoredTextBoxNS {
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers("{", "}"); //allow to collapse brackets block
 
-            if (bigText) {
+            if (bigText && !Worker4BigText.IsBusy) {
                 Worker4BigText.RunWorkerAsync(new Syntax2StepArgs(currentLanguage, range));
             } else {
                 CPPScriptSyntaxHighlight2(range);
@@ -1511,7 +1511,7 @@ namespace FastColoredTextBoxNS {
             range.ClearFoldingMarkers();
             range.SetFoldingMarkers("{", "}"); //allow to collapse brackets block
 
-            if (bigText) {
+            if (bigText && !Worker4BigText.IsBusy) {
                 Worker4BigText.RunWorkerAsync(new Syntax2StepArgs(currentLanguage, range));
             } else {
                 HmsJScriptSyntaxHighlight2(range);
@@ -1558,7 +1558,7 @@ namespace FastColoredTextBoxNS {
             range.SetFoldingMarkers(@"^\s*(?<range>For|For\s+Each)\b"                      , @"^\s*(?<range>Next)\b"                             , RegexOptions.IgnoreCase | RegexOptions.Multiline);
             range.SetFoldingMarkers(@"^\s*(?<range>Do)\b"                                  , @"^\s*(?<range>Loop)\b"                             , RegexOptions.IgnoreCase | RegexOptions.Multiline);
 
-            if (bigText) {
+            if (bigText && !Worker4BigText.IsBusy) {
                 Worker4BigText.RunWorkerAsync(new Syntax2StepArgs(currentLanguage, range));
             } else {
                 BasicSyntaxHighlight2(range);

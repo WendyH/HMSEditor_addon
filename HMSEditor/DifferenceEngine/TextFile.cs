@@ -39,7 +39,7 @@ namespace DifferenceEngine {
                 foreach (string line in System.Text.RegularExpressions.Regex.Split(text, "\r\n|\r|\n")) {
                     if (line.Length > MaxLineLength) {
                         throw new InvalidOperationException(
-                            string.Format("File contains a line greater than {0} characters.",
+                            string.Format("Файл содержит строки длиной более {0} симоволов. Такие файлы не поддерживаются.",
                                 MaxLineLength.ToString()));
                     }
                     _lines.Add(new TextLine(line));

@@ -46,8 +46,8 @@ namespace HMSEditorNS {
         #endregion Regular Expressions magnetic filed
 
         private static int    distanseBackward4Comments = 90;
-        private static string RemoveLinebeaks(string text) { return regexLineBreaks.Replace(text, ""); }
-        private static string ReturnSpaces(Match m) { return regexAllSymbols.Replace(m.Value, " "); }
+        private static string RemoveLinebeaks(string text) { return regexLineBreaks.Replace(text   , "" ); }
+        private static string ReturnSpaces(Match m)        { return regexAllSymbols.Replace(m.Value, " "); }
         private static readonly MatchEvaluator evaluatorSpaces = ReturnSpaces;
         private static char CensChar = ' '; // Символ замены строк и комментариев при обработке текста на поиск переменных и проч.
 

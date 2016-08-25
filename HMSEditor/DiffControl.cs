@@ -27,10 +27,10 @@ namespace HMSEditorNS {
         private int LineCount1 = 0;
         private int LineCount2 = 0;
 
-        Color ColorBackLines = Color.FromArgb(230, 231, 232);
-        Color ColorRedLines = Color.FromArgb(255, 102, 102);
-        Color ColorGreenLines = Color.FromArgb(118, 146, 60);
-        Color ColorVision = Color.FromArgb(111, 111, 111);
+        Color ColorBackLines  = Color.FromArgb(230, 231, 232);
+        Color ColorRedLines   = Color.FromArgb(255, 102, 102);
+        Color ColorGreenLines = Color.FromArgb(118, 146,  60);
+        Color ColorVision     = Color.FromArgb(111, 111, 111);
 
         public DiffControl() {
             SetStyle(ControlStyles.ResizeRedraw | ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
@@ -121,10 +121,10 @@ namespace HMSEditorNS {
             Rectangle rect1 = new Rectangle(x1, y, w, h);
             Rectangle rect2 = new Rectangle(x2, y, w, h);
 
-            Brush brushBack  = new SolidBrush(ColorBackLines);
+            Brush brushBack  = new SolidBrush(ColorBackLines );
             Brush brushGreen = new SolidBrush(ColorGreenLines);
-            Brush brushRed   = new SolidBrush(ColorRedLines);
-            Pen   penVis     = new Pen(ColorVision, 3);
+            Brush brushRed   = new SolidBrush(ColorRedLines  );
+            Pen penVis = new Pen(ColorVision, 3);
 
             g.FillRectangle(brushBack, rect1);
             g.FillRectangle(brushBack, rect2);
@@ -161,18 +161,18 @@ namespace HMSEditorNS {
                 g.DrawPath(penVis, path);
             }
 
-            brushBack .Dispose();
+            brushBack.Dispose();
             brushGreen.Dispose();
             brushRed.Dispose();
-            penVis  .Dispose();
+            penVis.Dispose();
 
             base.OnPaint(e);
         }
 
         public static GraphicsPath GetVisionPath(Rectangle bounds1, Rectangle bounds2, int radius) {
             int diameter = radius * 2;
-            Size         size = new Size(diameter, diameter);
-            Rectangle    arc  = new Rectangle(bounds1.Location, size);
+            Size size = new Size(diameter, diameter);
+            Rectangle arc = new Rectangle(bounds1.Location, size);
             GraphicsPath path = new GraphicsPath();
 
             if (radius == 0) {
@@ -191,7 +191,7 @@ namespace HMSEditorNS {
             path.AddLine(bounds1.X + radius, bounds1.Bottom, bounds1.Right, bounds1.Bottom);
 
             path.AddLine(bounds2.X, bounds2.Bottom, bounds2.Right - radius, bounds2.Bottom);
-            arc.X = bounds2.Right  - diameter;
+            arc.X = bounds2.Right - diameter;
             arc.Y = bounds2.Bottom - diameter;
             path.StartFigure();
             path.AddArc(arc, 0, 90); // bottom right arc  
@@ -261,10 +261,10 @@ namespace HMSEditorNS {
                 int horzScrolValue = tb.GetHorizontalScrollValue();
                 int iLine;
                 int CharHeight = tb.CharHeight;
-                int CharWidth  = tb.CharWidth;
+                int CharWidth = tb.CharWidth;
 
                 int firstChar = (Math.Max(0, horzScrolValue - tb.Paddings.Left)) / CharWidth;
-                int lastChar  = (horzScrolValue + ClientSize.Width) / CharWidth;
+                int lastChar = (horzScrolValue + ClientSize.Width) / CharWidth;
                 int x = tb.LeftIndent + tb.Paddings.Left - horzScrolValue;
                 if (x < tb.LeftIndent) firstChar++;
 
@@ -311,13 +311,16 @@ namespace HMSEditorNS {
 
         private string FileDialogFilter() {
             return "All files (*.*)|*.*|" +
+                   "All supported files|*.cfg;*.hdf;*.zip;*.pas;*.cpp;*.js;*.bas;*.vb;*.yml;*.txt;*.m3u;*.m3u8;*.pls;*.f4m|" +
                    "Config files (*.cfg)|*.cfg|" +
+                   "Podcast files (*.hdf, *.zip)|*.hdf;*.zip|" +
                    "PascalScript files (*.pas)|*.pas|" +
                    "C++Script files (*.cpp)|*.cpp|" +
                    "JavaScript files (*.js)|*.js|" +
                    "BasicScript files (*.bas, *.vb)|*.bas;*.vb|" +
                    "Yaml files (*.yml)|*.yml|" +
-                   "Text files (*.txt)|*.txt";
+                   "Text files (*.txt)|*.txt|" +
+                   "Playlist files (*.m3u8)|*.m3u;*.m3u8;*.pls;*.f4m";
         }
 
         public bool OpenFile(ref string text, ref string filename) {
@@ -332,40 +335,108 @@ namespace HMSEditorNS {
             fileFialog.RestoreDirectory = true;
             fileFialog.Title = @"Выбор файла скрипта";
             if (fileFialog.ShowDialog() == DialogResult.OK) {
+                FileDescription = "";
                 filename = fileFialog.FileName;
-                if (File.Exists(filename)) {
-                    HMS.LoadAndDetectEncoding(filename, out text);
-                    string msg = "";
-                    Match m = Regex.Match(text, "^<\\?xml.*?<TranscodingParams>(.*?)</TranscodingParams>.*?<TranscodingParamsSyntaxType>(.*?)</TranscodingParamsSyntaxType>", RegexOptions.Singleline);
-                    if (m.Success)
-                        msg = "Загрузить скрипт из профиля транскодирования?\n\n(Если ответите \"Нет\", то файл будет загружен как обычный текст.)";
-                    else {
-                        m = Regex.Match(text, "^<\\?xml.*?<Script>(.*?)</Script>.*?<ScriptSyntaxType>(.*?)</ScriptSyntaxType>", RegexOptions.Singleline);
-                        if (m.Success)
-                            msg = "Загрузить скрипт из обработки?\n\n(Если ответите \"Нет\", то файл будет загружен как обычный текст.)";
-                    }
-                    if (m.Success) {
-                        if (MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
-                            text = HttpUtility.HtmlDecode(m.Groups[1].Value).Replace("&apos;", "'");
-                            switch (m.Groups[2].Value) {
-                                case "C++Script"   : Language = Language.CPPScript   ; break;
-                                case "PascalScript": Language = Language.PascalScript; break;
-                                case "BasicScript" : Language = Language.BasicScript ; break;
-                                case "JScript"     : Language = Language.JScript     ; break;
-                                default            : Language = Language.YAML        ; break;
-                            }
-                        }
-                    }
-                    success = true;
-                }
+                success = LoadFile(ref text, filename);
             }
             FilterIndex = fileFialog.FilterIndex;
             return success;
         }
 
+        private string TryGetFirstFileContentFromZip(string filename, string ext) {
+            if (!File.Exists(filename)) return "";
+            string text = "";
+            string tmpDir = Path.Combine(Path.GetTempPath(), "hmseditordiff");
+            if (!HMS.ExtractZipTo(filename, tmpDir, "*."+ ext)) return "";
+            if (!Directory.Exists(tmpDir)) return "";
+            string[] files = Directory.GetFiles(tmpDir, "*." + ext, SearchOption.AllDirectories);
+            foreach (string file in files) {
+                text = File.ReadAllText(file);
+                break;
+            }
+            try {
+                Directory.Delete(tmpDir, true);
+            } catch {
+                // ingonre
+            }
+            return text;
+        }
+
+        string FileDescription = "";
+        /*
+        <ID>571</ID> Скрипт создания подкаст лент (Alt + 1)
+        <ID>530</ID> Скрипт чтения списка ресурсов (Alt + 2)
+        <ID>510</ID> Скрипт чтения дополнительных свойств RSS (Alt + 3)
+        <ID>550</ID> Скрипт получения ссылки на ресурс (Alt + 4)
+        <ID>500</ID> Скрипт динамической папки (Alt + 5)
+        */
+
+        private bool LoadFile(ref string text, string filename) {
+            if (!File.Exists(filename)) return false;
+            Match m; string lang = "";
+            if (Path.GetExtension(filename)==".zip") {
+                text = TryGetFirstFileContentFromZip(filename, "hdf");
+                if (text.Length == 0)
+                    text = TryGetFirstFileContentFromZip(filename, "cfg");
+                else {
+                    FormSelectScript formSelect = new FormSelectScript();
+                    Dictionary<int, string> scriptList = new Dictionary<int, string>();
+                    scriptList.Add(571, "Скрипт создания подкаст лент (Alt + 1)");
+                    scriptList.Add(530, "Скрипт чтения списка ресурсов (Alt + 2)");
+                    scriptList.Add(510, "Скрипт чтения дополнительных свойств RSS (Alt + 3)");
+                    scriptList.Add(550, "Скрипт получения ссылки на ресурс (Alt + 4)");
+                    scriptList.Add(500, "Скрипт динамической папки (Alt + 5)");
+
+                    formSelect.SetFile(filename);
+                    foreach (var pair in scriptList)
+                        if (Regex.IsMatch(text, @"<ID>"+pair.Key+@"</ID>\s*?<Value>.+</Value>", RegexOptions.Singleline))
+                            formSelect.AddValue(pair.Key, pair.Value);
+
+                    if (formSelect.ShowDialog() != DialogResult.OK) return false;
+
+                    int id = formSelect.ID;
+                    if (id > 0) {
+                        m = Regex.Match(text, @"<Property>\s*?<ID>"+id+@"</ID>\s*?<Value>(.*?)</Value>.*?<ID>"+(id+1)+@"</ID>\s*?<Value>(.*?)</Value>", RegexOptions.Singleline);
+                        if (m.Success) {
+                            text = HttpUtility.HtmlDecode(m.Groups[1].Value).Replace("&apos;", "'");
+                            lang = m.Groups[2].Value;
+                            FileDescription = formSelect.ScriptName;
+                        }
+                    }
+                }
+            } else {
+                HMS.LoadAndDetectEncoding(filename, out text);
+            }
+
+            string msg = "";
+            m = Regex.Match(text, "^<\\?xml.*?<TranscodingParams>(.*?)</TranscodingParams>.*?<TranscodingParamsSyntaxType>(.*?)</TranscodingParamsSyntaxType>", RegexOptions.Singleline);
+            if (m.Success)
+                msg = "Загрузить скрипт из профиля транскодирования?\n\n(Если ответите \"Нет\", то файл будет загружен как обычный текст.)";
+            else {
+                m = Regex.Match(text, "^<\\?xml.*?<Script>(.*?)</Script>.*?<ScriptSyntaxType>(.*?)</ScriptSyntaxType>", RegexOptions.Singleline);
+                if (m.Success)
+                    msg = "Загрузить скрипт из обработки?\n\n(Если ответите \"Нет\", то файл будет загружен как обычный текст.)";
+            }
+            if (m.Success) {
+                if (MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+                    text = HttpUtility.HtmlDecode(m.Groups[1].Value).Replace("&apos;", "'");
+                    lang = m.Groups[2].Value;
+                }
+            }
+            switch (lang) {
+                case "C++Script"   : Language = Language.CPPScript   ; break;
+                case "PascalScript": Language = Language.PascalScript; break;
+                case "BasicScript" : Language = Language.BasicScript ; break;
+                case "JScript"     : Language = Language.JScript     ; break;
+                default            : Language = Language.YAML        ; break;
+            }
+            return true;
+        }
+
+
         public void Compare() {
             RangesGreen.Clear();
-            RangesRed.Clear();
+            RangesRed  .Clear();
             try {
                 DiffEngine de = new DiffEngine(Text1, Text2);
                 ArrayList rep = de.ProcessDiff(DiffEngineLevel.Medium);
@@ -373,8 +444,8 @@ namespace HMSEditorNS {
                 Color red   = Color.FromArgb(100, Color.Red  );
                 Color green = Color.FromArgb( 80, Color.Green);
 
+                RedLines1  .Clear();
                 GreenLines2.Clear();
-                RedLines1.Clear();
 
                 lock (tb1.Lines) {
                     lock (tb2.Lines) {
@@ -399,7 +470,7 @@ namespace HMSEditorNS {
                                 case DiffResultSpanStatus.NoChange:
                                     for (i = 0; i < drs.Length; i++) {
                                         tb1.AddLine(de.GetSrcLineByIndex(drs.SourceIndex + i), Color.Transparent, ref LineCount1);
-                                        tb2.AddLine(de.GetDstLineByIndex(drs.DestIndex + i), Color.Transparent, ref LineCount2);
+                                        tb2.AddLine(de.GetDstLineByIndex(drs.DestIndex   + i), Color.Transparent, ref LineCount2);
                                     }
                                     break;
                                 case DiffResultSpanStatus.AddDestination:
@@ -416,7 +487,7 @@ namespace HMSEditorNS {
                                 case DiffResultSpanStatus.Replace:
                                     for (i = 0; i < drs.Length; i++) {
                                         string line1 = de.GetSrcLineByIndex(drs.SourceIndex + i);
-                                        string line2 = de.GetDstLineByIndex(drs.DestIndex + i);
+                                        string line2 = de.GetDstLineByIndex(drs.DestIndex   + i);
                                         tb1.AddLine(line1, red, ref LineCount1);
                                         tb2.AddLine(line2, green, ref LineCount2);
                                         RedLines1.Add(drs.SourceIndex + i);
@@ -435,7 +506,8 @@ namespace HMSEditorNS {
                 tb2.OnSyntaxHighlight(new TextChangedEventArgs(tb2.Range));
 
             } catch (Exception ex) {
-                HMS.LogError(ex);
+                HMS.Err(ex.Message);
+                //HMS.LogError(ex);
             }
             Invalidate();
 
@@ -455,8 +527,8 @@ namespace HMSEditorNS {
                         break;
 
                     case DiffResultSpanStatus.Replace:
-                        SetRangeStyle(tb1, drs.SourceIndex, drs.SourceIndex + drs.Length, true);
-                        SetRangeStyle(tb2, drs.DestIndex, drs.DestIndex + drs.Length, false);
+                        SetRangeStyle(tb1, drs.SourceIndex, drs.SourceIndex + drs.Length, true );
+                        SetRangeStyle(tb2, drs.DestIndex  , drs.DestIndex   + drs.Length, false);
                         break;
                 }
 
@@ -493,16 +565,25 @@ namespace HMSEditorNS {
             return r;
         }
 
+        private void SetLabelText(Label label, string text) {
+            if (label.Width > label.CreateGraphics().MeasureString(text+ ": " + FileDescription, label.Font).Width)
+                label.Text = text;
+            else
+                label.Text = Path.GetFileName(text);
+            if (FileDescription.Length > 0)
+                label.Text += ": " + FileDescription;
+        }
+
         private void toolStripMenuItemLoad1_Click(object sender, EventArgs e) {
             if (OpenFile(ref Text1, ref File1)) {
-                label1.Text = File1;
+                SetLabelText(label1, File1);
                 Compare();
             }
         }
 
         private void toolStripMenuItemLoad2_Click(object sender, EventArgs e) {
             if (OpenFile(ref Text2, ref File2)) {
-                label2.Text = File2;
+                SetLabelText(label2, File2);
                 Compare();
             }
         }

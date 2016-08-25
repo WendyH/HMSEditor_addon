@@ -193,7 +193,7 @@ namespace DifferenceEngine {
                 } else {
                     result.Add(drs);
                 }
-                curDest = drs.DestIndex + drs.Length;
+                curDest   = drs.DestIndex   + drs.Length;
                 curSource = drs.SourceIndex + drs.Length;
                 last = drs;
             }
@@ -208,7 +208,7 @@ namespace DifferenceEngine {
 
         private bool AddChanges(ArrayList report, int curDest, int nextDest, int curSource, int nextSource) {
             bool success = false;
-            int diffDest = nextDest - curDest;
+            int diffDest   = nextDest   - curDest;
             int diffSource = nextSource - curSource;
             int minDiff = 0;
 
