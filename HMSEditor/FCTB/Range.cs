@@ -191,7 +191,7 @@ namespace FastColoredTextBoxNS {
         public string Text {
             get {
                 if (ColumnSelectionMode)
-                return Text_ColumnSelectionMode;
+                    return Text_ColumnSelectionMode;
                 int fromLine = Math.Min(end.iLine, start.iLine);
                 int toLine   = Math.Max(end.iLine, start.iLine);
                 int fromChar = FromX;
@@ -200,14 +200,18 @@ namespace FastColoredTextBoxNS {
                 //
                 StringBuilder sb = new StringBuilder();
                 lock (tb.Lines) {
-                    for (int y = fromLine; y <= toLine; y++) {
-                        if (tb[y].Unavaliable) continue;
-                        int fromX = y == fromLine ? fromChar : 0;
-                        int toX   = y == toLine   ? Math.Min(tb[y].Count - 1, toChar - 1) : tb[y].Count - 1;
-                        for (int x = fromX; x <= toX; x++)
-                            sb.Append(tb[y][x].c);
-                        if (y != toLine && fromLine != toLine)
-                            sb.AppendLine();
+                    try {
+                        for (int y = fromLine; y <= toLine; y++) {
+                            if (tb[y].Unavaliable) continue;
+                            int fromX = y == fromLine ? fromChar : 0;
+                            int toX = y == toLine ? Math.Min(tb[y].Count - 1, toChar - 1) : tb[y].Count - 1;
+                            for (int x = fromX; x <= toX; x++)
+                                sb.Append(tb[y][x].c);
+                            if (y != toLine && fromLine != toLine)
+                                sb.AppendLine();
+                        }
+                    } catch {
+                        // ignore
                     }
                 }
                 return sb.ToString();

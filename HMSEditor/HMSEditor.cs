@@ -105,13 +105,13 @@ namespace HMSEditorNS {
                         CheckSyntaxIsBusy = false;
                         if (CheckSyntaxAgain) {
                             CheckSyntaxAgain = false;
-                            //AutoCheckSyntaxBackground();
+                            AutoCheckSyntaxBackground();
                         }
                     });
 
                 } catch (Exception e) {
                     TB.ClearErrorLines();
-                    HMS.LogError(e.ToString());
+                    //HMS.LogError(e.ToString());
                 }
             }, 10);
             th.Start();

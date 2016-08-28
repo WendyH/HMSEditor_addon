@@ -97,10 +97,12 @@ namespace HMSEditorNS {
             var    TB    = ActiveHMSEditor.TB;
             Point  point = ActiveHMSEditor.MouseLocation;
             bool   debugMode  = TB.DebugMode;
+            bool   selectMode = false;
             string expression = "";
             try {
                 Place place = TB.PointToPlace(point);
                 Range r = new Range(TB, place, place);
+                if (r.IsStringOrCommentBefore()) return;
                 if (r.IsErrorPlace) {
                     // Показываем инофрмацию об ошибке через ToolTip
                     ShowToolTip(TB, point, "Ошибка синтаксиса", "", "", TB.ErrorStyle.Message);
@@ -108,6 +110,7 @@ namespace HMSEditorNS {
                 }
                 if (debugMode && (TB.Selection.Start != TB.Selection.End) && TB.Selection.InRange(place)) {
                     expression = TB.SelectedText.Trim();
+                    selectMode = true;
                 }
                 if (expression.Length == 0) {
                     expression = r.GetFragmentAroundThePlace(place).Text.Replace("#", "").Trim();
@@ -117,7 +120,7 @@ namespace HMSEditorNS {
                 var item = ActiveHMSEditor.GetHMSItemByText(expression);
                 if (item != null) {
                     // Если идёт отладка - проверяем, мы навели на переменную или свойство объекта?
-                    if (debugMode && OK4Evaluate(item)) {
+                    if (debugMode && (OK4Evaluate(item) || selectMode)) {
                         // Проверяем тип объекта класса, может быть удобней представить в виде текста? (TStrings или TJsonObject)
                         string realExpression = expression;
                         expression = CheckTypeForToStringRules(item, expression);
