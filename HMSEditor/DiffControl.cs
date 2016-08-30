@@ -335,9 +335,17 @@ namespace HMSEditorNS {
             fileFialog.RestoreDirectory = true;
             fileFialog.Title = @"Выбор файла скрипта";
             if (fileFialog.ShowDialog() == DialogResult.OK) {
+                string lang = "";
                 FileDescription = "";
                 filename = fileFialog.FileName;
-                success = LoadFile(ref text, filename);
+                switch (Path.GetExtension(filename)) {
+                    case ".pas": lang = "PascalScript"; break;
+                    case ".cpp": lang = "C++Script"   ; break;
+                    case ".vb" :
+                    case ".bas": lang = "BasicScript" ; break;
+                    case ".js" : lang = "JScript"     ; break;
+                }
+                success = LoadFile(ref text, filename, lang);
             }
             FilterIndex = fileFialog.FilterIndex;
             return success;
@@ -371,9 +379,9 @@ namespace HMSEditorNS {
         <ID>500</ID> Скрипт динамической папки (Alt + 5)
         */
 
-        private bool LoadFile(ref string text, string filename) {
+        private bool LoadFile(ref string text, string filename, string lang) {
             if (!File.Exists(filename)) return false;
-            Match m; string lang = "";
+            Match m;
             if (Path.GetExtension(filename)==".zip") {
                 text = TryGetFirstFileContentFromZip(filename, "hdf");
                 if (text.Length == 0)
@@ -424,6 +432,7 @@ namespace HMSEditorNS {
                 }
             }
             switch (lang) {
+                case "CPPScript"   : Language = Language.CPPScript   ; break;
                 case "C++Script"   : Language = Language.CPPScript   ; break;
                 case "PascalScript": Language = Language.PascalScript; break;
                 case "BasicScript" : Language = Language.BasicScript ; break;
