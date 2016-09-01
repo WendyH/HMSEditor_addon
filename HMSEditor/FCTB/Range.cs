@@ -140,6 +140,16 @@ namespace FastColoredTextBoxNS {
         }
 
         /// <summary>
+        /// Reset selection
+        /// </summary>
+        public void UnSelect() {
+            ColumnSelectionMode = false;
+            Start = new Place(Start.iChar, Start.iLine);
+            if (this == tb.Selection)
+                tb.Invalidate();
+        }
+
+        /// <summary>
         /// Select all chars of control
         /// </summary>
         public void SelectAll() {

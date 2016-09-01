@@ -675,17 +675,22 @@ namespace HMSEditorNS {
             ToolStripItem item = sender as ToolStripItem;
             if (item != null) {
                 ToolStrip ts = item.GetCurrentParent();
-                if (ts.Bounds.IntersectsWith(tb1.RectangleToScreen(tb1.Bounds)))
+                if (ts == null) {
+                    return tb1.Focused;
+                } else if (ts.Bounds.IntersectsWith(tb1.RectangleToScreen(tb1.Bounds)))
                     return true;
             }
             return false;
         }
 
         private void ToolStripMenuItemSelectAll_Click(object sender, EventArgs e) {
-            if (ItsTb1(sender))
+            if (ItsTb1(sender)) {
                 tb1.SelectAll();
-            else
+                tb2.UnSelect();
+            } else {
                 tb2.SelectAll();
+                tb1.UnSelect();
+            }
         }
 
         private void ToolStripMenuItemCopy_Click(object sender, EventArgs e) {

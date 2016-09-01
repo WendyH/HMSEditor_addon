@@ -2815,6 +2815,13 @@ namespace FastColoredTextBoxNS {
         }
 
         /// <summary>
+        /// Reset selection
+        /// </summary>
+        public void UnSelect() {
+            Selection.UnSelect();
+        }
+
+        /// <summary>
         /// Select all chars of text
         /// </summary>
         public void SelectAll() {
