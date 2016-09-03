@@ -6239,6 +6239,7 @@ namespace FastColoredTextBoxNS {
                     lines[iLine].IsChanged = true;
         }
 
+
         /// <summary>
         /// Fires SelectionChanged event
         /// </summary>
@@ -6247,17 +6248,28 @@ namespace FastColoredTextBoxNS {
             var sw = Stopwatch.StartNew();
 #endif
             int iLine = Selection.Start.iLine;
+            int iLineStore = iLine;
             Line line = TextSource[iLine];
             if (line.Unavaliable && iLine > 0) {
+                int linesU = 0, linesD = 0;
                 while (iLine > 0) {
-                    iLine--;
+                    iLine--; linesU++;
                     line = TextSource[iLine];
                     if (!line.Unavaliable) {
-                        Selection.Start = new Place(0, iLine);
                         break;
                     }
                 }
-                DoCaretVisible();
+                iLine = iLineStore;
+                while (iLine < TextSource.Count) {
+                    iLine++; linesD++;
+                    line = TextSource[iLine];
+                    if (!line.Unavaliable) {
+                        break;
+                    }
+                }
+                iLine = (linesD > linesU) ? iLine - linesU : iLine + linesD;
+                Selection.SetStart(new Place(0, iLine));
+                //DoCaretVisible();
                 return;
             }
             VerticalScroll.CurrentLine = Selection.Start.iLine + 1;
@@ -6270,7 +6282,6 @@ namespace FastColoredTextBoxNS {
             ResetTimer(timer);
 
             SelectionChanged?.Invoke(this, new EventArgs());
-
 #if debug
             Console.WriteLine("OnSelectionChanged: "+ sw.ElapsedMilliseconds);
 #endif

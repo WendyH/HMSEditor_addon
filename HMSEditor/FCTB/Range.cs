@@ -167,6 +167,15 @@ namespace FastColoredTextBoxNS {
         }
 
         /// <summary>
+        /// Set start selection without event OnSelectionChanged
+        /// </summary>
+        public void SetStart(Place place) {
+            ColumnSelectionMode = false;
+            start = place;
+            tb.Invalidate();
+        }
+
+        /// <summary>
         /// Start line and char position
         /// </summary>
         public Place Start {
