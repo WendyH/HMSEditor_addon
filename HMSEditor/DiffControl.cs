@@ -23,6 +23,7 @@ namespace HMSEditorNS {
         public bool SelectionHighlightingForLineBreaksEnabled { get { return tb1.SelectionHighlightingForLineBreaksEnabled; } set { tb1.SelectionHighlightingForLineBreaksEnabled = value; tb2.SelectionHighlightingForLineBreaksEnabled = value; } }
         public bool HideLineBreakInvisibleChar { get { return tb1.HideLineBreakInvisibleChar; } set { tb1.HideLineBreakInvisibleChar = value; tb2.HideLineBreakInvisibleChar = value; } }
         public bool ShowInvisibleCharsInSelection { get { return tb1.ShowInvisibleCharsInSelection; } set { tb1.ShowInvisibleCharsInSelection = value; tb2.ShowInvisibleCharsInSelection = value; } }
+        public bool TrimEndWhenDiff = false;
 
         public int FilterIndex = 2;
 
@@ -460,7 +461,7 @@ namespace HMSEditorNS {
             int l_nochang = 0;
             double change = 0;
             try {
-                DiffEngine de = new DiffEngine(Text1, Text2);
+                DiffEngine de = new DiffEngine(Text1, Text2, false, TrimEndWhenDiff);
                 ArrayList rep = de.ProcessDiff(DiffEngineLevel.Medium);
 
                 Color red   = Color.FromArgb(100, Color.Red  );
@@ -550,7 +551,7 @@ namespace HMSEditorNS {
         }
 
         private void DiffChars(string line1, string line2) {
-            var del = new DiffEngine(line1, line2, true);
+            var del = new DiffEngine(line1, line2, true, false);
             ArrayList res = del.ProcessDiff(DiffEngineLevel.FastImperfect);
             foreach (DiffResultSpan drs in res) {
                 switch (drs.Status) {

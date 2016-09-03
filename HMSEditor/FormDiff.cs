@@ -11,6 +11,7 @@ namespace HMSEditorNS {
 
         public bool HideLineBreakInvisibleChar    { get { return diffControl1.HideLineBreakInvisibleChar   ; } set { diffControl1.HideLineBreakInvisibleChar    = value; } }
         public bool ShowInvisibleCharsInSelection { get { return diffControl1.ShowInvisibleCharsInSelection; } set { diffControl1.ShowInvisibleCharsInSelection = value; } }
+        public bool TrimEndWhenDiff { get { return diffControl1.TrimEndWhenDiff; } set { diffControl1.TrimEndWhenDiff = value; } }
 
         public FormDiff() {
             InitializeComponent();

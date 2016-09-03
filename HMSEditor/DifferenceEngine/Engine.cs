@@ -15,12 +15,9 @@ namespace DifferenceEngine {
         private DiffStateList   _stateList = null;
         private DiffEngineLevel _level     = DiffEngineLevel.FastImperfect;
 
-        public DiffEngine(string text1, string text2, bool byChars) {
-            _source = new DiffList_TextFile(text1, byChars);
-            _dest   = new DiffList_TextFile(text2, byChars);
-        }
-
-        public DiffEngine(string text1, string text2) : this(text1, text2, false) {
+        public DiffEngine(string text1, string text2, bool byChars, bool trimEnd) {
+            _source = new DiffList_TextFile(text1, byChars, trimEnd);
+            _dest   = new DiffList_TextFile(text2, byChars, trimEnd);
         }
 
         public string GetSrcLineByIndex(int i) {

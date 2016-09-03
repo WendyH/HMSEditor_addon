@@ -230,6 +230,9 @@ namespace HMSEditorNS {
             FormDiff form = new FormDiff(TB.Language);
             form.HideLineBreakInvisibleChar    = TB.HideLineBreakInvisibleChar;
             form.ShowInvisibleCharsInSelection = TB.ShowInvisibleCharsInSelection;
+
+            form.TrimEndWhenDiff = Settings.Get("TrimEndWhenDiff", SettingsSection, true);
+
             form.Text1 = FirstText;
             form.Text2 = TB.Text;
             form.Compare();

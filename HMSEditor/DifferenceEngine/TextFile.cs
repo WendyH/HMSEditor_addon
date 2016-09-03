@@ -29,7 +29,7 @@ namespace DifferenceEngine {
 
         }
 
-        public DiffList_TextFile(string text, bool byChars) {
+        public DiffList_TextFile(string text, bool byChars, bool TrimEnd) {
             _lines = new ArrayList();
             if (string.IsNullOrEmpty(text)) return;
             if (byChars) {
@@ -42,7 +42,7 @@ namespace DifferenceEngine {
                             string.Format("Файл содержит строки длиной более {0} симоволов. Такие файлы не поддерживаются.",
                                 MaxLineLength.ToString()));
                     }
-                    _lines.Add(new TextLine(line));
+                    _lines.Add(new TextLine(TrimEnd ? line.TrimEnd() : line));
                 }
             }
         }
