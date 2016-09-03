@@ -9,17 +9,15 @@ namespace HMSEditorNS {
         public string Text1 { get { return diffControl1.Text1; } set { diffControl1.Text1 = value; } }
         public string Text2 { get { return diffControl1.Text2; } set { diffControl1.Text2 = value; } }
 
+        public bool HideLineBreakInvisibleChar    { get { return diffControl1.HideLineBreakInvisibleChar   ; } set { diffControl1.HideLineBreakInvisibleChar    = value; } }
+        public bool ShowInvisibleCharsInSelection { get { return diffControl1.ShowInvisibleCharsInSelection; } set { diffControl1.ShowInvisibleCharsInSelection = value; } }
+
         public FormDiff() {
             InitializeComponent();
         }
 
         public FormDiff(FastColoredTextBoxNS.Language lang) : this() {
             diffControl1.Language = lang;
-        }
-
-        protected override void OnShown(EventArgs e) {
-            base.OnShown(e);
-            diffControl1.FindNextDiff();
         }
 
         public void Compare() {
@@ -53,8 +51,8 @@ namespace HMSEditorNS {
         }
 
         private void FormDiff_KeyDown(object sender, KeyEventArgs e) {
-            if (e.KeyCode == Keys.Escape)
-                Close();
+            //if (e.KeyCode == Keys.Escape)
+            //    Close();
         }
     }
 }

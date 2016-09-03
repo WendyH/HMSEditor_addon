@@ -66,6 +66,7 @@ namespace FastColoredTextBoxNS {
         public bool VerticalScrollVisible   { get { return VerticalScroll  .ShowIfVisible; } set { VerticalScroll  .ShowIfVisible = value; if (!value) VerticalScroll  .Visible = false; } }
         public bool HorizontalScrollVisible { get { return HorizontalScroll.ShowIfVisible; } set { HorizontalScroll.ShowIfVisible = value; if (!value) HorizontalScroll.Visible = false; } }
         // By WendyH
+        public bool           HideLineBreakInvisibleChar = true;
         public Regex          RegexStringAndComments = null;
         public HmsToolTip     ToolTip4Function       = new HmsToolTip();
         public SelectionStyle YellowSelectionStyle      = new SelectionStyle(Themes.ToColor("#E5C63BFF"), Color.Black);
@@ -485,7 +486,7 @@ namespace FastColoredTextBoxNS {
 
         private string CalculateKnuthHash(string text) {
             if (text == null) text = string.Empty;
-            UInt64 hashedValue = 3074457345618258791ul;
+            UInt64 hashedValue = 3074457345618258792ul;
             for (int i = 0; i < text.Length; i++) {
                 hashedValue += text[i];
                 hashedValue *= 3074457345618258799ul;
@@ -5568,7 +5569,7 @@ namespace FastColoredTextBoxNS {
                             SelectionStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange);
                         }
                         if (ShowInvisibleCharsInSelection)
-                            InvisibleCharsStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange, true);
+                            InvisibleCharsStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange, HideLineBreakInvisibleChar);
                     }
                 }
             }
@@ -5619,7 +5620,7 @@ namespace FastColoredTextBoxNS {
                             SelectionStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange);
                         }
                         if (ShowInvisibleCharsInSelection)
-                            InvisibleCharsStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange, true);
+                            InvisibleCharsStyle?.Draw(gr, new Point(startX + (textRange.Start.iChar - from) * CharWidth, 1 + y), textRange, HideLineBreakInvisibleChar);
                     }
                 }
             }
@@ -6255,21 +6256,19 @@ namespace FastColoredTextBoxNS {
                 while (iLine > 0) {
                     iLine--; linesU++;
                     line = TextSource[iLine];
-                    if (!line.Unavaliable) {
+                    if (!line.Unavaliable)
                         break;
-                    }
                 }
                 iLine = iLineStore;
-                while (iLine < TextSource.Count) {
+                while (iLine < TextSource.Count - 1) {
                     iLine++; linesD++;
                     line = TextSource[iLine];
-                    if (!line.Unavaliable) {
+                    if (!line.Unavaliable)
                         break;
-                    }
                 }
+                iLine = iLineStore;
                 iLine = (linesD > linesU) ? iLine - linesU : iLine + linesD;
                 Selection.SetStart(new Place(0, iLine));
-                //DoCaretVisible();
                 return;
             }
             VerticalScroll.CurrentLine = Selection.Start.iLine + 1;

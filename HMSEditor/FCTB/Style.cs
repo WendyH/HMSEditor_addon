@@ -403,8 +403,10 @@ namespace FastColoredTextBoxNS
                     }
                     int nextLine = range.End.iLine + 1;
                     if (nextLine <= selection.End.iLine && !range.tb[nextLine].Unavaliable) {
-                        lastChar = nextLine == selection.End.iLine ? selection.End.iChar : selection.tb.Lines[nextLine].Length + 1;
-                        rectNext = new Rectangle(startX - 1, position.Y + charH, lastChar * charW + 1, charH);
+                        if (!(nextLine == selection.End.iLine && selection.End.iChar == 0)) {
+                            lastChar = nextLine == selection.End.iLine ? selection.End.iChar : selection.tb.Lines[nextLine].Length + 1;
+                            rectNext = new Rectangle(startX - 1, position.Y + charH, lastChar * charW + 1, charH);
+                        }
                     }
 
                     // draw border
@@ -584,7 +586,7 @@ namespace FastColoredTextBoxNS
                 path4Bord.AddLines(new Point[] { new Point(rectNext.Right + d / 2, rect.Bottom) });
                 path4Fill.AddLines(new Point[] { new Point(rectNext.Right + d / 2, rect.Bottom) });
             } else {
-                path4Bord.AddLines(new Point[] { new Point(rect.Right, rect.Bottom) });
+                path4Bord.AddLines(new Point[] { new Point(rect.Right, rect.Bottom  ) });
                 path4Fill.AddLines(new Point[] { new Point(rect.Right, rect.Bottom+1) });
             }
         }

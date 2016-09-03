@@ -109,7 +109,7 @@ namespace HMSEditorNS {
                         }
                     });
 
-                } catch (Exception e) {
+                } catch /*(Exception e)*/ {
                     TB.ClearErrorLines();
                     //HMS.LogError(e.ToString());
                 }
@@ -228,10 +228,10 @@ namespace HMSEditorNS {
         #region Fuctions and procedures
         private void ShowDiff() {
             FormDiff form = new FormDiff(TB.Language);
+            form.HideLineBreakInvisibleChar    = TB.HideLineBreakInvisibleChar;
+            form.ShowInvisibleCharsInSelection = TB.ShowInvisibleCharsInSelection;
             form.Text1 = FirstText;
             form.Text2 = TB.Text;
-            //form.Text1 = File.ReadAllText(@"D:\file1.cpp");
-            //form.Text2 = File.ReadAllText(@"D:\file2.cpp");
             form.Compare();
             form.ShowDialog();
         }
@@ -607,6 +607,8 @@ namespace HMSEditorNS {
             btnInvisiblesInSelection.Checked = Settings.Get("InvisiblesInSelection"  , section, btnInvisiblesInSelection.Checked);
             btnSelectionBorder      .Checked = Settings.Get("SelectionWithBorders"   , section, btnSelectionBorder      .Checked);
             btnShowBeginOfFunctions .Checked = Settings.Get("ShowBeginOfFunctions"   , section, btnShowBeginOfFunctions .Checked);
+
+
             // Set to false deprecated settings
             btnCheckKeywordsRegister.Checked = false;
 
@@ -622,6 +624,8 @@ namespace HMSEditorNS {
                 btnToolStripMenuItemFONT_Click(null, new EventArgs());
             }
 
+            // Undocumented settings
+            TB.HideLineBreakInvisibleChar = Settings.Get("HideLineBreakInvisibleChar", SettingsSection, true);
             int val;
             if (int.TryParse(Settings.Get("RoundedCornersRadius", section, TB.RoundedCornersRadius.ToString()), out val))
                 TB.RoundedCornersRadius = val;
@@ -815,10 +819,10 @@ namespace HMSEditorNS {
             bool success = false;
             if (!String.IsNullOrEmpty(filename) && File.Exists(filename)) {
                 TB.Clear();
-                TB.Text = File.ReadAllText(filename, Encoding.UTF8);
+                TB.OpenFile(filename);
                 TB.ClearUndo();
                 Modified = false;
-                success = true;
+                success  = true;
             }
             return success;
         }

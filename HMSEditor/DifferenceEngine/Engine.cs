@@ -9,11 +9,11 @@ namespace DifferenceEngine {
     }
 
     public class DiffEngine {
-        private IDiffList _source = null;
-        private IDiffList _dest = null;
-        private ArrayList _matchList = null;
-        private DiffStateList _stateList = null;
-        private DiffEngineLevel _level = DiffEngineLevel.FastImperfect;
+        private IDiffList       _source    = null;
+        private IDiffList       _dest      = null;
+        private ArrayList       _matchList = null;
+        private DiffStateList   _stateList = null;
+        private DiffEngineLevel _level     = DiffEngineLevel.FastImperfect;
 
         public DiffEngine(string text1, string text2, bool byChars) {
             _source = new DiffList_TextFile(text1, byChars);
@@ -44,10 +44,10 @@ namespace DifferenceEngine {
         private void GetLongestSourceMatch(DiffState curItem, int destIndex, int destEnd, int sourceStart, int sourceEnd) {
 
             int maxDestLength = (destEnd - destIndex) + 1;
-            int curLength = 0;
+            int curLength     = 0;
             int curBestLength = 0;
-            int curBestIndex = -1;
-            int maxLength = 0;
+            int curBestIndex  = -1;
+            int maxLength     = 0;
             for (int sourceIndex = sourceStart; sourceIndex <= sourceEnd; sourceIndex++) {
                 maxLength = Math.Min(maxDestLength, (sourceEnd - sourceIndex) + 1);
                 if (maxLength <= curBestLength) {
@@ -57,7 +57,7 @@ namespace DifferenceEngine {
                 curLength = GetSourceMatchLength(destIndex, sourceIndex, maxLength);
                 if (curLength > curBestLength) {
                     //This is the best match so far
-                    curBestIndex = sourceIndex;
+                    curBestIndex  = sourceIndex;
                     curBestLength = curLength;
                 }
                 //jump over the match
@@ -73,10 +73,10 @@ namespace DifferenceEngine {
         }
 
         private void ProcessRange(int destStart, int destEnd, int sourceStart, int sourceEnd) {
-            int curBestIndex = -1;
-            int curBestLength = -1;
+            int curBestIndex   = -1;
+            int curBestLength  = -1;
             int maxPossibleDestLength = 0;
-            DiffState curItem = null;
+            DiffState curItem  = null;
             DiffState bestItem = null;
             for (int destIndex = destStart; destIndex <= destEnd; destIndex++) {
                 maxPossibleDestLength = (destEnd - destIndex) + 1;
@@ -95,9 +95,9 @@ namespace DifferenceEngine {
                         case DiffEngineLevel.FastImperfect:
                             if (curItem.Length > curBestLength) {
                                 //this is longest match so far
-                                curBestIndex = destIndex;
+                                curBestIndex  = destIndex;
                                 curBestLength = curItem.Length;
-                                bestItem = curItem;
+                                bestItem      = curItem;
                             }
                             //Jump over the match 
                             destIndex += curItem.Length - 1;
@@ -105,9 +105,9 @@ namespace DifferenceEngine {
                         case DiffEngineLevel.Medium:
                             if (curItem.Length > curBestLength) {
                                 //this is longest match so far
-                                curBestIndex = destIndex;
+                                curBestIndex  = destIndex;
                                 curBestLength = curItem.Length;
-                                bestItem = curItem;
+                                bestItem      = curItem;
                                 //Jump over the match 
                                 destIndex += curItem.Length - 1;
                             }
@@ -115,9 +115,9 @@ namespace DifferenceEngine {
                         default:
                             if (curItem.Length > curBestLength) {
                                 //this is longest match so far
-                                curBestIndex = destIndex;
+                                curBestIndex  = destIndex;
                                 curBestLength = curItem.Length;
-                                bestItem = curItem;
+                                bestItem      = curItem;
                             }
                             break;
                     }
@@ -159,7 +159,7 @@ namespace DifferenceEngine {
             _level = level;
             _matchList = new ArrayList();
 
-            int dcount = _dest.Count();
+            int dcount = _dest  .Count();
             int scount = _source.Count();
 
             if ((dcount > 0) && (scount > 0)) {
@@ -181,7 +181,7 @@ namespace DifferenceEngine {
             }
 
             _matchList.Sort();
-            int curDest = 0;
+            int curDest   = 0;
             int curSource = 0;
             DiffResultSpan last = null;
 

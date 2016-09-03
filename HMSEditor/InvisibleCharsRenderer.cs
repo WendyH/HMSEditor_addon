@@ -24,11 +24,11 @@ namespace FastColoredTextBoxNS {
                             gr.DrawLine(pen, point.X, point.Y + 1, point.X + 2, point.Y + 1);
                             break;
                     }
-                    if (!withoutEnd) {
+                    if (!withoutEnd && tb.Font.Size > 2) {
                         if (tb[place.iLine].Count - 1 == place.iChar) {
                             var point = tb.PlaceToPoint(place);
-                            point.Offset(tb.CharWidth, 0);
-                            gr.DrawString("¶", tb.Font, brush, point);
+                            point.Offset(tb.CharWidth - 2, 1);
+                            gr.DrawString("¶", new Font("Arial", tb.Font.Size - 2), brush, point);
                         }
                     }
                 }

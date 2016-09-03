@@ -172,6 +172,7 @@ namespace FastColoredTextBoxNS {
         public void SetStart(Place place) {
             ColumnSelectionMode = false;
             start = place;
+            if (tb[end.iLine].Unavaliable) end = place;
             tb.Invalidate();
         }
 

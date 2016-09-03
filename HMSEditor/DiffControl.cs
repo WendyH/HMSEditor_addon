@@ -20,6 +20,10 @@ namespace HMSEditorNS {
 
         public Language Language { get { return tb1.Language; } set { tb1.Language = value; tb2.Language = value; } }
 
+        public bool SelectionHighlightingForLineBreaksEnabled { get { return tb1.SelectionHighlightingForLineBreaksEnabled; } set { tb1.SelectionHighlightingForLineBreaksEnabled = value; tb2.SelectionHighlightingForLineBreaksEnabled = value; } }
+        public bool HideLineBreakInvisibleChar { get { return tb1.HideLineBreakInvisibleChar; } set { tb1.HideLineBreakInvisibleChar = value; tb2.HideLineBreakInvisibleChar = value; } }
+        public bool ShowInvisibleCharsInSelection { get { return tb1.ShowInvisibleCharsInSelection; } set { tb1.ShowInvisibleCharsInSelection = value; tb2.ShowInvisibleCharsInSelection = value; } }
+
         public int FilterIndex = 2;
 
         private List<int> GreenLines2 = new List<int>();
@@ -75,7 +79,7 @@ namespace HMSEditorNS {
         }
 
         public void FindNextDiff(FastColoredTextBox tb = null) {
-            if (tb == null) tb = tb2;
+            if (tb == null) tb = tb1.Focused ? tb1 : tb2;
             int oldLine = tb[tb.Selection.Start.iLine].LineNo - 1;
             int newLine = oldLine;
             List<int> list = tb == tb1 ? RedLines1 : GreenLines2;
@@ -413,7 +417,11 @@ namespace HMSEditorNS {
                     }
                 }
             } else {
-                HMS.LoadAndDetectEncoding(filename, out text);
+                try {
+                    var enc = EncodingDetector.DetectTextFileEncoding(filename);
+                    text = File.ReadAllText(filename, enc);
+                } catch {
+                }
             }
 
             string msg = "";
@@ -446,6 +454,11 @@ namespace HMSEditorNS {
         public void Compare() {
             RangesGreen.Clear();
             RangesRed  .Clear();
+            int l_changed = 0;
+            int l_added   = 0;
+            int l_deleted = 0;
+            int l_nochang = 0;
+            double change = 0;
             try {
                 DiffEngine de = new DiffEngine(Text1, Text2);
                 ArrayList rep = de.ProcessDiff(DiffEngineLevel.Medium);
@@ -474,12 +487,14 @@ namespace HMSEditorNS {
                                         DiffChars(line1, "");
                                         if (line1.Length == 0)
                                             SetRangeStyle(tb1, 0, 0, true);
+                                        l_deleted++;
                                     }
                                     break;
                                 case DiffResultSpanStatus.NoChange:
                                     for (i = 0; i < drs.Length; i++) {
                                         tb1.AddLine(de.GetSrcLineByIndex(drs.SourceIndex + i), Color.Transparent, ref LineCount1);
                                         tb2.AddLine(de.GetDstLineByIndex(drs.DestIndex   + i), Color.Transparent, ref LineCount2);
+                                        l_nochang++;
                                     }
                                     break;
                                 case DiffResultSpanStatus.AddDestination:
@@ -491,6 +506,7 @@ namespace HMSEditorNS {
                                         DiffChars("", line2);
                                         if (line2.Length == 0)
                                             SetRangeStyle(tb2, 0, 0, false);
+                                        l_added++;
                                     }
                                     break;
                                 case DiffResultSpanStatus.Replace:
@@ -502,6 +518,7 @@ namespace HMSEditorNS {
                                         RedLines1.Add(drs.SourceIndex + i);
                                         GreenLines2.Add(drs.DestIndex + i);
                                         DiffChars(line1, line2);
+                                        l_changed++;
                                     }
                                     break;
                             }
@@ -518,8 +535,18 @@ namespace HMSEditorNS {
                 HMS.Err(ex.Message);
                 //HMS.LogError(ex);
             }
+            // Statinstics
+            string s_change = "0%";
+            if (l_nochang != 0) {
+                change = (double)(LineCount2 - l_nochang) / l_nochang * 100;
+                if (change > 100) change = 100;
+                s_change = change < 1 && change > 0 ? " < 1%" : (Math.Round(change).ToString() + "%");
+            } else if (l_added!=0 || l_deleted!=0) {
+                s_change = "100%";
+            }
+            toolStripStatusLabelStat.Text = string.Format("   Изменённых строк: {0}   Удалённых строк: {1}   Добавлено строк: {2}   Изменений: {3}", l_changed, l_deleted, l_added, s_change);
             Invalidate();
-
+            FindNextDiff();
         }
 
         private void DiffChars(string line1, string line2) {

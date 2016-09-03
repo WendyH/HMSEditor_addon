@@ -25,8 +25,8 @@
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DiffControl));
+            FastColoredTextBoxNS.ServiceColors serviceColors3 = new FastColoredTextBoxNS.ServiceColors();
             FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
-            FastColoredTextBoxNS.ServiceColors serviceColors2 = new FastColoredTextBoxNS.ServiceColors();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.tb1 = new FastColoredTextBoxNS.FastColoredTextBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -55,6 +55,7 @@
             this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabelStat = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -128,13 +129,13 @@
             this.tb1.Paddings = new System.Windows.Forms.Padding(0);
             this.tb1.ReadOnly = true;
             this.tb1.RoundedCornersRadius = 3;
-            serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
-            serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
-            serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
-            serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
-            this.tb1.ServiceColors = serviceColors1;
+            serviceColors3.CollapseMarkerBackColor = System.Drawing.Color.White;
+            serviceColors3.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors3.CollapseMarkerForeColor = System.Drawing.Color.Silver;
+            serviceColors3.ExpandMarkerBackColor = System.Drawing.Color.White;
+            serviceColors3.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors3.ExpandMarkerForeColor = System.Drawing.Color.Red;
+            this.tb1.ServiceColors = serviceColors3;
             this.tb1.ShowChangedLinesOnScrollbar = false;
             this.tb1.ShowScrollBars = false;
             this.tb1.Size = new System.Drawing.Size(411, 409);
@@ -153,13 +154,13 @@
             this.toolStripSeparator10,
             this.ToolStripMenuItemZoom100});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(193, 126);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(196, 126);
             // 
             // ToolStripMenuItemSelectAll
             // 
             this.ToolStripMenuItemSelectAll.Name = "ToolStripMenuItemSelectAll";
             this.ToolStripMenuItemSelectAll.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.ToolStripMenuItemSelectAll.Size = new System.Drawing.Size(192, 22);
+            this.ToolStripMenuItemSelectAll.Size = new System.Drawing.Size(195, 22);
             this.ToolStripMenuItemSelectAll.Text = "Выделить всё";
             this.ToolStripMenuItemSelectAll.Click += new System.EventHandler(this.ToolStripMenuItemSelectAll_Click);
             // 
@@ -168,20 +169,20 @@
             this.ToolStripMenuItemCopy.Image = global::HMSEditorNS.Properties.Resources.Copy_6524;
             this.ToolStripMenuItemCopy.Name = "ToolStripMenuItemCopy";
             this.ToolStripMenuItemCopy.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.ToolStripMenuItemCopy.Size = new System.Drawing.Size(192, 22);
+            this.ToolStripMenuItemCopy.Size = new System.Drawing.Size(195, 22);
             this.ToolStripMenuItemCopy.Text = "Копировать";
             this.ToolStripMenuItemCopy.Click += new System.EventHandler(this.ToolStripMenuItemCopy_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(189, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(192, 6);
             // 
             // ToolStripMenuItemFind
             // 
             this.ToolStripMenuItemFind.Image = global::HMSEditorNS.Properties.Resources.Find_5650;
             this.ToolStripMenuItemFind.Name = "ToolStripMenuItemFind";
-            this.ToolStripMenuItemFind.Size = new System.Drawing.Size(192, 22);
+            this.ToolStripMenuItemFind.Size = new System.Drawing.Size(195, 22);
             this.ToolStripMenuItemFind.Text = "Найти";
             this.ToolStripMenuItemFind.Click += new System.EventHandler(this.ToolStripMenuItemFind_Click);
             // 
@@ -189,19 +190,19 @@
             // 
             this.ToolStripMenuItemGoTo.Image = global::HMSEditorNS.Properties.Resources.HistoricalInstructionPointer_16x;
             this.ToolStripMenuItemGoTo.Name = "ToolStripMenuItemGoTo";
-            this.ToolStripMenuItemGoTo.Size = new System.Drawing.Size(192, 22);
+            this.ToolStripMenuItemGoTo.Size = new System.Drawing.Size(195, 22);
             this.ToolStripMenuItemGoTo.Text = "Перейти к строке №...";
             this.ToolStripMenuItemGoTo.Click += new System.EventHandler(this.ToolStripMenuItemGoTo_Click);
             // 
             // toolStripSeparator10
             // 
             this.toolStripSeparator10.Name = "toolStripSeparator10";
-            this.toolStripSeparator10.Size = new System.Drawing.Size(189, 6);
+            this.toolStripSeparator10.Size = new System.Drawing.Size(192, 6);
             // 
             // ToolStripMenuItemZoom100
             // 
             this.ToolStripMenuItemZoom100.Name = "ToolStripMenuItemZoom100";
-            this.ToolStripMenuItemZoom100.Size = new System.Drawing.Size(192, 22);
+            this.ToolStripMenuItemZoom100.Size = new System.Drawing.Size(195, 22);
             this.ToolStripMenuItemZoom100.Text = "Zoom 100%";
             this.ToolStripMenuItemZoom100.Click += new System.EventHandler(this.ToolStripMenuItemZoom100_Click);
             // 
@@ -242,7 +243,7 @@
             // 
             this.toolStripMenuItemInsert1.Image = global::HMSEditorNS.Properties.Resources.Paste_6520;
             this.toolStripMenuItemInsert1.Name = "toolStripMenuItemInsert1";
-            this.toolStripMenuItemInsert1.Size = new System.Drawing.Size(176, 20);
+            this.toolStripMenuItemInsert1.Size = new System.Drawing.Size(187, 20);
             this.toolStripMenuItemInsert1.Text = "Вставить из буфера обмена";
             this.toolStripMenuItemInsert1.Click += new System.EventHandler(this.toolStripMenuItemInsert1_Click);
             // 
@@ -302,13 +303,13 @@
             this.tb2.Paddings = new System.Windows.Forms.Padding(0);
             this.tb2.ReadOnly = true;
             this.tb2.RoundedCornersRadius = 3;
-            serviceColors2.CollapseMarkerBackColor = System.Drawing.Color.White;
-            serviceColors2.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors2.CollapseMarkerForeColor = System.Drawing.Color.Silver;
-            serviceColors2.ExpandMarkerBackColor = System.Drawing.Color.White;
-            serviceColors2.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors2.ExpandMarkerForeColor = System.Drawing.Color.Red;
-            this.tb2.ServiceColors = serviceColors2;
+            serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
+            serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
+            serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
+            serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
+            this.tb2.ServiceColors = serviceColors1;
             this.tb2.ShowChangedLinesOnScrollbar = false;
             this.tb2.ShowScrollBars = false;
             this.tb2.Size = new System.Drawing.Size(433, 409);
@@ -353,7 +354,7 @@
             // 
             this.toolStripMenuItemInsert2.Image = global::HMSEditorNS.Properties.Resources.Paste_6520;
             this.toolStripMenuItemInsert2.Name = "toolStripMenuItemInsert2";
-            this.toolStripMenuItemInsert2.Size = new System.Drawing.Size(176, 20);
+            this.toolStripMenuItemInsert2.Size = new System.Drawing.Size(187, 20);
             this.toolStripMenuItemInsert2.Text = "Вставить из буфера обмена";
             this.toolStripMenuItemInsert2.Click += new System.EventHandler(this.toolStripMenuItemInsert2_Click);
             // 
@@ -381,10 +382,11 @@
             this.toolStripStatusLabel3,
             this.toolStripStatusLabel4,
             this.toolStripStatusLabel1,
-            this.toolStripStatusLabel2});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 454);
+            this.toolStripStatusLabel2,
+            this.toolStripStatusLabelStat});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 453);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(913, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(913, 23);
             this.statusStrip1.TabIndex = 2;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -393,13 +395,13 @@
             this.toolStripStatusLabel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.toolStripStatusLabel3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(13, 14);
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(13, 15);
             this.toolStripStatusLabel3.Text = "  ";
             // 
             // toolStripStatusLabel4
             // 
             this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
-            this.toolStripStatusLabel4.Size = new System.Drawing.Size(57, 17);
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(59, 18);
             this.toolStripStatusLabel4.Text = "Удалено  ";
             // 
             // toolStripStatusLabel1
@@ -407,14 +409,20 @@
             this.toolStripStatusLabel1.BackColor = System.Drawing.Color.Green;
             this.toolStripStatusLabel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(13, 14);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(13, 15);
             this.toolStripStatusLabel1.Text = "  ";
             // 
             // toolStripStatusLabel2
             // 
             this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(63, 17);
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(68, 18);
             this.toolStripStatusLabel2.Text = "Добавлено";
+            // 
+            // toolStripStatusLabelStat
+            // 
+            this.toolStripStatusLabelStat.Name = "toolStripStatusLabelStat";
+            this.toolStripStatusLabelStat.Size = new System.Drawing.Size(361, 18);
+            this.toolStripStatusLabelStat.Text = "Изменённых строк: 0 Удалённых: 0 Добавлено: 0 Изменено: 90%";
             // 
             // DiffControl
             // 
@@ -474,5 +482,6 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelStat;
     }
 }

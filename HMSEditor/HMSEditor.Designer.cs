@@ -128,6 +128,7 @@
             this.btnThemes = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.btnAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripButtonCompare = new System.Windows.Forms.ToolStripButton();
             this.btnSprav = new System.Windows.Forms.ToolStripButton();
             this.labelVersion = new System.Windows.Forms.ToolStripLabel();
             this.labelNewVersion = new System.Windows.Forms.ToolStripLabel();
@@ -136,7 +137,6 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.TB = new FastColoredTextBoxNS.FastColoredTextBox();
             this.helpPanel1 = new HMSEditorNS.HelpPanel();
-            this.toolStripButtonCompare = new System.Windows.Forms.ToolStripButton();
             this.contextMenuStrip1.SuspendLayout();
             this.tsMain.SuspendLayout();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -1039,6 +1039,18 @@
             this.btnAbout.Text = "О программе";
             this.btnAbout.Click += new System.EventHandler(this.btnAbout_Click);
             // 
+            // toolStripButtonCompare
+            // 
+            this.toolStripButtonCompare.CheckOnClick = true;
+            this.toolStripButtonCompare.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonCompare.Image = global::HMSEditorNS.Properties.Resources.Compare_13153;
+            this.toolStripButtonCompare.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonCompare.Name = "toolStripButtonCompare";
+            this.toolStripButtonCompare.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonCompare.Text = "Сравнение";
+            this.toolStripButtonCompare.ToolTipText = "Сравнение исходных текстов";
+            this.toolStripButtonCompare.Click += new System.EventHandler(this.toolStripButtonCompare_Click);
+            // 
             // btnSprav
             // 
             this.btnSprav.CheckOnClick = true;
@@ -1146,6 +1158,7 @@
             this.TB.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TB.Font = new System.Drawing.Font("Consolas", 9.75F);
             this.TB.HighlightingRangeType = FastColoredTextBoxNS.HighlightingRangeType.VisibleRange;
+            this.TB.HorizontalScrollVisible = true;
             this.TB.Hotkeys = resources.GetString("TB.Hotkeys");
             this.TB.IsReplaceMode = false;
             this.TB.LeftBracket = '(';
@@ -1154,6 +1167,7 @@
             this.TB.Name = "TB";
             this.TB.Paddings = new System.Windows.Forms.Padding(0);
             this.TB.RightBracket = ')';
+            this.TB.RoundedCornersRadius = 3;
             serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
             serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
             serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
@@ -1166,6 +1180,7 @@
             this.TB.Size = new System.Drawing.Size(672, 506);
             this.TB.TabIndex = 0;
             this.TB.TabLength = 2;
+            this.TB.VerticalScrollVisible = true;
             this.TB.Zoom = 100;
             this.TB.TextChanged += new System.EventHandler<FastColoredTextBoxNS.TextChangedEventArgs>(this.Editor_TextChanged);
             this.TB.SelectionChanged += new System.EventHandler(this.Editor_SelectionChanged);
@@ -1186,18 +1201,6 @@
             this.helpPanel1.Size = new System.Drawing.Size(295, 498);
             this.helpPanel1.SplitterDistance = 263;
             this.helpPanel1.TabIndex = 0;
-            // 
-            // toolStripButtonCompare
-            // 
-            this.toolStripButtonCompare.CheckOnClick = true;
-            this.toolStripButtonCompare.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonCompare.Image = global::HMSEditorNS.Properties.Resources.Compare_13153;
-            this.toolStripButtonCompare.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonCompare.Name = "toolStripButtonCompare";
-            this.toolStripButtonCompare.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButtonCompare.Text = "Сравнение";
-            this.toolStripButtonCompare.ToolTipText = "Сравнение исходных текстов";
-            this.toolStripButtonCompare.Click += new System.EventHandler(this.toolStripButtonCompare_Click);
             // 
             // HMSEditor
             // 
