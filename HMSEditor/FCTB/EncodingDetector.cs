@@ -66,6 +66,8 @@ namespace FastColoredTextBoxNS
                 if (Regex.IsMatch(Encoding.UTF8.GetString(sampleBytes), "[А-Яа-я]"))
                     encodingFound = Encoding.UTF8;
             }
+            if (encodingFound == null)
+                encodingFound = Encoding.Default;
             return encodingFound;
         }
 

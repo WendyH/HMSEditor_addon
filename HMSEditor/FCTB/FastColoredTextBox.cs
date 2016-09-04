@@ -66,13 +66,14 @@ namespace FastColoredTextBoxNS {
         public bool VerticalScrollVisible   { get { return VerticalScroll  .ShowIfVisible; } set { VerticalScroll  .ShowIfVisible = value; if (!value) VerticalScroll  .Visible = false; } }
         public bool HorizontalScrollVisible { get { return HorizontalScroll.ShowIfVisible; } set { HorizontalScroll.ShowIfVisible = value; if (!value) HorizontalScroll.Visible = false; } }
         // By WendyH
+        public bool           NoUseCache                 = false;
         public bool           HideLineBreakInvisibleChar = true;
-        public Regex          RegexStringAndComments = null;
-        public HmsToolTip     ToolTip4Function       = new HmsToolTip();
-        public SelectionStyle YellowSelectionStyle      = new SelectionStyle(Themes.ToColor("#E5C63BFF"), Color.Black);
-        public SelectionStyle LightYellowSelectionStyle = new SelectionStyle(Themes.ToColor("#FDFBACFF"), Color.Black);
-        public SelectionStyle GreenSelectionStyle       = new SelectionStyle(Themes.ToColor("#FFD2EEB0"), Color.Black);
-        public SelectionStyle BlueSelectionStyle        = new SelectionStyle(Themes.ToColor("#FFc6e3ff"), Color.Black);
+        public Regex          RegexStringAndComments     = null;
+        public HmsToolTip     ToolTip4Function           = new HmsToolTip();
+        public SelectionStyle YellowSelectionStyle       = new SelectionStyle(Themes.ToColor("#E5C63BFF"), Color.Black);
+        public SelectionStyle LightYellowSelectionStyle  = new SelectionStyle(Themes.ToColor("#FDFBACFF"), Color.Black);
+        public SelectionStyle GreenSelectionStyle        = new SelectionStyle(Themes.ToColor("#FFD2EEB0"), Color.Black);
+        public SelectionStyle BlueSelectionStyle         = new SelectionStyle(Themes.ToColor("#FFc6e3ff"), Color.Black);
 
         public SelectionStyle StyleDiffRed   = new SelectionStyle(Color.Red  , 2);
         public SelectionStyle StyleDiffGreen = new SelectionStyle(Color.Green, 2);
@@ -353,6 +354,7 @@ namespace FastColoredTextBoxNS {
                     line.LineNo = ++lineNo;
                 }
                 line.BackgroundBrush = new SolidBrush(color);
+                line.Unavaliable     = false;
                 if (!Cleared)
                     TextSource.Add(line);
                 Cleared = false;
@@ -428,7 +430,7 @@ namespace FastColoredTextBoxNS {
 
         // Load cashed text and styles from files
         private bool LoadCache(string text) {
-            if (string.IsNullOrEmpty(text)      ) return false;
+            if (NoUseCache || string.IsNullOrEmpty(text)) return false;
             if (text.Length < minCacheTextLength) return false; // dont work with cache for small text
             byte[] buffer = new byte[4]; char c;
             string hash = CalculateKnuthHash(text);
@@ -3294,8 +3296,13 @@ namespace FastColoredTextBoxNS {
             LeftIndent = LeftPadding;
             long maxLineNumber = LinesCount + lineNumberStartValue - 1;
             try {
-                if (DrawLineNumberFromInfo)
-                    maxLineNumber = lines[LinesCount - 1].LineNo; // By WendyH
+                if (DrawLineNumberFromInfo) {
+                    for (int i = LinesCount - 1; i > 0; i--) {
+                        if (lines[i].Unavaliable) continue;
+                        maxLineNumber = lines[i].LineNo; // By WendyH
+                        break;
+                    }
+                }
             } catch {
                 return;
             }

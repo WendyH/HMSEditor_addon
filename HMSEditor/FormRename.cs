@@ -24,6 +24,7 @@ namespace HMSEditorNS {
         public FormRename() {
             InitializeComponent();
             ContextToolTip.AutoPopDelay = 20000;
+            TextBox.NoUseCache = true;
         }
 
         private void FormRename_Load(object sender, EventArgs e) {

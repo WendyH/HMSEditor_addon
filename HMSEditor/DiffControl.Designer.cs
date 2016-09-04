@@ -25,10 +25,9 @@
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DiffControl));
-            FastColoredTextBoxNS.ServiceColors serviceColors3 = new FastColoredTextBoxNS.ServiceColors();
             FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
+            FastColoredTextBoxNS.ServiceColors serviceColors2 = new FastColoredTextBoxNS.ServiceColors();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.tb1 = new FastColoredTextBoxNS.FastColoredTextBox();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.ToolStripMenuItemSelectAll = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItemCopy = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,28 +42,33 @@
             this.toolStripMenuItemInsert1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemPrevDiff1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemNextDiff1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.tb2 = new FastColoredTextBoxNS.FastColoredTextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.menuStrip2 = new System.Windows.Forms.MenuStrip();
             this.toolStripMenuItemLoad2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemInsert2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemPrevDiff2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemNextDiff2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.настройкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ToolStripMenuItemSemantic = new System.Windows.Forms.ToolStripMenuItem();
+            this.игнорироватьПробелыСправаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.неВыделятьИзмененияВПробелахToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabelStat = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tb1 = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.tb2 = new FastColoredTextBoxNS.FastColoredTextBox();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tb1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tb2)).BeginInit();
             this.menuStrip2.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tb1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tb2)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -92,56 +96,6 @@
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 1;
             this.splitContainer1.TabStop = false;
-            // 
-            // tb1
-            // 
-            this.tb1.AutoCompleteBracketsList = new char[] {
-        '(',
-        ')',
-        '{',
-        '}',
-        '[',
-        ']',
-        '\"',
-        '\"',
-        '\'',
-        '\''};
-            this.tb1.AutoIndentExistingLines = false;
-            this.tb1.AutoScrollMinSize = new System.Drawing.Size(24, 15);
-            this.tb1.BackBrush = null;
-            this.tb1.BoldCaret = false;
-            this.tb1.BookmarkIcon = null;
-            this.tb1.BreakpointIcon = null;
-            this.tb1.BreakpointLineColor = System.Drawing.Color.Empty;
-            this.tb1.CharHeight = 15;
-            this.tb1.CharWidth = 7;
-            this.tb1.ContextMenuStrip = this.contextMenuStrip1;
-            this.tb1.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.tb1.DebugCurrentLineIcon = null;
-            this.tb1.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.tb1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tb1.Font = new System.Drawing.Font("Consolas", 9.75F);
-            this.tb1.HorizontalScrollVisible = true;
-            this.tb1.Hotkeys = resources.GetString("tb1.Hotkeys");
-            this.tb1.IsReplaceMode = false;
-            this.tb1.Location = new System.Drawing.Point(0, 43);
-            this.tb1.Name = "tb1";
-            this.tb1.Paddings = new System.Windows.Forms.Padding(0);
-            this.tb1.ReadOnly = true;
-            this.tb1.RoundedCornersRadius = 3;
-            serviceColors3.CollapseMarkerBackColor = System.Drawing.Color.White;
-            serviceColors3.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors3.CollapseMarkerForeColor = System.Drawing.Color.Silver;
-            serviceColors3.ExpandMarkerBackColor = System.Drawing.Color.White;
-            serviceColors3.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors3.ExpandMarkerForeColor = System.Drawing.Color.Red;
-            this.tb1.ServiceColors = serviceColors3;
-            this.tb1.ShowChangedLinesOnScrollbar = false;
-            this.tb1.ShowScrollBars = false;
-            this.tb1.Size = new System.Drawing.Size(411, 409);
-            this.tb1.TabIndex = 1;
-            this.tb1.VerticalScrollVisible = true;
-            this.tb1.Zoom = 100;
             // 
             // contextMenuStrip1
             // 
@@ -267,56 +221,6 @@
             this.toolStripMenuItemNextDiff1.ToolTipText = "Перейти к следующему отличию";
             this.toolStripMenuItemNextDiff1.Click += new System.EventHandler(this.toolStripMenuItemNextDiff1_Click);
             // 
-            // tb2
-            // 
-            this.tb2.AutoCompleteBracketsList = new char[] {
-        '(',
-        ')',
-        '{',
-        '}',
-        '[',
-        ']',
-        '\"',
-        '\"',
-        '\'',
-        '\''};
-            this.tb2.AutoIndentExistingLines = false;
-            this.tb2.AutoScrollMinSize = new System.Drawing.Size(24, 15);
-            this.tb2.BackBrush = null;
-            this.tb2.BoldCaret = false;
-            this.tb2.BookmarkIcon = null;
-            this.tb2.BreakpointIcon = null;
-            this.tb2.BreakpointLineColor = System.Drawing.Color.Empty;
-            this.tb2.CharHeight = 15;
-            this.tb2.CharWidth = 7;
-            this.tb2.ContextMenuStrip = this.contextMenuStrip1;
-            this.tb2.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.tb2.DebugCurrentLineIcon = null;
-            this.tb2.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
-            this.tb2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tb2.Font = new System.Drawing.Font("Consolas", 9.75F);
-            this.tb2.HorizontalScrollVisible = true;
-            this.tb2.Hotkeys = resources.GetString("tb2.Hotkeys");
-            this.tb2.IsReplaceMode = false;
-            this.tb2.Location = new System.Drawing.Point(0, 43);
-            this.tb2.Name = "tb2";
-            this.tb2.Paddings = new System.Windows.Forms.Padding(0);
-            this.tb2.ReadOnly = true;
-            this.tb2.RoundedCornersRadius = 3;
-            serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
-            serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
-            serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
-            serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
-            this.tb2.ServiceColors = serviceColors1;
-            this.tb2.ShowChangedLinesOnScrollbar = false;
-            this.tb2.ShowScrollBars = false;
-            this.tb2.Size = new System.Drawing.Size(433, 409);
-            this.tb2.TabIndex = 2;
-            this.tb2.VerticalScrollVisible = true;
-            this.tb2.Zoom = 100;
-            // 
             // label2
             // 
             this.label2.BackColor = System.Drawing.SystemColors.Control;
@@ -335,7 +239,8 @@
             this.toolStripMenuItemLoad2,
             this.toolStripMenuItemInsert2,
             this.toolStripMenuItemPrevDiff2,
-            this.toolStripMenuItemNextDiff2});
+            this.toolStripMenuItemNextDiff2,
+            this.настройкиToolStripMenuItem});
             this.menuStrip2.Location = new System.Drawing.Point(0, 0);
             this.menuStrip2.Name = "menuStrip2";
             this.menuStrip2.Size = new System.Drawing.Size(433, 24);
@@ -352,6 +257,7 @@
             // 
             // toolStripMenuItemInsert2
             // 
+            this.toolStripMenuItemInsert2.AutoToolTip = true;
             this.toolStripMenuItemInsert2.Image = global::HMSEditorNS.Properties.Resources.Paste_6520;
             this.toolStripMenuItemInsert2.Name = "toolStripMenuItemInsert2";
             this.toolStripMenuItemInsert2.Size = new System.Drawing.Size(187, 20);
@@ -375,6 +281,42 @@
             this.toolStripMenuItemNextDiff2.Size = new System.Drawing.Size(28, 20);
             this.toolStripMenuItemNextDiff2.ToolTipText = "Перейти к следующему отличию";
             this.toolStripMenuItemNextDiff2.Click += new System.EventHandler(this.toolStripMenuItemNextDiff2_Click);
+            // 
+            // настройкиToolStripMenuItem
+            // 
+            this.настройкиToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ToolStripMenuItemSemantic,
+            this.игнорироватьПробелыСправаToolStripMenuItem,
+            this.неВыделятьИзмененияВПробелахToolStripMenuItem});
+            this.настройкиToolStripMenuItem.Name = "настройкиToolStripMenuItem";
+            this.настройкиToolStripMenuItem.Size = new System.Drawing.Size(79, 20);
+            this.настройкиToolStripMenuItem.Text = "Настройки";
+            // 
+            // ToolStripMenuItemSemantic
+            // 
+            this.ToolStripMenuItemSemantic.CheckOnClick = true;
+            this.ToolStripMenuItemSemantic.Name = "ToolStripMenuItemSemantic";
+            this.ToolStripMenuItemSemantic.Size = new System.Drawing.Size(270, 22);
+            this.ToolStripMenuItemSemantic.Text = "Семантическое объединение";
+            this.ToolStripMenuItemSemantic.Click += new System.EventHandler(this.ToolStripMenuItemSemantic_Click);
+            // 
+            // игнорироватьПробелыСправаToolStripMenuItem
+            // 
+            this.игнорироватьПробелыСправаToolStripMenuItem.Checked = true;
+            this.игнорироватьПробелыСправаToolStripMenuItem.CheckOnClick = true;
+            this.игнорироватьПробелыСправаToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.игнорироватьПробелыСправаToolStripMenuItem.Name = "игнорироватьПробелыСправаToolStripMenuItem";
+            this.игнорироватьПробелыСправаToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
+            this.игнорироватьПробелыСправаToolStripMenuItem.Text = "Игнорировать пробелы справа";
+            this.игнорироватьПробелыСправаToolStripMenuItem.Click += new System.EventHandler(this.игнорироватьПробелыСправаToolStripMenuItem_Click);
+            // 
+            // неВыделятьИзмененияВПробелахToolStripMenuItem
+            // 
+            this.неВыделятьИзмененияВПробелахToolStripMenuItem.CheckOnClick = true;
+            this.неВыделятьИзмененияВПробелахToolStripMenuItem.Name = "неВыделятьИзмененияВПробелахToolStripMenuItem";
+            this.неВыделятьИзмененияВПробелахToolStripMenuItem.Size = new System.Drawing.Size(270, 22);
+            this.неВыделятьИзмененияВПробелахToolStripMenuItem.Text = "Не выделять изменения в пробелах";
+            this.неВыделятьИзмененияВПробелахToolStripMenuItem.Click += new System.EventHandler(this.неВыделятьИзмененияВПробелахToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -424,6 +366,106 @@
             this.toolStripStatusLabelStat.Size = new System.Drawing.Size(361, 18);
             this.toolStripStatusLabelStat.Text = "Изменённых строк: 0 Удалённых: 0 Добавлено: 0 Изменено: 90%";
             // 
+            // tb1
+            // 
+            this.tb1.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.tb1.AutoIndentExistingLines = false;
+            this.tb1.AutoScrollMinSize = new System.Drawing.Size(24, 15);
+            this.tb1.BackBrush = null;
+            this.tb1.BoldCaret = false;
+            this.tb1.BookmarkIcon = null;
+            this.tb1.BreakpointIcon = null;
+            this.tb1.BreakpointLineColor = System.Drawing.Color.Empty;
+            this.tb1.CharHeight = 15;
+            this.tb1.CharWidth = 7;
+            this.tb1.ContextMenuStrip = this.contextMenuStrip1;
+            this.tb1.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.tb1.DebugCurrentLineIcon = null;
+            this.tb1.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.tb1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tb1.Font = new System.Drawing.Font("Consolas", 9.75F);
+            this.tb1.HorizontalScrollVisible = true;
+            this.tb1.Hotkeys = resources.GetString("tb1.Hotkeys");
+            this.tb1.IsReplaceMode = false;
+            this.tb1.Location = new System.Drawing.Point(0, 43);
+            this.tb1.Name = "tb1";
+            this.tb1.Paddings = new System.Windows.Forms.Padding(0);
+            this.tb1.ReadOnly = true;
+            this.tb1.RoundedCornersRadius = 3;
+            serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
+            serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
+            serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
+            serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
+            this.tb1.ServiceColors = serviceColors1;
+            this.tb1.ShowChangedLinesOnScrollbar = false;
+            this.tb1.ShowScrollBars = false;
+            this.tb1.Size = new System.Drawing.Size(411, 409);
+            this.tb1.TabIndex = 1;
+            this.tb1.VerticalScrollVisible = true;
+            this.tb1.Zoom = 100;
+            // 
+            // tb2
+            // 
+            this.tb2.AutoCompleteBracketsList = new char[] {
+        '(',
+        ')',
+        '{',
+        '}',
+        '[',
+        ']',
+        '\"',
+        '\"',
+        '\'',
+        '\''};
+            this.tb2.AutoIndentExistingLines = false;
+            this.tb2.AutoScrollMinSize = new System.Drawing.Size(24, 15);
+            this.tb2.BackBrush = null;
+            this.tb2.BoldCaret = false;
+            this.tb2.BookmarkIcon = null;
+            this.tb2.BreakpointIcon = null;
+            this.tb2.BreakpointLineColor = System.Drawing.Color.Empty;
+            this.tb2.CharHeight = 15;
+            this.tb2.CharWidth = 7;
+            this.tb2.ContextMenuStrip = this.contextMenuStrip1;
+            this.tb2.Cursor = System.Windows.Forms.Cursors.IBeam;
+            this.tb2.DebugCurrentLineIcon = null;
+            this.tb2.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))), ((int)(((byte)(180)))));
+            this.tb2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tb2.Font = new System.Drawing.Font("Consolas", 9.75F);
+            this.tb2.HorizontalScrollVisible = true;
+            this.tb2.Hotkeys = resources.GetString("tb2.Hotkeys");
+            this.tb2.IsReplaceMode = false;
+            this.tb2.Location = new System.Drawing.Point(0, 43);
+            this.tb2.Name = "tb2";
+            this.tb2.Paddings = new System.Windows.Forms.Padding(0);
+            this.tb2.ReadOnly = true;
+            this.tb2.RoundedCornersRadius = 3;
+            serviceColors2.CollapseMarkerBackColor = System.Drawing.Color.White;
+            serviceColors2.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors2.CollapseMarkerForeColor = System.Drawing.Color.Silver;
+            serviceColors2.ExpandMarkerBackColor = System.Drawing.Color.White;
+            serviceColors2.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors2.ExpandMarkerForeColor = System.Drawing.Color.Red;
+            this.tb2.ServiceColors = serviceColors2;
+            this.tb2.ShowChangedLinesOnScrollbar = false;
+            this.tb2.ShowScrollBars = false;
+            this.tb2.Size = new System.Drawing.Size(433, 409);
+            this.tb2.TabIndex = 2;
+            this.tb2.VerticalScrollVisible = true;
+            this.tb2.Zoom = 100;
+            // 
             // DiffControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -438,15 +480,15 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             this.splitContainer1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.tb1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tb2)).EndInit();
             this.menuStrip2.ResumeLayout(false);
             this.menuStrip2.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tb1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tb2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -483,5 +525,9 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelStat;
+        private System.Windows.Forms.ToolStripMenuItem настройкиToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemSemantic;
+        private System.Windows.Forms.ToolStripMenuItem игнорироватьПробелыСправаToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem неВыделятьИзмененияВПробелахToolStripMenuItem;
     }
 }

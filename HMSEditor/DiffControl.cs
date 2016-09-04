@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
+using DiffMatchPatch;
 
 namespace HMSEditorNS {
     public partial class DiffControl: UserControl {
@@ -21,9 +22,11 @@ namespace HMSEditorNS {
         public Language Language { get { return tb1.Language; } set { tb1.Language = value; tb2.Language = value; } }
 
         public bool SelectionHighlightingForLineBreaksEnabled { get { return tb1.SelectionHighlightingForLineBreaksEnabled; } set { tb1.SelectionHighlightingForLineBreaksEnabled = value; tb2.SelectionHighlightingForLineBreaksEnabled = value; } }
-        public bool HideLineBreakInvisibleChar { get { return tb1.HideLineBreakInvisibleChar; } set { tb1.HideLineBreakInvisibleChar = value; tb2.HideLineBreakInvisibleChar = value; } }
+        public bool HideLineBreakInvisibleChar    { get { return tb1.HideLineBreakInvisibleChar   ; } set { tb1.HideLineBreakInvisibleChar    = value; tb2.HideLineBreakInvisibleChar    = value; } }
         public bool ShowInvisibleCharsInSelection { get { return tb1.ShowInvisibleCharsInSelection; } set { tb1.ShowInvisibleCharsInSelection = value; tb2.ShowInvisibleCharsInSelection = value; } }
-        public bool TrimEndWhenDiff = false;
+        public bool TrimEndWhenDiff    { get { return игнорироватьПробелыСправаToolStripMenuItem.Checked; } set { игнорироватьПробелыСправаToolStripMenuItem.Checked = value; } }
+        public bool NoSelectEmptyAreas { get { return неВыделятьИзмененияВПробелахToolStripMenuItem.Checked; } set { неВыделятьИзмененияВПробелахToolStripMenuItem.Checked = value; } }
+        public bool SemanticMerge      { get { return ToolStripMenuItemSemantic.Checked; } set { ToolStripMenuItemSemantic.Checked = value; } }
 
         public int FilterIndex = 2;
 
@@ -237,18 +240,18 @@ namespace HMSEditorNS {
         }
 
         private void PrepareTB(FastColoredTextBox tb) {
-            tb.BoldCaret = true;
-            tb.ShowBeginOfFunctions = false;
-            tb.ShowChangedLinesOnScrollbar = false;
-            tb.ShowFoldingLines = false;
-            tb.EnableFoldingIndicator = false;
-            tb.ShowFoldingMarkers = false;
-            tb.DrawLineNumberFromInfo = true;
+            tb.NoUseCache                    = true;
+            tb.BoldCaret                     = true;
+            tb.ShowBeginOfFunctions          = false;
+            tb.ShowChangedLinesOnScrollbar   = false;
+            tb.ShowFoldingLines              = false;
+            tb.EnableFoldingIndicator        = false;
+            tb.ShowFoldingMarkers            = false;
+            tb.DrawLineNumberFromInfo        = true;
             tb.ShowInvisibleCharsInSelection = true;
-            tb.SelectionWithBorders = true;
-            tb.AllowSeveralTextStyleDrawing = false;
-            tb.AllowInsertRemoveLines = false;
-            tb.ReadOnly = true;
+            tb.SelectionWithBorders          = true;
+            tb.AllowSeveralTextStyleDrawing  = false;
+            tb.ReadOnly                      = true;
             tb.SetScrollbarsNotRefreshable();
             tb.OffAlignByLines();
             //tb.Font = new System.Drawing.Font("Monospace", 10f); // in linux
@@ -261,15 +264,15 @@ namespace HMSEditorNS {
             if (tb == null) return;
 
             lock (tb.Lines) {
-                int startLine = tb.YtoLineIndex();
+                int startLine      = tb.YtoLineIndex();
                 int vertScrolValue = tb.GetVerticalScrollValue();
                 int horzScrolValue = tb.GetHorizontalScrollValue();
                 int iLine;
                 int CharHeight = tb.CharHeight;
-                int CharWidth = tb.CharWidth;
+                int CharWidth  = tb.CharWidth;
 
                 int firstChar = (Math.Max(0, horzScrolValue - tb.Paddings.Left)) / CharWidth;
-                int lastChar = (horzScrolValue + ClientSize.Width) / CharWidth;
+                int lastChar  = (horzScrolValue + ClientSize.Width) / CharWidth;
                 int x = tb.LeftIndent + tb.Paddings.Left - horzScrolValue;
                 if (x < tb.LeftIndent) firstChar++;
 
@@ -421,7 +424,8 @@ namespace HMSEditorNS {
                 try {
                     var enc = EncodingDetector.DetectTextFileEncoding(filename);
                     text = File.ReadAllText(filename, enc);
-                } catch {
+                } catch (Exception e) {
+                    HMS.Err(e.Message);
                 }
             }
 
@@ -451,8 +455,7 @@ namespace HMSEditorNS {
             return true;
         }
 
-
-        public void Compare() {
+        public void Compare(bool findNextDiff = true) {
             RangesGreen.Clear();
             RangesRed  .Clear();
             int l_changed = 0;
@@ -514,10 +517,10 @@ namespace HMSEditorNS {
                                     for (i = 0; i < drs.Length; i++) {
                                         string line1 = de.GetSrcLineByIndex(drs.SourceIndex + i);
                                         string line2 = de.GetDstLineByIndex(drs.DestIndex   + i);
-                                        tb1.AddLine(line1, red, ref LineCount1);
+                                        tb1.AddLine(line1, red  , ref LineCount1);
                                         tb2.AddLine(line2, green, ref LineCount2);
-                                        RedLines1.Add(drs.SourceIndex + i);
-                                        GreenLines2.Add(drs.DestIndex + i);
+                                        RedLines1  .Add(drs.SourceIndex + i);
+                                        GreenLines2.Add(drs.DestIndex   + i);
                                         DiffChars(line1, line2);
                                         l_changed++;
                                     }
@@ -546,13 +549,34 @@ namespace HMSEditorNS {
                 s_change = "100%";
             }
             toolStripStatusLabelStat.Text = string.Format("   Изменённых строк: {0}   Удалённых строк: {1}   Добавлено строк: {2}   Изменений: {3}", l_changed, l_deleted, l_added, s_change);
+
+            if (NoSelectEmptyAreas) {
+                for (int i = RangesRed.Count - 1; i >= 0; i--) {
+                    if (RangesRed[i].Text.Trim().Length == 0)
+                        RangesRed.RemoveAt(i);
+                }
+                for (int i = RangesGreen.Count - 1; i >= 0; i--) {
+                    if (RangesGreen[i].Text.Trim().Length == 0)
+                        RangesGreen.RemoveAt(i);
+                }
+            }
+
             Invalidate();
-            FindNextDiff();
+            if (findNextDiff)
+                FindNextDiff();
         }
 
         private void DiffChars(string line1, string line2) {
+            if (line1 == line2) return;
             var del = new DiffEngine(line1, line2, true, false);
-            ArrayList res = del.ProcessDiff(DiffEngineLevel.FastImperfect);
+            ArrayList res = del.ProcessDiff(DiffEngineLevel.SlowPerfect);
+
+            if (SemanticMerge) {
+                del.CleanupSemantic(res);
+            } else {
+                del.MergeShortSpan(res);
+            }
+
             foreach (DiffResultSpan drs in res) {
                 switch (drs.Status) {
                     case DiffResultSpanStatus.DeleteSource:
@@ -570,8 +594,8 @@ namespace HMSEditorNS {
                 }
 
             }
-
         }
+
         List<Range> RangesGreen = new List<Range>();
         List<Range> RangesRed   = new List<Range>();
 
@@ -582,7 +606,7 @@ namespace HMSEditorNS {
                 if (RangesRed.Count > 0) {
                     Range pr = RangesRed[RangesRed.Count - 1];
                     int plen = tb.Lines[pr.End.iLine].Length;
-                    if ((pr.End >= r.Start) || (pr.End.iLine == iLine - 1 && pr.End.iChar == plen)) {
+                    if ((pr.End >= r.Start) || (pr.End.iLine == iLine - 1 && pr.End.iChar >= plen)) {
                         RangesRed.Remove(pr);
                         r = new Range(tb, pr.Start, r.End);
                     }
@@ -763,6 +787,18 @@ namespace HMSEditorNS {
 
         private void toolStripMenuItemNextDiff2_Click(object sender, EventArgs e) {
             FindNextDiff(tb2);
+        }
+
+        private void ToolStripMenuItemSemantic_Click(object sender, EventArgs e) {
+            Compare(false);
+        }
+
+        private void игнорироватьПробелыСправаToolStripMenuItem_Click(object sender, EventArgs e) {
+            Compare(false);
+        }
+
+        private void неВыделятьИзмененияВПробелахToolStripMenuItem_Click(object sender, EventArgs e) {
+            Compare(false);
         }
     }
 }

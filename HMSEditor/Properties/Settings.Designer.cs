@@ -82,5 +82,41 @@ namespace HMSEditorNS.Properties {
                 this["FormDiffFilterIndex"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FormDiffSemanticMerge {
+            get {
+                return ((bool)(this["FormDiffSemanticMerge"]));
+            }
+            set {
+                this["FormDiffSemanticMerge"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FormDiffTrimEndWhenDiff {
+            get {
+                return ((bool)(this["FormDiffTrimEndWhenDiff"]));
+            }
+            set {
+                this["FormDiffTrimEndWhenDiff"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FormDiffNoSelectEmptyAreas {
+            get {
+                return ((bool)(this["FormDiffNoSelectEmptyAreas"]));
+            }
+            set {
+                this["FormDiffNoSelectEmptyAreas"] = value;
+            }
+        }
     }
 }

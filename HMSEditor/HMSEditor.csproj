@@ -141,11 +141,10 @@
     <Compile Include="AuthenticodeTools.cs" />
     <Compile Include="Autocomplete.cs" />
     <Compile Include="CodeAnalysis.cs" />
-    <Compile Include="DifferenceEngine\BinaryFile.cs" />
-    <Compile Include="DifferenceEngine\CharData.cs" />
     <Compile Include="DifferenceEngine\Engine.cs" />
     <Compile Include="DifferenceEngine\Structures.cs" />
     <Compile Include="DifferenceEngine\TextFile.cs" />
+    <Compile Include="DiffMatchPatch.cs" />
     <Compile Include="FCTB\AutocompleteItem.cs" />
     <Compile Include="FCTB\AutocompleteMenu.cs">
       <SubType>Component</SubType>

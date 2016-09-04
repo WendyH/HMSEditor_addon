@@ -11,7 +11,9 @@ namespace HMSEditorNS {
 
         public bool HideLineBreakInvisibleChar    { get { return diffControl1.HideLineBreakInvisibleChar   ; } set { diffControl1.HideLineBreakInvisibleChar    = value; } }
         public bool ShowInvisibleCharsInSelection { get { return diffControl1.ShowInvisibleCharsInSelection; } set { diffControl1.ShowInvisibleCharsInSelection = value; } }
-        public bool TrimEndWhenDiff { get { return diffControl1.TrimEndWhenDiff; } set { diffControl1.TrimEndWhenDiff = value; } }
+        public bool TrimEndWhenDiff    { get { return diffControl1.TrimEndWhenDiff   ; } set { diffControl1.TrimEndWhenDiff    = value; } }
+        public bool SemanticMerge      { get { return diffControl1.SemanticMerge     ; } set { diffControl1.SemanticMerge      = value; } }
+        public bool NoSelectEmptyAreas { get { return diffControl1.NoSelectEmptyAreas; } set { diffControl1.NoSelectEmptyAreas = value; } }
 
         public FormDiff() {
             InitializeComponent();
@@ -31,6 +33,9 @@ namespace HMSEditorNS {
             Properties.Settings.Default.FormDiffFile1 = File1;
             Properties.Settings.Default.FormDiffFile2 = File2;
             Properties.Settings.Default.FormDiffFilterIndex = diffControl1.FilterIndex;
+            Properties.Settings.Default.FormDiffTrimEndWhenDiff    = TrimEndWhenDiff;
+            Properties.Settings.Default.FormDiffSemanticMerge      = SemanticMerge;
+            Properties.Settings.Default.FormDiffNoSelectEmptyAreas = NoSelectEmptyAreas;
             Properties.Settings.Default.Save();
         }
 
@@ -38,7 +43,7 @@ namespace HMSEditorNS {
             var rect = Properties.Settings.Default.FormDiffWindowPosition;
             if (Properties.Settings.Default.FormDiffMaximized)
                 WindowState = FormWindowState.Maximized;
-            else foreach(var screen in Screen.AllScreens) {
+            else foreach (var screen in Screen.AllScreens) {
                     if (rect.Height > 0 && screen.WorkingArea.IntersectsWith(rect)) {
                         StartPosition = FormStartPosition.Manual;
                         DesktopBounds = rect;
@@ -49,6 +54,10 @@ namespace HMSEditorNS {
             File1 = Properties.Settings.Default.FormDiffFile1;
             File2 = Properties.Settings.Default.FormDiffFile2;
             diffControl1.FilterIndex = Properties.Settings.Default.FormDiffFilterIndex;
+
+            TrimEndWhenDiff    = Properties.Settings.Default.FormDiffTrimEndWhenDiff;
+            SemanticMerge      = Properties.Settings.Default.FormDiffSemanticMerge;
+            NoSelectEmptyAreas = Properties.Settings.Default.FormDiffNoSelectEmptyAreas;
         }
 
         private void FormDiff_KeyDown(object sender, KeyEventArgs e) {
