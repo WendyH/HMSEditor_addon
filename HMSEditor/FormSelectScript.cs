@@ -5,7 +5,7 @@ using System.Windows.Forms;
 namespace HMSEditorNS {
     public partial class FormSelectScript: Form {
 
-        public int ID = 0;
+        public string RE = "";
         public string ScriptName => comboBox1.Text;
 
         public FormSelectScript() {
@@ -16,8 +16,9 @@ namespace HMSEditorNS {
             label1.Text = file;
         }
 
-        public void AddValue(int id, string name) {
-            HMSItem item = new HMSItem(name, id);
+        public void AddValue(string re, string name) {
+            HMSItem item = new HMSItem(name);
+            item.Tag = re;
             comboBox1.Items.Add(item);
         }
 
@@ -40,7 +41,7 @@ namespace HMSEditorNS {
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e) {
             HMSItem item = comboBox1.SelectedItem as HMSItem;
             if (item != null)
-                ID = item.ImageIndex;
+                RE = (string)item.Tag;
         }
     }
 }

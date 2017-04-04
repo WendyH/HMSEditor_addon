@@ -9,7 +9,6 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
-using DiffMatchPatch;
 
 namespace HMSEditorNS {
     public partial class DiffControl: UserControl {
@@ -390,36 +389,11 @@ namespace HMSEditorNS {
         private bool LoadFile(ref string text, string filename, string lang) {
             if (!File.Exists(filename)) return false;
             Match m;
-            if (Path.GetExtension(filename)==".zip") {
+
+            if (Path.GetExtension(filename) == ".zip") {
                 text = TryGetFirstFileContentFromZip(filename, "hdf");
                 if (text.Length == 0)
                     text = TryGetFirstFileContentFromZip(filename, "cfg");
-                else {
-                    FormSelectScript formSelect = new FormSelectScript();
-                    Dictionary<int, string> scriptList = new Dictionary<int, string>();
-                    scriptList.Add(571, "Скрипт создания подкаст лент (Alt + 1)");
-                    scriptList.Add(530, "Скрипт чтения списка ресурсов (Alt + 2)");
-                    scriptList.Add(510, "Скрипт чтения дополнительных свойств RSS (Alt + 3)");
-                    scriptList.Add(550, "Скрипт получения ссылки на ресурс (Alt + 4)");
-                    scriptList.Add(500, "Скрипт динамической папки (Alt + 5)");
-
-                    formSelect.SetFile(filename);
-                    foreach (var pair in scriptList)
-                        if (Regex.IsMatch(text, @"<ID>"+pair.Key+@"</ID>\s*?<Value>.+</Value>", RegexOptions.Singleline))
-                            formSelect.AddValue(pair.Key, pair.Value);
-
-                    if (formSelect.ShowDialog() != DialogResult.OK) return false;
-
-                    int id = formSelect.ID;
-                    if (id > 0) {
-                        m = Regex.Match(text, @"<Property>\s*?<ID>"+id+@"</ID>\s*?<Value>(.*?)</Value>.*?<ID>"+(id+1)+@"</ID>\s*?<Value>(.*?)</Value>", RegexOptions.Singleline);
-                        if (m.Success) {
-                            text = HttpUtility.HtmlDecode(m.Groups[1].Value).Replace("&apos;", "'");
-                            lang = m.Groups[2].Value;
-                            FileDescription = formSelect.ScriptName;
-                        }
-                    }
-                }
             } else {
                 try {
                     var enc = EncodingDetector.DetectTextFileEncoding(filename);
@@ -428,20 +402,32 @@ namespace HMSEditorNS {
                     HMS.Err(e.Message);
                 }
             }
+            if (text.Trim().Length == 0) return false;
 
-            string msg = "";
-            m = Regex.Match(text, "^<\\?xml.*?<TranscodingParams>(.*?)</TranscodingParams>.*?<TranscodingParamsSyntaxType>(.*?)</TranscodingParamsSyntaxType>", RegexOptions.Singleline);
-            if (m.Success)
-                msg = "Загрузить скрипт из профиля транскодирования?\n\n(Если ответите \"Нет\", то файл будет загружен как обычный текст.)";
-            else {
-                m = Regex.Match(text, "^<\\?xml.*?<Script>(.*?)</Script>.*?<ScriptSyntaxType>(.*?)</ScriptSyntaxType>", RegexOptions.Singleline);
-                if (m.Success)
-                    msg = "Загрузить скрипт из обработки?\n\n(Если ответите \"Нет\", то файл будет загружен как обычный текст.)";
-            }
-            if (m.Success) {
-                if (MessageBox.Show(msg, HMSEditor.Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes) {
+            FormSelectScript formSelect = new FormSelectScript();
+            Dictionary<string, string> scriptList = new Dictionary<string, string>();
+            scriptList.Add(@"<ID>571</ID>\s*?<Value>(.+?)</Value>.*?<ID>572</ID>\s*?<Value>(.*?)</Value>", "Скрипт создания подкаст лент (Alt + 1)");
+            scriptList.Add(@"<ID>530</ID>\s*?<Value>(.+?)</Value>.*?<ID>531</ID>\s*?<Value>(.*?)</Value>", "Скрипт чтения списка ресурсов (Alt + 2)");
+            scriptList.Add(@"<ID>510</ID>\s*?<Value>(.+?)</Value>.*?<ID>511</ID>\s*?<Value>(.*?)</Value>", "Скрипт чтения дополнительных свойств RSS (Alt + 3)");
+            scriptList.Add(@"<ID>550</ID>\s*?<Value>(.+?)</Value>.*?<ID>551</ID>\s*?<Value>(.*?)</Value>", "Скрипт получения ссылки на ресурс (Alt + 4)");
+            scriptList.Add(@"<ID>500</ID>\s*?<Value>(.+?)</Value>.*?<ID>501</ID>\s*?<Value>(.*?)</Value>", "Скрипт динамической папки (Alt + 5)");
+            scriptList.Add(@"<TranscodingMimeTypeScript>(.+?)</TranscodingMimeTypeScript>.*?<TranscodingMimeTypeSyntaxType>(.*?)</TranscodingMimeTypeSyntaxType>", "Скрипт определения MIME-типа");
+            scriptList.Add(@"<TranscodingParams>(.+?)</TranscodingParams>.*?<TranscodingParamsSyntaxType>(.*?)</TranscodingParamsSyntaxType>", "Скрипт профиля транскодирования");
+            scriptList.Add(@"<Script>(.+?)</Script>.*?<ScriptSyntaxType>(.*?)</ScriptSyntaxType>", "Скрипт обработки");
+            scriptList.Add(@"^((.).*)$", "Как XML файл");
+            formSelect.SetFile(filename);
+            foreach (var pair in scriptList)
+                if (Regex.IsMatch(text, pair.Key, RegexOptions.Singleline | RegexOptions.Compiled))
+                    formSelect.AddValue(pair.Key, pair.Value);
+
+            if (formSelect.ShowDialog() != DialogResult.OK) return false;
+
+            if (formSelect.RE.Length > 0) {
+                m = Regex.Match(text, formSelect.RE, RegexOptions.Singleline);
+                if (m.Success) {
                     text = HttpUtility.HtmlDecode(m.Groups[1].Value).Replace("&apos;", "'");
                     lang = m.Groups[2].Value;
+                    FileDescription = formSelect.ScriptName;
                 }
             }
             switch (lang) {

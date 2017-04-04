@@ -334,33 +334,39 @@ namespace FastColoredTextBoxNS {
                 foreach (Match m in mc) {
                     string word  = m.Groups[1].Value;
                     string word2 = m.Groups[2].Value;
-                    if (word == "<t>" ) { font = FontTitle   ; color = colorText  ; continue; }
-                    if (word == "<b>" ) { font = FontTextBold; continue; }
-                    if (word == "</b>") { font = FontText    ; continue; }
-                    if (word == "<h>" ) { font = FontHelp    ; color = colorHelp  ; continue; }
-                    if (word == "<v>" ) { font = FontValue   ; color = colorValue ; continue; }
-                    if (word == "<i>" ) { font = FontItalic  ; continue; }
-                    if (word == "</i>") { font = FontText    ; continue; }
-                    if (word == "<s>" ) { prevColor = color  ; color = colorString; continue; }
-                    if (word == "</s>") { color = prevColor  ; continue; }
-                    if (word == "<r>" ) { prevColor = color  ; color = colorRed   ; continue; }
-                    if (word == "</r>") { color = prevColor  ; continue; }
-                    if (word == "<p>" ) { prevColor = color  ; font = FontTextBold; color = colorParam; continue; }
-                    if (word == "</p>") { color = prevColor  ; font = FontTitle   ; continue; }
-                    if (word == "<id>") { point.Y += 3       ; continue; }
+                    switch (word) {
+                        case "<t>" : font = FontTitle   ; color = colorText; word = ""; break;
+                        case "<b>" : font = FontTextBold; word = ""; break;
+                        case "</b>": font = FontText    ; word = ""; break;
+                        case "<h>" : font = FontHelp    ; color = colorHelp  ; word = ""; break;
+                        case "<v>" : font = FontValue   ; color = colorValue ; word = ""; break;
+                        case "<i>" : font = FontItalic  ; word = ""; break;
+                        case "</i>": font = FontText    ; word = ""; break;
+                        case "<s>" : prevColor = color  ; color = colorString; word = ""; break;
+                        case "</s>": color = prevColor  ; word = ""; break;
+                        case "<r>" : prevColor = color  ; color = colorRed   ; word = ""; break;
+                        case "</r>": color = prevColor  ; word = ""; break;
+                        case "<p>" : prevColor = color  ; font = FontTextBold; color = colorParam; word = ""; break;
+                        case "</p>": color = prevColor  ; font = FontTitle   ; word = ""; break;
+                        case "<id>": point.Y += 3       ; word = ""; break;
+                    }
+                    if ((word + word2).Length == 0) continue;
                     bool notColored;
                     if (tb!=null) {
                         notColored = (color == colorString) || (color == colorValue);
-                        if      (!notColored && isKeyWord(word)) tb.AppendText(word, colorKeyword, font);
-                        else if (!notColored && isClass  (word)) tb.AppendText(word, colorClass  , font);
-                        else                                     tb.AppendText(word, color       , font);
-                        tb.AppendText(word2, color, font);
+                        if (word.Length > 0) {
+                            if (!notColored && isKeyWord(word)) tb.AppendText(word, colorKeyword, font);
+                            else if (!notColored && isClass(word)) tb.AppendText(word, colorClass, font);
+                            else tb.AppendText(word, color, font);
+                        }
+                        if (word2.Length > 0) {
+                            tb.AppendText(word2, color, font);
+                        }
                         continue;
                     }
                     wordSize = TextRenderer.MeasureText(g, word+word2, font, MaxSize, tf);
                     maxWidth = Math.Max(maxWidth, point.X+wordSize.Width);
                     if (wordSize.Width > (bounds.Width - point.X - Margin.Width)) { point.X = Margin.Width; point.Y += prevHeight; word = word.TrimStart(); }
-                    if (word.Length == 0) continue;
                     if (word == "<hr>") {
                         float y = point.Y + prevHeight + 2;
                         if (!notShow) g.DrawLine(Pens.Gray, Margin.Width, y, bounds.Width - Margin.Width, y);
