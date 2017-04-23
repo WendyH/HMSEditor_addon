@@ -414,7 +414,7 @@ namespace HMSEditorNS {
             scriptList.Add(@"<TranscodingMimeTypeScript>(.+?)</TranscodingMimeTypeScript>.*?<TranscodingMimeTypeSyntaxType>(.*?)</TranscodingMimeTypeSyntaxType>", "Скрипт определения MIME-типа");
             scriptList.Add(@"<TranscodingParams>(.+?)</TranscodingParams>.*?<TranscodingParamsSyntaxType>(.*?)</TranscodingParamsSyntaxType>", "Скрипт профиля транскодирования");
             scriptList.Add(@"<Script>(.+?)</Script>.*?<ScriptSyntaxType>(.*?)</ScriptSyntaxType>", "Скрипт обработки");
-            scriptList.Add(@"^((.).*)$", "Как XML файл");
+            scriptList.Add(@"^((.).*)$", "Как простой текстовый файл");
             formSelect.SetFile(filename);
             foreach (var pair in scriptList)
                 if (Regex.IsMatch(text, pair.Key, RegexOptions.Singleline | RegexOptions.Compiled))

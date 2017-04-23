@@ -199,8 +199,13 @@ namespace FastColoredTextBoxNS
             try
             {
                 if (tb.SelectionLength != 0)
-                if (!tb.Selection.ReadOnly)
-                    tb.InsertText(tbReplace.Text);
+                if (!tb.Selection.ReadOnly) {
+                        if (cbRegex.Checked) {
+                            string newtxt = Regex.Replace(tb.Selection.Text, tbFind.Text, tbReplace.Text, RegexOptions.CultureInvariant);
+                            tb.InsertText(newtxt);
+                        } else
+                            tb.InsertText(tbReplace.Text);
+                    }
                 btFindNext_Click(sender, null);
             }
             catch (Exception ex)
@@ -229,7 +234,10 @@ namespace FastColoredTextBoxNS
                 if (!ro)
                 if (ranges.Count > 0)
                 {
-                    tb.TextSource.Manager.ExecuteCommand(new ReplaceTextCommand(tb.TextSource, ranges, tbReplace.Text));
+                    if (cbRegex.Checked)
+                        tb.TextSource.Manager.ExecuteCommand(new ReplaceTextCommand(tb.TextSource, ranges, tbReplace.Text, false, tbFind.Text));
+                    else
+                        tb.TextSource.Manager.ExecuteCommand(new ReplaceTextCommand(tb.TextSource, ranges, tbReplace.Text));
                     tb.Selection.Start = new Place(0, 0);
                 }
                 //

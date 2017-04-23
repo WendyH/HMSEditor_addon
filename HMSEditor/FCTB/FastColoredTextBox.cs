@@ -7499,6 +7499,8 @@ window.status = ""#print"";
                 findForm?.Dispose();
                 caretBitmap?.Dispose();
                 replaceForm?.Dispose();
+                StyleDiffGreen.Dispose();
+                StyleDiffRed.Dispose();
                 /*
                 if (Font != null)
                     Font.Dispose();

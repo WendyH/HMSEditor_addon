@@ -67,11 +67,6 @@ namespace HMSEditorNS {
     public class AutocompleteItems: List<HMSItem> {
         public int LastEndPosition { get { if (Count > 0) return this[Count - 1].PositionEnd; return 0; } }
 
-        public new void Add(HMSItem item) {
-            if (!this.ContainsName(item.MenuText))
-                base.Add(item);
-        }
-
         public void SortByMenuText() {
             Sort((a, b) => string.Compare(a.MenuText, b.MenuText, StringComparison.Ordinal));
         }

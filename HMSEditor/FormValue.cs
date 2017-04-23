@@ -59,6 +59,10 @@ namespace HMSEditorNS {
 
             cbFormatting.Visible = regexJSON.IsMatch(Value.Trim());
             chkFormatting_CheckedChanged(null, EventArgs.Empty);
+            if (text.IndexOf('\n') < 1) {
+                chkWordWrap.Checked = true;
+                fastColoredTB.WordWrap = chkWordWrap.Checked;
+            }
 
             if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
 
@@ -245,15 +249,13 @@ namespace HMSEditorNS {
                     // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
                     if (regexJSON.IsMatch(Value.Trim()))
                         Value = Utils.JsonHelper.FormatJson(_src);
-                }
-                catch {
+                } catch {
                     // ignored
                 }
             } else {
                 Value = _src;
             }
         }
-
 
     }
 }

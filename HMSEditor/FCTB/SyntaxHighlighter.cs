@@ -39,7 +39,9 @@ namespace FastColoredTextBoxNS {
         public string HmsClasses  = "";
         public string HmsKeywords = "";
         public Theme  StyleTheme  = null;
-        const int MaxLenght4FastWork = 15000;
+        const int MaxLength4FastWork = 15000;
+        const int MaxLineLength      = 1000;
+        const int AbsoluteMaxRangeLength = 150000;
         // CONSTRUCTOR
         public SyntaxHighlighter() {
         }
@@ -260,6 +262,7 @@ namespace FastColoredTextBoxNS {
         }
 
         public void AutoIndentNeeded(object sender, AutoIndentEventArgs args) {
+            if ((args.LineText.Length > MaxLineLength) || (args.PrevLineText.Length > MaxLineLength)) return;
             var tb = (sender as FastColoredTextBox);
             if (tb != null) {
                 Language language = tb.Language;
@@ -1356,6 +1359,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         /// <param name="range"></param>
         public void YAMLSyntaxHighlight(Range range) {
+            if ((range.Size > AbsoluteMaxRangeLength) || (range.ToX > MaxLineLength)) return;
             range.tb.CommentPrefix = "#";
             range.tb.LeftBracket   = '(';
             range.tb.RightBracket  = ')';
@@ -1380,6 +1384,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         /// <param name="range"></param>
         public void PascalScriptSyntaxHighlight(Range range) {
+            if ((range.Size > AbsoluteMaxRangeLength) || (range.ToX > MaxLineLength)) return;
             range.tb.CommentPrefix = "//";
             range.tb.LeftBracket   = '(';
             range.tb.RightBracket  = ')';
@@ -1388,7 +1393,7 @@ namespace FastColoredTextBoxNS {
             range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
             range.tb.AutoIndentCharsPatterns   = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
             if (PascalScriptStringRegex == null) InitPascalScriptRegex();
-            bool bigText = range.Text.Length > MaxLenght4FastWork;
+            bool bigText = range.Size > MaxLength4FastWork;
 
             range.ClearStyleAndFuncBegin(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, TypesStyle, PunctuationSyle);
             range.SetStylesStringsAndComments(PascalScriptStringRegex, StringStyle, CommentStyle);
@@ -1420,6 +1425,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         /// <param name="range"></param>
         public void CPPScriptSyntaxHighlight(Range range) {
+            if ((range.Size > AbsoluteMaxRangeLength) || (range.ToX > MaxLineLength)) return;
             range.tb.CommentPrefix = "//";
             range.tb.LeftBracket   = '(';
             range.tb.RightBracket  = ')';
@@ -1428,7 +1434,7 @@ namespace FastColoredTextBoxNS {
             range.tb.BracketsHighlightStrategy = BracketsHighlightStrategy.Strategy1;
             range.tb.AutoIndentCharsPatterns   = @"^\s*[\w\.]+(\s\w+)?\s*(?<range>=)\s*(?<range>[^;]+);^\s*(case|default)\s*[^:]*(?<range>:)\s*(?<range>[^;]+);";
             if (CPPScriptKeywordRegex == null) InitCPPScriptRegex();
-            bool bigText = range.Text.Length > MaxLenght4FastWork;
+            bool bigText = range.Size > MaxLength4FastWork;
 
             range.ClearStyleAndFuncBegin(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, TypesStyle);
             range.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
@@ -1491,6 +1497,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         /// <param name="range"></param>
         public void HmsJScriptSyntaxHighlight(Range range) {
+            if ((range.Size > AbsoluteMaxRangeLength) || (range.ToX > MaxLineLength)) return;
             range.tb.CommentPrefix = "//";
             range.tb.LeftBracket   = '(';
             range.tb.RightBracket  = ')';
@@ -1501,7 +1508,7 @@ namespace FastColoredTextBoxNS {
             if (JScriptNumberRegex     == null) InitJScriptRegex();
             if (HmsJScriptKeywordRegex == null) InitHmsJScriptRegex();
             if (CPPClassNameRegex      == null) InitCPPScriptRegex();
-            bool bigText = range.Text.Length > MaxLenght4FastWork;
+            bool bigText = range.Size > MaxLength4FastWork;
 
             range.ClearStyleAndFuncBegin(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, KeywordStyle, ClassNameStyle);
             range.SetStylesStringsAndComments(CPPStringAndCommentsRegex, StringStyle, CommentStyle);
@@ -1531,6 +1538,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         /// <param name="range"></param>
         public void BasicSyntaxHighlight(Range range) {
+            if ((range.Size > AbsoluteMaxRangeLength) || (range.ToX > MaxLineLength)) return;
             range.tb.CommentPrefix = "'";
             range.tb.LeftBracket   = '(';
             range.tb.RightBracket  = ')';
@@ -1540,7 +1548,7 @@ namespace FastColoredTextBoxNS {
             if (VBStringRegex            == null) InitVBRegex();
             if (BasicScriptKeywordRegex1 == null) InitBasicScriptRegex();
             if (CPPClassNameRegex        == null) InitCPPScriptRegex();
-            bool bigText = range.Text.Length > MaxLenght4FastWork;
+            bool bigText = range.Size > MaxLength4FastWork;
 
             range.ClearStyleAndFuncBegin(StringStyle, CommentStyle, NumberStyle, DeclFunctionStyle, ClassNameStyle, KeywordStyle, FunctionsStyle, VariableStyle, ConstantsStyle, PunctuationSyle, TypesStyle);
             range.SetStylesStringsAndComments(VBStringRegex, StringStyle, CommentStyle, false);

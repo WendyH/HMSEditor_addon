@@ -10,7 +10,7 @@ ResponseHeader: String|Заголовки ответа
 
 *smCreateFolderItems <Скрипт создания подкаст-лент>
 FolderItem: THmsScriptMediaItem|Текущая папка медиа-ресурсов
-FolderPath: Variant|Путь (ссылка) текущей папки медиа-ресурсов
+***FolderPath: Variant|Путь (ссылка) текущей папки медиа-ресурсов
 
 *smCreatePodcastFeeds <Скрипт чтения списка ресурсов>
 FolderItem: THmsScriptMediaItem|Текущая папка медиа-ресурсов
@@ -204,6 +204,7 @@ mpTranscodingProfile: String|Профиль транскодирования
 mpVideoBitRate: Integer|Видео битрейт
 mpVideoCodec: String|Видео кодек
 mpVideoSelected: String|Выбранная видео-дорожка
+mpVideoStreamNo: Integer|Номер видео дорожки
 mpWidth: Integer|Ширина кадра
 
 * [Параметры настройки]
@@ -236,7 +237,9 @@ cfgTranscodingAudioBitrate: Integer
 cfgTranscodingAudioChannels: Integer
 cfgTranscodingAudioCodec: String
 cfgTranscodingAudioCopyAC3: Boolean
-cfgTranscodingAudioMimeType: String
+cfgTranscodingAudioFileExt: String|Расширение файлов музыки, указанное в настройках устройства в разделе "Транскодирование".
+cfgTranscodingAudioFileFormat: String|Формат файлов музыки ("AC3", "AAC", "MP2", "MP3", "WMA", "LPCM", "VORBIS", "OPUS"), указанный в настройках устройства в разделе "Транскодирование".
+cfgTranscodingAudioMimeType: String|MIME-TYPE файлов музыки ("audio/x-wav", "audio/mpeg"...), указанный в настройках устройства в разделе "Транскодирование".
 cfgTranscodingAudioSupportFileTypes: String
 cfgTranscodingAudioTagsSize: Integer
 cfgTranscodingFileFormat: String
@@ -258,9 +261,14 @@ cfgTranscodingLpcmMaxChannels: Integer
 cfgTranscodingLpcmMaxSampleRate: Integer
 cfgTranscodingPadColor: Integer
 cfgTranscodingPadColorActive: Boolean
+cfgTranscodingPhotoFileExt: String|Расширение файлов фото, указанное в настройках устройства в разделе "Транскодирование".
+cfgTranscodingPhotoFileFormat: String|Формат файлов фото ("JPEG", "PNG"...), указанный в настройках устройства в разделе "Транскодирование".
+cfgTranscodingPhotoMimeType: String|MIME-TYPE файлов фото, указанный в настройках устройства в разделе "Транскодирование".
 cfgTranscodingPhotoMaxPixelsCount: Variant
 cfgTranscodingPhotoSupportFileTypes: String
-cfgTranscodingRadioMimeType: String
+cfgTranscodingRadioFileExt: String|Расширение файлов интернет-радио, указанное в настройках устройства в разделе "Транскодирование".
+cfgTranscodingRadioFileFormat: String|Формат файлов интернет-радио ("AC3", "AAC", "MP3"...), указанный в настройках устройства в разделе "Транскодирование".
+cfgTranscodingRadioMimeType: String|MIME-TYPE файлов интернет-радио, указанный в настройках устройства в разделе "Транскодирование".
 cfgTranscodingResizeMode: Integer
 cfgTranscodingScreenFormat: String
 cfgTranscodingScreenHeight: Integer|Высота кадра при транскодировании
@@ -283,10 +291,13 @@ cfgTranscodingSubTitlesLibAss: Boolean|Флаг использования вн�
 cfgTranscodingSubTitlesLineSpacing: Integer|Дополнительное расстояние между строками субтитров
 cfgTranscodingSubtitles3DOffsetX: Integer|3D-смещение субтитров
 cfgTranscodingThreadCount: Integer|Количество потоков при транскодировании
-cfgTranscodingTvsetMimeType: String
+cfgTranscodingTvsetFileExt: String|Расширение файлов интернет-телевидения, указанное в настройках устройства в разделе "Транскодирование".
+cfgTranscodingTvsetFileFormat: String|Формат файлов интернет-телевидения ("MPEG (DVD)", "MPEGTS"...), указанный в настройках устройства в разделе "Транскодирование".
+cfgTranscodingTvsetMimeType: String|MIME-TYPE файлов интернет-телевидения, указанный в настройках устройства в разделе "Транскодирование".
 cfgTranscodingVideoBitrate: Integer
-cfgTranscodingVideoCodec: String
-cfgTranscodingVideoMimeType: String
+cfgTranscodingVideoCodec: String|Кодек файлов видео, указанный в настройках устройства в разделе "Транскодирование".
+cfgTranscodingVideoFileExt: String|Расширение файлов видео, указанное в настройках устройства в разделе "Транскодирование".
+cfgTranscodingVideoMimeType: String|MIME-TYPE файлов видео, указанный в настройках устройства в разделе "Транскодирование".
 cfgTranscodingVideoMinMaxRate: Boolean
 cfgTranscodingVideoSupportFileTypes: String
 cfgUpnpIconHeight: Integer

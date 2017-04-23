@@ -234,7 +234,26 @@ namespace FastColoredTextBoxNS {
                         // ignore
                     }
                 }
+                _size = sb.Length;
+                cachedSizeVersion = tb.TextVersion;
                 return sb.ToString();
+            }
+        }
+
+        internal int _size = 0;
+        internal int cachedSizeVersion = 0;
+        public int Size {
+            get {
+                if (tb.TextVersion != cachedSizeVersion) {
+                    _size = 0;
+                    int fromLine = Math.Min(end.iLine, start.iLine);
+                    int toLine   = Math.Max(end.iLine, start.iLine);
+                    for (int y = fromLine; y <= toLine; y++) {
+                        _size += tb.GetLineLength(y) + Environment.NewLine.Length;
+                    }
+                    cachedSizeVersion = tb.TextVersion;
+                }
+                return _size;
             }
         }
 
@@ -276,6 +295,8 @@ namespace FastColoredTextBoxNS {
             cachedText             = text;
             cachedCharIndexToPlace = charIndexToPlace;
             cachedTextVersion      = tb.TextVersion;
+            _size = sb.Length;
+            cachedSizeVersion = tb.TextVersion;
             return cachedShift;
         }
 
@@ -791,10 +812,13 @@ namespace FastColoredTextBoxNS {
         }
 
         private object obj4LockLines = new object();
+        const int MaxLineLength = 1000;
+        
         /// <summary>
         /// Appends style to chars of range
         /// </summary>
         public void SetStyle(StyleIndex styleIndex) {
+            if (ToX > MaxLineLength) return;
             //set code to chars
             lock (obj4LockLines) {
                 int fromLine = Math.Min(End.iLine, Start.iLine);
@@ -828,6 +852,7 @@ namespace FastColoredTextBoxNS {
         /// Apply style to chars of range
         /// </summary>
         public void SetStyleOwerwrite(StyleIndex styleIndex) {
+            if (ToX > MaxLineLength) return;
             //set code to chars
             lock (obj4LockLines) {
                 int fromLine = Math.Min(End.iLine, Start.iLine);

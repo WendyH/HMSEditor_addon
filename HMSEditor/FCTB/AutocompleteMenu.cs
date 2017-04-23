@@ -662,6 +662,17 @@ namespace FastColoredTextBoxNS
                                 FocussedItemIndex = visibleItems.Count - 1;
                             }
 
+                        } else if (item.ImageIndex == ImagesIndex.Snippet) {
+                            if (item.Text.IndexOf(text, StringComparison.InvariantCultureIgnoreCase) == 0) {
+                                visibleItems.Add(item);
+
+                                if (!foundSelected && (lastword.Length > 0) && (item.MenuText == lastword)) {
+                                    foundSelected = true;
+                                    FocussedItemIndex = visibleItems.Count - 1;
+                                }
+                            } else
+                                continue;
+
                         } else if (item.NotExactlyCompare(text) == CompareResult.Visible) {
                             notExacctly.Add(item);
 

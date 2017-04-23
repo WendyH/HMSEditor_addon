@@ -39,8 +39,8 @@ namespace HMSEditorNS {
                 // Заполняем базу знаний функций, классов, встроенных констант и переменных...
                 InitAndLoadHMSKnowledgeDatabase();
 
-                HMS.AllowPrepareFastDraw = true;
-                PrepareFastDrawInBackground(); 
+                HMS.AllowPrepareFastDraw = false;
+                //PrepareFastDrawInBackground(); 
 
             } catch (Exception e) {
                 LogError(e.ToString());
@@ -106,6 +106,7 @@ namespace HMSEditorNS {
         public static AutocompleteItems ItemsFunction = new AutocompleteItems();
         public static AutocompleteItems ItemsVariable = new AutocompleteItems();
         public static AutocompleteItems ItemsBoolean  = new AutocompleteItems();
+        public static AutocompleteItems ItemsConstantUser = new AutocompleteItems();
 
         private static Regex regexGetFromLineCmd  = new Regex(@"\s*?(\w.*?)(\||$)");
         private static Regex regexGetFromLineHelp = new Regex(@"\|(.*)"           );
@@ -480,6 +481,7 @@ namespace HMSEditorNS {
 
             foreach(var info in HmsTypes) {
                 foreach(var typeitem in info.MemberItems) {
+                    typeitem.InXmlDescription = true;
                     ItemsConstant.Add(typeitem);
                 }
             }
@@ -492,8 +494,16 @@ namespace HMSEditorNS {
             foreach (var q in ItemsVariable) CheckKnownType(q.Type);
             foreach (var q in ItemsConstant) CheckKnownType(q.Type);
 
+            ClassesString += NotFoundedType.ToLower();
+            HmsTypesString += "";
+        }
+        public static Regex RegexHmsFunctions;
+        public static Regex RegexHmsVariables;
+        public static Regex RegexHmsConstants;
+        
+        public static void BuildSyntaxRegexes() {
             string funcList = "";
-            foreach (var q in ItemsFunction) funcList += "|"+q.MenuText;
+            foreach (var q in ItemsFunction) funcList += "|" + q.MenuText;
             funcList = funcList.Substring(1).Replace("|Int|", "|Int\\(|");
             RegexHmsFunctions = new Regex(@"\b(" + funcList + @")\b", RegexOptions.IgnoreCase);
 
@@ -502,18 +512,16 @@ namespace HMSEditorNS {
             varsList = varsList.Substring(1);
             RegexHmsVariables = new Regex(@"\b(" + varsList + @")\b", RegexOptions.IgnoreCase);
 
-            varsList = "|true|false|nil|null";
-            foreach (var q in ItemsConstant) varsList += "|" + q.MenuText;
+            BuildConstantSyntaxRegexes();
+        }
+
+        public static void BuildConstantSyntaxRegexes() {
+            string varsList = "|true|false|nil|null";
+            foreach (var q in ItemsConstant    ) varsList += "|" + q.MenuText;
+            foreach (var q in ItemsConstantUser) varsList += "|" + q.MenuText;
             varsList = varsList.Substring(1);
             RegexHmsConstants = new Regex(@"\b(" + varsList + @")\b", RegexOptions.IgnoreCase);
-
-            ClassesString += NotFoundedType.ToLower();
-            HmsTypesString += "";
         }
-        public static Regex RegexHmsFunctions;
-        public static Regex RegexHmsVariables;
-        public static Regex RegexHmsConstants;
-        
 
         private static void CheckKnownType(string type) {
             if (type.Length < 1) return;

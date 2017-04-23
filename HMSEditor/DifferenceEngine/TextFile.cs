@@ -22,7 +22,7 @@ namespace DifferenceEngine {
 
 
     public class DiffList_TextFile: IDiffList {
-        private const int MaxLineLength = 1024;
+        private const int MaxLineLength = 100000;
         private ArrayList _lines;
 
         public DiffList_TextFile() {

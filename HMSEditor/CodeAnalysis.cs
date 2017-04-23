@@ -22,7 +22,7 @@ namespace HMSEditorNS {
 
         private static Regex regexSearchVarsCPP       = new Regex(@"(?<type>\w+)\s+&?(?<vars>[^;{}]+)");
         private static Regex regexSearchVarsJS        = new Regex(@"(?<vars>\w+)\s*?=\s*?$?(?<type>[\w""']+)");
-        private static Regex regexSearchVarsPascal    = new Regex(@"(?<vars>[\w ,]+):(?<type>[^=;\)]+)");
+        private static Regex regexSearchVarsPascal    = new Regex(@"(?<vars>[\w\s,\r\n]+):(?<type>[^=;\)]+)");
         private static Regex regexSearchVarsBasic     = new Regex(@"\bDIM\s+(?<vars>[\w ,]+)", RegexOptions.IgnoreCase);
 
         private static Regex regexTwoWords            = new Regex(@"(\w+)\s+&?(\w+)\s*$");
@@ -311,20 +311,30 @@ namespace HMSEditorNS {
             result.NeedRecalcVars = false;
             result.LocalVars.Clear();
             if ((itemFunction != null) && (itemFunction.Type != "MainProcedure")) {
-                string context = result.Text.Substring(itemFunction.PositionStart, itemFunction.PositionEnd - itemFunction.PositionStart);
-                context = result.Editor.TB.WithoutStringAndComments(context);
-                if (WorkerVariables.CancellationPending) { e.Cancel = true; return; }
-                if (context.Length > 0) GetVariables(e, result, context, itemFunction.PositionStart, result.LocalVars, result.Variables);
-                if (itemFunction.Kind == DefKind.Function) {
-                    HMSItem hmsItem = new HMSItem("Result") { ImageIndex = ImagesIndex.Field };
-                    hmsItem.MenuText      = hmsItem.Text;
-                    hmsItem.Type          = itemFunction.Type;
-                    hmsItem.PositionStart = itemFunction.PositionStart;
-                    hmsItem.PositionEnd   = itemFunction.PositionEnd;
-                    hmsItem.ToolTipText   = "Переменная, хранящая значение, которое будет возвращено функцией как результат.";
-                    hmsItem.Help          = "Используется в PascalScript, но видна как переменная и в других режимах синтаксиса.\nИмеет такой-же тип, как и функция, в которой она видна.";
-                    hmsItem.ToolTipTitle  = "Result: " + hmsItem.Type;
-                    result.LocalVars.Add(hmsItem);
+                if (result.Variables.Count==0) {
+                    string contextGlobal = GetGlobalContext(result.Editor.TB.WithoutStringAndComments(result.Editor.Text), result.Functions);
+                    if (contextGlobal.Length > 0) GetVariables(e, result, contextGlobal, 0, result.Variables, result.LocalVars);
+                }
+                int len = itemFunction.PositionEnd - itemFunction.PositionStart;
+                if (len > 0) {
+                    string context = result.Text.Substring(itemFunction.PositionStart, len);
+                    context = result.Editor.TB.WithoutStringAndComments(context);
+                    if (WorkerVariables.CancellationPending) { e.Cancel = true; return; }
+                    if (context.Length > 0) GetVariables(e, result, context, itemFunction.PositionStart, result.LocalVars, result.Variables);
+                    if (itemFunction.Kind == DefKind.Function) {
+                        HMSItem hmsItem = new HMSItem("Result") { ImageIndex = ImagesIndex.Field };
+                        hmsItem.MenuText = hmsItem.Text;
+                        hmsItem.Type = itemFunction.Type;
+                        hmsItem.PositionStart = itemFunction.PositionStart;
+                        hmsItem.PositionEnd = itemFunction.PositionEnd;
+                        hmsItem.ToolTipText = "Переменная, хранящая значение, которое будет возвращено функцией как результат.";
+                        hmsItem.Help = "Используется в PascalScript, но видна как переменная и в других режимах синтаксиса.\nИмеет такой-же тип, как и функция, в которой она видна.";
+                        hmsItem.ToolTipTitle = "Result: " + hmsItem.Type;
+                        result.LocalVars.Add(hmsItem);
+                    }
+                } else {
+                    int wtf = 1;
+                    wtf++;
                 }
             } else {
                 result.Variables.Clear();
@@ -351,6 +361,7 @@ namespace HMSEditorNS {
             string allText = result.Editor.Text;
             // Collect constants
             if (isGlobalContext) {
+                HMS.ItemsConstantUser.Clear();
                 switch (result.Language) {
                     case Language.CPPScript:
                         mc = regexSearchConstantsCPP.Matches(txt);
@@ -371,7 +382,9 @@ namespace HMSEditorNS {
                                 item.Type          = GetTypeOfConstant(sval);
                                 item.PositionStart = m.Groups[1].Index + indexContext;
                                 item.PositionEnd   = item.PositionStart + name.Length;
-                                string textline    = allText.Substring(m.Groups[2].Index, Math.Min(allText.Length-m.Groups[2].Index, maxLineLength));
+                                int linelen        = Math.Min(allText.Length - m.Groups[2].Index, maxLineLength);
+                                if (linelen < 1) break;
+                                string textline    = allText.Substring(m.Groups[2].Index, linelen);
                                 if (item.Type.Length > 0) item.ToolTipText += "\nТип: " + item.Type;
                                 if ((sval.Length == 0) || (sval == ";")) sval = "<s>" + regexExractConstantValue.Match(textline).Value + "</s>";
                                 if (sval.Length > 0) item.ToolTipTitle += " = " + sval;
@@ -381,8 +394,10 @@ namespace HMSEditorNS {
                                 if (cm.Groups["com2"].Success) comment = cm.Groups["com2"].Value;
                                 if (comment.Length > 0) item.Help = comment;
                                 ITEMS.Add(item);
+                                HMS.ItemsConstantUser.Add(item);
                             }
                         }
+                        txt = regexSearchConstantsCPP.Replace(txt, MatchReturnEmptyLines);
                         break;
                     case Language.PascalScript:
                         Match c = regexSearchConstantsPascal1.Match(txt);
@@ -405,7 +420,9 @@ namespace HMSEditorNS {
                                     item.ToolTipTitle = item.Text;
                                     item.ToolTipText  = "Объявленная константа";
                                     item.Type         = GetTypeOfConstant(sval);
-                                    string textline   = allText.Substring(m.Groups[2].Index, Math.Min(allText.Length - m.Groups[2].Index, maxLineLength));
+                                    int linelen       = Math.Min(allText.Length - m.Groups[2].Index, maxLineLength);
+                                    if (linelen < 1) break;
+                                    string textline   = allText.Substring(m.Groups[2].Index, linelen);
                                     if (item.Type.Length > 0) item.ToolTipText += "\nТип: " + item.Type;
                                     if ((sval.Length == 0) || (sval == ";")) sval = "<s>" + regexExractConstantValue.Match(textline).Value + "</s>";
                                     if (sval.Length > 0) item.ToolTipTitle += " = " + sval;
@@ -415,15 +432,18 @@ namespace HMSEditorNS {
                                     if (cm.Groups["com2"].Success) comment = cm.Groups["com2"].Value;
                                     if (comment.Length > 0) item.Help = comment;
                                     ITEMS.Add(item);
+                                    HMS.ItemsConstantUser.Add(item);
                                 }
                             }
-
+                            txt = regexSearchConstantsPascal1.Replace(txt, MatchReturnEmptyLines);
                         }
                         break;
                 }
+                if (HMS.ItemsConstantUser.Count > 0) HMS.BuildConstantSyntaxRegexes();
             }
 
             mc = null;
+
             switch (result.Language) {
                 case Language.CPPScript   : mc = regexSearchVarsCPP   .Matches(txt); break;
                 case Language.JScript     : mc = regexSearchVarsJS    .Matches(txt); break;
@@ -473,7 +493,9 @@ namespace HMSEditorNS {
                                 item.PositionEnd   = item.PositionStart + name.Length;
                                 item.ImageIndex    = ImagesIndex.Field;
                                 if (item.Type.Length > 0) item.ToolTipText += "\nТип: " + item.Type;
-                                string textline = WithoutString(allText.Substring(index + indexContext, Math.Min(allText.Length - m.Groups[2].Index, maxLineLength)));
+                                int linelen        = Math.Min(allText.Length - m.Groups[2].Index, maxLineLength);
+                                if (linelen < 1) break;
+                                string textline = WithoutString(allText.Substring(index + indexContext, linelen));
                                 Match commentMatch = null;
                                 switch (result.Language) {
                                     case Language.CPPScript   :

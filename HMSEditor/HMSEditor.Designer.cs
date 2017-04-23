@@ -139,6 +139,7 @@
             this.helpPanel1 = new HMSEditorNS.HelpPanel();
             this.contextMenuStrip1.SuspendLayout();
             this.tsMain.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -760,7 +761,9 @@
             // 
             // btnGetScriptDescriptions
             // 
+            this.btnGetScriptDescriptions.Checked = true;
             this.btnGetScriptDescriptions.CheckOnClick = true;
+            this.btnGetScriptDescriptions.CheckState = System.Windows.Forms.CheckState.Checked;
             this.btnGetScriptDescriptions.Name = "btnGetScriptDescriptions";
             this.btnGetScriptDescriptions.Size = new System.Drawing.Size(460, 22);
             this.btnGetScriptDescriptions.Text = "При открытии получать описания доступных функций от программы";
@@ -1214,6 +1217,7 @@
             this.tsMain.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.TB)).EndInit();
             this.ResumeLayout(false);

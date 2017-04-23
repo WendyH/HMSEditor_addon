@@ -17,6 +17,7 @@ namespace HMSEditorNS {
         public string  Filter    = "";
         public string  Rtf       = "";
         public bool    Enabled   = true;
+        public bool    InXmlDescription = false;
         public bool    Expanded  = false;
         public int     Level     = 0;
         public HMSClassInfo ClassInfo = new HMSClassInfo();

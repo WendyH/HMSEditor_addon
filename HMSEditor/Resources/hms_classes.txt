@@ -892,7 +892,7 @@ TCheckListBox: TCustomListBox|Отмечаемый список
   property Visible: Boolean|Определяет, видим или невидим компонент
   property Width: Integer|Ширина в пикселях
   
-TCollenction: TPersistent|Общий класс коллекции объектов
+TCollection: TPersistent|Общий класс коллекции объектов
   index property Items(p0: Integer): TCollectionItem|Доступ к элементам коллекции по их индексу (начиная с 0)
     p0 - индекс элемента (начиная с 0)
   procedure Clear|Очистка коллекции или набора подчинённых объектов
@@ -1841,23 +1841,6 @@ TIniFile: TCustomIniFile|Класс для работы с текстовыми 
     Ident - идентификатор ключа
     Value - значение ключа
   
-TJsonArray: TObject|Массив объекта TJson
-  index property B(p0: Integer): Boolean|Доступ к значению массива по индексу. Тип возвращаемого значения всегда Boolean.
-    p0 - индекс значения в массиве (начинается с 0)
-  index property C(p0: Integer): Currency|Доступ к значению массива по индексу. Тип возвращаемого значения всегда Currency.
-    p0 - индекс значения в массиве (начинается с 0)
-  index property D(p0: Integer): Double|Доступ к значению массива по индексу. Тип возвращаемого значения всегда Double.
-    p0 - индекс значения в массиве (начинается с 0)
-  index property I(p0: Integer): Integer|Доступ к значению массива по индексу. Тип возвращаемого значения всегда Integer.
-    p0 - индекс значения в массиве (начинается с 0)
-  index property N(p0: Integer): TJsonObject|Доступ к значению массива по индексу. Тип возвращаемого значения всегда TJsonObject.
-    p0 - индекс значения в массиве (начинается с 0)
-  index property O(p0: Integer): TJsonObject|Доступ к значению массива по индексу. Тип возвращаемого значения всегда TJsonObject.
-    p0 - индекс значения в массиве (начинается с 0)
-  index property S(p0: Integer): String|Доступ к значению массива по индексу. Тип возвращаемого значения всегда String.
-    p0 - индекс значения в массиве (начинается с 0)
-  property Length: Integer|Количество элементов в массиве
-  
 TJsonObject: TObject|Объект JSON представления данных
   function AsArray: TJsonArray|Возвращает текущий объект как тип JSON-массив c типом TJsonArray
   function AsBoolean: Boolean|Возвращает текущий объект c типом Boolean
@@ -1899,6 +1882,23 @@ TJsonObject: TObject|Объект JSON представления данных
   property Count: Integer|Количество подчинённых элементов
   property DataType: TJsonType|Тип данных данного объекта (jtArray, jtBoolean, jtCurrency, jtDouble, jtInt, jtNull, jtObject, jtString)
                         
+TJsonArray: TObject|Массив объекта TJson
+  index property B(p0: Integer): Boolean|Доступ к значению массива по индексу. Тип возвращаемого значения всегда Boolean.
+    p0 - индекс значения в массиве (начинается с 0)
+  index property C(p0: Integer): Currency|Доступ к значению массива по индексу. Тип возвращаемого значения всегда Currency.
+    p0 - индекс значения в массиве (начинается с 0)
+  index property D(p0: Integer): Double|Доступ к значению массива по индексу. Тип возвращаемого значения всегда Double.
+    p0 - индекс значения в массиве (начинается с 0)
+  index property I(p0: Integer): Integer|Доступ к значению массива по индексу. Тип возвращаемого значения всегда Integer.
+    p0 - индекс значения в массиве (начинается с 0)
+  index property N(p0: Integer): TJsonObject|Доступ к значению массива по индексу. Тип возвращаемого значения всегда TJsonObject.
+    p0 - индекс значения в массиве (начинается с 0)
+  index property O(p0: Integer): TJsonObject|Доступ к значению массива по индексу. Тип возвращаемого значения всегда TJsonObject.
+    p0 - индекс значения в массиве (начинается с 0)
+  index property S(p0: Integer): String|Доступ к значению массива по индексу. Тип возвращаемого значения всегда String.
+    p0 - индекс значения в массиве (начинается с 0)
+  property Length: Integer|Количество элементов в массиве
+  
 TJsonTableString: TObject|Таблица объектов JSON представления
   function Exists(const aPath: string): Boolean|Проверка существования объекта по указанному пути, например: "Item\Thumbnail\Url"
   function Find(const aPath: string; var aValue: TJsonObject): Boolean|Поиск объекта по по указанному пути. Найденный объект присваивается переменной, указанной во втором параметре. В случае, когда объект найден, возвращается True.

@@ -1,4 +1,6 @@
 ﻿/* This code is released under WTFPL Version 2 (http://www.wtfpl.net/) * Created by WendyH. Copyleft. */
+#define GETANDSAVENOTINDATABASEITEMS
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -126,7 +128,7 @@ namespace HMSEditorNS {
         public  bool   IsFirstActivate      = true;
         public  bool   WasCommaOrBracket;
         public  bool   NeedRecalcVars;
-        private string ThemeName            = "Стандартная";
+        private string ThemeName            = "Oceanic Next";
         private uint   OldTextHash;
         private string FirstText = "";
         public  IHmsScriptFrame  HmsScriptFrame;
@@ -638,6 +640,7 @@ namespace HMSEditorNS {
                 FastColoredTextBox.maxCacheFiles = val;
             if (int.TryParse(Settings.Get("CacheMaxSize" , section, FastColoredTextBox.maxCacheSize .ToString()), out val))
                 FastColoredTextBox.maxCacheSize  = val;
+            this.LogAsErrorNotInDatabaseItems = Settings.Get("LogAsErrorNotInDatabaseItems", SettingsSection, false);
 
             var sVal = Settings.Get("Zoom", section, "100"); 
             TB.Zoom = Int32.Parse(sVal);
@@ -1724,6 +1727,8 @@ namespace HMSEditorNS {
                         hmsTypes = hmsTypes.Replace("Integer|", "int|long|").Replace("Extended|", "extended|float|").Replace("Boolean|", "bool|").Replace("Boolean|", "bool|").Replace("String", "string") + "|{Тип функции: процедура (отсутствие возвращаемого значения)}void|";
                         keywords = "#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|nil|null|true|false|";
                         snippets = "for (i=0; i < ^; i++) {\n}|while (^)";
+                        snippets += "|JSON = TJsonObject.Create();\ntry {\n^JSON.LoadFromString(sData);\nJARRAY = JSON.AsArray; if (JARRAY == nil) return;\nfor (i = 0; i < JARRAY.Length; i++) {\nVIDEO = JARRAY[i];\n}\n} finally { JSON.Free; }\n";
+                        snippets += "|RE = TRegExpr.Create('^<section>(.*?)</section>', PCRE_SINGLELINE);\ntry {\nif (RE.Search(sHtml)) do {\n\n}\n} finally { RE.Free; }\n";
                         break;
                     case "PascalScript":
                         HMS.InitItemsBoolean(false);
@@ -1763,6 +1768,7 @@ namespace HMSEditorNS {
                 PopupMenu.Items.AddAutocompleteItems(HMS.ItemsConstant);
                 PopupMenu.Items.AddAutocompleteItems(HMS.ItemsClass   );
                 PopupMenu.Items.AddAutocompleteItems(ScriptAutocompleteItems);
+                HMS.BuildSyntaxRegexes();
             }
         }
         private object PopupMenuLockObject = new object();
@@ -1776,6 +1782,7 @@ namespace HMSEditorNS {
         private static Regex regexCutDesc      = new Regex("description=\"([^\"]+)"      );
         private static Regex regexExcludeConst = new Regex("^(True|False|nil|Null)"      );
 
+        private bool LogAsErrorNotInDatabaseItems = false;
         private void SearchClassesItemsInScriptDescrition(ref string xml) {
             lock (HMS.HmsClasses) {
                 string xmlBlock = Regex.Match(xml, "<Classes>(.*?)</Classes>").Value;
@@ -1793,6 +1800,8 @@ namespace HMSEditorNS {
                     if (foundItem != null) {
                         if (foundItem.Help.Length == 0) foundItem.Help = descr;
                     } else {
+                        string newdescription = "Новый класс: " + item.Text + " Type: " + item.Type + " Description: " + item.Help;
+                        item.Help += "\nНет в базе данных HMSEditor. Добавлен из описания классов новой версии HMS автоматически.";
                         var hmsclass = new HMSClassInfo {
                             Name = item.Text,
                             Type = item.Type,
@@ -1804,6 +1813,7 @@ namespace HMSEditorNS {
                         item.ToolTipTitle = "Класс " + item.Text;
                         item.IsClass      = true;
                         item.ClassInfo    = hmsclass;
+                        item.InXmlDescription = true;
                         HMS.ItemsClass.Add(item);
                         HMS.ClassesString += hmsclass.Name.ToLower() + "|";
                         //ScriptAutocompleteItems.Add(item);
@@ -1828,8 +1838,11 @@ namespace HMSEditorNS {
                             }
                             if (name.ToLower() == "create") hmsclass?.StaticItems.Add(childItem);
                             else                            hmsclass?.MemberItems.Add(childItem);
+                            if (LogAsErrorNotInDatabaseItems)
+                                newdescription += "\r\n  " + KindToString(childItem.Kind) + " " + childItem.Text + "  Type: " + childItem.Type + "  " + (childItem.Help.Length > 0 ? "  Description: " + childItem.Help : "");
                         }
-                        //Console.WriteLine(kind.ToString() + " MenuText: " + item.MenuText);
+                        if (LogAsErrorNotInDatabaseItems)
+                            HMS.LogError(newdescription);
                     }
                 }
             }
@@ -1847,14 +1860,25 @@ namespace HMSEditorNS {
                 item.ToolTipText = toolTipText;
                 item.Kind        = kind;
                 item.Help        = descr;
+                item.InXmlDescription = true;
                 if (kind == DefKind.Function) item.Kind = (item.Type.Length > 0) ? DefKind.Function : DefKind.Procedure;
                 if (regexExcludeConst.IsMatch(item.MenuText)) continue;
                 var foundItem = Items.GetItemOrNull(item.MenuText);
                 if (foundItem!=null) {
                     if (foundItem.Help.Length == 0) foundItem.Help = descr;
+                    foundItem.InXmlDescription = true;
                 } else {
-                    ScriptAutocompleteItems.Add(item);
-                    //Console.WriteLine(kind.ToString() + " MenuText: " + item.MenuText);
+                    string sk = "";
+                    switch (kind) {
+                        case DefKind.Function: sk = "функций "   ; break;
+                        case DefKind.Variable: sk = "переменных "; break;
+                        case DefKind.Constant: sk = "констант "  ; break;
+                    }
+                    //ScriptAutocompleteItems.Add(item);
+                    Items.Add(item);
+                    if (LogAsErrorNotInDatabaseItems)
+                        HMS.LogError(KindToString(item.Kind) + " " + item.Text + "  Type: " + item.Type + (item.Help.Length>0 ? "  Description: " + item.Help : ""));
+                    item.Help += "\nНет в базе данных HMSEditor. Добавлено из описания " + sk + "новой версии HMS автоматически.";
                 }
             }
         }
@@ -1865,9 +1889,6 @@ namespace HMSEditorNS {
                 string xml = "";
 #if DEBUG
                 var sw = Stopwatch.StartNew();
-
-                //if ((HmsScriptFrame == null) && (File.Exists(@"D:\descr.txt")))
-                //    xml = File.ReadAllText(@"D:\descr.txt");
 #endif
                 if (HmsScriptFrame != null) {
                     xml = GetScriptDescriptions();
@@ -1875,10 +1896,15 @@ namespace HMSEditorNS {
                 }
 
                 if (!string.IsNullOrEmpty(xml)) {
+                    if (LogAsErrorNotInDatabaseItems)
+                        HMS.LogError("-------------- ПОИСК ОТСУТСТВУЮЩИХ В БАЗЕ ДАННЫХ ЭЛЕМЕНТОВ (Классов, Функций, Переменных, Констант) --------------");
                     SearchClassesItemsInScriptDescrition(ref xml);
                     SearchAutocompleteItemsInScriptDescrition(regexCutFunctions, ref xml, ImagesIndex.Procedure, ""                     , DefKind.Function, HMS.ItemsFunction);
                     SearchAutocompleteItemsInScriptDescrition(regexCutVariables, ref xml, ImagesIndex.Field    , "Встроенная переменная", DefKind.Variable, HMS.ItemsVariable);
                     SearchAutocompleteItemsInScriptDescrition(regexCutConstants, ref xml, ImagesIndex.Enum     , "Встроенная константа" , DefKind.Constant, HMS.ItemsConstant);
+                    DeleteNotInDescriptionItems(HMS.ItemsFunction);
+                    DeleteNotInDescriptionItems(HMS.ItemsVariable);
+                    DeleteNotInDescriptionItems(HMS.ItemsConstant);
                 }
 #if DEBUG
                 sw.Stop();
@@ -1887,6 +1913,30 @@ namespace HMSEditorNS {
 #endif
                 //HMS.AllowPrepareFastDraw = true;
                 //HMS.PrepareFastDrawInBackground();
+            }
+        }
+
+        private void DeleteNotInDescriptionItems(AutocompleteItems items) {
+            for (int i=items.Count-1; i >= 0; i--) {
+                if (!items[i].InXmlDescription) {
+                    if (LogAsErrorNotInDatabaseItems)
+                        HMS.LogError("Deleted "+ items[i].Text);
+                    items.RemoveAt(i);
+                }
+            }
+        }
+
+        public string KindToString(DefKind kind) {
+            switch (kind) {
+                case DefKind.Class    : return "Класс";
+                case DefKind.Constant : return "Константа";
+                case DefKind.Event    : return "Событие";
+                case DefKind.Function : return "Функция";
+                case DefKind.Method   : return "Метод";
+                case DefKind.Procedure: return "Процедура";
+                case DefKind.Property : return "Свойство";
+                case DefKind.Variable : return "Переменная";
+                default: return "";
             }
         }
 

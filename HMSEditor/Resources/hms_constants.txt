@@ -3,15 +3,52 @@ AM_CONFIGASFWRITER_PARAM_AUTOINDEX: Integer = 1|Определяет парам�
 AM_CONFIGASFWRITER_PARAM_DONTCOMPRESS: Integer = 3|Определяет параметры настройки фильтрации, используемые в IConfigAsfWriter2 GetParam и SetParam методах.\nУказывает, что WM ASF Writer не будет пытаться сжимать входные потоки. Используйте этот флаг, чтобы упаковать не Windows Media содержимое в файле ASF.
 AM_CONFIGASFWRITER_PARAM_INDEXMODE: Integer = 40
 AM_CONFIGASFWRITER_PARAM_MULTIPASS: Integer = 2|Определяет параметры настройки фильтрации, используемые в IConfigAsfWriter2 GetParam и SetParam методах.\nУказывает, должен ли фильтр работать в двухпроходном режиме. При первом проходе, фильтр проверяет каждый медиа-поток в целом, чтобы определить оптимальные параметры кодирования для файла. Фактическое кодирование выполняется на втором проходе. Таким образом, для создания файла ASF в двухпроходном режиме, необходимо запустить график, ждать событие EC_PREPROCESS_COMPLETE, искать в начале исходного файла, а затем запустить граф второй раз.
+AV_CH_BACK_CENTER: Integer = 256
+AV_CH_BACK_LEFT: Integer = 16
+AV_CH_BACK_RIGHT: Integer = 32
+AV_CH_FRONT_CENTER: Integer = 4
+AV_CH_FRONT_LEFT: Integer = 1
+AV_CH_FRONT_LEFT_OF_CENTER: Integer = 64
+AV_CH_FRONT_RIGHT: Integer = 2
+AV_CH_FRONT_RIGHT_OF_CENTER: Integer = 128
+AV_CH_LOW_FREQUENCY: Integer = 8
+AV_CH_SIDE_LEFT: Integer = 512
+AV_CH_SIDE_RIGHT: Integer = 1024
+AV_CH_STEREO_LEFT: Integer = 536870912
+AV_CH_STEREO_RIGHT: Integer = 1073741824
+AV_CH_TOP_BACK_CENTER: Integer = 65536
+AV_CH_TOP_BACK_LEFT: Integer = 32768
+AV_CH_TOP_BACK_RIGHT: Integer = 131072
+AV_CH_TOP_CENTER: Integer = 2048
+AV_CH_TOP_FRONT_CENTER: Integer = 8192
+AV_CH_TOP_FRONT_LEFT: Integer = 4096
+AV_CH_TOP_FRONT_RIGHT: Integer = 16384
 FORMAT_VideoInfo2: String = "{F72A76A0-EB0A-11D0-ACE4-0000C0CC16BA}"
 FORMAT_VideoInfo: String = "{05589F80-C356-11CE-BF01-00AA0055595A}"
 FORMAT_WaveFormatEx: String = "{05589F81-C356-11CE-BF01-00AA0055595A}"
+HWCodec_H264: Integer = 0
+HWCodec_HEVC: Integer = 6
+HWCodec_MPEG2: Integer = 3
+HWCodec_MPEG2DVD: Integer = 5
+HWCodec_MPEG4: Integer = 4
+HWCodec_NB: Integer = 8
+HWCodec_VC1: Integer = 1
+HWCodec_VP9: Integer = 7
 ICodecApi: String = "{901db4c7-31ce-41a2-85dc-8fa0bf41b8da}"
 IConfigAsfWriter2: String = "{7989ccaa-53f0-44f0-884a-f3b03f6ae066}"
 IFFDShowBaseT: String = "{EC5BCCF4-FD62-45ee-B022-3840EAEA77B2}"
+ILAVAudioSettings: String = "{4158A22B-6553-45D0-8069-24716F8FF171}"
+ILAVFSettings: String = "{774A919D-EA95-4A87-8A1E-F48ABE8499C7}"
+ILAVVideoSettings: String = "{FA40D6E9-4D38-4761-ADD2-71A9EC5FD32F}"
 IModuleConfig: String = "{486F726E-4D43-49b9-8A0C-C22A2B0524E8}"
+KSDATAFORMAT_SUBTYPE_IEEE_FLOAT = "{00000003-0000-0010-8000-00AA00389B71}"
 KSDATAFORMAT_SUBTYPE_PCM: String = "{00000001-0000-0010-8000-00AA00389B71}"
+LAVHWResFlag_HD: Integer = 2
+LAVHWResFlag_SD: Integer = 1
+LAVHWResFlag_UHD: Integer = 4
+LAVOutPixFmt_None: Integer = -1
 MEDIASUBTYPE_AAC: String = "{000000FF-0000-0010-8000-00AA00389B71}"
+MEDIASUBTYPE_AAC_ADTS: String = "{53544441-0000-0010-8000-00AA00389B71}"
 MEDIASUBTYPE_ARGB32: String = "{773C9AC0-3274-11D0-B724-00AA006C1A01}"
 MEDIASUBTYPE_AVC1_: String = "{31435641-0000-0010-8000-00AA00389B71}"
 MEDIASUBTYPE_DOLBY_AC3: String = "{E06D802C-DB46-11CF-B4D1-00805F6CBBEA}"
@@ -37,6 +74,7 @@ MEDIASUBTYPE_UYVY: String = "{59565955-0000-0010-8000-00AA00389B71}"
 MEDIASUBTYPE_WAVE_DOLBY_AC3: String = "{00002000-0000-0010-8000-00aa00389b71}"
 MEDIASUBTYPE_WAVE_DTS: String = "{00002001-0000-0010-8000-00aa00389b71}"
 MEDIASUBTYPE_WVC1_: String = "{31435657-0000-0010-8000-00AA00389B71}"
+MEDIASUBTYPE_WVC1_CYBERLINK: String = "{D979F77B-DBEA-4BF6-9E6D-1D7E57FBAD53}"
 MEDIASUBTYPE_X264_: String = "{34363258-0000-0010-8000-00AA00389B71}"
 MEDIASUBTYPE_Y411: String = "{31313459-0000-0010-8000-00AA00389B71}"
 MEDIASUBTYPE_Y41P: String = "{50313459-0000-0010-8000-00AA00389B71}"
@@ -77,6 +115,7 @@ PCRE_UNGREEDY: Integer = 512|Модификатор шаблона регуля�
 PINDIR_INPUT: Integer = 0
 PINDIR_OUTPUT: Integer = 1
 S_OK: Integer = 0
+SampleFormat_None: Integer = -1
 TIME_FORMAT_BYTE: String = "{7B785571-8C82-11CF-BC0C-00AA00AC74F6}"
 TIME_FORMAT_FIELD: String = "{7B785573-8C82-11CF-BC0C-00AA00AC74F6}"
 TIME_FORMAT_FRAME: String = "{7B785570-8C82-11CF-BC0C-00AA00AC74F6}"
@@ -249,7 +288,9 @@ taRightJustify: Integer = 1
 vstAudioDelay: Integer = 5|Значение для функции HmsGetVideoSettings: задержка звука.
 vstAudioOriginal: Integer = 4|Значение для функции HmsGetVideoSettings: оригинальная звуковая-дорожка
 vstAudioStream: Integer = 0|Значение для функции HmsGetVideoSettings: выбранная звуковая-дорожка
+vstAudioVolume: Integer = 10|Значение для функции HmsGetVideoSettings: уровень громкости аудио-дорожки
 vstDeinterlace: Integer = 9|Значение для функции HmsGetVideoSettings: использование сглаживания (деинтерлейса)
+vstDVDAspectRatio: Integer = 11|Значение для функции HmsGetVideoSettings: соотношение сторон ("16:9", "4:3")
 vstFrameRate: Integer = 8|Значение для функции HmsGetVideoSettings: частота кадров
 vstSubtitle: Integer = 1|Значение для функции HmsGetVideoSettings: выбранные субтитры
 vstSubtitleBMargin: Integer = 7|Значение для функции HmsGetVideoSettings: отсуп для субтитров
@@ -258,440 +299,424 @@ vstTranscodingProfile: Integer = 2|Значение для функции HmsGet
 vstVideoOriginal: Integer = 6|Значение для функции HmsGetVideoSettings: оригинальная видео-дорожка
 
 * [Идентификаторы кодеков]
-CODEC_ID_012V: Integer = 808530518
-CODEC_ID_4XM: Integer = 35
-CODEC_ID_8BPS: Integer = 49
-CODEC_ID_8SVX_EXP: Integer = 86071
-CODEC_ID_8SVX_FIB: Integer = 86072
-CODEC_ID_A64_MULTI5: Integer = 145
-CODEC_ID_A64_MULTI: Integer = 144
-CODEC_ID_AAC: Integer = 86018
-CODEC_ID_AAC_LATM: Integer = 86066
-CODEC_ID_AASC: Integer = 75
-CODEC_ID_AC3: Integer = 86019
-CODEC_ID_ADPCM_4XM: Integer = 69639
-CODEC_ID_ADPCM_ADX: Integer = 69641
-CODEC_ID_ADPCM_AFC: Integer = 1095123744
-CODEC_ID_ADPCM_CT: Integer = 69644
-CODEC_ID_ADPCM_DTK: Integer = 1146374944
-CODEC_ID_ADPCM_EA: Integer = 69642
-CODEC_ID_ADPCM_EA_MAXIS_XA: Integer = 69658
-CODEC_ID_ADPCM_EA_R1: Integer = 69652
-CODEC_ID_ADPCM_EA_R2: Integer = 69654
-CODEC_ID_ADPCM_EA_R3: Integer = 69653
-CODEC_ID_ADPCM_EA_XAS: Integer = 69657
-CODEC_ID_ADPCM_G722: Integer = 69660
-CODEC_ID_ADPCM_G726: Integer = 69643
-CODEC_ID_ADPCM_G726LE: Integer = 909260615
-CODEC_ID_ADPCM_IMA_AMV: Integer = 69651
-CODEC_ID_ADPCM_IMA_APC: Integer = 69661
-CODEC_ID_ADPCM_IMA_DK3: Integer = 69634
-CODEC_ID_ADPCM_IMA_DK4: Integer = 69635
-CODEC_ID_ADPCM_IMA_EA_EACS: Integer = 69656
-CODEC_ID_ADPCM_IMA_EA_SEAD: Integer = 69655
-CODEC_ID_ADPCM_IMA_ISS: Integer = 69659
-CODEC_ID_ADPCM_IMA_OKI: Integer = 1330333984
-CODEC_ID_ADPCM_IMA_QT: Integer = 69632
-CODEC_ID_ADPCM_IMA_RAD: Integer = 1380008992
-CODEC_ID_ADPCM_IMA_SMJPEG: Integer = 69637
-CODEC_ID_ADPCM_IMA_WAV: Integer = 69633
-CODEC_ID_ADPCM_IMA_WS: Integer = 69636
-CODEC_ID_ADPCM_MS: Integer = 69638
-CODEC_ID_ADPCM_SBPRO_2: Integer = 69649
-CODEC_ID_ADPCM_SBPRO_3: Integer = 69648
-CODEC_ID_ADPCM_SBPRO_4: Integer = 69647
-CODEC_ID_ADPCM_SWF: Integer = 69645
-CODEC_ID_ADPCM_THP: Integer = 69650
-CODEC_ID_ADPCM_VIMA: Integer = 1447644481
-CODEC_ID_ADPCM_VIMA_DEPRECATED: Integer = 69662
-CODEC_ID_ADPCM_XA: Integer = 69640
-CODEC_ID_ADPCM_YAMAHA: Integer = 69646
-CODEC_ID_AIC: Integer = 170
-CODEC_ID_ALAC: Integer = 86032
-CODEC_ID_ALIAS_PIX: Integer = 177
-CODEC_ID_AMR_NB: Integer = 73728
-CODEC_ID_AMR_WB: Integer = 73729
-CODEC_ID_AMV: Integer = 108
-CODEC_ID_ANM: Integer = 135
-CODEC_ID_ANSI: Integer = 143
-CODEC_ID_APE: Integer = 86049
-CODEC_ID_APNG: Integer = 1095781959
-CODEC_ID_ASS: Integer = 1095979808
-CODEC_ID_ASV1: Integer = 32
-CODEC_ID_ASV2: Integer = 33
-CODEC_ID_ATRAC1: Integer = 86063
-CODEC_ID_ATRAC3: Integer = 86047
-CODEC_ID_ATRAC3P: Integer = 86056
-CODEC_ID_AURA2: Integer = 125
-CODEC_ID_AURA: Integer = 124
-CODEC_ID_AVRN: Integer = 1096176238
-CODEC_ID_AVRP: Integer = 1096176208
-CODEC_ID_AVS: Integer = 83
-CODEC_ID_AVUI: Integer = 1096176969
-CODEC_ID_AYUV: Integer = 1096373590
-CODEC_ID_BETHSOFTVID: Integer = 104
-CODEC_ID_BFI: Integer = 118
-CODEC_ID_BINKAUDIO_DCT: Integer = 86065
-CODEC_ID_BINKAUDIO_RDFT: Integer = 86064
-CODEC_ID_BINKVIDEO: Integer = 136
-CODEC_ID_BINTEXT: Integer = 1112823892
-CODEC_ID_BIN_DATA: Integer = 1145132097
-CODEC_ID_BMP: Integer = 79
-CODEC_ID_BMV_AUDIO: Integer = 86073
-CODEC_ID_BMV_VIDEO: Integer = 155
-CODEC_ID_BRENDER_PIX: Integer = 1112557912
-CODEC_ID_BRENDER_PIX_DEPRECATED: Integer = 178
-CODEC_ID_C93: Integer = 103
-CODEC_ID_CAVS: Integer = 88
-CODEC_ID_CDGRAPHICS: Integer = 133
-CODEC_ID_CDXL: Integer = 160
+CODEC_ID_012V
+CODEC_ID_4XM
+CODEC_ID_8BPS
+CODEC_ID_8SVX_EXP
+CODEC_ID_8SVX_FIB
+CODEC_ID_A64_MULTI5
+CODEC_ID_A64_MULTI
+CODEC_ID_AAC
+CODEC_ID_AAC_LATM
+CODEC_ID_AASC
+CODEC_ID_AC3
+CODEC_ID_ADPCM_4XM
+CODEC_ID_ADPCM_ADX
+CODEC_ID_ADPCM_AFC
+CODEC_ID_ADPCM_CT
+CODEC_ID_ADPCM_DTK
+CODEC_ID_ADPCM_EA
+CODEC_ID_ADPCM_EA_MAXIS_XA
+CODEC_ID_ADPCM_EA_R1
+CODEC_ID_ADPCM_EA_R2
+CODEC_ID_ADPCM_EA_R3
+CODEC_ID_ADPCM_EA_XAS
+CODEC_ID_ADPCM_G722
+CODEC_ID_ADPCM_G726
+CODEC_ID_ADPCM_G726LE
+CODEC_ID_ADPCM_IMA_AMV
+CODEC_ID_ADPCM_IMA_APC
+CODEC_ID_ADPCM_IMA_DK3
+CODEC_ID_ADPCM_IMA_DK4
+CODEC_ID_ADPCM_IMA_DAT4
+CODEC_ID_ADPCM_IMA_EA_EACS
+CODEC_ID_ADPCM_IMA_EA_SEAD
+CODEC_ID_ADPCM_IMA_ISS
+CODEC_ID_ADPCM_IMA_OKI
+CODEC_ID_ADPCM_IMA_QT
+CODEC_ID_ADPCM_IMA_RAD
+CODEC_ID_ADPCM_IMA_SMJPEG
+CODEC_ID_ADPCM_IMA_WAV
+CODEC_ID_ADPCM_IMA_WS
+CODEC_ID_ADPCM_MS
+CODEC_ID_ADPCM_MTAF
+CODEC_ID_ADPCM_SBPRO_2
+CODEC_ID_ADPCM_SBPRO_3
+CODEC_ID_ADPCM_SBPRO_4
+CODEC_ID_ADPCM_SWF
+CODEC_ID_ADPCM_THP
+CODEC_ID_ADPCM_VIMA
+CODEC_ID_ADPCM_XA
+CODEC_ID_ADPCM_YAMAHA
+CODEC_ID_AIC
+CODEC_ID_ALAC
+CODEC_ID_ALIAS_PIX
+CODEC_ID_AMR_NB
+CODEC_ID_AMR_WB
+CODEC_ID_AMV
+CODEC_ID_ANM
+CODEC_ID_ANSI
+CODEC_ID_APE
+CODEC_ID_APNG
+CODEC_ID_ASS
+CODEC_ID_ASV1
+CODEC_ID_ASV2
+CODEC_ID_ATRAC1
+CODEC_ID_ATRAC3
+CODEC_ID_ATRAC3P
+CODEC_ID_AURA2
+CODEC_ID_AURA
+CODEC_ID_AVRN
+CODEC_ID_AVRP
+CODEC_ID_AVS
+CODEC_ID_AVUI
+CODEC_ID_AYUV
+CODEC_ID_BETHSOFTVID
+CODEC_ID_BFI
+CODEC_ID_BINKAUDIO_DCT
+CODEC_ID_BINKAUDIO_RDFT
+CODEC_ID_BINKVIDEO
+CODEC_ID_BINTEXT
+CODEC_ID_BIN_DATA
+CODEC_ID_BMP
+CODEC_ID_BMV_AUDIO
+CODEC_ID_BMV_VIDEO
+CODEC_ID_BRENDER_PIX
+CODEC_ID_C93
+CODEC_ID_CAVS
+CODEC_ID_CDGRAPHICS
+CODEC_ID_CDXL
 CODEC_ID_CELT
-CODEC_ID_CINEPAK: Integer = 44
-CODEC_ID_CLJR: Integer = 37
-CODEC_ID_CLLC: Integer = 167
-CODEC_ID_CMV: Integer = 119
-CODEC_ID_COMFORT_NOISE: Integer = 86078
-CODEC_ID_COOK: Integer = 86036
-CODEC_ID_CPIA: Integer = 1129335105
-CODEC_ID_CSCD: Integer = 80
-CODEC_ID_CYUV: Integer = 27
-CODEC_ID_DFA: Integer = 151
-CODEC_ID_DIRAC: Integer = 117
-CODEC_ID_DNXHD: Integer = 100
-CODEC_ID_DPX: Integer = 129
-CODEC_ID_DSD_LSBF: Integer = 1146307660
-CODEC_ID_DSD_LSBF_PLANAR: Integer = 1146307633
-CODEC_ID_DSD_MSBF: Integer = 1146307661
-CODEC_ID_DSD_MSBF_PLANAR: Integer = 1146307640
-CODEC_ID_DSICINAUDIO: Integer = 86042
-CODEC_ID_DSICINVIDEO: Integer = 95
-CODEC_ID_DSS_SP: Integer = 86083
+CODEC_ID_CINEPAK
+CODEC_ID_CLJR
+CODEC_ID_CLLC
+CODEC_ID_CMV
+CODEC_ID_COMFORT_NOISE
+CODEC_ID_COOK
+CODEC_ID_CPIA
+CODEC_ID_CSCD
+CODEC_ID_CYUV
+CODEC_ID_DFA
+CODEC_ID_DIRAC
+CODEC_ID_DNXHD
+CODEC_ID_DPX
+CODEC_ID_DSD_LSBF
+CODEC_ID_DSD_LSBF_PLANAR
+CODEC_ID_DSD_MSBF
+CODEC_ID_DSD_MSBF_PLANAR
+CODEC_ID_DSICINAUDIO
+CODEC_ID_DSICINVIDEO
+CODEC_ID_DSS_SP
+CODEC_ID_DST
 CODEC_ID_DTS
-CODEC_ID_DVAUDIO: Integer = 86022
-CODEC_ID_DVB_SUBTITLE: Integer = 94209
-CODEC_ID_DVB_TELETEXT: Integer = 94215
-CODEC_ID_DVD_NAV: Integer = 1145979222
-CODEC_ID_DVD_SUBTITLE: Integer = 94208
-CODEC_ID_DVVIDEO: Integer = 25
-CODEC_ID_DXA: Integer = 99
-CODEC_ID_DXTORY: Integer = 157
-CODEC_ID_EAC3: Integer = 86057
-CODEC_ID_EIA_608: Integer = 1664495672
-CODEC_ID_ESCAPE124: Integer = 116
-CODEC_ID_ESCAPE130: Integer = 1160852272
-CODEC_ID_ESCAPE130_DEPRECATED: Integer = 171
-CODEC_ID_EVRC: Integer = 1936029283
-CODEC_ID_EXR: Integer = 809850962
-CODEC_ID_EXR_DEPRECATED: Integer = 180
-CODEC_ID_FFMETADATA: Integer = 135168
-CODEC_ID_FFV1: Integer = 34
-CODEC_ID_FFVHUFF: Integer = 68
-CODEC_ID_FFWAVESYNTH: Integer = 1179014995
-CODEC_ID_FIC: Integer = 176
-CODEC_ID_FIRST_AUDIO: Integer = 65536
-CODEC_ID_FIRST_SUBTITLE: Integer = 94208
-CODEC_ID_FLAC: Integer = 86028
-CODEC_ID_FLASHSV2: Integer = 132
-CODEC_ID_FLASHSV: Integer = 87
-CODEC_ID_FLIC: Integer = 51
-CODEC_ID_FLV1: Integer = 22
-CODEC_ID_FRAPS: Integer = 77
-CODEC_ID_FRWU: Integer = 131
-CODEC_ID_G2M: Integer = 4665933
-CODEC_ID_G2M_DEPRECATED: Integer = 172
-CODEC_ID_G723_1: Integer = 86069
-CODEC_ID_G729: Integer = 86070
-CODEC_ID_GIF: Integer = 98
-CODEC_ID_GSM: Integer = 86034
-CODEC_ID_GSM_MS: Integer = 86046
-CODEC_ID_H261: Integer = 4
-CODEC_ID_H263: Integer = 5
-CODEC_ID_H263I: Integer = 21
-CODEC_ID_H263P: Integer = 20
-CODEC_ID_H264: Integer = 28
-CODEC_ID_H265: Integer = 1211250229
-CODEC_ID_HDMV_PGS_SUBTITLE: Integer = 94214
-CODEC_ID_HEVC: Integer = 1211250229
-CODEC_ID_HEVC_DEPRECATED: Integer = 175
-CODEC_ID_HNM4_VIDEO: Integer = 174
-CODEC_ID_HQX: Integer = 186
-CODEC_ID_HUFFYUV: Integer = 26
-CODEC_ID_IAC: Integer = 86075
-CODEC_ID_IDCIN: Integer = 48
-CODEC_ID_IDF: Integer = 4801606
-CODEC_ID_IFF_BYTERUN1: Integer = 138
-CODEC_ID_IFF_ILBM: Integer = 137
-CODEC_ID_IGS_SUBTITLE: Integer = 94465
-CODEC_ID_ILBC: Integer = 86076
-CODEC_ID_IMC: Integer = 86043
-CODEC_ID_INDEO2: Integer = 76
-CODEC_ID_INDEO3: Integer = 29
-CODEC_ID_INDEO4: Integer = 112
-CODEC_ID_INDEO5: Integer = 113
-CODEC_ID_INTERPLAY_DPCM: Integer = 81921
-CODEC_ID_INTERPLAY_VIDEO: Integer = 40
-CODEC_ID_JACOSUB: Integer = 1246975298
-CODEC_ID_JPEG2000: Integer = 89
-CODEC_ID_JPEGLS: Integer = 12
-CODEC_ID_JV: Integer = 150
-CODEC_ID_KGV1: Integer = 139
-CODEC_ID_KMVC: Integer = 86
-CODEC_ID_LAGARITH: Integer = 148
-CODEC_ID_LJPEG: Integer = 10
-CODEC_ID_LOCO: Integer = 73
-CODEC_ID_MACE3: Integer = 86025
-CODEC_ID_MACE6: Integer = 86026
-CODEC_ID_MAD: Integer = 130
-CODEC_ID_MDEC: Integer = 38
-CODEC_ID_METASOUND: Integer = 86080
-CODEC_ID_MICRODVD: Integer = 1833195076
-CODEC_ID_MIMIC: Integer = 114
-CODEC_ID_MJPEG: Integer = 8
-CODEC_ID_MJPEGB: Integer = 9
-CODEC_ID_MLP: Integer = 86045
-CODEC_ID_MMVIDEO: Integer = 81
-CODEC_ID_MOTIONPIXELS: Integer = 120
-CODEC_ID_MOV_TEXT: Integer = 94213
-CODEC_ID_MP1: Integer = 86059
-CODEC_ID_MP2: Integer = 86016
-CODEC_ID_MP3: Integer = 86017
-CODEC_ID_MP3ADU: Integer = 86029
-CODEC_ID_MP3ON4: Integer = 86030
-CODEC_ID_MP4ALS: Integer = 86062
-CODEC_ID_MPEG1VIDEO: Integer = 1
-CODEC_ID_MPEG2TS: Integer = 131072
-CODEC_ID_MPEG2VIDEO: Integer = 2
-CODEC_ID_MPEG2VIDEO_XVMC: Integer = 3
-CODEC_ID_MPEG4: Integer = 13
-CODEC_ID_MPL2: Integer = 1297108018
-CODEC_ID_MPEG4SYSTEMS: Integer = 131073
-CODEC_ID_MSA1: Integer = 164
-CODEC_ID_MSMPEG4V1: Integer = 15
-CODEC_ID_MSMPEG4V2: Integer = 16
-CODEC_ID_MSMPEG4V3: Integer = 17
-CODEC_ID_MSRLE: Integer = 46
-CODEC_ID_MSS1: Integer = 163
-CODEC_ID_MSS2: Integer = 168
-CODEC_ID_MSVIDEO1: Integer = 47
-CODEC_ID_MSZH: Integer = 54
-CODEC_ID_MTS2: Integer = 166
-CODEC_ID_MUSEPACK7: Integer = 86044
-CODEC_ID_MUSEPACK8: Integer = 86051
-CODEC_ID_MVC1: Integer = 1297498929
-CODEC_ID_MVC1_DEPRECATED: Integer = 184
-CODEC_ID_MVC2: Integer = 1297498930
-CODEC_ID_MVC2_DEPRECATED: Integer = 185
-CODEC_ID_MXPEG: Integer = 147
-CODEC_ID_NELLYMOSER: Integer = 86050
-CODEC_ID_NONE: Integer = 0
-CODEC_ID_NUV: Integer = 85
-CODEC_ID_ON2AVC: Integer = 86082
-CODEC_ID_OPUS: Integer = 1330664787
-CODEC_ID_OPUS_DEPRECATED: Integer = 86077
-CODEC_ID_OTF: Integer = 5198918
-CODEC_ID_PAF_AUDIO: Integer = 1346455105
-CODEC_ID_PAF_AUDIO_DEPRECATED: Integer = 86081
-CODEC_ID_PAF_VIDEO: Integer = 1346455126
-CODEC_ID_PAF_VIDEO_DEPRECATED: Integer = 179
-CODEC_ID_PAM: Integer = 67
-CODEC_ID_PBM: Integer = 64
-CODEC_ID_PCM_ALAW: Integer = 65543
-CODEC_ID_PCM_BLURAY: Integer = 65560
-CODEC_ID_PCM_DVD: Integer = 65555
-CODEC_ID_PCM_F32BE: Integer = 65556
-CODEC_ID_PCM_F32LE: Integer = 65557
+CODEC_ID_DVAUDIO
+CODEC_ID_DVB_SUBTITLE
+CODEC_ID_DVB_TELETEXT
+CODEC_ID_DVD_NAV
+CODEC_ID_DVD_SUBTITLE
+CODEC_ID_DVVIDEO
+CODEC_ID_DXA
+CODEC_ID_DXTORY
+CODEC_ID_EAC3
+CODEC_ID_EIA_608
+CODEC_ID_ESCAPE124
+CODEC_ID_ESCAPE130
+CODEC_ID_EVRC
+CODEC_ID_EXR
+CODEC_ID_FFMETADATA
+CODEC_ID_FFV1
+CODEC_ID_FFVHUFF
+CODEC_ID_FFWAVESYNTH
+CODEC_ID_FIC
+CODEC_ID_FLAC
+CODEC_ID_FLASHSV2
+CODEC_ID_FLASHSV
+CODEC_ID_FLIC
+CODEC_ID_FLV1
+CODEC_ID_FRAPS
+CODEC_ID_FRWU
+CODEC_ID_G2M
+CODEC_ID_G723_1
+CODEC_ID_G729
+CODEC_ID_GIF
+CODEC_ID_GSM
+CODEC_ID_GSM_MS
+CODEC_ID_H261
+CODEC_ID_H263
+CODEC_ID_H263I
+CODEC_ID_H263P
+CODEC_ID_H264
+CODEC_ID_HDMV_PGS_SUBTITLE
+CODEC_ID_HEVC
+CODEC_ID_HNM4_VIDEO
+CODEC_ID_HQX
+CODEC_ID_HUFFYUV
+CODEC_ID_IAC
+CODEC_ID_IDCIN
+CODEC_ID_IDF
+CODEC_ID_IFF_ILBM
+CODEC_ID_IGS_SUBTITLE
+CODEC_ID_ILBC
+CODEC_ID_IMC
+CODEC_ID_INDEO2
+CODEC_ID_INDEO3
+CODEC_ID_INDEO4
+CODEC_ID_INDEO5
+CODEC_ID_INTERPLAY_DPCM
+CODEC_ID_INTERPLAY_VIDEO
+CODEC_ID_JACOSUB
+CODEC_ID_JPEG2000
+CODEC_ID_JPEGLS
+CODEC_ID_JV
+CODEC_ID_KGV1
+CODEC_ID_KMVC
+CODEC_ID_LAGARITH
+CODEC_ID_LJPEG
+CODEC_ID_LOCO
+CODEC_ID_M101
+CODEC_ID_MACE3
+CODEC_ID_MACE6
+CODEC_ID_MAD
+CODEC_ID_MAGICYUV
+CODEC_ID_MDEC
+CODEC_ID_METASOUND
+CODEC_ID_MICRODVD
+CODEC_ID_MIMIC
+CODEC_ID_MJPEG
+CODEC_ID_MJPEGB
+CODEC_ID_MLP
+CODEC_ID_MMVIDEO
+CODEC_ID_MOTIONPIXELS
+CODEC_ID_MOV_TEXT
+CODEC_ID_MP1
+CODEC_ID_MP2
+CODEC_ID_MP3
+CODEC_ID_MP3ADU
+CODEC_ID_MP3ON4
+CODEC_ID_MP4ALS
+CODEC_ID_MPEG1VIDEO
+CODEC_ID_MPEG2TS
+CODEC_ID_MPEG2VIDEO
+CODEC_ID_MPEG2VIDEO_XVMC
+CODEC_ID_MPEG4
+CODEC_ID_MPL2
+CODEC_ID_MPEG4SYSTEMS
+CODEC_ID_MSA1
+CODEC_ID_MSMPEG4V1
+CODEC_ID_MSMPEG4V2
+CODEC_ID_MSMPEG4V3
+CODEC_ID_MSRLE
+CODEC_ID_MSS1
+CODEC_ID_MSS2
+CODEC_ID_MSVIDEO1
+CODEC_ID_MSZH
+CODEC_ID_MTS2
+CODEC_ID_MUSEPACK7
+CODEC_ID_MUSEPACK8
+CODEC_ID_MVC1
+CODEC_ID_MVC2
+CODEC_ID_MXPEG
+CODEC_ID_NELLYMOSER
+CODEC_ID_NONE
+CODEC_ID_NUV
+CODEC_ID_ON2AVC
+CODEC_ID_OPUS
+CODEC_ID_OTF
+CODEC_ID_PAF_AUDIO
+CODEC_ID_PAF_VIDEO
+CODEC_ID_PAM
+CODEC_ID_PBM
+CODEC_ID_PCM_ALAW
+CODEC_ID_PCM_BLURAY
+CODEC_ID_PCM_DVD
+CODEC_ID_PCM_F32BE
+CODEC_ID_PCM_F32LE
 CODEC_ID_PCM_F64BE
-CODEC_ID_PCM_F64LE: Integer = 65559
-CODEC_ID_PCM_LXF: Integer = 65561
-CODEC_ID_PCM_MULAW: Integer = 65542
-CODEC_ID_PCM_S16BE: Integer = 65537
-CODEC_ID_PCM_S16BE_PLANAR: Integer = 1347637264
-CODEC_ID_PCM_S16LE: Integer = 65536
-CODEC_ID_PCM_S16LE_PLANAR: Integer = 65554
-CODEC_ID_PCM_S24BE: Integer = 65549
-CODEC_ID_PCM_S24DAUD: Integer = 65552
-CODEC_ID_PCM_S24LE: Integer = 65548
-CODEC_ID_PCM_S24LE_PLANAR: Integer = 407917392
-CODEC_ID_PCM_S24LE_PLANAR_DEPRECATED: Integer = 65564
-CODEC_ID_PCM_S32BE: Integer = 65545
-CODEC_ID_PCM_S32LE: Integer = 65544
-CODEC_ID_PCM_S32LE_PLANAR: Integer = 542135120
-CODEC_ID_PCM_S32LE_PLANAR_DEPRECATED: Integer = 65565
-CODEC_ID_PCM_S8: Integer = 65540
-CODEC_ID_PCM_S8_PLANAR: Integer = 65563
-CODEC_ID_PCM_U16BE: Integer = 65539
-CODEC_ID_PCM_U16LE: Integer = 65538
-CODEC_ID_PCM_U24BE: Integer = 65551
-CODEC_ID_PCM_U24LE: Integer = 65550
-CODEC_ID_PCM_U32BE: Integer = 65547
-CODEC_ID_PCM_U32LE: Integer = 65546
-CODEC_ID_PCM_U8: Integer = 65541
-CODEC_ID_PCM_ZORK: Integer = 65553
-CODEC_ID_PCX: Integer = 110
-CODEC_ID_PGM: Integer = 65
-CODEC_ID_PGMYUV: Integer = 66
-CODEC_ID_PGS_SUBTITLE: Integer = 94464
-CODEC_ID_PICTOR: Integer = 142
-CODEC_ID_PJS: Integer = 1349012051
-CODEC_ID_PNG: Integer = 62
-CODEC_ID_PPM: Integer = 63
-CODEC_ID_PROBE: Integer = 102400
-CODEC_ID_PRORES: Integer = 149
-CODEC_ID_PTX: Integer = 105
-CODEC_ID_QCELP: Integer = 86040
-CODEC_ID_QDM2: Integer = 86035
-CODEC_ID_QDMC: Integer = 86067
-CODEC_ID_QDRAW: Integer = 59
-CODEC_ID_QPEG: Integer = 61
-CODEC_ID_QTRLE: Integer = 56
-CODEC_ID_R10K: Integer = 146
-CODEC_ID_R210: Integer = 134
-CODEC_ID_RALF: Integer = 86074
-CODEC_ID_RAWVIDEO: Integer = 14
-CODEC_ID_RA_144: Integer = 77824
-CODEC_ID_RA_288: Integer = 77825
-CODEC_ID_REALTEXT: Integer = 1381259348
-CODEC_ID_RL2: Integer = 115
-CODEC_ID_ROQ: Integer = 39
+CODEC_ID_PCM_F64LE
+CODEC_ID_PCM_LXF
+CODEC_ID_PCM_MULAW
+CODEC_ID_PCM_S16BE
+CODEC_ID_PCM_S16BE_PLANAR
+CODEC_ID_PCM_S16LE
+CODEC_ID_PCM_S16LE_PLANAR
+CODEC_ID_PCM_S24BE
+CODEC_ID_PCM_S24DAUD
+CODEC_ID_PCM_S24LE
+CODEC_ID_PCM_S24LE_PLANAR
+CODEC_ID_PCM_S32BE
+CODEC_ID_PCM_S32LE
+CODEC_ID_PCM_S32LE_PLANAR
+CODEC_ID_PCM_S8
+CODEC_ID_PCM_S8_PLANAR
+CODEC_ID_PCM_U16BE
+CODEC_ID_PCM_U16LE
+CODEC_ID_PCM_U24BE
+CODEC_ID_PCM_U24LE
+CODEC_ID_PCM_U32BE
+CODEC_ID_PCM_U32LE
+CODEC_ID_PCM_U8
+CODEC_ID_PCM_ZORK
+CODEC_ID_PCX
+CODEC_ID_PGM
+CODEC_ID_PGMYUV
+CODEC_ID_PGS_SUBTITLE
+CODEC_ID_PICTOR
+CODEC_ID_PJS
+CODEC_ID_PNG
+CODEC_ID_PPM
+CODEC_ID_PROBE
+CODEC_ID_PRORES
+CODEC_ID_PTX
+CODEC_ID_QCELP
+CODEC_ID_QDM2
+CODEC_ID_QDMC
+CODEC_ID_QDRAW
+CODEC_ID_QPEG
+CODEC_ID_QTRLE
+CODEC_ID_R10K
+CODEC_ID_R210
+CODEC_ID_RALF
+CODEC_ID_RAWVIDEO
+CODEC_ID_RA_144
+CODEC_ID_RA_288
+CODEC_ID_REALTEXT
+CODEC_ID_RL2
+CODEC_ID_ROQ
 CODEC_ID_ROQ_DPCM
-CODEC_ID_RPZA: Integer = 43
-CODEC_ID_RV10: Integer = 6
-CODEC_ID_RV20: Integer = 7
-CODEC_ID_RV30: Integer = 69
-CODEC_ID_RV40: Integer = 70
-CODEC_ID_S302M: Integer = 65562
-CODEC_ID_SAMI: Integer = 1396788553
-CODEC_ID_SANM: Integer = 1396788813
-CODEC_ID_SANM_DEPRECATED: Integer = 182
-CODEC_ID_SGI: Integer = 102
-CODEC_ID_SGIRLE: Integer = 1397180754
-CODEC_ID_SGIRLE_DEPRECATED: Integer = 183
-CODEC_ID_SHORTEN: Integer = 86031
-CODEC_ID_SIPR: Integer = 86058
-CODEC_ID_SMACKAUDIO: Integer = 86039
-CODEC_ID_SMACKVIDEO: Integer = 84
-CODEC_ID_SMC: Integer = 50
-CODEC_ID_SMPTE_KLV: Integer = 1263294017
-CODEC_ID_SMV: Integer = 1936944502
-CODEC_ID_SMVJPEG: Integer = 1397577290
-CODEC_ID_SNOW: Integer = 1397641047
-CODEC_ID_SOL_DPCM: Integer = 81923
-CODEC_ID_SONIC: Integer = 1397706307
-CODEC_ID_SONIC_LS: Integer = 1397706316
-CODEC_ID_SP5X: Integer = 11
-CODEC_ID_SPEEX: Integer = 86052
-CODEC_ID_SRT: Integer = 94216
-CODEC_ID_SSA: Integer = 94212
-CODEC_ID_STL: Integer = 1399870540
-CODEC_ID_SUBRIP: Integer = 1397909872
-CODEC_ID_SUBVIEWER1: Integer = 1398953521
-CODEC_ID_SUBVIEWER: Integer = 1400201814
-CODEC_ID_SUNRAST: Integer = 111
-CODEC_ID_SVQ1: Integer = 23
-CODEC_ID_SVQ3: Integer = 24
-CODEC_ID_TAK: Integer = 1950507339
-CODEC_ID_TAK_DEPRECATED: Integer = 86079
-CODEC_ID_TARGA: Integer = 94
-CODEC_ID_TARGA_Y216: Integer = 1412575542
-CODEC_ID_TEXT: Integer = 94210
-CODEC_ID_TGQ: Integer = 122
-CODEC_ID_TGV: Integer = 121
-CODEC_ID_THEORA: Integer = 31
-CODEC_ID_THP: Integer = 101
-CODEC_ID_TIERTEXSEQVIDEO: Integer = 96
-CODEC_ID_TIFF: Integer = 97
-CODEC_ID_TIMED_ID3: Integer = 1414087731
-CODEC_ID_TMV: Integer = 127
-CODEC_ID_TQI: Integer = 123
-CODEC_ID_TRUEHD: Integer = 86061
-CODEC_ID_TRUEMOTION1: Integer = 52
-CODEC_ID_TRUEMOTION2: Integer = 78
-CODEC_ID_TRUESPEECH: Integer = 86037
-CODEC_ID_TSCC2: Integer = 165
-CODEC_ID_TSCC: Integer = 57
-CODEC_ID_TTA: Integer = 86038
-CODEC_ID_TTF: Integer = 98304
-CODEC_ID_TWINVQ: Integer = 86060
-CODEC_ID_TXD: Integer = 106
-CODEC_ID_ULTI: Integer = 58
-CODEC_ID_UTVIDEO: Integer = 154
-CODEC_ID_V210: Integer = 128
-CODEC_ID_V210X: Integer = 126
-CODEC_ID_V21$: Integer = 126
-CODEC_ID_V308: Integer = 1446195256
-CODEC_ID_V408: Integer = 1446260792
-CODEC_ID_V410: Integer = 158
-CODEC_ID_VB: Integer = 109
-CODEC_ID_VBLE: Integer = 156
-CODEC_ID_VC1: Integer = 71
-CODEC_ID_VC1IMAGE: Integer = 153
-CODEC_ID_VCR1: Integer = 36
-CODEC_ID_VIMA: Integer = 1447644481
-CODEC_ID_VIXL: Integer = 60
-CODEC_ID_VMDAUDIO: Integer = 86027
-CODEC_ID_VMDVIDEO: Integer = 53
-CODEC_ID_VMNC: Integer = 90
-CODEC_ID_VORBIS: Integer = 86021
-CODEC_ID_VOXWARE: Integer = 86048
-CODEC_ID_VP3: Integer = 30
-CODEC_ID_VP5: Integer = 91
-CODEC_ID_VP6: Integer = 92
-CODEC_ID_VP6A: Integer = 107
-CODEC_ID_VP6F: Integer = 93
-CODEC_ID_VP7: Integer = 1448097584
-CODEC_ID_VP7_DEPRECATED: Integer = 181
-CODEC_ID_VP8: Integer = 141
-CODEC_ID_VP9: Integer = 169
-CODEC_ID_VPLAYER: Integer = 1448111218
-CODEC_ID_WAVPACK: Integer = 86041
-CODEC_ID_WEBP: Integer = 1464156752
-CODEC_ID_WEBP_DEPRECATED: Integer = 173
-CODEC_ID_WEBVTT: Integer = 1465275476
-CODEC_ID_WESTWOOD_SND1: Integer = 86033
-CODEC_ID_WMALOSSLESS: Integer = 86055
-CODEC_ID_WMAPRO: Integer = 86054
-CODEC_ID_WMAV1: Integer = 86023
-CODEC_ID_WMAV2: Integer = 86024
-CODEC_ID_WMAVOICE: Integer = 86053
-CODEC_ID_WMV1: Integer = 18
-CODEC_ID_WMV2: Integer = 19
-CODEC_ID_WMV3: Integer = 72
-CODEC_ID_WMV3IMAGE: Integer = 152
-CODEC_ID_WNV1: Integer = 74
-CODEC_ID_WS_VQA: Integer = 45
-CODEC_ID_XAN_DPCM: Integer = 81922
-CODEC_ID_XAN_WC4: Integer = 42
-CODEC_ID_XAN_WC3: Integer = 41
-CODEC_ID_XBIN: Integer = 1480739150
-CODEC_ID_XBM: Integer = 161
-CODEC_ID_XFACE: Integer = 1480999235
-CODEC_ID_XSUB: Integer = 94211
-CODEC_ID_XWD: Integer = 159
-CODEC_ID_Y41P: Integer = 1496592720
-CODEC_ID_YOP: Integer = 140
-CODEC_ID_YUV4: Integer = 1498764852
-CODEC_ID_ZEROCODEC: Integer = 162
-CODEC_ID_ZLIB: Integer = 55
-CODEC_ID_ZMBV: Integer = 82
-CODEC_ID_4GV: Integer = 88073
-CODEC_ID_ADPCM_AICA: Integer = 71687
-CODEC_ID_ADPCM_PSX: Integer = 71686
-CODEC_ID_ADPCM_THP_LE: Integer = 71685
-CODEC_ID_CFHD: Integer = 32784
-CODEC_ID_DAALA: Integer = 32783
-CODEC_ID_DDS: Integer = 189
-CODEC_ID_DXV: Integer = 190
-CODEC_ID_HAP: Integer = 188
-CODEC_ID_HDMV_TEXT_SUBTITLE: Integer = 96270
-CODEC_ID_HQ_HQA: Integer = 187
-CODEC_ID_INTERPLAY_ACM: Integer = 88074
-CODEC_ID_RSCC: Integer = 192
-CODEC_ID_SCREENPRESSO: Integer = 191
-CODEC_ID_SDX2_DPCM: Integer = 83968
-CODEC_ID_TDSC: Integer = 186
-CODEC_ID_WRAPPED_AVFRAME: Integer = 135169
-CODEC_ID_XMA1: Integer = 88075
-CODEC_ID_XMA2: Integer = 88076
+CODEC_ID_RPZA
+CODEC_ID_RV10
+CODEC_ID_RV20
+CODEC_ID_RV30
+CODEC_ID_RV40
+CODEC_ID_S302M
+CODEC_ID_SAMI
+CODEC_ID_SANM
+CODEC_ID_SGI
+CODEC_ID_SGIRLE
+CODEC_ID_SHEERVIDEO
+CODEC_ID_SHORTEN
+CODEC_ID_SIPR
+CODEC_ID_SMACKAUDIO
+CODEC_ID_SMACKVIDEO
+CODEC_ID_SMC
+CODEC_ID_SMPTE_KLV
+CODEC_ID_SMV
+CODEC_ID_SMVJPEG
+CODEC_ID_SNOW
+CODEC_ID_SOL_DPCM
+CODEC_ID_SONIC
+CODEC_ID_SONIC_LS
+CODEC_ID_SP5X
+CODEC_ID_SPEEX
+CODEC_ID_SRT
+CODEC_ID_SSA
+CODEC_ID_STL
+CODEC_ID_SUBRIP
+CODEC_ID_SUBVIEWER1
+CODEC_ID_SUBVIEWER
+CODEC_ID_SUNRAST
+CODEC_ID_SVQ1
+CODEC_ID_SVQ3
+CODEC_ID_TAK
+CODEC_ID_TARGA
+CODEC_ID_TARGA_Y216
+CODEC_ID_TEXT
+CODEC_ID_TGQ
+CODEC_ID_TGV
+CODEC_ID_THEORA
+CODEC_ID_THP
+CODEC_ID_TIERTEXSEQVIDEO
+CODEC_ID_TIFF
+CODEC_ID_TIMED_ID3
+CODEC_ID_TMV
+CODEC_ID_TQI
+CODEC_ID_TRUEHD
+CODEC_ID_TRUEMOTION1
+CODEC_ID_TRUEMOTION2
+CODEC_ID_TRUEMOTION2RT
+CODEC_ID_TRUESPEECH
+CODEC_ID_TSCC2
+CODEC_ID_TSCC
+CODEC_ID_TTA
+CODEC_ID_TTF
+CODEC_ID_TWINVQ
+CODEC_ID_TXD
+CODEC_ID_ULTI
+CODEC_ID_UTVIDEO
+CODEC_ID_V210
+CODEC_ID_V21$
+CODEC_ID_V308
+CODEC_ID_V408
+CODEC_ID_V410
+CODEC_ID_VB
+CODEC_ID_VBLE
+CODEC_ID_VC1
+CODEC_ID_VC1IMAGE
+CODEC_ID_VCR1
+CODEC_ID_VIXL
+CODEC_ID_VMDAUDIO
+CODEC_ID_VMDVIDEO
+CODEC_ID_VMNC
+CODEC_ID_VORBIS
+CODEC_ID_VOXWARE
+CODEC_ID_VP3
+CODEC_ID_VP5
+CODEC_ID_VP6
+CODEC_ID_VP6A
+CODEC_ID_VP6F
+CODEC_ID_VP7
+CODEC_ID_VP8
+CODEC_ID_VP9
+CODEC_ID_VPLAYER
+CODEC_ID_WAVPACK
+CODEC_ID_WEBP
+CODEC_ID_WEBVTT
+CODEC_ID_WESTWOOD_SND1
+CODEC_ID_WMALOSSLESS
+CODEC_ID_WMAPRO
+CODEC_ID_WMAV1
+CODEC_ID_WMAV2
+CODEC_ID_WMAVOICE
+CODEC_ID_WMV1
+CODEC_ID_WMV2
+CODEC_ID_WMV3
+CODEC_ID_WMV3IMAGE
+CODEC_ID_WNV1
+CODEC_ID_WS_VQA
+CODEC_ID_XAN_DPCM
+CODEC_ID_XAN_WC4
+CODEC_ID_XAN_WC3
+CODEC_ID_XBIN
+CODEC_ID_XBM
+CODEC_ID_XFACE
+CODEC_ID_XSUB
+CODEC_ID_XWD
+CODEC_ID_Y41P
+CODEC_ID_YLC
+CODEC_ID_YOP
+CODEC_ID_YUV4
+CODEC_ID_ZEROCODEC
+CODEC_ID_ZLIB
+CODEC_ID_ZMBV
+CODEC_ID_4GV
+CODEC_ID_ADPCM_AICA
+CODEC_ID_ADPCM_PSX
+CODEC_ID_ADPCM_THP_LE
+CODEC_ID_CFHD
+CODEC_ID_DAALA
+CODEC_ID_DDS
+CODEC_ID_DXV
+CODEC_ID_HAP
+CODEC_ID_HDMV_TEXT_SUBTITLE
+CODEC_ID_HQ_HQA
+CODEC_ID_INTERPLAY_ACM
+CODEC_ID_RSCC
+CODEC_ID_SCREENPRESSO
+CODEC_ID_SDX2_DPCM
+CODEC_ID_TDSC
+CODEC_ID_WRAPPED_AVFRAME
+CODEC_ID_XMA1
+CODEC_ID_XMA2
 
 * [Идентификаторы папок медиа-ресурса]
 mfAudioAlbumsItemID: String = "CB5F0F05-1530-4E89-8FBB-8221F51B3208"|Папка "Альбомы" в разделе "Музыка"
@@ -734,6 +759,13 @@ mfVideoTranscodingItemsID: String = "9F95A59C-E171-4B31-B5E6-AEEF379AED9F"|Па�
 mfVideoWatchFoldersItemID: String = "B7A1EE6A-CE07-4E09-B5ED-E51D22BBE743"|Папка "Каталоги медиа-ресурсов" в разделе "Фильмы"
 
 * [Идентификаторы параметров медиа-ресурса]
+mpiFilePath: Integer = 31|Путь (ссылка) до файла
+mpiTitle: Integer = 4|Название
+mpiThumbnail: Integer = 55|Ссылка на изображение
+mpiPodcastParameters: Integer = 527|Дополнительные параметры подкаста
+mpiYear: Integer = 8|Год
+mpiGenre: Integer = 9|Жанр
+mpiComment: Integer = 41|Комментарий
 mpi3DVideoType: Integer = 84|Тип 3D ("Нет", "Горизонтальная пара", "Вертикальная пара", "Две видео-дорожки")
 mpiActor: Integer = 36|Актёры
 mpiAddDate: Integer = 93|Дата добавления
@@ -759,13 +791,12 @@ mpiCodecNalLengthSize: Integer = 105|
 mpiCodecProfile: Integer = 90|Профиль кодека
 mpiCodecRefFrames: Integer = 92
 mpiCodecWarpPoints: Integer = 97|
-mpiComment: Integer = 41|Комментарий
 mpiComposer: Integer = 74|Композитор
 mpiConductor: Integer = 75|Дирижёр
 mpiCopyright: Integer = 6|Копирайт
 mpiCreateDate: Integer = 35|Дата создания
 mpiCuesheet: Integer = 60|Файл разметки .cue
-mpiDVDAspectRatio: Integer = 58|Кадр DVD ("16:9", "4:3")
+mpiDVDAspectRatio: Integer = 58|Кадр DVD (соотношение сторон - "16:9", "4:3")
 mpiDataBitRate: Integer = 23|Битрейт данных
 mpiDataRate: Integer = 11|
 mpiDimension: Integer = 32|Измерение ("2D", "3D")
@@ -775,12 +806,10 @@ mpiDvbItem: Integer = 65|Флаг, определяющий, что это эл�
 mpiDvdItem: Integer = 64|Флаг, определяющий, что это элемент DVD
 mpiFileDate: Integer = 71|Дата файла
 mpiFileName: Integer = 89|Имя файла
-mpiFilePath: Integer = 31|Путь (ссылка) до файла
 mpiFileSize: Integer = 2|Размер файла
 mpiFileType: Integer = 1|Тип файла
 mpiFolderSortOrder: Integer = 215|Режим сортировки
 mpiFrameRate: Integer = 12|
-mpiGenre: Integer = 9|Жанр
 mpiHeight: Integer = 16|Высота
 mpiIMDBInfo: Integer = 1000|Ссылка на IMDB Info
 mpiImageWebShotParameters: Integer = 340|Параметры для слепка web страницы
@@ -803,7 +832,6 @@ mpiParentalRating: Integer = 96|Возрастной рейтинг
 mpiPartNo: Integer = 98|Номер части
 mpiPartTotal: Integer = 99|Всего частей
 mpiPodcastItem: Integer = 72|Флаг, определяющий, что элемент является элементом подкаста
-mpiPodcastParameters: Integer = 527|Дополнительные параметры подкаста
 mpiProducer: Integer = 29|Продюсер
 mpiProgramID: Integer = 67|ID программы
 mpiRating: Integer = 30|Рейтинг
@@ -821,14 +849,12 @@ mpiSubItemsCount: Integer = 51|Количество подчинённых эл�
 mpiSubtitleLanguage: Integer = 57|Язык субтитров
 mpiSubtitleList: Integer = 56|Список файлов субтитров, разделённых знаком "|"
 mpiTempo: Integer = 102|Музыкальный темп
-mpiThumbnail: Integer = 55|Ссылка на изображение
 mpiThumbnailDimension: Integer = 83|Разрешение изображения
 mpiThumbnailHeight: Integer = 82|Высота изображения
 mpiThumbnailWidth: Integer = 81|Ширина изображения
 mpiTimeLength: Integer = 3|Длительность
 mpiTimeSeekDisabled: Integer = 250|Флаг запрета использования промотки по времени
 mpiTimeStart: Integer = 46|Время, с которого будет воспроизводиться файл
-mpiTitle: Integer = 4|Название
 mpiTrack: Integer = 10|Номер трека
 mpiTrackTotal: Integer = 103|Всего треков
 mpiTranscodingActive: Integer = 44|Флаг, определяющий активность транскодирования
@@ -837,8 +863,8 @@ mpiTranscodingProfile: Integer = 50|Профиль транскодирован�
 mpiVideoBitRate: Integer = 14|Видео битрейт
 mpiVideoCodec: Integer = 13|Видео кодек
 mpiVideoSelected: Integer = 70|Выбранная видео-дорожка
+mpiVideoStreamNo: Integer = 106|Номер видео-дорожки
 mpiWidth: Integer = 15|Ширина
-mpiYear: Integer = 8|Год
 
 * [Идентификаторы типов данных]
 varAny: Integer = 257|Любой тип
@@ -894,3 +920,5 @@ stAudio: Char = 'A'|Аудио-дорожка
 stSubtitle: Char = 'S'|Субтитры
 stUnknown: Char = 'U'|Неизвестный тип дорожки
 stVideo: Char = 'V'|Видео-дорожка
+stAttachment: Char = 'E'|Вложенный файл
+stThumbnail: Char = 'T'|Изображение

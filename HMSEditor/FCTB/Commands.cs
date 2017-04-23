@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace FastColoredTextBoxNS
 {
@@ -271,6 +272,8 @@ namespace FastColoredTextBoxNS
     public class ReplaceTextCommand : UndoableCommand
     {
         string insertedText;
+        string replacePattern;
+        bool regexReplace;
         List<Range> ranges;
         List<string> prevText = new List<string>();
 
@@ -280,9 +283,11 @@ namespace FastColoredTextBoxNS
         /// <param name="ts">Underlaying textbox</param>
         /// <param name="ranges">List of ranges for replace</param>
         /// <param name="insertedText">Text for inserting</param>
-        public ReplaceTextCommand(TextSource ts, List<Range> ranges, string insertedText, bool fastUndo=false)
+        public ReplaceTextCommand(TextSource ts, List<Range> ranges, string insertedText, bool fastUndo = false, string regexReplacePattern = "")
             : base(ts)
         {
+            regexReplace = regexReplacePattern.Length > 0;
+            replacePattern = regexReplacePattern;
             FastUndo = fastUndo;
             //sort ranges by place
             ranges.Sort((r1, r2)=>
@@ -342,9 +347,16 @@ namespace FastColoredTextBoxNS
                 tb.Selection.Start = ranges[i].Start;
                 tb.Selection.End = ranges[i].End;
                 prevText.Add(tb.Selection.Text);
-                ClearSelected(ts);
-                if (insertedText  != "")
-                    InsertTextCommand.InsertText(insertedText, ts);
+                if (regexReplace) {
+                    string newtxt = Regex.Replace(tb.Selection.Text, replacePattern, insertedText, RegexOptions.CultureInvariant);
+                    ClearSelected(ts);
+                    if (newtxt != "")
+                        InsertTextCommand.InsertText(newtxt, ts);
+                } else {
+                    ClearSelected(ts);
+                    if (insertedText != "")
+                        InsertTextCommand.InsertText(insertedText, ts);
+                }
             }
             if(ranges.Count > 0)
                 ts.OnTextChanged(ranges[0].Start.iLine, ranges[ranges.Count - 1].End.iLine);
