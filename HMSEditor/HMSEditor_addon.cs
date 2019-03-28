@@ -20,7 +20,7 @@ namespace HmsAddons {
                             Title            = HMSEditor.Title,
                             Description      = HMSEditor.Description,
                             RequiredVersion  = "2.03",
-                            CheckedOnVersion = "2.28"
+                            CheckedOnVersion = "2.29"
                         }
                     };
 
@@ -33,11 +33,11 @@ namespace HmsAddons {
             uint result = HRESULT.E_UNEXPECTED;
             if ((aIndex >= 0) && (aIndex < AddonsCount)) {
                 HmsAddonInfo info = AddonInfoList[aIndex];
-                aClassID = info.ClassID;
-                aInterfaceID = info.InterfaceID;
-                aTitle = info.Title;
-                aDescription = info.Description;
-                aRequiredVersion = info.RequiredVersion;
+                aClassID          = info.ClassID;
+                aInterfaceID      = info.InterfaceID;
+                aTitle            = info.Title;
+                aDescription      = info.Description;
+                aRequiredVersion  = info.RequiredVersion;
                 aCheckedOnVersion = info.CheckedOnVersion;
                 result = HRESULT.S_OK;
             }
@@ -49,7 +49,7 @@ namespace HmsAddons {
             instance = null;
             if (Constatns.IsEqualGUID(iid, typeof(IHmsScriptEditor))) {
                 instance = new HmsScriptEditor();
-                result = HRESULT.S_OK;
+                result   = HRESULT.S_OK;
             }
             return result;
         }
