@@ -40,14 +40,17 @@ namespace HMSEditorNS {
             }
         }
         #endregion Static
+
+        public IntPtr ParentHwnd;
         // Constructor
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
-        public HMSEditor(IntPtr aScriptFrame, int aScriptMode) {
+        public HMSEditor(IntPtr aScriptFrame, int aScriptMode, IntPtr parentHwnd) {
             PtrScriptFrame = aScriptFrame;
             if (PtrScriptFrame != IntPtr.Zero) {
                 HmsScriptFrame = (IHmsScriptFrame)System.Runtime.Remoting.Services.EnterpriseServicesHelper.WrapIUnknownWithComObject(PtrScriptFrame);
             }
-            HmsScriptMode  = (HmsScriptMode)aScriptMode;
+            this.ParentHwnd = parentHwnd;
+            HmsScriptMode = (HmsScriptMode)aScriptMode;
             InitializeComponent();
             labelVersion.Text = Title;
             splitContainer1.Panel2Collapsed = true;
@@ -59,6 +62,7 @@ namespace HMSEditorNS {
             helpPanel1.PanelClose += HelpPanel1_PanelClose;
             helpPanel1.Init(imageList1, HmsScriptMode.ToString());
             CodeAnalysis.Init();
+            NativeMethods.SetParent(Handle, parentHwnd);
         }
 
         private void HelpPanel1_PanelClose(object sender, EventArgs e) {
@@ -277,7 +281,8 @@ namespace HMSEditorNS {
             if (iChar > 0) iChar -= 1;
             TB.Selection.Start = new Place(iChar, iLine);
             RunLineRised = false;
-            if (DebugMode) CheckDebugState(); // 4 getting debug line
+            //if (DebugMode) CheckDebugState(); // 4 getting debug line
+            CheckDebugState(); // 4 getting debug line
 
             int iFirstLine = TB.YtoLineIndex() + 2;
             int iLastLine  = TB.YtoLineIndex(TB.VerticalScroll.Value + TB.Height) + iFirstLine-4;
@@ -659,6 +664,7 @@ namespace HMSEditorNS {
             ThemeName = Settings.Get("Theme"   , section, ThemeName);
             int countOfBuildinThemes = Themes.Init();
             FillThemes(countOfBuildinThemes);
+
             Themes.SetTheme(this, ThemeName, btnThemes.DropDownItems);
             HMS.LoadTemplates(); // Сначала загружаем шаблоны, какие есть
 
@@ -886,7 +892,7 @@ namespace HMSEditorNS {
             } catch (Exception e) {
                 HMS.LogError(e.ToString());
             }
-            return objXml.ToString();
+            return Encoding.UTF8.GetString(Encoding.GetEncoding("Windows-1251").GetBytes(objXml.ToString()));
         }
 
         private void RenameVariable() {
@@ -1546,13 +1552,14 @@ namespace HMSEditorNS {
             int currentSourceChar = 0;
             try {
                 HmsScriptFrame?.GetCurrentState(ref running, ref currentSourceLine, ref currentSourceChar);
-            } catch (Exception e) {
+                TB.NeedRecalc();
+            }
+            catch (Exception e) {
                 HMS.LogError(e.ToString());
             }
             TB.DebugMode    = running < 0;
             TB.HmsDebugLine = currentSourceLine - 1;
             TB.HmsDebugChar = currentSourceChar - 1;
-            TB.NeedRecalc();
             return TB.DebugMode;
         }
 
@@ -1894,7 +1901,6 @@ namespace HMSEditorNS {
                     xml = GetScriptDescriptions();
                     //File.WriteAllText(@"D:\descr.txt", xml);
                 }
-
                 if (!string.IsNullOrEmpty(xml)) {
                     if (LogAsErrorNotInDatabaseItems)
                         HMS.LogError("-------------- ПОИСК ОТСУТСТВУЮЩИХ В БАЗЕ ДАННЫХ ЭЛЕМЕНТОВ (Классов, Функций, Переменных, Констант) --------------");

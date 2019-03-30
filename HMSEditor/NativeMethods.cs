@@ -25,6 +25,9 @@ namespace HMSEditorNS {
         public static extern int CoInitialize(IntPtr pvReserved);
 
         [DllImport("User32")]
+        public static extern IntPtr GetParent(IntPtr hWnd);
+
+        [DllImport("User32")]
         public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndParent);
 
         [DllImport("Wintrust.dll", PreserveSig = true, SetLastError = false)]
@@ -35,6 +38,18 @@ namespace HMSEditorNS {
 
         [DllImportAttribute("User32")]
         public static extern bool ReleaseCapture();
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
 
         #region methods FastColoredTextBox used
         [DllImport("User32", CharSet = CharSet.Unicode)]
@@ -138,6 +153,17 @@ namespace HMSEditorNS {
 
         public static void SendNotifyKey(IntPtr hwnd, int key) {
             SendNotifyMessage(hwnd, WM_KEYDOWN, (IntPtr)key, IntPtr.Zero);
+        }
+
+        [DllImport("gdi32.dll")]
+        public static extern uint GetPixel(IntPtr hdc, int nXPos, int nYPos);
+
+        [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
+        public static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
+
+        public static IntPtr FindWindowByCaption(string caption)
+        {
+            return FindWindowByCaption(IntPtr.Zero, caption);
         }
 
     }

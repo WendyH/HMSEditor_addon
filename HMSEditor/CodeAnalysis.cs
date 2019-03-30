@@ -42,7 +42,7 @@ namespace HMSEditorNS {
         private static Regex regexAllSymbols = new Regex(".");
         private static Regex regexLineBreaks = new Regex(@"[\r\n]");
 
-        private static RegexOptions StdOpt = RegexOptions.Singleline | RegexOptions.IgnoreCase; // Стандартные флаги RegexOptions
+        private static readonly RegexOptions StdOpt = RegexOptions.Singleline | RegexOptions.IgnoreCase; // Стандартные флаги RegexOptions
         #endregion Regular Expressions magnetic filed
 
         private static int    distanseBackward4Comments = 90;
