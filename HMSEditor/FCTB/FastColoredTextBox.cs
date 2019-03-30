@@ -48,7 +48,7 @@ namespace FastColoredTextBoxNS {
     /// <summary>
     /// Fast colored textbox
     /// </summary>
-    public sealed class FastColoredTextBox: UserControl, ISupportInitialize {
+    public class FastColoredTextBox: UserControl, ISupportInitialize {
         new FlatScrollbar VerticalScroll;
         new FlatScrollbar HorizontalScroll;
 

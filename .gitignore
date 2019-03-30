@@ -229,3 +229,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+*.ide
+*.ide-shm
+*.ide-wal
