@@ -6,6 +6,7 @@ using FastColoredTextBoxNS;
 using whYamlParser;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 
 namespace HMSEditorNS {
     public class Theme {
@@ -199,8 +200,6 @@ namespace HMSEditorNS {
             }
         }
 
-        
-
         public static int Init() {
             string data = HMS.ReadTextFromResource("ColorThemes.txt");
             LoadThemesFromString(data);
@@ -214,6 +213,17 @@ namespace HMSEditorNS {
             }
             //SaveThemesToFile(@"D:\ColorThemes.txt");
             return buildinThemes;
+        }
+
+        static public Color GetPixelColor(IntPtr hwnd, int x, int y)
+        {
+            IntPtr hdc = NativeMethods.GetDC(hwnd);
+            uint pixel = NativeMethods.GetPixel(hdc, x, y);
+            NativeMethods.ReleaseDC(hwnd, hdc);
+            Color color = Color.FromArgb((int)(pixel & 0x000000FF),
+                            (int)(pixel & 0x0000FF00) >> 8,
+                            (int)(pixel & 0x00FF0000) >> 16);
+            return color;
         }
 
         public static void LoadThemesFromFile(string file) {

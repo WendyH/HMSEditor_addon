@@ -241,8 +241,7 @@ namespace FastColoredTextBoxNS {
             } else if (OwnWords.Count > 0) {
                 DrawFast(g, OwnWords);
             } else {
-                float i;
-                WriteWords(GetText(e.ToolTipText, out i), Bounds, g);
+                WriteWords(GetText(e.ToolTipText, out float i), Bounds, g);
             }
             b.Dispose();
             Visible = true;

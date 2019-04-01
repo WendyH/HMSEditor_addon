@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 using System.Drawing;
 using System.Security.Permissions;
+using System.Diagnostics;
 
 namespace HMSEditorNS {
     /// <summary>
@@ -66,6 +67,18 @@ namespace HMSEditorNS {
             if (HMSEditor.ActiveEditor != null) {
                 HMSEditor.ActiveEditor.ValueForm.Show(HMSEditor.ActiveEditor.TB, Expression, ctl.Text, RealExpression);
                 Close();
+            }
+        }
+
+        protected override CreateParams CreateParams {
+            get {
+                CreateParams baseParams = base.CreateParams;
+
+                const int WS_EX_NOACTIVATE = 0x08000000;
+                const int WS_EX_TOOLWINDOW = 0x00000080;
+                baseParams.ExStyle |= (int)(WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW);
+
+                return baseParams;
             }
         }
 
@@ -220,6 +233,7 @@ namespace HMSEditorNS {
             int y = MousePosition.Y - Top;
             if ((x < -MouseDX.Width ) || (x - Width  > MouseDX.Width ) || (y < -MouseDX.Height) || (y - Height > MouseDX.Height)) {
                 Hide();
+                IsShowing = false;
             }
         }
 
@@ -230,7 +244,7 @@ namespace HMSEditorNS {
             RealExpression = realExpression;
             Size textSize  = new Size(MaxSize.Width, MaxSize.Height);
             if (value.Length < 500)
-                textSize = TextRenderer.MeasureText(value, ctl.Font, MaxSize, TextFormatFlags.WordBreak | TextFormatFlags.ExternalLeading);
+                textSize = TextRenderer.MeasureText(value, ctl.Font, MaxSize, TextFormatFlags.WordBreak);
             textSize.Height += 8;
             textSize.Width  += 12;
             if (textSize.Width >= (MaxSize.Width-50)) {

@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>HMSEditorNS</RootNamespace>
     <AssemblyName>HMSEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
@@ -105,6 +105,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug2HMS|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -116,6 +117,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Ionic.Zip.Reduced">
@@ -279,6 +281,10 @@
     <Compile Include="ImagesIndex.cs" />
     <Compile Include="INI.cs" />
     <Compile Include="InvisibleCharsRenderer.cs" />
+    <Compile Include="Jsbeautifier\Beautifier.cs" />
+    <Compile Include="Jsbeautifier\BeautifierFlags.cs" />
+    <Compile Include="Jsbeautifier\BeautifierOptions.cs" />
+    <Compile Include="Jsbeautifier\BraceStyle.cs" />
     <Compile Include="MouseHelpTimer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NativeMethods.cs" />
@@ -310,6 +316,7 @@
     </Compile>
     <EmbeddedResource Include="AboutDialog.resx">
       <DependentUpon>AboutDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="FCTB\AutocompleteMenu.resx">
       <DependentUpon>AutocompleteMenu.cs</DependentUpon>

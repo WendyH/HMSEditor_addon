@@ -348,6 +348,7 @@
             this.fastColoredTB.FoldingIndicatorColor = System.Drawing.Color.Transparent;
             this.fastColoredTB.Font = new System.Drawing.Font("Consolas", 9.75F);
             this.fastColoredTB.HighlightFoldingIndicator = false;
+            this.fastColoredTB.HorizontalScrollVisible = true;
             this.fastColoredTB.Hotkeys = resources.GetString("fastColoredTB.Hotkeys");
             this.fastColoredTB.IsReplaceMode = false;
             this.fastColoredTB.Language = FastColoredTextBoxNS.Language.HTML;
@@ -359,7 +360,7 @@
             this.fastColoredTB.ReadOnly = true;
             this.fastColoredTB.RightBracket = '>';
             this.fastColoredTB.RightBracket2 = ')';
-            this.fastColoredTB.SelectionStyle = new FastColoredTextBoxNS.SelectionStyle(System.Drawing.Color.FromArgb(((int)(((byte)(60)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(255))))));
+            this.fastColoredTB.RoundedCornersRadius = 3;
             this.fastColoredTB.SelectionHighlightingForLineBreaksEnabled = false;
             serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
             serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
@@ -368,12 +369,14 @@
             serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
             serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
             this.fastColoredTB.ServiceColors = serviceColors1;
+            this.fastColoredTB.ShowChangedLinesOnScrollbar = false;
             this.fastColoredTB.ShowLineNumbers = false;
             this.fastColoredTB.ShowScrollBars = false;
             this.fastColoredTB.Size = new System.Drawing.Size(692, 215);
             this.fastColoredTB.SourceTextBox = this.fastColoredTB;
             this.fastColoredTB.TabIndex = 3;
             this.fastColoredTB.Text = "<HTML>";
+            this.fastColoredTB.VerticalScrollVisible = true;
             this.fastColoredTB.WordWrap = true;
             this.fastColoredTB.WordWrapAutoIndent = false;
             this.fastColoredTB.Zoom = 100;

@@ -20,7 +20,11 @@ namespace HmsAddons {
                             Title            = HMSEditor.Title,
                             Description      = HMSEditor.Description,
                             RequiredVersion  = "2.03",
+<<<<<<< HEAD
+                            CheckedOnVersion = "3.00"
+=======
                             CheckedOnVersion = "2.29"
+>>>>>>> 8a877f6599b2a5db4ed26ed5844e293f57779021
                         }
                     };
 
@@ -113,9 +117,7 @@ namespace HmsAddons {
 
         public uint CreateEditor(IntPtr aParent, IntPtr aScriptFrame, int aScriptMode, ref IntPtr aEditor) {
             try {
-                EditBox = new HMSEditor(aScriptFrame, aScriptMode);
-                NativeMethods.SetParent(EditBox.Handle, aParent);
-
+                EditBox = new HMSEditor(aScriptFrame, aScriptMode, aParent);
                 LoadSettings();
                 aEditor = EditBox.Handle;
 

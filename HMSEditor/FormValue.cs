@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
+using System.Xml;
 using FastColoredTextBoxNS;
 
 namespace HMSEditorNS {
@@ -51,7 +53,29 @@ namespace HMSEditorNS {
                 MessageBox.Show(this, "Окно отображения значения не может быть показано.\nЕго кто-то или что-то уничтожило.", HMSEditor.Title);
                 return;
             }
-            fastColoredTB.Font = ctl.Font; 
+
+
+            var trimmed = text.TrimStart();
+            if (trimmed.Length > 0)
+            {
+                var firstChar = trimmed.Substring(0, 1);
+                if (firstChar == "{" || firstChar == "[")
+                {
+                    Jsbeautifier.Beautifier beautifier = new Jsbeautifier.Beautifier();
+                    text = beautifier.Beautify(text);
+                }
+                if (firstChar == "<")
+                {
+                    try
+                    {
+                        XmlDocument d = new XmlDocument();
+                        d.LoadXml(text);
+                        text = d.ToString();
+                    } catch (Exception e) { ; }
+                }
+            }
+
+            fastColoredTB.Font = ctl.Font;
             Expression = expr;
             Value      = text;
             RealExpression = realExpression;
@@ -63,6 +87,8 @@ namespace HMSEditorNS {
                 chkWordWrap.Checked = true;
                 fastColoredTB.WordWrap = chkWordWrap.Checked;
             }
+
+            NativeMethods.SetParent(Handle, HMSEditor.ActiveEditor.Handle);
 
             if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
 
@@ -254,6 +280,18 @@ namespace HMSEditorNS {
                 }
             } else {
                 Value = _src;
+            }
+        }
+
+        protected override CreateParams CreateParams {
+            get {
+                CreateParams baseParams = base.CreateParams;
+
+                const int WS_EX_NOACTIVATE = 0x08000000;
+                const int WS_EX_TOOLWINDOW = 0x00000080;
+                baseParams.ExStyle |= (int)(WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW);
+
+                return baseParams;
             }
         }
 

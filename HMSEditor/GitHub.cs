@@ -8,8 +8,8 @@ using whYamlParser;
 
 namespace HMSEditorNS {
     public static class GitHub {
-        private static string giturl       = "https://api.github.com/repos/";
-        public  static string ReleaseUrl   = "";
+        private static readonly string giturl = "https://api.github.com/repos/";
+        public  static string ReleaseUrl      = "";
 
         public static bool IsWinVistaOrHigher() {
             OperatingSystem OS = Environment.OSVersion;
@@ -20,7 +20,8 @@ namespace HMSEditorNS {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36";
             request.Accept    = "application/vnd.github.v3+json";
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls | SecurityProtocolType.Ssl3;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            //ServicePointManager.Expect100Continue = true;
             return request;
         }
 
