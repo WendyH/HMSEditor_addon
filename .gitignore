@@ -229,3 +229,4 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+.vs/HMSEditor_addon/v15/Server/sqlite3/storage.ide-shm
