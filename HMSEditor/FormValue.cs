@@ -54,7 +54,6 @@ namespace HMSEditorNS {
                 return;
             }
 
-
             var trimmed = text.TrimStart();
             if (trimmed.Length > 0)
             {

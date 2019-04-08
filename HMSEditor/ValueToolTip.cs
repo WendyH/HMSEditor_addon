@@ -242,22 +242,21 @@ namespace HMSEditorNS {
             ctl.Text       = value;
             Expression     = expr;
             RealExpression = realExpression;
-            Size textSize  = new Size(MaxSize.Width, MaxSize.Height);
-            if (value.Length < 500)
-                textSize = TextRenderer.MeasureText(value, ctl.Font, MaxSize, TextFormatFlags.WordBreak);
-            textSize.Height += 8;
-            textSize.Width  += 12;
-            if (textSize.Width >= (MaxSize.Width-50)) {
-                textSize.Height += 16;
-                textSize.Width  += 16;
+            SizeF textSize = new Size(MaxSize.Width, MaxSize.Height);
+            if (value.Length < 500) {
+                var g = ctl.CreateGraphics();
+                StringFormat stringFormat = new StringFormat();
+                stringFormat.Trimming = StringTrimming.Character;
+                textSize = g.MeasureString(value, ctl.Font, textSize, stringFormat, out int chars_fitted, out int lines_fitted);
+                string linef = value.Substring(0, chars_fitted);
             }
+            textSize.Height += 10;
+            textSize.Width  += 12;
             ctl.ScrollBars = RichTextBoxScrollBars.None;
             if (textSize.Height > MaxSize.Height) { ctl.ScrollBars = RichTextBoxScrollBars.Vertical; }
-            int h = 0, w = 0;
-            bool btnEnable  = (value.Length > 200);
-            BtnHost.Visible = btnEnable;
-            if (btnEnable) { h += BtnHost.Height; }
-            Size = new Size(textSize.Width+w, textSize.Height+h);
+            BtnHost.Visible = value.Length > 200;
+            if (BtnHost.Visible) { textSize.Width += BtnHost.Height; }
+            Size = new Size((int)textSize.Width, (int)textSize.Height);
             Show(control, point);
             OnResize(EventArgs.Empty);
             timer.Start();

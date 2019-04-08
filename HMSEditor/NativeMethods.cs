@@ -166,5 +166,16 @@ namespace HMSEditorNS {
             return FindWindowByCaption(IntPtr.Zero, caption);
         }
 
+        [DllImport("USER32.dll")]
+        private static extern short GetKeyState(VirtualKeyStates nVirtKey);
+
+        public static bool KeyState(VirtualKeyStates nVirtKey) {
+            return Convert.ToBoolean(GetKeyState(nVirtKey) & 0x8000);
+        }
+
+        public enum VirtualKeyStates : int {
+            VK_SHIFT = 0x10,
+            VK_CONTROL = 0x11
+        }
     }
 }

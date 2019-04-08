@@ -2,13 +2,14 @@
 using System.Text.RegularExpressions;
 using System.Drawing;
 using FastColoredTextBoxNS;
+using Newtonsoft.Json;
 
 namespace HMSEditorNS {
     /// <summary>
     /// Класс для работы и отображения всплывающей подсказки при наведении курсора мыши на часть слова редакторе
     /// </summary>
     class MouseHelpTimer {
-        const int MaxValueLength = 119000;
+        const int MaxValueLength = 89000;
         internal static Regex regexRemoveParams = new Regex(@"\(([^\)])*\)|\[([^\]])*\]|(//.*|\/\*[\s\S]*?\*\/)");
         internal static Regex regexNoNewLines   = new Regex(@"[^\n]");
 
@@ -25,7 +26,8 @@ namespace HMSEditorNS {
             if ((text.EndsWith("]") || text.EndsWith(")")) && item.ImageIndex != ImagesIndex.Enum) return text;
             string type = item.Type;
             var info = HMS.HmsClasses[type];
-            if (info.MemberItems.ContainsName("SaveToString") && type.ToLower()!="tbitmap32") return text + ".SaveToString";
+            if (info.MemberItems.ContainsName("SaveToString") && type.ToLower()!="tbitmap32")
+                return text + ".SaveToString";
             if (info.MemberItems.ContainsName("Text")) return text + ".Text";
             switch (type) {
                 case "THmsScriptMediaItem":
@@ -57,15 +59,61 @@ namespace HMSEditorNS {
             return value;
         }
 
-        private static void ShowValue(FastColoredTextBox tb, Point point, string expression, string realExpression) {
+        private static string ObjectToValues(string expression) {
+            var activeEditor = HMSEditor.ActiveEditor;
+            string pred = "["; bool strict = false;
+            int.TryParse(activeEditor.EvalVariableValue("Length(" + expression + ")"), out int len);
+            if (len > 32) { len = 32; strict = true; }
+            for (int i = 0; i < len; i++) {
+                string elem = activeEditor.EvalVariableValue(expression + "[" + i + "]");
+                string typeVal = activeEditor.EvalVariableValue("VarType(" + expression + "[" + i + "])");
+                if (i > 0) pred += ",";
+                pred += elem;
+            }
+            if (strict) { pred += ",..."; }
+            pred += "]";
+            return pred;
+        }
+
+        private static bool IsDigitsOnly(string str) {
+            foreach (char c in str) if (c < '0' || c > '9') return false;
+            return true;
+        }
+
+        private static void ShowValue(FastColoredTextBox tb, Point point, string expression, string realExpression, bool isItem=false, string type="") {
             System.Windows.Forms.MethodInvoker action = delegate {
                 point.Offset(0, tb.CharHeight - 4);
                 tb.ReshowCaret = true;
                 var activeEditor = HMSEditor.ActiveEditor;
                 if (activeEditor != null) {
-                    string value = activeEditor.EvalVariableValue(expression);
+                    string typeVal = ""; string value="";
+                    if (isItem)
+                        typeVal = activeEditor.EvalVariableValue("VarType(" + expression + ")");
+                    if (typeVal == "8204") // Это Array
+                        value = ObjectToValues(expression);
+                    else
+                        value = activeEditor.EvalVariableValue(expression);
+                    if (value == realExpression) return; // Не показываем просто числовые значения
+
+                    if (type == "TJsonObject") {
+                        try {
+                            var ob = JsonConvert.DeserializeObject(value);
+                            value = JsonConvert.SerializeObject(ob);
+                            Jsbeautifier.BeautifierOptions beautifierOptions = new Jsbeautifier.BeautifierOptions();
+                            beautifierOptions.BraceStyle = Jsbeautifier.BraceStyle.EndExpand;
+                            Jsbeautifier.Beautifier beautifier = new Jsbeautifier.Beautifier(beautifierOptions);
+                            value = beautifier.Beautify(value);
+                        }
+                        catch { ; }
+                    }
+
+                    if (value.Length < 32) {
+                        if (IsDigitsOnly(value) && NativeMethods.KeyState(NativeMethods.VirtualKeyStates.VK_CONTROL))
+                            value = string.Format("0x{0:X}", int.Parse(value));
+                    }
+
                     if (value.Length > MaxValueLength || activeEditor.ValueForm.Visible) {
-                        //value = value.Substring(0, MaxValueLength) + "...";
+                        value = value.Substring(0, MaxValueLength) + "...";
                         activeEditor.ValueForm.Show(tb, expression, value, realExpression);
                     } else {
                         activeEditor.ValueHint.ShowValue(tb, expression, value, point, realExpression);
@@ -124,7 +172,7 @@ namespace HMSEditorNS {
                         // Проверяем тип объекта класса, может быть удобней представить в виде текста? (TStrings или TJsonObject)
                         string realExpression = expression;
                         expression = CheckTypeForToStringRules(item, expression);
-                        ShowValue(TB, point, expression, realExpression);
+                        ShowValue(TB, point, expression, realExpression, true, item.Type);
                         return;
                     }
                     ShowToolTip(TB, point, item.ToolTipTitle, item.ToolTipText, "", item.Help);
