@@ -248,7 +248,7 @@ namespace HMSEditorNS {
             }
             //textSize.Height += 8;
             textSize.Width += 4;
-            ctl.ScrollBars = textSize.Height > MaxSize.Height ? RichTextBoxScrollBars.Vertical : RichTextBoxScrollBars.None;
+            ctl.ScrollBars = textSize.Height+2 >= MaxSize.Height ? RichTextBoxScrollBars.Vertical : RichTextBoxScrollBars.None;
 
             int h = SystemInformation.HorizontalResizeBorderThickness, w = SystemInformation.VerticalResizeBorderThickness;
             if (ctl.Text.Length > 200) {
