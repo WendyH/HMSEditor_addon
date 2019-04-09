@@ -241,29 +241,22 @@ namespace HMSEditorNS {
             RealExpression = realExpression;
             SizeF textSize = new Size(MaxSize.Width, MaxSize.Height);
             if (value.Length < 500) {
-                ctl.
-                textSize = HMSEditor.ActiveEditor.GetSizeText(ctl.Text, ctl.Font, new Size(MaxSize.Width, MaxSize.Height));
-                //textSize = ctl.GetPreferredSize(new Size(MaxSize.Width, MaxSize.Height));
-                /*
                 var g = ctl.CreateGraphics();
                 g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
                 StringFormat stringFormat = StringFormat.GenericTypographic;
                 stringFormat.Trimming = StringTrimming.Word;
                 stringFormat.LineAlignment = StringAlignment.Near;
                 textSize = g.MeasureString(value, ctl.Font, textSize, stringFormat, out int chars_fitted, out int lines_fitted);
-                string linef = value.Substring(0, chars_fitted);
-                */
+                int correctLines = ctl.GetLineFromCharIndex(ctl.Text.Length) + 1 - lines_fitted;
+                textSize.Height += correctLines * ctl.Font.Height;
             }
-            textSize.Height += 10;
+            textSize.Height += 14;
             textSize.Width  += 10;
-            ctl.ScrollBars = RichTextBoxScrollBars.None;
-            if (textSize.Height > MaxSize.Height) { ctl.ScrollBars = RichTextBoxScrollBars.Vertical; }
-            /*
+            ctl.ScrollBars = textSize.Height > MaxSize.Height ? RichTextBoxScrollBars.Vertical : RichTextBoxScrollBars.None;
             if (value.Length > 200) {
                 BtnHost.Visible = true;
                 textSize.Height += BtnHost.Height;
             }
-            */
             Size = new Size((int)textSize.Width, (int)textSize.Height);
             Show(control, point);
             OnResize(EventArgs.Empty);

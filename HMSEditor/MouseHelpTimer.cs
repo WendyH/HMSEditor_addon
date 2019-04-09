@@ -113,7 +113,7 @@ namespace HMSEditorNS {
                     }
 
                     if (value.Length > MaxValueLength || activeEditor.ValueForm.Visible) {
-                        value = value.Substring(0, MaxValueLength) + "...";
+                        //value = value.Substring(0, MaxValueLength) + "...";
                         activeEditor.ValueForm.Show(tb, expression, value, realExpression);
                     } else {
                         activeEditor.ValueHint.ShowValue(tb, expression, value, point, realExpression);

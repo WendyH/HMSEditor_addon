@@ -1583,18 +1583,25 @@ namespace FastColoredTextBoxNS {
         }
 
         public Language DetectLang(string txt) {
-            Language lang = Language.HTML;
-            Dictionary<Language, string> langPatterns = new Dictionary<Language, string> {
-                [Language.HTML] = @"^<!DOCTYPE", [Language.XML] = @"^<\?xml", [Language.PHP] = @"(^<\?php|\$\w+\s*?[=\[\)])", [Language.PascalScript] = @"(\w+\s*?:=\s*?[\d'""\w]|ifthen|end;|end\.)", [Language.JS] = @"{\s*?[\w-]+:\s*?[\d\w\s#\.]+;", [Language.BasicScript] = @"If[\S\s]+Then[\S\s]+End\sIf|Sub[\S\s]+End\sSub|^\s*?Dim\s\w+\s*?(,|$)", [Language.YAML] = @"^\s*?[\[\{].*[\]\}]$", [Language.CPPScript] = @"^\s*?(int\s+\w+\s*?[,;=]|(void|int)\s+\w+\s*?\()", [Language.CSharp] = @"(using\s+\w+\.\w+.*?;|(public|private)\s+\w+\s+\w+\s+\w+\()"
-            };
-            // JSON
-            foreach (var item in langPatterns) {
-                string pattern = item.Value;
-                if (Regex.IsMatch(txt, pattern, RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.IgnoreCase)) {
-                    return item.Key;
-                }
-            }
-            return lang;
+            string firstChar = txt.Substring(0, 1);
+            if ((firstChar == "{") || (firstChar == "["))
+                return Language.YAML;
+            else
+                return Language.XML;
+            /*            
+                        Language lang = Language.HTML;
+                        Dictionary<Language, string> langPatterns = new Dictionary<Language, string> {
+                            [Language.HTML] = @"^<!DOCTYPE", [Language.XML] = @"^<\?xml", [Language.PHP] = @"(^<\?php|\$\w+\s*?[=\[\)])", [Language.PascalScript] = @"(\w+\s*?:=\s*?[\d'""\w]|ifthen|end;|end\.)", [Language.JS] = @"{\s*?[\w-]+:\s*?[\d\w\s#\.]+;", [Language.BasicScript] = @"If[\S\s]+Then[\S\s]+End\sIf|Sub[\S\s]+End\sSub|^\s*?Dim\s\w+\s*?(,|$)", [Language.YAML] = @"^\s*?[\[\{].*[\]\}]$", [Language.CPPScript] = @"^\s*?(int\s+\w+\s*?[,;=]|(void|int)\s+\w+\s*?\()", [Language.CSharp] = @"(using\s+\w+\.\w+.*?;|(public|private)\s+\w+\s+\w+\s+\w+\()"
+                        };
+                        // JSON
+                        foreach (var item in langPatterns) {
+                            string pattern = item.Value;
+                            if (Regex.IsMatch(txt, pattern, RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.IgnoreCase)) {
+                                return item.Key;
+                            }
+                        }
+                        return lang;
+            */
         }
 
         // By WendyH > ----------------------------------------------------------------------------

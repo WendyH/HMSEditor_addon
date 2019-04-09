@@ -115,8 +115,6 @@ namespace FastColoredTextBoxNS {
         public  bool      BoldCaret { get { return _boldCaret; } set { _boldCaret = value; CaretCreated = false; Invalidate(); } }
         private bool     _boldCaret;
         private Brush     backBrush;
-        private Bookmarks bookmarks;
-        private Bookmarks breakpoints; // By WendyH
         private bool      Cleared;  
         private bool      caretVisible;
         private Color     changedLineColor;
@@ -125,12 +123,10 @@ namespace FastColoredTextBoxNS {
         private Cursor    defaultCursor;
         private Range     delayedTextChangedRange;
         private string    descriptionFile;
-        private int       endFoldingLine = -1;
         private Color     foldingIndicatorColor;
         private Dictionary<int, int> foldingPairs = new Dictionary<int, int>();
         private bool      handledChar;
         private bool      highlightFoldingIndicator;
-        private Hints     hints;
         private Color     indentBackColor;
         private bool      isChanged;
         private bool      isLineSelect;
@@ -168,7 +164,6 @@ namespace FastColoredTextBoxNS {
         private bool      showFoldingLines;
         private bool      showLineNumbers;
         private FastColoredTextBox sourceTextBox;
-        private int       startFoldingLine = -1;
         private int       updating;
         private Range     updatingRange;
         private Range     visibleRange;
@@ -255,12 +250,12 @@ namespace FastColoredTextBoxNS {
             AllowDrop = true;
             FindEndOfFoldingBlockStrategy = FindEndOfFoldingBlockStrategy.Strategy1;
             VirtualSpace = false;
-            bookmarks   = new Bookmarks(this, false);
-            breakpoints = new Bookmarks(this, true); // By WendyH
+            Bookmarks   = new Bookmarks(this, false);
+            Breakpoints = new Bookmarks(this, true); // By WendyH
             BookmarkColor = Color.PowderBlue;
             ToolTip = new HmsToolTip();
             timer3.Interval = 500;
-            hints = new Hints(this);
+            Hints = new Hints(this);
             SelectionHighlightingForLineBreaksEnabled = true;
             textAreaBorder = TextAreaBorderType.None;
             textAreaBorderColor = Color.Black;
@@ -618,10 +613,7 @@ namespace FastColoredTextBoxNS {
         /// <remarks>You can asynchronously add, remove and clear hints. Appropriate hints will be shown or hidden from the screen.</remarks>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden),
          EditorBrowsable(EditorBrowsableState.Never)]
-        public Hints Hints {
-            get { return hints; }
-            set { hints = value; }
-        }
+        public Hints Hints { get; set; }
 
         /// <summary>
         /// Delay (ms) of ToolTip
@@ -684,10 +676,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden),
          EditorBrowsable(EditorBrowsableState.Never)]
-        public Bookmarks Breakpoints {
-            get { return breakpoints; }
-            set { breakpoints = value; }
-        }
+        public Bookmarks Breakpoints { get; set; }
 
         private FindEndOfFoldingBlockStrategy _findEndOfFoldingBlockStrategy;
 
@@ -712,10 +701,7 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden),
          EditorBrowsable(EditorBrowsableState.Never)]
-        public Bookmarks Bookmarks {
-            get { return bookmarks; }
-            set { bookmarks = value; }
-        }
+        public Bookmarks Bookmarks { get; set; }
 
         /// <summary>
         /// Enables spaces
@@ -1380,14 +1366,14 @@ namespace FastColoredTextBoxNS {
         /// </summary>
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public int StartFoldingLine => startFoldingLine;
+        public int StartFoldingLine { get; private set; } = -1;
 
         /// <summary>
         /// End line index of current highlighted folding area. Return -1 if end of area is not found.
         /// </summary>
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public int EndFoldingLine => endFoldingLine;
+        public int EndFoldingLine { get; private set; } = -1;
 
         /// <summary>
         /// TextSource
@@ -4085,7 +4071,7 @@ namespace FastColoredTextBoxNS {
             int minNextLineIndex = int.MaxValue;
             Bookmark minBookmark = null;
             int minLineIndex = int.MaxValue;
-            foreach (Bookmark bookmark in bookmarks) {
+            foreach (Bookmark bookmark in Bookmarks) {
                 if (bookmark.LineIndex < minLineIndex) {
                     minLineIndex = bookmark.LineIndex;
                     minBookmark = bookmark;
@@ -4117,7 +4103,7 @@ namespace FastColoredTextBoxNS {
             int maxPrevLineIndex = -1;
             Bookmark maxBookmark = null;
             int maxLineIndex = -1;
-            foreach (Bookmark bookmark in bookmarks) {
+            foreach (Bookmark bookmark in Bookmarks) {
                 if (bookmark.LineIndex > maxLineIndex) {
                     maxLineIndex = bookmark.LineIndex;
                     maxBookmark = bookmark;
@@ -4144,8 +4130,8 @@ namespace FastColoredTextBoxNS {
         /// Bookmarks line
         /// </summary>
         public void BookmarkLine(int iLine) {
-            if (!bookmarks.Contains(iLine))
-                bookmarks.Add(iLine);
+            if (!Bookmarks.Contains(iLine))
+                Bookmarks.Add(iLine);
             UpdateScrollMarkers();
         }
 
@@ -4153,8 +4139,8 @@ namespace FastColoredTextBoxNS {
         /// Bookmarks line
         /// </summary>
         public void BookmarkLine(int iLine, string name) {
-            if (!bookmarks.Contains(iLine))
-                bookmarks.Add(iLine, name);
+            if (!Bookmarks.Contains(iLine))
+                Bookmarks.Add(iLine, name);
             UpdateScrollMarkers();
         }
 
@@ -4162,7 +4148,7 @@ namespace FastColoredTextBoxNS {
         /// Unbookmarks current line
         /// </summary>
         public void UnbookmarkLine(int iLine) {
-            bookmarks.Remove(iLine);
+            Bookmarks.Remove(iLine);
             UpdateScrollMarkers();
         }
 
@@ -4201,7 +4187,7 @@ namespace FastColoredTextBoxNS {
         /// Bookmarks line by name
         /// </summary>
         public void SetBookmarkByName(int iLine, string name) {
-            bookmarks.Set(iLine, name);
+            Bookmarks.Set(iLine, name);
             UpdateScrollMarkers();
         }
 
@@ -4209,7 +4195,7 @@ namespace FastColoredTextBoxNS {
         /// Bookmarks line by name
         /// </summary>
         public void GotoBookmarkByName(string name) {
-            Bookmark b = bookmarks.GetByName(name);
+            Bookmark b = Bookmarks.GetByName(name);
             b?.DoVisible();
         }
 
@@ -4217,8 +4203,8 @@ namespace FastColoredTextBoxNS {
         /// Breakpoint line
         /// </summary>
         public void BreakpointLine(int iLine, string name) {
-            if (!breakpoints.Contains(iLine))
-                breakpoints.Add(iLine, name);
+            if (!Breakpoints.Contains(iLine))
+                Breakpoints.Add(iLine, name);
             UpdateScrollMarkers();
         }
 
@@ -4226,7 +4212,7 @@ namespace FastColoredTextBoxNS {
         /// Unbreakpoints current line
         /// </summary>
         public void UnbreakpointLine(int iLine) {
-            breakpoints.Remove(iLine);
+            Breakpoints.Remove(iLine);
             UpdateScrollMarkers();
         }
 
@@ -5171,11 +5157,11 @@ namespace FastColoredTextBoxNS {
                 firstChar++;
             //create dictionary of bookmarks
             var bookmarksByLineIndex = new Dictionary<int, Bookmark>();
-            foreach (Bookmark item in bookmarks)
+            foreach (Bookmark item in Bookmarks)
                 bookmarksByLineIndex[item.LineIndex] = item;
             //create dictionary of breakpoints | By WendyH
             var breakpointsByLineIndex = new Dictionary<int, Bookmark>();
-            foreach (Bookmark item in breakpoints)
+            foreach (Bookmark item in Breakpoints)
                 breakpointsByLineIndex[item.LineIndex] = item;
             
             //
@@ -5319,12 +5305,12 @@ namespace FastColoredTextBoxNS {
             }
             //draw folding indicator
             if (EnableFoldingIndicator) {
-                if ((startFoldingLine >= 0 || endFoldingLine >= 0) && (Selection.Start == Selection.End) && (endFoldingLine < LineInfos.Count)) {
+                if ((StartFoldingLine >= 0 || EndFoldingLine >= 0) && (Selection.Start == Selection.End) && (EndFoldingLine < LineInfos.Count)) {
                     //folding indicator
-                    int startFoldingY = (startFoldingLine >= 0 ? LineInfos[startFoldingLine].startY : 0) - VerticalScroll.Value + 1;
-                    int endFoldingY   = (endFoldingLine >= 0
-                                            ? LineInfos[endFoldingLine].startY +
-                                                (LineInfos[endFoldingLine].WordWrapStringsCount - 1) * CharHeight
+                    int startFoldingY = (StartFoldingLine >= 0 ? LineInfos[StartFoldingLine].startY : 0) - VerticalScroll.Value + 1;
+                    int endFoldingY   = (EndFoldingLine >= 0
+                                            ? LineInfos[EndFoldingLine].startY +
+                                                (LineInfos[EndFoldingLine].WordWrapStringsCount - 1) * CharHeight
                                             : TextHeight + CharHeight) - VerticalScroll.Value + CharHeight;
                     startFoldingY += CharHeight / 2;
                     endFoldingY   -= CharHeight / 2;
@@ -5485,7 +5471,7 @@ namespace FastColoredTextBoxNS {
         }
 
         private void PaintHintBrackets(Graphics gr) {
-            foreach (Hint hint in hints) {
+            foreach (Hint hint in Hints) {
                 Range r = hint.Range.Clone();
                 r.Normalize();
                 Point p1 = PlaceToPoint(r.Start);
@@ -6298,11 +6284,11 @@ namespace FastColoredTextBoxNS {
             if (LinesCount == 0)
                 return;
             //
-            int prevStartFoldingLine = startFoldingLine;
-            int prevEndFoldingLine   = endFoldingLine;
+            int prevStartFoldingLine = StartFoldingLine;
+            int prevEndFoldingLine   = EndFoldingLine;
             //
-            startFoldingLine = -1;
-            endFoldingLine   = -1;
+            StartFoldingLine = -1;
+            EndFoldingLine   = -1;
             int counter = 0;
             for (int i = Selection.Start.iLine; i >= Math.Max(Selection.Start.iLine - maxLinesForFolding, 0); i--) {
                 bool hasStartMarker = lines.LineHasFoldingStartMarker(i);
@@ -6315,21 +6301,21 @@ namespace FastColoredTextBoxNS {
                     counter--;
                     if (counter == -1) //found start folding
                     {
-                        startFoldingLine = i;
+                        StartFoldingLine = i;
                         break;
                     }
                 }
                 if (hasEndMarker && i != Selection.Start.iLine)
                     counter++;
             }
-            if (startFoldingLine >= 0) {
+            if (StartFoldingLine >= 0) {
                 //find end of block
-                endFoldingLine = FindEndOfFoldingBlock(startFoldingLine, maxLinesForFolding);
-                if (endFoldingLine == startFoldingLine)
-                    endFoldingLine = -1;
+                EndFoldingLine = FindEndOfFoldingBlock(StartFoldingLine, maxLinesForFolding);
+                if (EndFoldingLine == StartFoldingLine)
+                    EndFoldingLine = -1;
             }
 
-            if (startFoldingLine != prevStartFoldingLine || endFoldingLine != prevEndFoldingLine)
+            if (StartFoldingLine != prevStartFoldingLine || EndFoldingLine != prevEndFoldingLine)
                 OnFoldingHighlightChanged();
         }
 
@@ -7483,9 +7469,9 @@ window.status = ""#print"";
             SaveCache();
             if (disposing) {
                 SyntaxHighlighter?.Dispose();
-                bookmarks  .Dispose();
-                breakpoints.Dispose();
-                hints .Dispose();
+                Bookmarks  .Dispose();
+                Breakpoints.Dispose();
+                Hints .Dispose();
                 timer .Dispose();
                 timer2.Dispose();
                 YellowSelectionStyle.Dispose();

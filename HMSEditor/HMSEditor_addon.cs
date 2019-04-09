@@ -20,7 +20,7 @@ namespace HmsAddons {
                             Title            = HMSEditor.Title,
                             Description      = HMSEditor.Description,
                             RequiredVersion  = "2.03",
-                            CheckedOnVersion = "3.01"
+                            CheckedOnVersion = "3.02"
                         }
                     };
 

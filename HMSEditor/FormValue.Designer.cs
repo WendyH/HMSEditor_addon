@@ -27,9 +27,6 @@
             FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
             this.panel1 = new System.Windows.Forms.Panel();
             this.cbFormatting = new System.Windows.Forms.CheckBox();
-            this.cbLanguage = new System.Windows.Forms.ComboBox();
-            this.chkOnTop = new System.Windows.Forms.CheckBox();
-            this.chkWordWrap = new System.Windows.Forms.CheckBox();
             this.btnClose = new System.Windows.Forms.Button();
             this.panelTop = new System.Windows.Forms.Panel();
             this.groupRegex = new System.Windows.Forms.GroupBox();
@@ -58,80 +55,29 @@
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.panel1.Controls.Add(this.cbFormatting);
-            this.panel1.Controls.Add(this.cbLanguage);
-            this.panel1.Controls.Add(this.chkOnTop);
-            this.panel1.Controls.Add(this.chkWordWrap);
             this.panel1.Controls.Add(this.btnClose);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 366);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(692, 42);
+            this.panel1.Size = new System.Drawing.Size(916, 42);
             this.panel1.TabIndex = 1;
             // 
             // cbFormatting
             // 
             this.cbFormatting.AutoSize = true;
-            this.cbFormatting.Location = new System.Drawing.Point(287, 15);
+            this.cbFormatting.Location = new System.Drawing.Point(12, 15);
             this.cbFormatting.Name = "cbFormatting";
-            this.cbFormatting.Size = new System.Drawing.Size(116, 17);
+            this.cbFormatting.Size = new System.Drawing.Size(249, 17);
             this.cbFormatting.TabIndex = 4;
-            this.cbFormatting.Text = "Форматирование";
+            this.cbFormatting.Text = "Преобразовать в человекочитаемый вывод";
             this.cbFormatting.UseVisualStyleBackColor = true;
             this.cbFormatting.CheckedChanged += new System.EventHandler(this.chkFormatting_CheckedChanged);
-            // 
-            // cbLanguage
-            // 
-            this.cbLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbLanguage.FormattingEnabled = true;
-            this.cbLanguage.Items.AddRange(new object[] {
-            "C#",
-            "VisualBasic",
-            "HTML",
-            "XML",
-            "SQL",
-            "PHP",
-            "JavaScript",
-            "Lua",
-            "YAML",
-            "C++Script",
-            "PascalScript",
-            "BasicScript",
-            "JScript"});
-            this.cbLanguage.Location = new System.Drawing.Point(409, 13);
-            this.cbLanguage.Name = "cbLanguage";
-            this.cbLanguage.Size = new System.Drawing.Size(97, 21);
-            this.cbLanguage.TabIndex = 3;
-            this.cbLanguage.SelectedIndexChanged += new System.EventHandler(this.cbLanguage_SelectedIndexChanged);
-            // 
-            // chkOnTop
-            // 
-            this.chkOnTop.AutoSize = true;
-            this.chkOnTop.Checked = true;
-            this.chkOnTop.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkOnTop.Location = new System.Drawing.Point(161, 15);
-            this.chkOnTop.Name = "chkOnTop";
-            this.chkOnTop.Size = new System.Drawing.Size(120, 17);
-            this.chkOnTop.TabIndex = 2;
-            this.chkOnTop.Text = "Поверх всех форм";
-            this.chkOnTop.UseVisualStyleBackColor = true;
-            this.chkOnTop.CheckedChanged += new System.EventHandler(this.chkOnTop_CheckedChanged);
-            // 
-            // chkWordWrap
-            // 
-            this.chkWordWrap.AutoSize = true;
-            this.chkWordWrap.Location = new System.Drawing.Point(12, 15);
-            this.chkWordWrap.Name = "chkWordWrap";
-            this.chkWordWrap.Size = new System.Drawing.Size(143, 17);
-            this.chkWordWrap.TabIndex = 1;
-            this.chkWordWrap.Text = "Переносить по словам";
-            this.chkWordWrap.UseVisualStyleBackColor = true;
-            this.chkWordWrap.CheckedChanged += new System.EventHandler(this.chkWordWrap_CheckedChanged);
             // 
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(597, 9);
+            this.btnClose.Location = new System.Drawing.Point(821, 9);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(87, 27);
             this.btnClose.TabIndex = 0;
@@ -148,7 +94,7 @@
             this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTop.Location = new System.Drawing.Point(0, 0);
             this.panelTop.Name = "panelTop";
-            this.panelTop.Size = new System.Drawing.Size(692, 151);
+            this.panelTop.Size = new System.Drawing.Size(916, 151);
             this.panelTop.TabIndex = 2;
             // 
             // groupRegex
@@ -169,7 +115,7 @@
             this.groupRegex.Location = new System.Drawing.Point(7, 53);
             this.groupRegex.MinimumSize = new System.Drawing.Size(682, 92);
             this.groupRegex.Name = "groupRegex";
-            this.groupRegex.Size = new System.Drawing.Size(682, 92);
+            this.groupRegex.Size = new System.Drawing.Size(906, 92);
             this.groupRegex.TabIndex = 9;
             this.groupRegex.TabStop = false;
             // 
@@ -182,7 +128,7 @@
             this.tbResult.Margin = new System.Windows.Forms.Padding(6, 3, 6, 3);
             this.tbResult.Name = "tbResult";
             this.tbResult.ReadOnly = true;
-            this.tbResult.Size = new System.Drawing.Size(232, 23);
+            this.tbResult.Size = new System.Drawing.Size(456, 23);
             this.tbResult.TabIndex = 21;
             // 
             // label3
@@ -308,7 +254,7 @@
             this.tbExpression.Margin = new System.Windows.Forms.Padding(6, 3, 6, 3);
             this.tbExpression.Name = "tbExpression";
             this.tbExpression.ReadOnly = true;
-            this.tbExpression.Size = new System.Drawing.Size(607, 24);
+            this.tbExpression.Size = new System.Drawing.Size(831, 24);
             this.tbExpression.TabIndex = 1;
             // 
             // lblExpression
@@ -372,7 +318,7 @@
             this.fastColoredTB.ShowChangedLinesOnScrollbar = false;
             this.fastColoredTB.ShowLineNumbers = false;
             this.fastColoredTB.ShowScrollBars = false;
-            this.fastColoredTB.Size = new System.Drawing.Size(692, 215);
+            this.fastColoredTB.Size = new System.Drawing.Size(916, 215);
             this.fastColoredTB.SourceTextBox = this.fastColoredTB;
             this.fastColoredTB.TabIndex = 3;
             this.fastColoredTB.Text = "<HTML>";
@@ -386,7 +332,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
-            this.ClientSize = new System.Drawing.Size(692, 408);
+            this.ClientSize = new System.Drawing.Size(916, 408);
             this.Controls.Add(this.fastColoredTB);
             this.Controls.Add(this.panelTop);
             this.Controls.Add(this.panel1);
@@ -411,7 +357,6 @@
 
         #endregion
         private System.Windows.Forms.Panel panel1;
-        private System.Windows.Forms.CheckBox chkWordWrap;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Panel panelTop;
         private System.Windows.Forms.TextBox tbExpression;
@@ -429,8 +374,6 @@
         private System.Windows.Forms.CheckBox chkHTML2Text;
         private System.Windows.Forms.TextBox tbResult;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.CheckBox chkOnTop;
-        private System.Windows.Forms.ComboBox cbLanguage;
         private FastColoredTextBoxNS.FastColoredTextBox fastColoredTB;
         private System.Windows.Forms.CheckBox cbFormatting;
     }

@@ -12,15 +12,13 @@ using FastColoredTextBoxNS;
 namespace HMSEditorNS {
     public partial class FormValue: Form {
         private string _src = "";
-        private Regex regexJSON = new Regex(@"^[\{\[].*[\}\]]$", RegexOptions.Singleline);
+        private Regex regexJSONorXML = new Regex(@"^[{[<]", RegexOptions.Compiled);
 
         public string Value {
             get { return fastColoredTB.Text; }
             set {
                 fastColoredTB.Language = fastColoredTB.SyntaxHighlighter.DetectLang(value);
                 fastColoredTB.Text     = value;
-                cbLanguage.Text = fastColoredTB.SyntaxHighlighter.Lang2Str(fastColoredTB.Language);
-                //cbLanguage_SelectedIndexChanged(null, EventArgs.Empty);
             }
         }
         public string Expression = " ";
@@ -28,9 +26,6 @@ namespace HMSEditorNS {
 
         public FormValue() {
             InitializeComponent();
-            chkWordWrap_CheckedChanged(null, EventArgs.Empty);
-            chkOnTop_CheckedChanged(null, EventArgs.Empty);
-
             cbResultIndex.Items.Add("Группировка 0");
             cbResultIndex.Items.Add("Группировка 1");
             cbResultIndex.Items.Add("Группировка 2");
@@ -45,10 +40,17 @@ namespace HMSEditorNS {
             cbPattern.Items.Add(@"(<h\d.*?</h\d>)");
             cbPattern.Items.Add(@"<img[^>]+src=""(.*?)""");
 
+            fastColoredTB.WordWrap = true;
             chkUseRegex_CheckedChanged(null, EventArgs.Empty);
 
             Themes.LoadThemesFromString(HMS.ReadTextFromResource("ColorThemes.txt"));
             Themes.SetTheme(fastColoredTB, "Dawn");
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e) {
+            base.OnKeyDown(e);
+            if (e.KeyCode == Keys.Escape)
+                Close();
         }
 
         public void Show(Control ctl, string expr, string text, string realExpression) {
@@ -57,51 +59,21 @@ namespace HMSEditorNS {
                 return;
             }
 
-            var trimmed = text.TrimStart();
-            if (trimmed.Length > 0) {
-                try {
-                    var firstChar = trimmed.Substring(0, 1);
-                    if (firstChar == "{" || firstChar == "[") {
-                        var ob = Newtonsoft.Json.JsonConvert.DeserializeObject(text);
-                        text = Newtonsoft.Json.JsonConvert.SerializeObject(ob);
-                        Jsbeautifier.BeautifierOptions beautifierOptions = new Jsbeautifier.BeautifierOptions();
-                        beautifierOptions.BraceStyle = Jsbeautifier.BraceStyle.EndExpand;
-                        Jsbeautifier.Beautifier beautifier = new Jsbeautifier.Beautifier(beautifierOptions);
-                        text = beautifier.Beautify(text);
-                    }
-                    if (firstChar == "<") {
-                            XmlDocument d = new XmlDocument();
-                            d.LoadXml(text);
-                            text = d.ToString();
-                    }
-                } catch {; }
-            }
-
             fastColoredTB.Font = ctl.Font;
             Expression = expr;
-            Value      = text;
             RealExpression = realExpression;
             _src       = text;
 
-            cbFormatting.Visible = regexJSON.IsMatch(Value.Trim());
-            chkFormatting_CheckedChanged(null, EventArgs.Empty);
-            if (text.IndexOf('\n') < 1) {
-                chkWordWrap.Checked = true;
-                fastColoredTB.WordWrap = chkWordWrap.Checked;
-            }
+            cbFormatting.Visible = regexJSONorXML.IsMatch(_src.TrimStart());
 
             NativeMethods.SetParent(Handle, HMSEditor.ActiveEditor.Handle);
 
             if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
 
+            chkFormatting_CheckedChanged(null, EventArgs.Empty);
             if (!Visible) {
                 Show(ctl);
             }
-        }
-
-        private void chkWordWrap_CheckedChanged(object sender, EventArgs e) {
-            fastColoredTB.WordWrap = chkWordWrap.Checked;
-            if (!chkWordWrap.Checked) fastColoredTB.GoHome();
         }
 
         private void FormValue_KeyDown(object sender, KeyEventArgs e) {
@@ -262,27 +234,29 @@ namespace HMSEditorNS {
             }
         }
 
-        private void chkOnTop_CheckedChanged(object sender, EventArgs e) {
-            TopMost = chkOnTop.Checked;
-        }
-
-        private void cbLanguage_SelectedIndexChanged(object sender, EventArgs e) {
-            fastColoredTB.Language = fastColoredTB.SyntaxHighlighter.Str2Lang(cbLanguage.Text);
-            fastColoredTB.SyntaxHighlighter.HighlightSyntax(fastColoredTB.Language, fastColoredTB.Range);
-        }
-
         private void chkFormatting_CheckedChanged(object sender, EventArgs e) {
             if (cbFormatting.Checked) {
-                try {
-                    // ReSharper disable once ConvertIfStatementToConditionalTernaryExpression
-                    if (regexJSON.IsMatch(Value.Trim()))
-                        Value = Utils.JsonHelper.FormatJson(_src);
-                } catch {
-                    // ignored
+                if (_src.Length > 0) {
+                    try {
+                        var firstChar = _src.Substring(0, 1);
+                        if (firstChar == "{" || firstChar == "[") {
+                            var ob = Newtonsoft.Json.JsonConvert.DeserializeObject(_src);
+                            string text = Newtonsoft.Json.JsonConvert.SerializeObject(ob);
+                            Jsbeautifier.BeautifierOptions beautifierOptions = new Jsbeautifier.BeautifierOptions();
+                            beautifierOptions.BraceStyle = Jsbeautifier.BraceStyle.EndExpand;
+                            Jsbeautifier.Beautifier beautifier = new Jsbeautifier.Beautifier(beautifierOptions);
+                            Value = beautifier.Beautify(text);
+                            return;
+                        } else if (firstChar == "<") {
+                            XmlDocument xmlDoc = new XmlDocument();
+                            xmlDoc.LoadXml(_src);
+                            Value = xmlDoc.ToString();
+                            return;
+                        }
+                    } catch {; }
                 }
-            } else {
-                Value = _src;
             }
+            Value = _src;
         }
 
         protected override CreateParams CreateParams {
