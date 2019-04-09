@@ -17,11 +17,11 @@ namespace HMSEditorNS {
         }
 
         private static HttpWebRequest CreateRequest(string url) {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.80 Safari/537.36";
             request.Accept    = "application/vnd.github.v3+json";
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            //ServicePointManager.Expect100Continue = true;
+            request.ServicePoint.Expect100Continue = false;
             return request;
         }
 

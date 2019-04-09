@@ -165,7 +165,7 @@ namespace HMSEditorNS {
         public bool AutoIdent                { get { return TB.AutoIndent              ; } set { TB.AutoIndent              = value; } }
         public bool AutoIndentChars          { get { return TB.AutoIndentChars         ; } set { TB.AutoIndentChars         = value; } }
         public bool AutoIndentExistingLines  { get { return TB.AutoIndentExistingLines ; } set { TB.AutoIndentExistingLines = value; } }
-        public bool ToolStripVisible         { get { return tsMain.Visible                 ; } set { tsMain.Visible                 = value; } }
+        public bool ToolStripVisible         { get { return tsMain.Visible             ; } set { tsMain.Visible             = value; } }
         public bool DebugMode                { get { return TB.DebugMode               ; } set { TB.DebugMode               = value; } }
         public bool EnableFunctionToolTip = true;
         public bool EnableEvaluateByMouse = true;
@@ -856,11 +856,13 @@ namespace HMSEditorNS {
                     RunLineRised = true; // resets in SetCaretPos() and OnRunningStateChange()
                     string line = TB.Lines[TB.Selection.Start.iLine];
                     HmsScriptFrame.ProcessCommand(Constatns.ecRunLine);
-                    if (ValueForm.Visible) {
-                        if (line.IndexOf(ValueForm.RealExpression, StringComparison.Ordinal) >= 0) ValueForm.Value = EvalVariableValue(ValueForm.Expression);
-                    } else if (ValueHint.IsShowing) {
-                        if (line.IndexOf(ValueHint.RealExpression, StringComparison.Ordinal) >= 0) ValueHint.Value = EvalVariableValue(ValueHint.Expression);
-                    }
+                    //if (ValueForm.Visible) {
+                    //    if (line.IndexOf(ValueForm.RealExpression, StringComparison.Ordinal) >= 0)
+                    //        ValueForm.Value = EvalVariableValue(ValueForm.Expression);
+                    //} else if (ValueHint.IsShowing) {
+                    //    if (line.IndexOf(ValueHint.RealExpression, StringComparison.Ordinal) >= 0)
+                    //        ValueHint.Value = EvalVariableValue(ValueHint.Expression);
+                    //}
                 } catch (Exception e) {
                     HMS.LogError(e.ToString());
                 }

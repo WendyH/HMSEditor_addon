@@ -136,6 +136,7 @@ namespace HMSEditorNS {
                 DeniedClose = true;
                 try {
                     ThisDialog.Invoke((MethodInvoker)delegate {
+                        ThisDialog.pictureBoxWait.Visible = false;
                         HMS.UpdateInfo           = updatesInfo;
                         ThisDialog.TemplatesInfo = templatesInfo;
                         ThisDialog.CheckUpdate(lastVersion, templateVersion);

@@ -42,6 +42,8 @@
             this.btnUpdateTemplates = new System.Windows.Forms.Button();
             this.logo = new HMSEditorNS.Logo();
             this.btnDelete = new System.Windows.Forms.Button();
+            this.pictureBoxWait = new System.Windows.Forms.PictureBox();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWait)).BeginInit();
             this.SuspendLayout();
             // 
             // progressBar1
@@ -117,7 +119,7 @@
             this.linkLabel1.AutoSize = true;
             this.linkLabel1.Location = new System.Drawing.Point(185, 183);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(198, 13);
+            this.linkLabel1.Size = new System.Drawing.Size(234, 13);
             this.linkLabel1.TabIndex = 35;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "https://github.com/WendyH/HMSEditor_addon";
@@ -250,11 +252,22 @@
             this.btnDelete.Text = "Удаление";
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
+            // pictureBoxWait
+            // 
+            this.pictureBoxWait.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.pictureBoxWait.Image = global::HMSEditorNS.Properties.Resources.wait;
+            this.pictureBoxWait.Location = new System.Drawing.Point(63, 245);
+            this.pictureBoxWait.Name = "pictureBoxWait";
+            this.pictureBoxWait.Size = new System.Drawing.Size(69, 68);
+            this.pictureBoxWait.TabIndex = 48;
+            this.pictureBoxWait.TabStop = false;
+            // 
             // AboutDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(502, 325);
+            this.Controls.Add(this.pictureBoxWait);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.labelNewTemplates);
             this.Controls.Add(this.btnUpdateTemplates);
@@ -286,6 +299,7 @@
             this.Text = "О программе";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AboutDialog_FormClosing);
             this.Load += new System.EventHandler(this.AboutDialog_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxWait)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -311,5 +325,6 @@
         private System.Windows.Forms.LinkLabel labelNewTemplates;
         private System.Windows.Forms.Button btnUpdateTemplates;
         private System.Windows.Forms.Button btnDelete;
+        private System.Windows.Forms.PictureBox pictureBoxWait;
     }
 }

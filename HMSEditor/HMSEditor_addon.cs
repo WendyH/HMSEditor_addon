@@ -178,10 +178,12 @@ namespace HmsAddons {
             return HRESULT.E_UNEXPECTED;
         }
 
-
         public uint InvalidateLine(int aLine) {
             if (EditBox != null) {
+                bool f = EditBox.TB.Focused;
+                EditBox.CheckDebugState();
                 EditBox.Invalidate();
+                if (f) EditBox.TB.Select();
                 return HRESULT.S_OK;
             }
             return HRESULT.E_UNEXPECTED;
@@ -203,6 +205,13 @@ namespace HmsAddons {
                     EditBox.RestorePosition();
                 } else {
                     EditBox.SetCaretPos(aLine, aChar);
+                    if (EditBox.DebugMode) {
+                        if (EditBox.ValueForm.Visible) {
+                            EditBox.ValueForm.Value = EditBox.EvalVariableValue(EditBox.ValueForm.Expression);
+                        } else if (EditBox.ValueHint.IsShowing) {
+                            EditBox.ValueHint.Value = EditBox.EvalVariableValue(EditBox.ValueHint.Expression);
+                        }
+                    }
                 }
                 return HRESULT.S_OK;
             }
@@ -211,7 +220,9 @@ namespace HmsAddons {
 
         public uint SetFocus() {
             if (EditBox != null) {
+                EditBox.CheckDebugState();
                 EditBox.TB.Focus();
+                EditBox.TB.Select();
                 return HRESULT.S_OK;
             }
             return HRESULT.E_UNEXPECTED;
@@ -220,7 +231,7 @@ namespace HmsAddons {
         public uint SetRunning(int aValue) {
             if (EditBox != null) {
                 EditBox.OnRunningStateChange(aValue < 0);
-                EditBox.TB.Focus();
+                EditBox.TB.Select();
             }
             return HRESULT.S_OK;
         }

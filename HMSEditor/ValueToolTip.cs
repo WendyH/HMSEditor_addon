@@ -14,11 +14,11 @@ namespace HMSEditorNS {
         private Timer  timer    = new Timer();
         private Size   MouseDX  = new Size(20, 20);
         private Button Btn      = new Button();
-        private Size   MaxSize  = new Size(500, 400);
+        private Size   MaxSize  = new Size(600, 500);
         public string  Expression     = "";
         public string  RealExpression = "";
         public bool    IsShowing;
-        public string Value { get { return ctl.Text; } set { ctl.Text = value; } }
+        public string Value { get { return ctl.Text; } set { ctl.Text = value; RecalcSize();  } }
 
         protected override CreateParams CreateParams {
             get {
@@ -154,15 +154,6 @@ namespace HMSEditorNS {
             ControlPaint.DrawBorder(e.Graphics, ClientRectangle, HMS.BordersColor, ButtonBorderStyle.Solid);
         }
 
-        protected override void OnResize(EventArgs e) {
-            //base.OnResize(e);
-            int h = SystemInformation.HorizontalResizeBorderThickness, w = SystemInformation.VerticalResizeBorderThickness;
-            if (BtnHost.Visible) {
-                h += BtnHost.Height + 0; 
-            }
-            ctl.Size = new Size(Size.Width - w , Size.Height - h);
-        }
-
         private void Ctl_KeyDown(object sender, KeyEventArgs e) {
             OnKeyDown(e);
         }
@@ -234,34 +225,52 @@ namespace HMSEditorNS {
             }
         }
 
+        protected override void OnResize(EventArgs e) {
+            //base.OnResize(e);
+            int h = SystemInformation.HorizontalResizeBorderThickness, w = SystemInformation.VerticalResizeBorderThickness;
+            if (BtnHost.Visible) {
+                h += BtnHost.Height;
+            }
+            ctl.Size = new Size(Size.Width - w, Size.Height - h);
+        }
+
+        public void RecalcSize() {
+            SizeF textSize = new Size(MaxSize.Width, MaxSize.Height);
+            int linesFitted = 0;
+            if (ctl.Text.Length < 500) {
+                var g = ctl.CreateGraphics();
+                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                StringFormat stringFormat = StringFormat.GenericTypographic;
+                stringFormat.Trimming = StringTrimming.Word;
+                stringFormat.FormatFlags = StringFormatFlags.LineLimit;
+                textSize = g.MeasureString(ctl.Text, ctl.Font, textSize, stringFormat, out int charsFitted, out linesFitted);
+                textSize.Height += linesFitted;
+            }
+            //textSize.Height += 8;
+            textSize.Width += 4;
+            ctl.ScrollBars = textSize.Height > MaxSize.Height ? RichTextBoxScrollBars.Vertical : RichTextBoxScrollBars.None;
+
+            int h = SystemInformation.HorizontalResizeBorderThickness, w = SystemInformation.VerticalResizeBorderThickness;
+            if (ctl.Text.Length > 200) {
+                BtnHost.Visible = true;
+                h += BtnHost.Height;
+            } else {
+                BtnHost.Visible = false;
+            }
+
+            Size = new Size((int)Math.Round(textSize.Width) + w, (int)Math.Round(textSize.Height) + h);
+        }
+
         public void ShowValue(Control control, string expr, string value, Point point, string realExpression) {
             if (value.Length == 0) value = "  ";
             ctl.Text       = value;
             Expression     = expr;
             RealExpression = realExpression;
-            SizeF textSize = new Size(MaxSize.Width, MaxSize.Height);
-            if (value.Length < 500) {
-                var g = ctl.CreateGraphics();
-                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
-                StringFormat stringFormat = StringFormat.GenericTypographic;
-                stringFormat.Trimming = StringTrimming.Word;
-                stringFormat.LineAlignment = StringAlignment.Near;
-                textSize = g.MeasureString(value, ctl.Font, textSize, stringFormat, out int chars_fitted, out int lines_fitted);
-                int correctLines = ctl.GetLineFromCharIndex(ctl.Text.Length) + 1 - lines_fitted;
-                textSize.Height += correctLines * ctl.Font.Height;
-            }
-            textSize.Height += 14;
-            textSize.Width  += 10;
-            ctl.ScrollBars = textSize.Height > MaxSize.Height ? RichTextBoxScrollBars.Vertical : RichTextBoxScrollBars.None;
-            if (value.Length > 200) {
-                BtnHost.Visible = true;
-                textSize.Height += BtnHost.Height;
-            }
-            Size = new Size((int)textSize.Width, (int)textSize.Height);
+            RecalcSize();
             Show(control, point);
             OnResize(EventArgs.Empty);
-            timer.Start();
             IsShowing = true;
+            timer.Start();
             control.Focus();
         }
 

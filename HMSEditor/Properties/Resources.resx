@@ -118,8 +118,8 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="NavigateBackwards_62701" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\NavigateBackwards_62701.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Compare_13153" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Compare_13153.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="RunningLine161" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RunningLine161.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -136,21 +136,23 @@
   <data name="AboutDialog_SetNeedRestart_Требуется_перезапуск_дополнения" xml:space="preserve">
     <value>Требуется перезапуск дополнения</value>
   </data>
+  <data name="ArrowDown" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ArrowDown.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="WorkItem_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\WorkItem_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="breakpoint_x16" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\breakpoint_x16.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Arrow_RedoRetry_16xLG_color" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Arrow_RedoRetry_16xLG_color.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="toggle_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\toggle_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Open_6529" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Open_6529.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="AboutDialog_CheckUpdate_Есть_новая_версия_" xml:space="preserve">
-    <value>Есть новая версия </value>
-  </data>
-  <data name="ReplaceForm_btFindNext_Click_" xml:space="preserve">
-    <value>К сожалению, дальнейший поиск не дал результатов.
-:(</value>
   </data>
   <data name="togglebookmark" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\togglebookmark.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -165,8 +167,8 @@
 </value>
     <comment>Delete all bookmarks?</comment>
   </data>
-  <data name="AboutDialog_SetNeedRestart_Перезапустить" xml:space="preserve">
-    <value>Перезапустить</value>
+  <data name="Bullets_11690" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Bullets_11690.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Bookmark_5776" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Bookmark_5776.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -177,8 +179,8 @@
   <data name="FindNext_13243" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FindNext_13243.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Bullets_11690" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Bullets_11690.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AboutDialog_SetNeedRestart_Перезапустить" xml:space="preserve">
+    <value>Перезапустить</value>
   </data>
   <data name="Clearallrequests_8816" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Clearallrequests_8816.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -189,17 +191,14 @@
   <data name="Template_Application_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Template_Application_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AboutDialog_labelNewTemplates_LinkClicked_Информация_о_новых_шаблонах_HMS_Editor" xml:space="preserve">
-    <value>Информация о новых шаблонах HMS Editor</value>
-  </data>
   <data name="Output_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Output_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="clearallbreakpoints_6551" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\clearallbreakpoints_6551.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="AboutDialog_CheckUpdate_Не_удалось_проверить_версию_на_GitHub" xml:space="preserve">
-    <value>Не удалось проверить версию на GitHub</value>
+  <data name="ArrowUp" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ArrowUp.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Find_5650" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Find_5650.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -207,11 +206,12 @@
   <data name="Print_11009" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Print_11009.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="VSO_Run_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\VSO_Run_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AboutDialog_CheckUpdate_Не_удалось_проверить_версию_на_GitHub" xml:space="preserve">
+    <value>Не удалось проверить версию на GitHub</value>
   </data>
-  <data name="NavigateBackwards_6270" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\NavigateBackwards_6270.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="ReplaceForm_btFindNext_Click_" xml:space="preserve">
+    <value>К сожалению, дальнейший поиск не дал результатов.
+:(</value>
   </data>
   <data name="BookmarkPrevious_2391" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BookmarkPrevious_2391.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -219,8 +219,8 @@
   <data name="AboutDialog_DownloadTemplateCallback_Обновлено" xml:space="preserve">
     <value>Обновлено</value>
   </data>
-  <data name="AboutDialog_CheckUpdate_Есть_новая_версия_шаблонов_от_" xml:space="preserve">
-    <value>Есть новая версия шаблонов от </value>
+  <data name="Up" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Up.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="DialogID_6220_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DialogID_6220_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -228,17 +228,14 @@
   <data name="Save_6530" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Save_6530.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Zoom_5442" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Zoom_5442.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="RefactoringLog_12810" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\RefactoringLog_12810.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="NavigateBackwards_62701" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NavigateBackwards_62701.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="FindPrevious_13244" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\FindPrevious_13244.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Arrow_UndoRevertRestore_16xLG_color" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Arrow_UndoRevertRestore_16xLG_color.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="VSO_Run_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\VSO_Run_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="HistoricalInstructionPointer_16x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\HistoricalInstructionPointer_16x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -246,29 +243,32 @@
   <data name="AboutDialog_btnUpdate_Click_Идёт_загрузка___" xml:space="preserve">
     <value>Идёт загрузка...</value>
   </data>
-  <data name="ArrowDown" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ArrowDown.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="NavigateBackwards_6270" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NavigateBackwards_6270.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="BookmarkNext_2389" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\BookmarkNext_2389.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="AboutDialog_CheckUpdate_Есть_новая_версия_шаблонов_от_" xml:space="preserve">
+    <value>Есть новая версия шаблонов от </value>
   </data>
   <data name="BookmarkClear_2381" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BookmarkClear_2381.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Cut_6523" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Cut_6523.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="arrow_run_16xMD" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\arrow_run_16xMD.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Arrow_RedoRetry_16xLG_color" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Arrow_RedoRetry_16xLG_color.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="BookmarkNext_2389" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\BookmarkNext_2389.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ArrowUp" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ArrowUp.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Zoom_5442" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Zoom_5442.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AboutDialog_CheckUpdate_Есть_новая_версия_" xml:space="preserve">
+    <value>Есть новая версия </value>
   </data>
   <data name="Down" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Down.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Paste_6520" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Paste_6520.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Arrow_UndoRevertRestore_16xLG_color" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Arrow_UndoRevertRestore_16xLG_color.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Copy_6524" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Copy_6524.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -276,17 +276,20 @@
   <data name="HmsAddonList_CanUnloadNow_Будет_установлена_новая_версия_дополнения__Просканируйте_список_дополнений_через_несколько_секунд_" xml:space="preserve">
     <value>Будет установлена новая версия дополнения. Просканируйте список дополнений через несколько секунд.</value>
   </data>
-  <data name="Up" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Up.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Cut_6523" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Cut_6523.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="arrow_run_16xMD" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\arrow_run_16xMD.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Paste_6520" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Paste_6520.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="AboutDialog_labelNewTemplates_LinkClicked_Информация_о_новых_шаблонах_HMS_Editor" xml:space="preserve">
+    <value>Информация о новых шаблонах HMS Editor</value>
   </data>
   <data name="RunningLine162" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\RunningLine162.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="WorkItem_16xLG" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\WorkItem_16xLG.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="RefactoringLog_12810" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RefactoringLog_12810.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Close_12x" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Close_12x.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -294,7 +297,7 @@
   <data name="AboutDialog_CheckUpdate_У_вас_последняя_версия" xml:space="preserve">
     <value>У вас последняя версия</value>
   </data>
-  <data name="Compare_13153" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Compare_13153.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="wait" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\wait.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

@@ -302,7 +302,6 @@
       <DependentUpon>DiffControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Utils\HtmlRemoval.cs" />
-    <Compile Include="Utils\JsonHelper.cs" />
     <Compile Include="Utils\Plist.cs" />
     <Compile Include="Utils\YamlParser.cs" />
     <Compile Include="ValueHintControl.cs">
@@ -396,6 +395,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <Content Include="Resources\wait.gif" />
     <None Include="Resources\Compare_13153.png" />
     <None Include="Resources\Close_12x.png" />
     <None Include="Resources\Down.png" />
