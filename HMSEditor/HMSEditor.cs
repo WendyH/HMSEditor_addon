@@ -41,6 +41,14 @@ namespace HMSEditorNS {
         }
         #endregion Static
 
+        public Size GetSizeText(string text, Font font, Size maxSize) {
+            fittingLabel.MaximumSize = maxSize;
+            fittingLabel.Font = font;
+            fittingLabel.Text = text;
+            fittingLabel.AutoSize = true;
+            return new Size(fittingLabel.Width, fittingLabel.Height);
+        }
+
         public IntPtr ParentHwnd;
         // Constructor
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]

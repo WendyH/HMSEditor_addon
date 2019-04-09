@@ -395,8 +395,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="bin\Release\Ionic.Zip.Reduced.dll" />
-    <EmbeddedResource Include="bin\Release\Newtonsoft.Json.dll" />
     <Content Include="HMSEditor_icons.ico" />
     <None Include="Resources\Compare_13153.png" />
     <None Include="Resources\Close_12x.png" />

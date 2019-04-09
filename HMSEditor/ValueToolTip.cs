@@ -2,7 +2,6 @@
 using System.Windows.Forms;
 using System.Drawing;
 using System.Security.Permissions;
-using System.Diagnostics;
 
 namespace HMSEditorNS {
     /// <summary>
@@ -12,18 +11,29 @@ namespace HMSEditorNS {
         private ToolStripControlHost BtnHost;
         private ContextMenuStrip     menustrip = new ContextMenuStrip();
         private RichTextBox ctl = new RichTextBox();
-        private Size   MaxSize  = new Size(500, 400);
         private Timer  timer    = new Timer();
         private Size   MouseDX  = new Size(20, 20);
         private Button Btn      = new Button();
+        private Size   MaxSize  = new Size(500, 400);
         public string  Expression     = "";
         public string  RealExpression = "";
         public bool    IsShowing;
-
         public string Value { get { return ctl.Text; } set { ctl.Text = value; } }
 
+        protected override CreateParams CreateParams {
+            get {
+                CreateParams baseParams = base.CreateParams;
+
+                const int WS_EX_NOACTIVATE = 0x08000000;
+                const int WS_EX_TOOLWINDOW = 0x00000080;
+                baseParams.ExStyle |= (int)(WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW);
+
+                return baseParams;
+            }
+        }
+
         public ValueToolTip() {
-            Btn.AutoSize = true;
+            Btn.AutoSize = false;
             Btn.Size     = new Size(34, 25);
             Btn.Text     = "";
             Btn.Image    = Properties.Resources.Find_5650;
@@ -38,7 +48,6 @@ namespace HMSEditorNS {
             ctl.WordWrap    = true;
             ctl.DetectUrls  = false;
             ctl.BackColor   = Color.FromArgb(255, 231, 232, 236);
-            MaximumSize     = new Size(MaxSize.Width+20, MaxSize.Height+20);
             timer.Tick     += tick_CheckMouseNearly;
             timer.Interval  = 500;
             var item = menustrip.Items.Add("Копировать", Properties.Resources.Copy_6524);
@@ -67,18 +76,6 @@ namespace HMSEditorNS {
             if (HMSEditor.ActiveEditor != null) {
                 HMSEditor.ActiveEditor.ValueForm.Show(HMSEditor.ActiveEditor.TB, Expression, ctl.Text, RealExpression);
                 Close();
-            }
-        }
-
-        protected override CreateParams CreateParams {
-            get {
-                CreateParams baseParams = base.CreateParams;
-
-                const int WS_EX_NOACTIVATE = 0x08000000;
-                const int WS_EX_TOOLWINDOW = 0x00000080;
-                baseParams.ExStyle |= (int)(WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW);
-
-                return baseParams;
             }
         }
 
@@ -244,18 +241,29 @@ namespace HMSEditorNS {
             RealExpression = realExpression;
             SizeF textSize = new Size(MaxSize.Width, MaxSize.Height);
             if (value.Length < 500) {
+                ctl.
+                textSize = HMSEditor.ActiveEditor.GetSizeText(ctl.Text, ctl.Font, new Size(MaxSize.Width, MaxSize.Height));
+                //textSize = ctl.GetPreferredSize(new Size(MaxSize.Width, MaxSize.Height));
+                /*
                 var g = ctl.CreateGraphics();
-                StringFormat stringFormat = new StringFormat();
-                stringFormat.Trimming = StringTrimming.Character;
+                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
+                StringFormat stringFormat = StringFormat.GenericTypographic;
+                stringFormat.Trimming = StringTrimming.Word;
+                stringFormat.LineAlignment = StringAlignment.Near;
                 textSize = g.MeasureString(value, ctl.Font, textSize, stringFormat, out int chars_fitted, out int lines_fitted);
                 string linef = value.Substring(0, chars_fitted);
+                */
             }
             textSize.Height += 10;
-            textSize.Width  += 12;
+            textSize.Width  += 10;
             ctl.ScrollBars = RichTextBoxScrollBars.None;
             if (textSize.Height > MaxSize.Height) { ctl.ScrollBars = RichTextBoxScrollBars.Vertical; }
-            BtnHost.Visible = value.Length > 200;
-            if (BtnHost.Visible) { textSize.Width += BtnHost.Height; }
+            /*
+            if (value.Length > 200) {
+                BtnHost.Visible = true;
+                textSize.Height += BtnHost.Height;
+            }
+            */
             Size = new Size((int)textSize.Width, (int)textSize.Height);
             Show(control, point);
             OnResize(EventArgs.Empty);

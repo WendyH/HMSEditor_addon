@@ -107,9 +107,9 @@ namespace HMSEditorNS {
                         catch { ; }
                     }
 
-                    if (value.Length < 32) {
+                    if (value.Length < 16) {
                         if (IsDigitsOnly(value) && NativeMethods.KeyState(NativeMethods.VirtualKeyStates.VK_CONTROL))
-                            value = string.Format("0x{0:X}", int.Parse(value));
+                            value = string.Format("0x{0:X}", ulong.Parse(value));
                     }
 
                     if (value.Length > MaxValueLength || activeEditor.ValueForm.Visible) {

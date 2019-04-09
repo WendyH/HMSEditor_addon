@@ -137,6 +137,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.TB = new FastColoredTextBoxNS.FastColoredTextBox();
             this.helpPanel1 = new HMSEditorNS.HelpPanel();
+            this.fittingLabel = new System.Windows.Forms.Label();
             this.contextMenuStrip1.SuspendLayout();
             this.tsMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -1079,7 +1080,7 @@
             // 
             this.labelNewVersion.IsLink = true;
             this.labelNewVersion.Name = "labelNewVersion";
-            this.labelNewVersion.Size = new System.Drawing.Size(109, 15);
+            this.labelNewVersion.Size = new System.Drawing.Size(109, 22);
             this.labelNewVersion.Text = "Есть новая версия!";
             this.labelNewVersion.Visible = false;
             this.labelNewVersion.Click += new System.EventHandler(this.labelNewVersion_Click);
@@ -1118,6 +1119,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.fittingLabel);
             this.splitContainer1.Panel2.Controls.Add(this.helpPanel1);
             this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(4);
             this.splitContainer1.Size = new System.Drawing.Size(979, 506);
@@ -1205,6 +1207,15 @@
             this.helpPanel1.SplitterDistance = 263;
             this.helpPanel1.TabIndex = 0;
             // 
+            // fittingLabel
+            // 
+            this.fittingLabel.AutoSize = true;
+            this.fittingLabel.Location = new System.Drawing.Point(73, 101);
+            this.fittingLabel.Name = "fittingLabel";
+            this.fittingLabel.Size = new System.Drawing.Size(58, 13);
+            this.fittingLabel.TabIndex = 1;
+            this.fittingLabel.Text = "fittingLabel";
+            // 
             // HMSEditor
             // 
             this.Controls.Add(this.splitContainer1);
@@ -1217,6 +1228,7 @@
             this.tsMain.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.TB)).EndInit();
@@ -1325,5 +1337,6 @@
         private System.Windows.Forms.ToolStripMenuItem btnSelectionBorder;
         private System.Windows.Forms.ToolStripMenuItem btnShowBeginOfFunctions;
         private System.Windows.Forms.ToolStripButton toolStripButtonCompare;
+        private System.Windows.Forms.Label fittingLabel;
     }
 }

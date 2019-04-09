@@ -46,6 +46,9 @@ namespace HMSEditorNS {
             cbPattern.Items.Add(@"<img[^>]+src=""(.*?)""");
 
             chkUseRegex_CheckedChanged(null, EventArgs.Empty);
+
+            Themes.LoadThemesFromString(HMS.ReadTextFromResource("ColorThemes.txt"));
+            Themes.SetTheme(fastColoredTB, "Dawn");
         }
 
         public void Show(Control ctl, string expr, string text, string realExpression) {
@@ -55,23 +58,23 @@ namespace HMSEditorNS {
             }
 
             var trimmed = text.TrimStart();
-            if (trimmed.Length > 0)
-            {
-                var firstChar = trimmed.Substring(0, 1);
-                if (firstChar == "{" || firstChar == "[")
-                {
-                    Jsbeautifier.Beautifier beautifier = new Jsbeautifier.Beautifier();
-                    text = beautifier.Beautify(text);
-                }
-                if (firstChar == "<")
-                {
-                    try
-                    {
-                        XmlDocument d = new XmlDocument();
-                        d.LoadXml(text);
-                        text = d.ToString();
-                    } catch (Exception e) { ; }
-                }
+            if (trimmed.Length > 0) {
+                try {
+                    var firstChar = trimmed.Substring(0, 1);
+                    if (firstChar == "{" || firstChar == "[") {
+                        var ob = Newtonsoft.Json.JsonConvert.DeserializeObject(text);
+                        text = Newtonsoft.Json.JsonConvert.SerializeObject(ob);
+                        Jsbeautifier.BeautifierOptions beautifierOptions = new Jsbeautifier.BeautifierOptions();
+                        beautifierOptions.BraceStyle = Jsbeautifier.BraceStyle.EndExpand;
+                        Jsbeautifier.Beautifier beautifier = new Jsbeautifier.Beautifier(beautifierOptions);
+                        text = beautifier.Beautify(text);
+                    }
+                    if (firstChar == "<") {
+                            XmlDocument d = new XmlDocument();
+                            d.LoadXml(text);
+                            text = d.ToString();
+                    }
+                } catch {; }
             }
 
             fastColoredTB.Font = ctl.Font;
