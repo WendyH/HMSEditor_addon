@@ -191,6 +191,7 @@ namespace HmsAddons {
 
         public uint Repaint() {
             if (EditBox != null) {
+                EditBox.CheckDebugState();
                 EditBox.Refresh();
                 return HRESULT.S_OK;
             }

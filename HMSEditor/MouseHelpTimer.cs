@@ -31,9 +31,11 @@ namespace HMSEditorNS {
             if (info.MemberItems.ContainsName("Text")) return text + ".Text";
             switch (type) {
                 case "THmsScriptMediaItem":
-                    return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: THmsScriptMediaItem)\"#13#10+\"mpiTitle=\"+" + text + ".Properties[mpiTitle]+#13#10+\"mpiFilePath=\"+" + text + ".Properties[mpiFilePath]+#13#10+\"mpiThumbnail=\"+Str(" + text + ".Properties[mpiThumbnail])+#13#10+\"mpiTimeLength=\"+Str(" + text + ".Properties[mpiTimeLength])+#13#10+\"mpiCreateDate=\"+Str(" + text + ".Properties[mpiCreateDate])";
+                    return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: THmsScriptMediaItem)\"#13+\"mpiTitle=\"+" + text + ".Properties[mpiTitle]+#13+\"mpiFilePath=\"+" + text + ".Properties[mpiFilePath]+#13+\"mpiThumbnail=\"+Str(" + text + ".Properties[mpiThumbnail])+#13+\"mpiTimeLength=\"+Str(" + text + ".Properties[mpiTimeLength])+#13+\"mpiCreateDate=\"+Str(" + text + ".Properties[mpiCreateDate])";
                 case "TRegExpr":
-                    return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: TRegExpr)\"#13#10+\"Match(0)=\"+" + text + ".Match(0)+#13#10+\"Match(1)=\"+" + text + ".Match(1)+#13#10+\"Match(2)=\"+" + text + ".Match(2)+#13#10+\"Match(3)=\"+" + text + ".Match(3)";
+                    return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: TRegExpr)\"#13+\"Match(0)=\"+" + text + ".Match(0)+#13+\"Match(1)=\"+" + text + ".Match(1)+#13+\"Match(2)=\"+" + text + ".Match(2)+#13+\"Match(3)=\"+" + text + ".Match(3)";
+                case "TJsonArray":
+                    return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: TJsonArray)\"#13+\"Length=\"+Str(" + text + ".Length)";
             }
             return text;
         }

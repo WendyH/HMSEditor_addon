@@ -14,7 +14,7 @@ namespace HMSEditorNS {
         private Timer  timer    = new Timer();
         private Size   MouseDX  = new Size(20, 20);
         private Button Btn      = new Button();
-        private Size   MaxSize  = new Size(600, 500);
+        private Size   MaxSize  = new Size(600, 400);
         public string  Expression     = "";
         public string  RealExpression = "";
         public bool    IsShowing;
@@ -237,17 +237,17 @@ namespace HMSEditorNS {
         public void RecalcSize() {
             SizeF textSize = new Size(MaxSize.Width, MaxSize.Height);
             int linesFitted = 0;
-            if (ctl.Text.Length < 500) {
+            //if (ctl.Text.Length < 500) {
                 var g = ctl.CreateGraphics();
-                g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+                //g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
                 StringFormat stringFormat = StringFormat.GenericTypographic;
-                stringFormat.Trimming = StringTrimming.Word;
-                stringFormat.FormatFlags = StringFormatFlags.LineLimit;
+                //stringFormat.Trimming = StringTrimming.Word;
+                //stringFormat.FormatFlags = StringFormatFlags.FitBlackBox;
                 textSize = g.MeasureString(ctl.Text, ctl.Font, textSize, stringFormat, out int charsFitted, out linesFitted);
-                textSize.Height += linesFitted;
-            }
+                textSize.Height += linesFitted + 1;
+            //}
             //textSize.Height += 8;
-            textSize.Width += 4;
+            textSize.Width += 6;
             ctl.ScrollBars = textSize.Height+2 >= MaxSize.Height ? RichTextBoxScrollBars.Vertical : RichTextBoxScrollBars.None;
 
             int h = SystemInformation.HorizontalResizeBorderThickness, w = SystemInformation.VerticalResizeBorderThickness;
