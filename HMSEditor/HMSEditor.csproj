@@ -30,6 +30,8 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -120,7 +122,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ionic.Zip.Reduced">
+    <Reference Include="Ionic.Zip.Reduced, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>Resources\Ionic.Zip.Reduced.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -135,6 +138,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AboutDialog.cs">
@@ -395,6 +399,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="HMSEditor_icons.ico" />
+    <EmbeddedResource Include="Resources\Ionic.Zip.Reduced.dll" />
     <Content Include="Resources\wait.gif" />
     <None Include="Resources\Compare_13153.png" />
     <None Include="Resources\Close_12x.png" />
@@ -428,7 +433,6 @@
     <EmbeddedResource Include="Resources\Markdown.html" />
     <None Include="icons\logo.png" />
     <None Include="Resources\Output_16xLG.png" />
-    <EmbeddedResource Include="Resources\Ionic.Zip.Reduced.dll" />
     <None Include="Resources\Template_Application_16xLG.png" />
     <None Include="Resources\Find_5650.png" />
     <None Include="Resources\arrow_run_16xMD.png" />

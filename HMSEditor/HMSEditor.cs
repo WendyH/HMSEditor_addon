@@ -1545,6 +1545,15 @@ namespace HMSEditorNS {
                 HMS.LogError(e.ToString());
             }
             if (result == null) return "";
+            if (result.GetType().IsArray) {
+                try {
+                    if (NativeMethods.KeyState(NativeMethods.VirtualKeyStates.VK_CONTROL)) {
+                        return Newtonsoft.Json.JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.None, new HexStringJsonConverter()).ToString();
+                    } else {
+                        return Newtonsoft.Json.JsonConvert.SerializeObject(result, Newtonsoft.Json.Formatting.None).ToString();
+                    }
+                } catch { ; }
+            }
             return result.ToString();
         }
 

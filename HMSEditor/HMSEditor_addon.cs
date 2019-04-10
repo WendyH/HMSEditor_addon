@@ -207,9 +207,7 @@ namespace HmsAddons {
                 } else {
                     EditBox.SetCaretPos(aLine, aChar);
                     if (EditBox.DebugMode) {
-                        if (EditBox.ValueForm.Visible) {
-                            EditBox.ValueForm.Value = EditBox.EvalVariableValue(EditBox.ValueForm.Expression);
-                        } else if (EditBox.ValueHint.IsShowing) {
+                        if (EditBox.ValueHint.IsShowing) {
                             EditBox.ValueHint.Value = EditBox.EvalVariableValue(EditBox.ValueHint.Expression);
                         }
                     }

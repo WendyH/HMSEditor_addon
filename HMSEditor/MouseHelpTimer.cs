@@ -61,22 +61,6 @@ namespace HMSEditorNS {
             return value;
         }
 
-        private static string ObjectToValues(string expression) {
-            var activeEditor = HMSEditor.ActiveEditor;
-            string pred = "["; bool strict = false;
-            int.TryParse(activeEditor.EvalVariableValue("Length(" + expression + ")"), out int len);
-            if (len > 32) { len = 32; strict = true; }
-            for (int i = 0; i < len; i++) {
-                string elem = activeEditor.EvalVariableValue(expression + "[" + i + "]");
-                string typeVal = activeEditor.EvalVariableValue("VarType(" + expression + "[" + i + "])");
-                if (i > 0) pred += ",";
-                pred += elem;
-            }
-            if (strict) { pred += ",..."; }
-            pred += "]";
-            return pred;
-        }
-
         private static bool IsDigitsOnly(string str) {
             foreach (char c in str) if (c < '0' || c > '9') return false;
             return true;
@@ -88,13 +72,7 @@ namespace HMSEditorNS {
                 tb.ReshowCaret = true;
                 var activeEditor = HMSEditor.ActiveEditor;
                 if (activeEditor != null) {
-                    string typeVal = ""; string value="";
-                    if (isItem)
-                        typeVal = activeEditor.EvalVariableValue("VarType(" + expression + ")");
-                    if (typeVal == "8204") // Это Array
-                        value = ObjectToValues(expression);
-                    else
-                        value = activeEditor.EvalVariableValue(expression);
+                    string value = activeEditor.EvalVariableValue(expression);
                     if (value == realExpression) return; // Не показываем просто числовые значения
 
                     if (type == "TJsonObject") {
@@ -111,10 +89,10 @@ namespace HMSEditorNS {
 
                     if (value.Length < 16) {
                         if (IsDigitsOnly(value) && NativeMethods.KeyState(NativeMethods.VirtualKeyStates.VK_CONTROL))
-                            value = string.Format("0x{0:X}", ulong.Parse(value));
+                            value = string.Format("0x{0:x}", ulong.Parse(value));
                     }
 
-                    if (value.Length > MaxValueLength || activeEditor.ValueForm.Visible) {
+                    if (value.Length > MaxValueLength && !activeEditor.ValueForm.Visible) {
                         //value = value.Substring(0, MaxValueLength) + "...";
                         activeEditor.ValueForm.Show(tb, expression, value, realExpression);
                     } else {
@@ -188,5 +166,22 @@ namespace HMSEditorNS {
 
         }
 
+    }
+
+    public sealed class HexStringJsonConverter : JsonConverter {
+        public override bool CanConvert(Type objectType) {
+            return typeof(int).Equals(objectType) || typeof(uint).Equals(objectType);
+        }
+
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
+            writer.WriteValue($"0x{value:x}");
+        }
+
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
+            var str = reader.ReadAsString();
+            if (str == null || !str.StartsWith("0x"))
+                throw new JsonSerializationException();
+            return Convert.ToUInt32(str);
+        }
     }
 }
