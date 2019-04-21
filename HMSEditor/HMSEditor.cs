@@ -1428,7 +1428,11 @@ namespace HMSEditorNS {
                     // Mouse mooving
                     MouseLocation = e.Location;
                     ActiveEditor = this;
-                    if (ValueHint.Visible) ValueHint.Visible = false;
+                    if (ValueHint.Visible) {
+                        if (!ValueHint.CheckMouseNearly()) {
+                            ValueHint.Close();
+                        }
+                    }
                     MouseTimer.Change(DebugMode ? 450 : 800, Timeout.Infinite); // Show help tooltip from mouse cursor
                 }
             }
