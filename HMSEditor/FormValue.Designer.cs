@@ -24,10 +24,10 @@
         /// </summary>
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormValue));
-            FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
+            FastColoredTextBoxNS.ServiceColors serviceColors2 = new FastColoredTextBoxNS.ServiceColors();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.cbFormatting = new System.Windows.Forms.CheckBox();
             this.btnClose = new System.Windows.Forms.Button();
+            this.cbFormatting = new System.Windows.Forms.CheckBox();
             this.panelTop = new System.Windows.Forms.Panel();
             this.groupRegex = new System.Windows.Forms.GroupBox();
             this.tbResult = new System.Windows.Forms.TextBox();
@@ -45,6 +45,7 @@
             this.tbExpression = new System.Windows.Forms.TextBox();
             this.lblExpression = new System.Windows.Forms.Label();
             this.fastColoredTB = new FastColoredTextBoxNS.FastColoredTextBox();
+            this.cbWrap = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panelTop.SuspendLayout();
             this.groupRegex.SuspendLayout();
@@ -54,30 +55,18 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.panel1.Controls.Add(this.cbFormatting);
             this.panel1.Controls.Add(this.btnClose);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 366);
+            this.panel1.Location = new System.Drawing.Point(0, 372);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(916, 42);
+            this.panel1.Size = new System.Drawing.Size(916, 36);
             this.panel1.TabIndex = 1;
-            // 
-            // cbFormatting
-            // 
-            this.cbFormatting.AutoSize = true;
-            this.cbFormatting.Location = new System.Drawing.Point(12, 15);
-            this.cbFormatting.Name = "cbFormatting";
-            this.cbFormatting.Size = new System.Drawing.Size(249, 17);
-            this.cbFormatting.TabIndex = 4;
-            this.cbFormatting.Text = "Преобразовать в человекочитаемый вывод";
-            this.cbFormatting.UseVisualStyleBackColor = true;
-            this.cbFormatting.CheckedChanged += new System.EventHandler(this.chkFormatting_CheckedChanged);
             // 
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(821, 9);
+            this.btnClose.Location = new System.Drawing.Point(821, 5);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(87, 27);
             this.btnClose.TabIndex = 0;
@@ -85,8 +74,21 @@
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
+            // cbFormatting
+            // 
+            this.cbFormatting.AutoSize = true;
+            this.cbFormatting.Location = new System.Drawing.Point(159, 36);
+            this.cbFormatting.Name = "cbFormatting";
+            this.cbFormatting.Size = new System.Drawing.Size(109, 17);
+            this.cbFormatting.TabIndex = 4;
+            this.cbFormatting.Text = "Форматировать";
+            this.cbFormatting.UseVisualStyleBackColor = true;
+            this.cbFormatting.CheckedChanged += new System.EventHandler(this.chkFormatting_CheckedChanged);
+            // 
             // panelTop
             // 
+            this.panelTop.Controls.Add(this.cbWrap);
+            this.panelTop.Controls.Add(this.cbFormatting);
             this.panelTop.Controls.Add(this.groupRegex);
             this.panelTop.Controls.Add(this.chkUseRegex);
             this.panelTop.Controls.Add(this.tbExpression);
@@ -236,8 +238,10 @@
             // 
             // chkUseRegex
             // 
+            this.chkUseRegex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkUseRegex.AutoSize = true;
-            this.chkUseRegex.Location = new System.Drawing.Point(12, 36);
+            this.chkUseRegex.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.chkUseRegex.Location = new System.Drawing.Point(776, 36);
             this.chkUseRegex.Name = "chkUseRegex";
             this.chkUseRegex.Size = new System.Drawing.Size(132, 17);
             this.chkUseRegex.TabIndex = 2;
@@ -308,17 +312,17 @@
             this.fastColoredTB.RightBracket2 = ')';
             this.fastColoredTB.RoundedCornersRadius = 3;
             this.fastColoredTB.SelectionHighlightingForLineBreaksEnabled = false;
-            serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
-            serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
-            serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
-            serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
-            this.fastColoredTB.ServiceColors = serviceColors1;
+            serviceColors2.CollapseMarkerBackColor = System.Drawing.Color.White;
+            serviceColors2.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors2.CollapseMarkerForeColor = System.Drawing.Color.Silver;
+            serviceColors2.ExpandMarkerBackColor = System.Drawing.Color.White;
+            serviceColors2.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors2.ExpandMarkerForeColor = System.Drawing.Color.Red;
+            this.fastColoredTB.ServiceColors = serviceColors2;
             this.fastColoredTB.ShowChangedLinesOnScrollbar = false;
             this.fastColoredTB.ShowLineNumbers = false;
             this.fastColoredTB.ShowScrollBars = false;
-            this.fastColoredTB.Size = new System.Drawing.Size(916, 215);
+            this.fastColoredTB.Size = new System.Drawing.Size(916, 221);
             this.fastColoredTB.SourceTextBox = this.fastColoredTB;
             this.fastColoredTB.TabIndex = 3;
             this.fastColoredTB.Text = "<HTML>";
@@ -326,6 +330,17 @@
             this.fastColoredTB.WordWrap = true;
             this.fastColoredTB.WordWrapAutoIndent = false;
             this.fastColoredTB.Zoom = 100;
+            // 
+            // cbWrap
+            // 
+            this.cbWrap.AutoSize = true;
+            this.cbWrap.Location = new System.Drawing.Point(8, 36);
+            this.cbWrap.Name = "cbWrap";
+            this.cbWrap.Size = new System.Drawing.Size(148, 17);
+            this.cbWrap.TabIndex = 10;
+            this.cbWrap.Text = "Переносить по строкам";
+            this.cbWrap.UseVisualStyleBackColor = true;
+            this.cbWrap.CheckedChanged += new System.EventHandler(this.CbWrap_CheckedChanged);
             // 
             // FormValue
             // 
@@ -345,7 +360,6 @@
             this.Text = "Просмотр значения";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormValue_KeyDown);
             this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.panelTop.ResumeLayout(false);
             this.panelTop.PerformLayout();
             this.groupRegex.ResumeLayout(false);
@@ -376,5 +390,6 @@
         private System.Windows.Forms.Label label3;
         private FastColoredTextBoxNS.FastColoredTextBox fastColoredTB;
         private System.Windows.Forms.CheckBox cbFormatting;
+        private System.Windows.Forms.CheckBox cbWrap;
     }
 }

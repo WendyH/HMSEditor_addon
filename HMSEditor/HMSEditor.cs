@@ -259,7 +259,8 @@ namespace HMSEditorNS {
             TB.   ToolTip?.RemoveAll();
             PopupMenu.ToolTip?.RemoveAll();
             PopupMenu.Close();
-            //ValueForm.Hide();
+            ValueForm?.Hide();
+            ValueHint?.Close();
         }
 
         private void HideToolTip4Function(bool noCheckLine = false) {
@@ -855,13 +856,6 @@ namespace HMSEditorNS {
                     RunLineRised = true; // resets in SetCaretPos() and OnRunningStateChange()
                     string line = TB.Lines[TB.Selection.Start.iLine];
                     HmsScriptFrame.ProcessCommand(Constatns.ecRunLine);
-                    //if (ValueForm.Visible) {
-                    //    if (line.IndexOf(ValueForm.RealExpression, StringComparison.Ordinal) >= 0)
-                    //        ValueForm.Value = EvalVariableValue(ValueForm.Expression);
-                    //} else if (ValueHint.IsShowing) {
-                    //    if (line.IndexOf(ValueHint.RealExpression, StringComparison.Ordinal) >= 0)
-                    //        ValueHint.Value = EvalVariableValue(ValueHint.Expression);
-                    //}
                 } catch (Exception e) {
                     HMS.LogError(e.ToString());
                 }

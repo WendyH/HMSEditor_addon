@@ -41,10 +41,16 @@ namespace HMSEditorNS {
             cbPattern.Items.Add(@"<img[^>]+src=""(.*?)""");
 
             fastColoredTB.WordWrap = true;
+            cbWrap.Checked = fastColoredTB.WordWrap;
             chkUseRegex_CheckedChanged(null, EventArgs.Empty);
 
             Themes.LoadThemesFromString(HMS.ReadTextFromResource("ColorThemes.txt"));
             Themes.SetTheme(fastColoredTB, "Dawn");
+
+            ToolTip tooltipFormat = new ToolTip();
+            tooltipFormat.SetToolTip(cbFormatting, "Преобразовать в человекочитаемый вывод");
+            tooltipFormat.SetToolTip(cbWrap      , "Включение режима переноса строк по словам");
+            tooltipFormat.SetToolTip(chkUseRegex , "Включение панели для работы с запросами по регулярным выражениям");
         }
 
         protected override void OnKeyDown(KeyEventArgs e) {
@@ -250,6 +256,7 @@ namespace HMSEditorNS {
                             opt.KeepArrayIndentation = false;
                             Value = beautifier.Beautify(text, opt);
                             fastColoredTB.WordWrap = false;
+                            cbWrap.Checked = fastColoredTB.WordWrap;
                             return;
                         } else if (firstChar == "<") {
                             Value = FormatHtml(_src);
@@ -260,6 +267,7 @@ namespace HMSEditorNS {
             }
             Value = _src;
             fastColoredTB.WordWrap = true;
+            cbWrap.Checked = fastColoredTB.WordWrap;
         }
 
         /// <summary>
@@ -360,5 +368,8 @@ namespace HMSEditorNS {
             }
         }
 
+        private void CbWrap_CheckedChanged(object sender, EventArgs e) {
+            fastColoredTB.WordWrap = cbWrap.Checked;
+        }
     }
 }

@@ -190,6 +190,11 @@ namespace HMSEditorNS {
                 ctl.Copy();
                 return;
             }
+            if (e.KeyCode == Keys.Escape) {
+                e.Handled = true;
+                Close();
+                return;
+            }
             //e.Handled = false;
             //NativeMethods.SendNotifyKey(HMSEditor.ActiveEditor.TB.Handle, (int)e.KeyCode);
 
