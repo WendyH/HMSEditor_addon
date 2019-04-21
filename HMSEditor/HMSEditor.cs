@@ -281,8 +281,7 @@ namespace HMSEditorNS {
             if (iChar > 0) iChar -= 1;
             TB.Selection.Start = new Place(iChar, iLine);
             RunLineRised = false;
-            //if (DebugMode) CheckDebugState(); // 4 getting debug line
-            CheckDebugState(); // 4 getting debug line
+            if (DebugMode) CheckDebugState(); // 4 getting debug line
 
             int iFirstLine = TB.YtoLineIndex() + 2;
             int iLastLine  = TB.YtoLineIndex(TB.VerticalScroll.Value + TB.Height) + iFirstLine-4;
@@ -1007,8 +1006,8 @@ namespace HMSEditorNS {
             if      (e.KeyCode == Keys.F10) btnAbout_Click(null, EventArgs.Empty);
             else if (e.KeyCode == Keys.F11) tsMain.Visible = !tsMain.Visible;
             else if (e.KeyCode == Keys.F12) GotoDefinition();
-            else if (e.KeyCode == Keys.F1 ) ShowDiff();
             else if (e.KeyCode == Keys.F2 ) RenameVariable();
+            else if (e.KeyCode == Keys.F4 ) ShowDiff();
             else if (e.KeyCode == Keys.F5 ) ToggleBreakpoint();
             else if (e.KeyCode == Keys.F7 ) EvaluateDialog();
             else if (e.KeyCode == Keys.F8 ) RunLine();
@@ -1746,7 +1745,7 @@ namespace HMSEditorNS {
                         keywords = "#include|#define|new|break|continue|exit|delete|return|if|else|switch|default|case|do|while|for|try|finally|except|in|is|nil|null|true|false|";
                         snippets = "for (i=0; i < ^; i++) {\n}|while (^)";
                         snippets += "|JSON = TJsonObject.Create();\ntry {\n^JSON.LoadFromString(sData);\nJARRAY = JSON.AsArray; if (JARRAY == nil) return;\nfor (i = 0; i < JARRAY.Length; i++) {\nVIDEO = JARRAY[i];\n}\n} finally { JSON.Free; }\n";
-                        snippets += "|RE = TRegExpr.Create('^<section>(.*?)</section>', PCRE_SINGLELINE);\ntry {\nif (RE.Search(sHtml)) do {\n\n}\n} finally { RE.Free; }\n";
+                        snippets += "|RE = TRegExpr.Create('^<section>(.*?)</section>', PCRE_SINGLELINE);\ntry {\nif (RE.Search(sHtml)) do {\n\n} while (RE.SearchAgain());\n} finally { RE.Free; }\n";
                         break;
                     case "PascalScript":
                         HMS.InitItemsBoolean(false);
@@ -1817,9 +1816,36 @@ namespace HMSEditorNS {
                     var foundItem = HMS.ItemsClass.GetItemOrNull(item.MenuText);
                     if (foundItem != null) {
                         if (foundItem.Help.Length == 0) foundItem.Help = descr;
+                        // Поиск методов и свойств класса
+                        MatchCollection mcChild = Regex.Matches(matchItem.Groups[1].Value, "<item text=\"(.*?)\"");
+                        foreach (Match m in mcChild) {
+                            var childItem = HMS.GetHmsItemFromLine(m.Groups[1].Value);
+                            var cmd = childItem.ToolTipTitle;
+                            if      (cmd.StartsWith("function" )) { childItem.ImageIndex = ImagesIndex.Method; childItem.Kind = DefKind.Method   ; }
+                            else if (cmd.StartsWith("procedure")) { childItem.ImageIndex = ImagesIndex.Method; childItem.Kind = DefKind.Procedure; }
+                            else if (cmd.StartsWith("property" )) { childItem.ImageIndex = ImagesIndex.Field ; childItem.Kind = DefKind.Property ; }
+                            else if (cmd.StartsWith("index"    )) { childItem.ImageIndex = ImagesIndex.Enum  ; childItem.Kind = DefKind.Property ; }
+                            else if (cmd.StartsWith("event"    )) { childItem.ImageIndex = ImagesIndex.Event ; childItem.Kind = DefKind.Event    ; }
+                            var name = Regex.Replace(cmd, @"^(function|procedure|property|index property|event)\s+", "");
+                            name = Regex.Match(name, @"\w+").Value.Trim();
+                            if ((name.ToLower() == "create") || foundItem.ClassInfo.MemberItems.ContainsName(name)) continue;
+                            string newdescription = "Новый метод/свойство класса "+ foundItem.Text + " Type: " + foundItem.Type;
+                            foundItem.ClassInfo.MemberItems.Add(childItem);
+                            if (name.Length < 1) name += " ";
+                            childItem.Text     = name;
+                            childItem.MenuText = name;
+                            childItem.Level    = 1;
+                            childItem.Help     = "Нет в базе данных HMSEditor. Добавлено из описания классов новой версии HMS автоматически.";
+                            if (childItem.ImageIndex == ImagesIndex.Enum) childItem.Text = name + "[^]";
+                            else if (childItem.ImageIndex == ImagesIndex.Method) {
+                                if (cmd.IndexOf('(') > 0) childItem.Text = name + "(^)";
+                            }
+                            if (LogAsErrorNotInDatabaseItems)
+                                newdescription += "\r\n  " + KindToString(childItem.Kind) + " " + childItem.Text + "  Type: " + childItem.Type + "  " + (childItem.Help.Length > 0 ? "  Description: " + childItem.Help : "");
+                        }
                     } else {
                         string newdescription = "Новый класс: " + item.Text + " Type: " + item.Type + " Description: " + item.Help;
-                        item.Help += "\nНет в базе данных HMSEditor. Добавлен из описания классов новой версии HMS автоматически.";
+                        item.Help += "\nНет в базе данных HMSEditor. Добавлено из описания классов новой версии HMS автоматически.";
                         var hmsclass = new HMSClassInfo {
                             Name = item.Text,
                             Type = item.Type,

@@ -20,7 +20,7 @@ namespace HmsAddons {
                             Title            = HMSEditor.Title,
                             Description      = HMSEditor.Description,
                             RequiredVersion  = "2.03",
-                            CheckedOnVersion = "3.00"
+                            CheckedOnVersion = "3.01"
                         }
                     };
 
@@ -134,7 +134,6 @@ namespace HmsAddons {
         public uint GetCapabilities(ref int aCapabilities) {
             try {
                 aCapabilities = Constatns.ecEditor;
-
             } catch { return HRESULT.E_UNEXPECTED; }
             return HRESULT.S_OK;
         }
@@ -180,10 +179,7 @@ namespace HmsAddons {
 
         public uint InvalidateLine(int aLine) {
             if (EditBox != null) {
-                bool f = EditBox.TB.Focused;
-                EditBox.CheckDebugState();
                 EditBox.Invalidate();
-                if (f) EditBox.TB.Select();
                 return HRESULT.S_OK;
             }
             return HRESULT.E_UNEXPECTED;
@@ -191,7 +187,6 @@ namespace HmsAddons {
 
         public uint Repaint() {
             if (EditBox != null) {
-                EditBox.CheckDebugState();
                 EditBox.Refresh();
                 return HRESULT.S_OK;
             }
@@ -219,8 +214,6 @@ namespace HmsAddons {
 
         public uint SetFocus() {
             if (EditBox != null) {
-                EditBox.CheckDebugState();
-                EditBox.TB.Focus();
                 EditBox.TB.Select();
                 return HRESULT.S_OK;
             }

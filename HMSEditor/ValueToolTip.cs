@@ -15,22 +15,11 @@ namespace HMSEditorNS {
         private Size   MouseDX  = new Size(20, 20);
         private Button Btn      = new Button();
         private Size   MaxSize  = new Size(600, 400);
+        private ToolStripDropDownButton tsbtn = new ToolStripDropDownButton();
         public string  Expression     = "";
         public string  RealExpression = "";
         public bool    IsShowing;
         public string Value { get { return ctl.Text; } set { ctl.Text = value; RecalcSize();  } }
-
-        protected override CreateParams CreateParams {
-            get {
-                CreateParams baseParams = base.CreateParams;
-
-                const int WS_EX_NOACTIVATE = 0x08000000;
-                const int WS_EX_TOOLWINDOW = 0x00000080;
-                baseParams.ExStyle |= (int)(WS_EX_NOACTIVATE | WS_EX_TOOLWINDOW);
-
-                return baseParams;
-            }
-        }
 
         public ValueToolTip() {
             Btn.AutoSize = false;
@@ -69,7 +58,7 @@ namespace HMSEditorNS {
             //this.BackColor = Color.LightGray;
             Initialize();
             BackColor = ctl.BackColor;
-            AutoClose = true;
+            AutoClose = false;
         }
 
         private void Btn_Click(object sender, EventArgs e) {
@@ -164,12 +153,12 @@ namespace HMSEditorNS {
         }
 
         private void Menustrip_Opening(object sender, System.ComponentModel.CancelEventArgs e) {
-            AutoClose = false;
+            //AutoClose = false;
             menustrip.Items[0].Enabled = ctl.SelectionLength > 0;
         }
 
         private void Menustrip_Closing(object sender, ToolStripDropDownClosingEventArgs e) {
-            AutoClose = true;
+            //AutoClose = true;
         }
 
         private void SelectAll_Click(object sender, EventArgs e) {
@@ -193,17 +182,20 @@ namespace HMSEditorNS {
                 ctl.Copy();
                 return;
             }
-            if (Array.IndexOf(SkipKeys, e.KeyCode)>=0) {
-                base.OnKeyDown(e); 
-                return; 
-            }
+            e.Handled = false;
+           // NativeMethods.SendNotifyKey(HMSEditor.ActiveEditor.TB.Handle, (int)e.KeyCode);
 
-            if ((e.KeyValue >= (int)Keys.F1 && e.KeyValue <= (int)Keys.F12) && HMSEditor.ActiveEditor != null) {
-                e.Handled = true;
-                NativeMethods.SendNotifyKey(HMSEditor.ActiveEditor.TB.Handle, (int)e.KeyCode);
-                return;
-            }
-            base.OnKeyDown(e);
+            //if (Array.IndexOf(SkipKeys, e.KeyCode)>=0) {
+            //    base.OnKeyDown(e); 
+            //    return; 
+            //}
+
+            //if ((e.KeyValue >= (int)Keys.F1 && e.KeyValue <= (int)Keys.F12) && HMSEditor.ActiveEditor != null) {
+            //    e.Handled = true;
+            //    NativeMethods.SendNotifyKey(HMSEditor.ActiveEditor.TB.Handle, (int)e.KeyCode);
+            //    return;
+            //}
+            //base.OnKeyDown(e);
         }
 
         protected override void OnClosing(ToolStripDropDownClosingEventArgs e) {
@@ -211,6 +203,7 @@ namespace HMSEditorNS {
                 e.Cancel = true;
                 return;
             }
+            AutoClose = true;
             IsShowing = false;
             timer.Stop();
             base.OnClosing(e);
@@ -237,17 +230,12 @@ namespace HMSEditorNS {
         public void RecalcSize() {
             SizeF textSize = new Size(MaxSize.Width, MaxSize.Height);
             int linesFitted = 0;
-            //if (ctl.Text.Length < 500) {
-                var g = ctl.CreateGraphics();
-                //g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SystemDefault;
-                StringFormat stringFormat = StringFormat.GenericTypographic;
-                //stringFormat.Trimming = StringTrimming.Word;
-                //stringFormat.FormatFlags = StringFormatFlags.FitBlackBox;
-                textSize = g.MeasureString(ctl.Text, ctl.Font, textSize, stringFormat, out int charsFitted, out linesFitted);
-                textSize.Height += linesFitted + 1;
-            //}
+            var g = ctl.CreateGraphics();
+            StringFormat stringFormat = StringFormat.GenericTypographic;
+            textSize = g.MeasureString(ctl.Text, ctl.Font, textSize, stringFormat, out int charsFitted, out linesFitted);
+            textSize.Height += linesFitted + 1;
             //textSize.Height += 8;
-            textSize.Width += 6;
+            textSize.Width += 8;
             ctl.ScrollBars = textSize.Height+2 >= MaxSize.Height ? RichTextBoxScrollBars.Vertical : RichTextBoxScrollBars.None;
 
             int h = SystemInformation.HorizontalResizeBorderThickness, w = SystemInformation.VerticalResizeBorderThickness;
@@ -270,8 +258,8 @@ namespace HMSEditorNS {
             Show(control, point);
             OnResize(EventArgs.Empty);
             IsShowing = true;
+            AutoClose = false;
             timer.Start();
-            control.Focus();
         }
 
         private void Initialize() {
@@ -285,6 +273,7 @@ namespace HMSEditorNS {
             host.Size     = ctl.Size;
             Size = ctl.Size;
             Items.Add(host);
+            Items.Add(tsbtn);
         }
     }
 

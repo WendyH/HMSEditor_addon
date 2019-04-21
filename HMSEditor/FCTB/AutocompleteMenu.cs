@@ -464,8 +464,10 @@ namespace FastColoredTextBoxNS
             HMSClassInfo classInfo = HMS.HmsClasses[className];  // variable founded - search type in classes
             if (!string.IsNullOrEmpty(classInfo.Name)) {
                 foreach (HMSItem childItem in classInfo.MemberItems) {
-                    if (childItem.MenuText.ToLower().StartsWith(namePart)) {
+                    if (childItem.MenuText.ToLower().StartsWith(namePart) && !visibleItems.ContainsName(childItem.MenuText)) {
                         childItem.Parent = Menu;
+                        //if ((childItem.MenuText == "ClassName") && (childItem.Help.IndexOf(classInfo.Name)<1))
+                        //    childItem.Help += " (возвращает \"" + classInfo.Name + "\")";
                         visibleItems.Add(childItem);
                     }
                 }
@@ -645,6 +647,7 @@ namespace FastColoredTextBoxNS
                         foundSelected = GetActiveLastwordInVisibleItems(text, lastword);
                     }
                 }
+                visibleItems.Sort(new HMSItemComparer());
                 // > By WendyH -------------------------------------
                 if (!doNotGetFromSourceItems) {
                     AutocompleteItems notExacctly = new AutocompleteItems();

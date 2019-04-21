@@ -76,14 +76,8 @@ namespace HMSEditorNS {
     }
 
     public class HMSItemComparer: IComparer<HMSItem> {
-        private readonly string name;
-
-        public HMSItemComparer(string name) {
-            this.name = name.ToLower();
-        }
-
         public int Compare(HMSItem item1, HMSItem item2) {
-            return String.Compare(item1.MenuText.ToLower(), name, StringComparison.Ordinal);
+            return string.Compare(item1.MenuText.ToLower(), item2.MenuText.ToLower(), StringComparison.Ordinal);
         }
     }
 

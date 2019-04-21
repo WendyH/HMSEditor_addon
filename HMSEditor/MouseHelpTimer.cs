@@ -22,9 +22,8 @@ namespace HMSEditorNS {
         /// <param name="type">Тип переменной</param>
         /// <param name="text">Часть текста (имя меременной, свойства)</param>
         /// <returns></returns>
-        private static string CheckTypeForToStringRules(HMSItem item, string text) {
-            if ((text.EndsWith("]") || text.EndsWith(")")) && item.ImageIndex != ImagesIndex.Enum) return text;
-            string type = item.Type;
+        private static string CheckTypeForToStringRules(string type, string text) {
+            if (text.EndsWith("]") || text.EndsWith(")")) return text;
             var info = HMS.HmsClasses[type];
             if (info.MemberItems.ContainsName("SaveToString") && type.ToLower()!="tbitmap32")
                 return text + ".SaveToString";
@@ -151,12 +150,17 @@ namespace HMSEditorNS {
                     if (debugMode && (OK4Evaluate(item) || selectMode)) {
                         // Проверяем тип объекта класса, может быть удобней представить в виде текста? (TStrings или TJsonObject)
                         string realExpression = expression;
-                        expression = CheckTypeForToStringRules(item, expression);
+                        if (TB.Language == Language.JScript)
+                            expression = TryGetTypeOfVariabe(ActiveHMSEditor, item, expression);
+                        else if (item.ImageIndex != ImagesIndex.Enum)
+                            expression = CheckTypeForToStringRules(item.Type, expression);
                         ShowValue(TB, point, expression, realExpression, true, item.Type);
                         return;
                     }
                     ShowToolTip(TB, point, item.ToolTipTitle, item.ToolTipText, "", item.Help);
                 } else if (debugMode && !HMS.WordIsKeyword(expression)) {
+                    if (TB.Language == Language.JScript)
+                        expression = TryGetTypeOfVariabe(ActiveHMSEditor, item, expression);
                     ShowValue(TB, point, expression, expression);
                 }
 
@@ -165,7 +169,16 @@ namespace HMSEditorNS {
             }
 
         }
-
+        public static string TryGetTypeOfVariabe(HMSEditor ActiveHMSEditor, HMSItem item, string expression) {
+            System.Windows.Forms.MethodInvoker action = delegate {
+                string classname = ActiveHMSEditor.EvalVariableValue(expression + ".ClassName");
+                if (classname.Length > 0)
+                    expression = CheckTypeForToStringRules(classname, expression);
+            };
+            if (ActiveHMSEditor.InvokeRequired) ActiveHMSEditor.Invoke(action);
+            else action();
+            return expression;
+        }
     }
 
     public sealed class HexStringJsonConverter : JsonConverter {

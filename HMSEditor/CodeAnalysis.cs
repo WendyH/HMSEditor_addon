@@ -215,6 +215,7 @@ namespace HMSEditorNS {
                     item.ImageIndex    = ImagesIndex.Procedure;
                     item.PositionStart = lastEndPosition + matchMainProc.Index;
                     item.PositionEnd   = txt.Length - 1;
+                    item.PositionReal  = lastEndPosition + matchMainProc.Index + 1;
                     Functions.Add(item);
                     break;
                 }
@@ -231,7 +232,7 @@ namespace HMSEditorNS {
             char[] txt = text.ToCharArray();
             foreach (HMSItem item in Functions) {
                 for (int i = item.PositionReal; i < item.PositionEnd; i++) {
-                    if (item.Type == "MainProcedure") continue;
+                    //if (item.Type == "MainProcedure") continue;
                     if (i >= txt.Length) break;
                     txt[i] = txt[i] != '\n' ? CensChar : '\n';
                 }
@@ -300,7 +301,7 @@ namespace HMSEditorNS {
 
             HMSItem itemFunction = GetCurrentProcedure(result.Functions, position);
 
-            if ((itemFunction != null) && (itemFunction.Type != "MainProcedure")) {
+            if (itemFunction != null) {
                 if ((itemFunction.PositionStart == result.LastPtocedureIndex) && !result.NeedRecalcVars) return; // We are in same procedure - skip update
                 result.LastPtocedureIndex = itemFunction.PositionStart;
             } else if ((result.LastPtocedureIndex == 0) && !result.NeedRecalcVars) {
@@ -310,7 +311,7 @@ namespace HMSEditorNS {
 
             result.NeedRecalcVars = false;
             result.LocalVars.Clear();
-            if ((itemFunction != null) && (itemFunction.Type != "MainProcedure")) {
+            if (itemFunction != null) {
                 if (result.Variables.Count==0) {
                     string contextGlobal = GetGlobalContext(result.Editor.TB.WithoutStringAndComments(result.Editor.Text), result.Functions);
                     if (contextGlobal.Length > 0) GetVariables(e, result, contextGlobal, 0, result.Variables, result.LocalVars);
@@ -463,6 +464,15 @@ namespace HMSEditorNS {
                         } else
                             continue;
                     }
+                    if (type.ToLower()=="variant") {
+                        // Попытка определения реального типа переменной после присвоения
+                        var mt = Regex.Match(names, "=([^;$]+)");
+                        if (mt.Success) {
+                            string detectedType = mt.Groups[1].Value.Trim();
+                            if (DetectTypeOfHmsItem(result.Editor, ref detectedType))
+                                type = detectedType;
+                        }
+                    }
                     names = HMS.GetTextWithoutBrackets(names); // Убираем скобки и всё что в них
                     names = regexAssignment.Replace(names, evaluatorSpaces); // Убираем присвоение - знак равно и после
                     names = regexConstantKeys.Replace(names, evaluatorSpaces); // Убираем ключевые слова констант (var, const)
@@ -549,6 +559,8 @@ namespace HMSEditorNS {
                 type = "Integer";
             else if (type.Length > 0 && (type[0] == '\'' || type[0] == '"'))
                 type = "String";
+            else if (type.StartsWith("["))
+                type = "Array";
             else
                 return false;
             return true;

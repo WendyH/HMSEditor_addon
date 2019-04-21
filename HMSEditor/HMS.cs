@@ -367,6 +367,8 @@ namespace HMSEditorNS {
                                         ClassesString += hmsclass.Name.ToLower() + "|";
                                     }
 
+                                } else if (hmsclass == null) {
+                                    continue;
                                 } else if (indent == 2) {
                                     // it's method or property of the class
                                     var cmd = item.ToolTipTitle;
@@ -390,8 +392,7 @@ namespace HMSEditorNS {
                                         // hmm... only one static method
                                         isStatic = true;
                                         hmsclass?.StaticItems.Add(item);
-                                    }
-                                    else {
+                                    } else {
                                         isStatic = false;
                                         hmsclass?.MemberItems.Add(item);
                                     }
@@ -474,7 +475,7 @@ namespace HMSEditorNS {
             BuildAutocompleteItemsFromResourse(ResourcePath + "hms_func.txt", ImagesIndex.Procedure, "", ItemsFunction, DefKind.Function);
 
             // Load a built-in Variables
-            BuildAutocompleteItemsFromResourse(ResourcePath + "hms_vars.txt"     , ImagesIndex.Field, "Встроенная переменная", ItemsVariable, DefKind.Variable);
+            BuildAutocompleteItemsFromResourse(ResourcePath + "hms_vars.txt", ImagesIndex.Field, "Встроенная переменная", ItemsVariable, DefKind.Variable);
                 
             // Load a built-in Constants
             BuildAutocompleteItemsFromResourse(ResourcePath + "hms_constants.txt", ImagesIndex.Enum , "Встроенная константа" , ItemsConstant, DefKind.Constant);
