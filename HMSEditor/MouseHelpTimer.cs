@@ -36,6 +36,14 @@ namespace HMSEditorNS {
                 case "TJsonArray":
                     return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: TJsonArray)\"#13+\"Length=\"+Str(" + text + ".Length)";
             }
+            if (info.MemberItems.Count > 0) {
+                string cmd = "\"" + text + "=\"+Str(" + text + ")+\" (Тип: " + type + ")\"";
+                foreach (var item in info.MemberItems) {
+                    if ((item.Kind != DefKind.Property) || (Regex.IsMatch(item.Text, "\\W"))) continue;
+                    cmd += "+#13+\""+ item.MenuText + "=\"+Str(" + text + "." + item.MenuText + ")";
+                }
+                return cmd;
+            }
             return text;
         }
 
