@@ -19,8 +19,7 @@ namespace FastColoredTextBoxNS
         string MBCaption = "HMS Editor: Поиск";
         Timer timer = new Timer();
 
-        public FindForm(FastColoredTextBox tb)
-        {
+        public FindForm(FastColoredTextBox tb) {
             InitializeComponent();
             this.tb = tb;
             timer.Interval = 500;
@@ -47,7 +46,7 @@ namespace FastColoredTextBoxNS
             if (!Visible) return;
             FoundCount = 0;
             try {
-                string pattern = tbFind.Text;
+                string pattern = cbFind.Text;
                 if (pattern!="") {
                     RegexOptions opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
                     if (!cbRegex.Checked) pattern = Regex.Escape(pattern);
@@ -141,12 +140,19 @@ namespace FastColoredTextBoxNS
             }
         }
 
-        private void tbFind_KeyPress(object sender, KeyPressEventArgs e)
+        private void cbFind_KeyPress(object sender, KeyPressEventArgs e)
         {
+            ResetSearch();
             if (e.KeyChar == '\r')
             {
-                FindNext(tbFind.Text);
+                FindNext(cbFind.Text);
                 e.Handled = true;
+
+                // Store search history
+                if (!string.IsNullOrWhiteSpace(cbFind.Text) && !cbFind.Items.Contains(cbFind.Text))
+                    cbFind.Items.Insert(0, cbFind.Text);
+                while (cbFind.Items.Count > 12) cbFind.Items.RemoveAt(cbFind.Items.Count-1);
+
                 return;
             }
             if (e.KeyChar == '\x1b')
@@ -154,6 +160,7 @@ namespace FastColoredTextBoxNS
                 Hide();
                 e.Handled = true;
                 SetFocusToEditor();
+                return;
             }
         }
 
@@ -180,7 +187,7 @@ namespace FastColoredTextBoxNS
 
         protected override void OnActivated(EventArgs e)
         {
-            tbFind.Focus();
+            cbFind.Focus();
             ResetSearch();
         }
 
@@ -225,11 +232,11 @@ namespace FastColoredTextBoxNS
         }
 
         private void btnForw_Click(object sender, EventArgs e) {
-            FindNext(tbFind.Text);
+            FindNext(cbFind.Text);
         }
 
         private void btnBack_Click(object sender, EventArgs e) {
-            FindPrev(tbFind.Text);
+            FindPrev(cbFind.Text);
         }
 
         private void btnClose_Click(object sender, EventArgs e) {
@@ -238,8 +245,19 @@ namespace FastColoredTextBoxNS
         }
 
         private void FindForm_VisibleChanged(object sender, EventArgs e) {
-            if (!Visible)
+            if (!Visible) {
+                tb.SearchHistory.Clear();
+                foreach (var item in cbFind.Items) tb.SearchHistory.Add(item.ToString());
                 SetFocusToEditor();
+            }
+        }
+
+        private void BtnClose_Leave(object sender, EventArgs e) {
+            cbFind.Select();
+        }
+
+        private void FindForm_Activated(object sender, EventArgs e) {
+            cbFind.Select();
         }
     }
 }

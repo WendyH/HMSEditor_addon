@@ -49,7 +49,7 @@ namespace FastColoredTextBoxNS
             if (!Visible) return;
             FoundCount = 0;
             try {
-                string pattern = tbFind.Text;
+                string pattern = cbFind.Text;
                 if (pattern != "") {
                     RegexOptions opt = cbMatchCase.Checked ? RegexOptions.None : RegexOptions.IgnoreCase;
                     if (!cbRegex.Checked) pattern = Regex.Escape(pattern);
@@ -84,7 +84,7 @@ namespace FastColoredTextBoxNS
         {
             try
             {
-                if (!Find(tbFind.Text)) {
+                if (!Find(cbFind.Text)) {
                     if (FoundCount == 0)
                         MessageBox.Show("К сожалению, ничего найдено не было.\r\n:(", MBCaption, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     else
@@ -163,10 +163,20 @@ namespace FastColoredTextBoxNS
             return false;
         }
 
-        private void tbFind_KeyPress(object sender, KeyPressEventArgs e)
+        private void cbFind_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == '\r')
+            if (e.KeyChar == '\r') {
                 btFindNext_Click(sender, null);
+                e.Handled = true;
+
+                // Store search history
+                if (!string.IsNullOrWhiteSpace(cbFind.Text) && !cbFind.Items.Contains(cbFind.Text))
+                    cbFind.Items.Insert(0, cbFind.Text);
+                while (cbFind.Items.Count > 12) cbFind.Items.RemoveAt(cbFind.Items.Count - 1);
+
+                return;
+
+            }
             if (e.KeyChar == '\x1b') {
                 Hide();
             }
@@ -201,7 +211,7 @@ namespace FastColoredTextBoxNS
                 if (tb.SelectionLength != 0)
                 if (!tb.Selection.ReadOnly) {
                         if (cbRegex.Checked) {
-                            string newtxt = Regex.Replace(tb.Selection.Text, tbFind.Text, tbReplace.Text, RegexOptions.CultureInvariant);
+                            string newtxt = Regex.Replace(tb.Selection.Text, cbFind.Text, tbReplace.Text, RegexOptions.CultureInvariant);
                             tb.InsertText(newtxt);
                         } else
                             tb.InsertText(tbReplace.Text);
@@ -221,7 +231,7 @@ namespace FastColoredTextBoxNS
                 tb.Selection.BeginUpdate();
 
                 //search
-                var ranges = FindAll(tbFind.Text);
+                var ranges = FindAll(cbFind.Text);
                 //check readonly
                 var ro = false;
                 foreach (var r in ranges)
@@ -235,7 +245,7 @@ namespace FastColoredTextBoxNS
                 if (ranges.Count > 0)
                 {
                     if (cbRegex.Checked)
-                        tb.TextSource.Manager.ExecuteCommand(new ReplaceTextCommand(tb.TextSource, ranges, tbReplace.Text, false, tbFind.Text));
+                        tb.TextSource.Manager.ExecuteCommand(new ReplaceTextCommand(tb.TextSource, ranges, tbReplace.Text, false, cbFind.Text));
                     else
                         tb.TextSource.Manager.ExecuteCommand(new ReplaceTextCommand(tb.TextSource, ranges, tbReplace.Text));
                     tb.Selection.Start = new Place(0, 0);
@@ -253,7 +263,7 @@ namespace FastColoredTextBoxNS
 
         protected override void OnActivated(EventArgs e)
         {
-            tbFind.Focus();
+            cbFind.Focus();
             ResetSearch();
         }
 
@@ -316,8 +326,11 @@ namespace FastColoredTextBoxNS
         }
 
         private void ReplaceForm_VisibleChanged(object sender, EventArgs e) {
-            if (!Visible)
+            if (!Visible) {
+                tb.SearchHistory.Clear();
+                foreach (var item in cbFind.Items) tb.SearchHistory.Add(item.ToString());
                 SetFocusToEditor();
+            }
         }
     }
 }

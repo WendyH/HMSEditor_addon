@@ -74,6 +74,7 @@ namespace FastColoredTextBoxNS {
         public SelectionStyle LightYellowSelectionStyle  = new SelectionStyle(Themes.ToColor("#FDFBACFF"), Color.Black);
         public SelectionStyle GreenSelectionStyle        = new SelectionStyle(Themes.ToColor("#FFD2EEB0"), Color.Black);
         public SelectionStyle BlueSelectionStyle         = new SelectionStyle(Themes.ToColor("#FFc6e3ff"), Color.Black);
+        public List<string>   SearchHistory              = new List<string>();
 
         public SelectionStyle StyleDiffRed   = new SelectionStyle(Color.Red  , 2);
         public SelectionStyle StyleDiffGreen = new SelectionStyle(Color.Green, 2);
@@ -294,6 +295,11 @@ namespace FastColoredTextBoxNS {
         protected override void OnResize(EventArgs e) {
             if (!VerticalScroll  .Visible) VerticalScroll.Height  = Height;
             if (!HorizontalScroll.Visible) HorizontalScroll.Width = Width;
+            int vsw = VerticalScroll.Visible ? VerticalScroll.Width : 0;
+            if ((findForm != null) && findForm.Visible)
+                findForm.Location = new Point(Location.X + Width - findForm.Width - vsw, Location.Y);
+            if ((replaceForm != null) && replaceForm.Visible)
+                replaceForm.Location = new Point(Location.X + Width - replaceForm.Width - vsw, Location.Y);
             base.OnResize(e);
         }
 
@@ -2560,17 +2566,22 @@ namespace FastColoredTextBoxNS {
                 findForm = new FindForm(this);
             }
             int vsw = VerticalScroll.Visible ? VerticalScroll.Width : 0;
-            findForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - findForm.Width - 0 - vsw), Parent.PointToScreen(Location).Y + 0);
+            findForm.Location = new Point(Location.X + Width - findForm.Width - vsw, Location.Y);
 
             if (findText != null)
-                findForm.tbFind.Text = findText;
+                findForm.cbFind.Text = findText;
             else if (!Selection.IsEmpty && Selection.Start.iLine == Selection.End.iLine)
-                findForm.tbFind.Text = Selection.Text;
+                findForm.cbFind.Text = Selection.Text;
 
-            findForm.tbFind.SelectAll();
-            if (!findForm.Visible)
+            findForm.cbFind.SelectAll();
+            if (!findForm.Visible) {
+                findForm.cbFind.Items.Clear();
+                findForm.cbFind.Items.AddRange(SearchHistory.ToArray());
+                NativeMethods.SetParent(findForm.Handle, Handle);
+                findForm.cbFind.Select();
                 findForm.Show(this);
-            findForm.Focus();
+            }
+            findForm.cbFind.Focus();
         }
 
         /// <summary>
@@ -2590,19 +2601,25 @@ namespace FastColoredTextBoxNS {
                 replaceForm = new ReplaceForm(this);
             }
             int vsw = VerticalScroll.Visible ? VerticalScroll.Width : 0;
-            replaceForm.Location = new Point(Parent.PointToScreen(Location).X + (Parent.Width - replaceForm.Width - 0 - vsw), Parent.PointToScreen(Location).Y + 0);
+            replaceForm.Location = new Point(Location.X + Width - replaceForm.Width - vsw, Location.Y);
+
             if (findText != null) {
-                replaceForm.tbFind.Text = findText;
+                replaceForm.cbFind.Text = findText;
 
             } else if (!Selection.IsEmpty && Selection.Start.iLine == Selection.End.iLine) {
-                replaceForm.tbFind.Text = Selection.Text;
+                replaceForm.cbFind.Text = Selection.Text;
 
             }
 
-            replaceForm.tbFind.SelectAll();
-            if (!replaceForm.Visible)
+            replaceForm.cbFind.SelectAll();
+            if (!replaceForm.Visible) {
+                replaceForm.cbFind.Items.Clear();
+                replaceForm.cbFind.Items.AddRange(SearchHistory.ToArray());
+                NativeMethods.SetParent(replaceForm.Handle, Handle);
+                replaceForm.cbFind.Select();
                 replaceForm.Show(this);
-            replaceForm.Focus();
+            }
+            replaceForm.cbFind.Focus();
         }
 
         /// <summary>
@@ -3774,10 +3791,10 @@ namespace FastColoredTextBoxNS {
                 case FCTBAction.FindDialog      : ShowFindDialog(); break;
                 case FCTBAction.FindChar        : findCharMode = true; break;
                 case FCTBAction.FindNext        :
-                    if (findForm == null || findForm.tbFind.Text == "")
+                    if (findForm == null || findForm.cbFind.Text == "")
                         ShowFindDialog();
                     else
-                        findForm.FindNext(findForm.tbFind.Text);
+                        findForm.FindNext(findForm.cbFind.Text);
                     break;
                 case FCTBAction.ReplaceDialog   : ShowReplaceDialog(); break;
                 case FCTBAction.Copy            : Copy(); break;

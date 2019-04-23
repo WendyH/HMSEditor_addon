@@ -30,25 +30,16 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FindForm));
-            this.tbFind = new System.Windows.Forms.TextBox();
             this.cbRegex = new System.Windows.Forms.CheckBox();
             this.cbMatchCase = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
             this.cbWholeWord = new System.Windows.Forms.CheckBox();
             this.lblFound = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
+            this.cbFind = new System.Windows.Forms.ComboBox();
             this.btnForw = new HMSEditorNS.FlatButton();
             this.btnBack = new HMSEditorNS.FlatButton();
             this.SuspendLayout();
-            // 
-            // tbFind
-            // 
-            this.tbFind.Location = new System.Drawing.Point(55, 18);
-            this.tbFind.Name = "tbFind";
-            this.tbFind.Size = new System.Drawing.Size(288, 20);
-            this.tbFind.TabIndex = 0;
-            this.tbFind.TextChanged += new System.EventHandler(this.cbMatchCase_CheckedChanged);
-            this.tbFind.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbFind_KeyPress);
             // 
             // cbRegex
             // 
@@ -107,6 +98,7 @@
             // btnClose
             // 
             this.btnClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClose.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnClose.FlatAppearance.BorderSize = 0;
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -118,14 +110,24 @@
             this.btnClose.TabStop = false;
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            this.btnClose.Leave += new System.EventHandler(this.BtnClose_Leave);
+            // 
+            // cbFind
+            // 
+            this.cbFind.FormattingEnabled = true;
+            this.cbFind.Location = new System.Drawing.Point(48, 18);
+            this.cbFind.Name = "cbFind";
+            this.cbFind.Size = new System.Drawing.Size(221, 21);
+            this.cbFind.TabIndex = 10;
+            this.cbFind.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cbFind_KeyPress);
             // 
             // btnForw
             // 
             this.btnForw.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnForw.Image = global::HMSEditorNS.Properties.Resources.Down;
-            this.btnForw.Location = new System.Drawing.Point(292, 20);
+            this.btnForw.Location = new System.Drawing.Point(294, 18);
             this.btnForw.Name = "btnForw";
-            this.btnForw.Size = new System.Drawing.Size(19, 16);
+            this.btnForw.Size = new System.Drawing.Size(21, 19);
             this.btnForw.TabIndex = 8;
             this.btnForw.TabStop = false;
             this.btnForw.UseVisualStyleBackColor = true;
@@ -135,9 +137,9 @@
             // 
             this.btnBack.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnBack.Image = global::HMSEditorNS.Properties.Resources.Up;
-            this.btnBack.Location = new System.Drawing.Point(273, 20);
+            this.btnBack.Location = new System.Drawing.Point(272, 18);
             this.btnBack.Name = "btnBack";
-            this.btnBack.Size = new System.Drawing.Size(19, 16);
+            this.btnBack.Size = new System.Drawing.Size(21, 19);
             this.btnBack.TabIndex = 7;
             this.btnBack.TabStop = false;
             this.btnBack.UseVisualStyleBackColor = true;
@@ -149,6 +151,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(354, 71);
+            this.Controls.Add(this.cbFind);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnForw);
             this.Controls.Add(this.btnBack);
@@ -157,7 +160,7 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.cbMatchCase);
             this.Controls.Add(this.cbRegex);
-            this.Controls.Add(this.tbFind);
+            this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
@@ -166,6 +169,7 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Поиск";
+            this.Activated += new System.EventHandler(this.FindForm_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FindForm_FormClosing);
             this.VisibleChanged += new System.EventHandler(this.FindForm_VisibleChanged);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FindForm_KeyPress);
@@ -180,10 +184,10 @@
         private System.Windows.Forms.CheckBox cbMatchCase;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox cbWholeWord;
-        public System.Windows.Forms.TextBox tbFind;
         private System.Windows.Forms.Label lblFound;
         private HMSEditorNS.FlatButton btnBack;
         private HMSEditorNS.FlatButton btnForw;
         private System.Windows.Forms.Button btnClose;
+        public System.Windows.Forms.ComboBox cbFind;
     }
 }

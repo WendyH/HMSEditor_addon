@@ -31,7 +31,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ReplaceForm));
             this.btFindNext = new System.Windows.Forms.Button();
-            this.tbFind = new System.Windows.Forms.TextBox();
             this.cbRegex = new System.Windows.Forms.CheckBox();
             this.cbMatchCase = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -42,11 +41,12 @@
             this.tbReplace = new System.Windows.Forms.TextBox();
             this.lblFound = new System.Windows.Forms.Label();
             this.btnClose = new System.Windows.Forms.Button();
+            this.cbFind = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // btFindNext
             // 
-            this.btFindNext.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btFindNext.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btFindNext.Location = new System.Drawing.Point(109, 92);
             this.btFindNext.Name = "btFindNext";
             this.btFindNext.Size = new System.Drawing.Size(120, 25);
@@ -54,15 +54,6 @@
             this.btFindNext.Text = "Найти следующий";
             this.btFindNext.UseVisualStyleBackColor = true;
             this.btFindNext.Click += new System.EventHandler(this.btFindNext_Click);
-            // 
-            // tbFind
-            // 
-            this.tbFind.Location = new System.Drawing.Point(87, 15);
-            this.tbFind.Name = "tbFind";
-            this.tbFind.Size = new System.Drawing.Size(334, 20);
-            this.tbFind.TabIndex = 0;
-            this.tbFind.TextChanged += new System.EventHandler(this.cbMatchCase_CheckedChanged);
-            this.tbFind.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbFind_KeyPress);
             // 
             // cbRegex
             // 
@@ -108,7 +99,7 @@
             // 
             // btnReplace
             // 
-            this.btnReplace.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnReplace.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnReplace.Location = new System.Drawing.Point(235, 92);
             this.btnReplace.Name = "btnReplace";
             this.btnReplace.Size = new System.Drawing.Size(90, 25);
@@ -119,7 +110,7 @@
             // 
             // btnReplaceAll
             // 
-            this.btnReplaceAll.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnReplaceAll.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnReplaceAll.Location = new System.Drawing.Point(331, 92);
             this.btnReplaceAll.Name = "btnReplaceAll";
             this.btnReplaceAll.Size = new System.Drawing.Size(90, 25);
@@ -144,7 +135,7 @@
             this.tbReplace.Size = new System.Drawing.Size(334, 20);
             this.tbReplace.TabIndex = 0;
             this.tbReplace.TextChanged += new System.EventHandler(this.cbMatchCase_CheckedChanged);
-            this.tbReplace.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbFind_KeyPress);
+            this.tbReplace.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cbFind_KeyPress);
             // 
             // lblFound
             // 
@@ -173,6 +164,16 @@
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
             // 
+            // cbFind
+            // 
+            this.cbFind.FormattingEnabled = true;
+            this.cbFind.Location = new System.Drawing.Point(87, 15);
+            this.cbFind.Name = "cbFind";
+            this.cbFind.Size = new System.Drawing.Size(294, 21);
+            this.cbFind.TabIndex = 12;
+            this.cbFind.TextChanged += new System.EventHandler(this.cbMatchCase_CheckedChanged);
+            this.cbFind.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.cbFind_KeyPress);
+            // 
             // ReplaceForm
             // 
             this.AcceptButton = this.btFindNext;
@@ -180,9 +181,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(432, 125);
+            this.Controls.Add(this.cbFind);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.lblFound);
-            this.Controls.Add(this.tbFind);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tbReplace);
             this.Controls.Add(this.btnReplaceAll);
@@ -219,9 +220,9 @@
         private System.Windows.Forms.Button btnReplace;
         private System.Windows.Forms.Button btnReplaceAll;
         private System.Windows.Forms.Label label2;
-        public System.Windows.Forms.TextBox tbFind;
         public System.Windows.Forms.TextBox tbReplace;
         private System.Windows.Forms.Label lblFound;
         private System.Windows.Forms.Button btnClose;
+        public System.Windows.Forms.ComboBox cbFind;
     }
 }
