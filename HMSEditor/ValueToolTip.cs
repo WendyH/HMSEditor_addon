@@ -270,13 +270,16 @@ namespace HMSEditorNS {
         }
 
         public void ShowValue(Control control, string expr, string value, Point point, string realExpression) {
+            Point newPoint = control.PointToClient(point);
+            newPoint.Offset(5, 15);
+            NativeMethods.SetParent(Handle, control.Handle);
             if (value.Length == 0) value = "  ";
             ctl.Text       = value;
             Expression     = expr;
             RealExpression = realExpression;
             AutoClose      = false;
             RecalcSize();
-            Show(control, point);
+            Show(control, newPoint);
             OnResize(EventArgs.Empty);
             IsShowing = true;
             timer.Start();

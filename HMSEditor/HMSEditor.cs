@@ -618,7 +618,6 @@ namespace HMSEditorNS {
             btnSelectionBorder      .Checked = Settings.Get("SelectionWithBorders"   , section, btnSelectionBorder      .Checked);
             btnShowBeginOfFunctions .Checked = Settings.Get("ShowBeginOfFunctions"   , section, btnShowBeginOfFunctions .Checked);
 
-
             // Set to false deprecated settings
             btnCheckKeywordsRegister.Checked = false;
 
@@ -699,6 +698,14 @@ namespace HMSEditorNS {
                 foreach(var pair in ourMap)
                     TB.HotkeysMapping[pair.Key] = pair.Value;
             }
+
+            string hist = Settings.Get("SearchHistory", section, "");
+            TB.SearchHistory.Clear();
+            foreach(string item in hist.Split(',')) {
+                if (!string.IsNullOrWhiteSpace(item))
+                    TB.SearchHistory.Add(item);
+            }
+
             TB.Refresh();
         }
 
@@ -767,6 +774,8 @@ namespace HMSEditorNS {
                 Settings.Set("Zoom"                , TB.Zoom                     , section);
 
                 Settings.Set("UnderlinePascalKeywords", btnUnderlinePascalKeywrd.Checked, section);
+
+                Settings.Set("SearchHistory", string.Join(",", TB.SearchHistory), section);
 
                 if (btnStorePositions.Checked) {
                     SaveState();

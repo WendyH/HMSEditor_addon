@@ -82,18 +82,6 @@ namespace HMSEditorNS {
                     string value = activeEditor.EvalVariableValue(expression);
                     if (value == realExpression) return; // Не показываем просто числовые значения
 
-                    if (type == "TJsonObject") {
-                        try {
-                            var ob = JsonConvert.DeserializeObject(value);
-                            value = JsonConvert.SerializeObject(ob);
-                            Jsbeautifier.BeautifierOptions beautifierOptions = new Jsbeautifier.BeautifierOptions();
-                            beautifierOptions.BraceStyle = Jsbeautifier.BraceStyle.EndExpand;
-                            Jsbeautifier.Beautifier beautifier = new Jsbeautifier.Beautifier(beautifierOptions);
-                            value = beautifier.Beautify(value);
-                        }
-                        catch { ; }
-                    }
-
                     if (value.Length < 16) {
                         if (IsDigitsOnly(value) && NativeMethods.KeyState(NativeMethods.VirtualKeyStates.VK_CONTROL))
                             value = string.Format("0x{0:x}", ulong.Parse(value));
@@ -101,9 +89,20 @@ namespace HMSEditorNS {
 
                     if (value.Length > MaxValueLength && !activeEditor.ValueForm.Visible) {
                         //value = value.Substring(0, MaxValueLength) + "...";
+                        activeEditor.ValueForm.Formatting = false;
                         activeEditor.ValueForm.Show(tb, expression, value, realExpression);
                     } else {
-                        activeEditor.ValueHint.ShowValue(tb, expression, value, point, realExpression);
+                        if (type == "TJsonObject") {
+                            try {
+                                var ob = JsonConvert.DeserializeObject(value);
+                                value = JsonConvert.SerializeObject(ob);
+                                Jsbeautifier.BeautifierOptions beautifierOptions = new Jsbeautifier.BeautifierOptions();
+                                beautifierOptions.BraceStyle = Jsbeautifier.BraceStyle.EndExpand;
+                                Jsbeautifier.Beautifier beautifier = new Jsbeautifier.Beautifier(beautifierOptions);
+                                value = beautifier.Beautify(value);
+                            } catch {; }
+                        }
+                        activeEditor.ValueHint.ShowValue(activeEditor, expression, value, point, realExpression);
                     }
                 }
             };

@@ -23,6 +23,7 @@ namespace HMSEditorNS {
         }
         public string Expression = " ";
         public string RealExpression { get { return tbExpression.Text; } set { tbExpression.Text = value; } }
+        public bool Formatting { get { return cbFormatting.Checked; } set { cbFormatting.Checked = value; } }
 
         public FormValue() {
             InitializeComponent();
