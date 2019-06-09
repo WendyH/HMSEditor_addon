@@ -75,10 +75,12 @@ namespace HMSEditorNS {
 
         private static void ShowValue(FastColoredTextBox tb, Point point, string expression, string realExpression, bool isItem=false, string type="") {
             System.Windows.Forms.MethodInvoker action = delegate {
-                point.Offset(0, tb.CharHeight - 4);
-                tb.ReshowCaret = true;
                 var activeEditor = HMSEditor.ActiveEditor;
                 if (activeEditor != null) {
+                    if (activeEditor.HintsInWindow)
+                        point = tb.PointToClient(point);
+                    point.Offset(0, tb.CharHeight - 4);
+                    tb.ReshowCaret = true;
                     string value = activeEditor.EvalVariableValue(expression);
                     if (value == realExpression) return; // Не показываем просто числовые значения
 
@@ -88,9 +90,8 @@ namespace HMSEditorNS {
                     }
 
                     if (value.Length > MaxValueLength && !activeEditor.ValueForm.Visible) {
-                        //value = value.Substring(0, MaxValueLength) + "...";
                         activeEditor.ValueForm.Formatting = false;
-                        activeEditor.ValueForm.Show(tb, expression, value, realExpression);
+                        activeEditor.ValueForm.Show(tb, expression, value, realExpression, activeEditor.HintsInWindow);
                     } else {
                         if (type == "TJsonObject") {
                             try {
@@ -102,7 +103,7 @@ namespace HMSEditorNS {
                                 value = beautifier.Beautify(value);
                             } catch {; }
                         }
-                        activeEditor.ValueHint.ShowValue(activeEditor, expression, value, point, realExpression);
+                        activeEditor.ValueHint.ShowValue(tb, expression, value, point, realExpression, activeEditor.HintsInWindow);
                     }
                 }
             };
@@ -129,7 +130,7 @@ namespace HMSEditorNS {
         /// <param name="ActiveHMSEditor">Активный (вызвавший) элемент HMSEditor</param>
         public static void Task(HMSEditor ActiveHMSEditor) {
             var    TB    = ActiveHMSEditor.TB;
-            Point  point = ActiveHMSEditor.MouseLocation;
+            Point  point = TB.lastMouseCoord;
             bool   debugMode  = TB.DebugMode;
             bool   selectMode = false;
             string expression = "";

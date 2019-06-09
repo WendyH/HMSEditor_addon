@@ -1588,7 +1588,7 @@ namespace FastColoredTextBoxNS {
                 return Language.YAML;
             else
             {
-                string firstText = txt.Substring(0, 500);
+                string firstText = txt.Length > 500 ? txt.Substring(0, 500) : txt;
                 Language lang = Language.HTML;
                 Dictionary<Language, string> langPatterns = new Dictionary<Language, string> {
                     [Language.PHP] = @"^<\?php",

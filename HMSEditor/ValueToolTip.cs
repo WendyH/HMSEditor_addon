@@ -22,23 +22,23 @@ namespace HMSEditorNS {
         public string Value { get { return ctl.Text; } set { ctl.Text = value; RecalcSize(); } }
 
         public ValueToolTip() {
-            btn.AutoSize = false;
-            btn.Size = new Size(34, 25);
-            btn.Text = "";
-            btn.Image = Properties.Resources.Find_5650;
-            btn.Click += Btn_Click;
-            ctl.BorderStyle = BorderStyle.None;
-            ctl.BackColor = Color.White;
-            ctl.ForeColor = Color.Black;
-            ctl.Multiline = true;
-            ctl.ReadOnly = true;
-            ctl.Font = new Font("Arial", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
+            btn.AutoSize      = false;
+            btn.Size          = new Size(34, 25);
+            btn.Text          = "";
+            btn.Image         = Properties.Resources.Find_5650;
+            btn.Click        += Btn_Click;
+            ctl.BorderStyle   = BorderStyle.None;
+            ctl.BackColor     = Color.White;
+            ctl.ForeColor     = Color.Black;
+            ctl.Multiline     = true;
+            ctl.ReadOnly      = true;
+            ctl.Font          = new Font("Arial", 9.75f, FontStyle.Regular, GraphicsUnit.Point);
             ctl.HideSelection = false;
-            ctl.WordWrap = true;
-            ctl.DetectUrls = false;
-            ctl.BackColor = Color.FromArgb(255, 231, 232, 236);
-            timer.Tick += tick_CheckMouseNearly;
-            timer.Interval = 500;
+            ctl.WordWrap      = true;
+            ctl.DetectUrls    = false;
+            ctl.BackColor     = Color.FromArgb(255, 231, 232, 236);
+            timer.Tick       += tick_CheckMouseNearly;
+            timer.Interval    = 500;
             var item = menustrip.Items.Add("Копировать", Properties.Resources.Copy_6524);
             item.Click += Copy_Click;
             item = menustrip.Items.Add("Выделить всё");
@@ -71,7 +71,7 @@ namespace HMSEditorNS {
 
         private void Btn_Click(object sender, EventArgs e) {
             if (HMSEditor.ActiveEditor != null) {
-                HMSEditor.ActiveEditor.ValueForm.Show(HMSEditor.ActiveEditor.TB, Expression, ctl.Text, RealExpression);
+                HMSEditor.ActiveEditor.ValueForm.Show(HMSEditor.ActiveEditor.TB, Expression, ctl.Text, RealExpression, HMSEditor.ActiveEditor.HintsInWindow);
                 Close();
             }
         }
@@ -269,21 +269,28 @@ namespace HMSEditorNS {
             Size = new Size((int)Math.Round(textSize.Width) + w, (int)Math.Round(textSize.Height) + h);
         }
 
-        public void ShowValue(Control control, string expr, string value, Point point, string realExpression) {
-            Point newPoint = control.PointToClient(point);
-            newPoint.Offset(5, 15);
-            NativeMethods.SetParent(Handle, control.Handle);
+        public void ShowValue(Control control, string expr, string value, Point point, string realExpression, bool inWindow) {
+            if (inWindow && control!=null) {
+                NativeMethods.SetParent(Handle, control.Handle);
+                if (control.Height < MaxSize.Height) MaxSize.Height = control.Height - btnHost.Height;
+                if (control.Width  < MaxSize.Width ) MaxSize.Width  = control.Width;
+            }
             if (value.Length == 0) value = "  ";
             ctl.Text       = value;
             Expression     = expr;
             RealExpression = realExpression;
             AutoClose      = false;
             RecalcSize();
-            Show(control, newPoint);
+            if (inWindow && control != null) {
+                if (point.Y + Height > control.Height - control.PointToScreen(new Point(0, 0)).Y) {
+                    point.Y -= Height + control.Font.Height;
+                }
+            }
+            Show(control, point);
             OnResize(EventArgs.Empty);
             IsShowing = true;
             timer.Start();
-            control.Focus();
+            control?.Focus();
         }
     }
 

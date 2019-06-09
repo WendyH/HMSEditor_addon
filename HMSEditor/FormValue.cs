@@ -60,20 +60,30 @@ namespace HMSEditorNS {
                 Close();
         }
 
-        public void Show(Control ctl, string expr, string text, string realExpression) {
+        public void Show(Control ctl, string expr, string text, string realExpression, bool inWindow) {
             if (IsDisposed) {
                 MessageBox.Show(this, "Окно отображения значения не может быть показано.\nЕго кто-то или что-то уничтожило.", HMSEditor.Title);
                 return;
             }
 
             fastColoredTB.Font = ctl.Font;
-            Expression = expr;
-            RealExpression = realExpression;
-            _src       = text;
+            Expression         = expr;
+            RealExpression     = realExpression;
+            _src               = text;
 
             cbFormatting.Visible = regexJSONorXML.IsMatch(_src.TrimStart());
 
-            NativeMethods.SetParent(Handle, HMSEditor.ActiveEditor.Handle);
+            if (inWindow && ctl != null) {
+                NativeMethods.SetParent(Handle, HMSEditor.ActiveEditor.Handle);
+                if ((ctl.Width < Width) || (ctl.Height < Height)) {
+                    if (ctl.Width  < Width ) Width  = ctl.Width;
+                    if (ctl.Height < Height) Height = ctl.Height;
+                    int x = Location.X, y = Location.Y;
+                    if (x + Width  > ctl.Width ) x = ctl.Width  - Width;
+                    if (y + Height > ctl.Height) y = ctl.Height - Height;
+                    Location = new Point(x, y);
+                }
+            }
 
             if (WindowState == FormWindowState.Minimized) WindowState = FormWindowState.Normal;
 

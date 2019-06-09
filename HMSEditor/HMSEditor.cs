@@ -63,6 +63,7 @@ namespace HMSEditorNS {
             helpPanel1.Init(imageList1, HmsScriptMode.ToString());
             CodeAnalysis.Init();
             NativeMethods.SetParent(Handle, parentHwnd);
+            this.SetStyle(ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
         }
 
         private void HelpPanel1_PanelClose(object sender, EventArgs e) {
@@ -124,6 +125,7 @@ namespace HMSEditorNS {
         }
 
         // Fields
+        public  bool   HintsInWindow { get { return btnCheckShowHintsInWindow.Checked; } }
         public  bool   Locked;
         public  string Filename             = HMS.TemplatesDir; // last opened or saved file 
         public  int    LastPtocedureIndex   = -1;
@@ -166,6 +168,7 @@ namespace HMSEditorNS {
         public bool AutoIndentChars          { get { return TB.AutoIndentChars         ; } set { TB.AutoIndentChars         = value; } }
         public bool AutoIndentExistingLines  { get { return TB.AutoIndentExistingLines ; } set { TB.AutoIndentExistingLines = value; } }
         public bool ToolStripVisible         { get { return tsMain.Visible             ; } set { tsMain.Visible             = value; } }
+        public int  ToolStripHeight          { get { return tsMain.Height; } }
         public bool DebugMode                { get { return TB.DebugMode               ; } set { TB.DebugMode               = value; } }
         public bool EnableFunctionToolTip = true;
         public bool EnableEvaluateByMouse = true;
@@ -617,6 +620,7 @@ namespace HMSEditorNS {
             btnInvisiblesInSelection.Checked = Settings.Get("InvisiblesInSelection"  , section, btnInvisiblesInSelection.Checked);
             btnSelectionBorder      .Checked = Settings.Get("SelectionWithBorders"   , section, btnSelectionBorder      .Checked);
             btnShowBeginOfFunctions .Checked = Settings.Get("ShowBeginOfFunctions"   , section, btnShowBeginOfFunctions .Checked);
+            btnCheckShowHintsInWindow.Checked= Settings.Get("HintsInWindow"          , section, btnCheckShowHintsInWindow.Checked);
 
             // Set to false deprecated settings
             btnCheckKeywordsRegister.Checked = false;
@@ -767,6 +771,7 @@ namespace HMSEditorNS {
                 Settings.Set("InvisiblesInSelection",btnInvisiblesInSelection.Checked, section);
                 Settings.Set("SelectionWithBorders" , btnSelectionBorder     .Checked, section);
                 Settings.Set("ShowBeginOfFunctions" , btnShowBeginOfFunctions.Checked, section);
+                Settings.Set("HintsInWindow"        ,btnCheckShowHintsInWindow.Checked, section);
 
                 Settings.Set("Theme"               , ThemeName                       , section);
                 Settings.Set("LastFile"            , Filename                        , section);
@@ -1034,6 +1039,7 @@ namespace HMSEditorNS {
                 else if (e.KeyCode == Keys.Space) {
 
                 }
+                HideAllToolTipsAndHints();
             } else if (e.Control) {
                 if      (e.KeyCode == Keys.D1) TB.GotoBookmarkByName("1");
                 else if (e.KeyCode == Keys.D2) TB.GotoBookmarkByName("2");

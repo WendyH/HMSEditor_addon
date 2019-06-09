@@ -101,6 +101,7 @@
             this.btnStorePositions = new System.Windows.Forms.ToolStripMenuItem();
             this.btnGetScriptDescriptions = new System.Windows.Forms.ToolStripMenuItem();
             this.btnCheckNewVersionOnLoad = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnCheckShowHintsInWindow = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.btnShowBeginOfFunctions = new System.Windows.Forms.ToolStripMenuItem();
             this.btnHighlightSameWords = new System.Windows.Forms.ToolStripMenuItem();
@@ -642,6 +643,7 @@
             this.btnStorePositions,
             this.btnGetScriptDescriptions,
             this.btnCheckNewVersionOnLoad,
+            this.btnCheckShowHintsInWindow,
             this.toolStripSeparator12,
             this.btnShowBeginOfFunctions,
             this.btnHighlightSameWords,
@@ -779,6 +781,14 @@
             this.btnCheckNewVersionOnLoad.Text = "Проверять новую версию при загрузке дополнения";
             this.btnCheckNewVersionOnLoad.ToolTipText = "Проверять наличие новой версии и отображать надпись на панели инструментов";
             this.btnCheckNewVersionOnLoad.Click += new System.EventHandler(this.btnCheckNewVersionOnLoad_Click);
+            // 
+            // btnCheckShowHintsInWindow
+            // 
+            this.btnCheckShowHintsInWindow.CheckOnClick = true;
+            this.btnCheckShowHintsInWindow.Name = "btnCheckShowHintsInWindow";
+            this.btnCheckShowHintsInWindow.Size = new System.Drawing.Size(460, 22);
+            this.btnCheckShowHintsInWindow.Text = "Показывать окна подксказок при отладке только в окне редактора";
+            this.btnCheckShowHintsInWindow.ToolTipText = "Показывать окна подксказок при отладке только в окне редактора";
             // 
             // toolStripSeparator12
             // 
@@ -1079,7 +1089,7 @@
             // 
             this.labelNewVersion.IsLink = true;
             this.labelNewVersion.Name = "labelNewVersion";
-            this.labelNewVersion.Size = new System.Drawing.Size(109, 22);
+            this.labelNewVersion.Size = new System.Drawing.Size(109, 15);
             this.labelNewVersion.Text = "Есть новая версия!";
             this.labelNewVersion.Visible = false;
             this.labelNewVersion.Click += new System.EventHandler(this.labelNewVersion_Click);
@@ -1325,5 +1335,6 @@
         private System.Windows.Forms.ToolStripMenuItem btnSelectionBorder;
         private System.Windows.Forms.ToolStripMenuItem btnShowBeginOfFunctions;
         private System.Windows.Forms.ToolStripButton toolStripButtonCompare;
+        private System.Windows.Forms.ToolStripMenuItem btnCheckShowHintsInWindow;
     }
 }
