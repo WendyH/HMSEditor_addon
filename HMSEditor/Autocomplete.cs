@@ -71,9 +71,16 @@ namespace HMSEditorNS {
             Sort((a, b) => string.Compare(a.MenuText, b.MenuText, StringComparison.Ordinal));
         }
 
-        public HMSItem GetItemOrNull(string name) {
+        public HMSItem GetItemOrNull(string name, string filter="") {
             name = name.Trim().ToLower();
-            foreach (HMSItem o in this) if (o.MenuText.ToLower() == name) return o;
+            if (filter.Length>0) {
+                string filt = filter.ToLower();
+                foreach (HMSItem o in this)
+                    if ((o.MenuText.ToLower() == name) && (o.Filter.ToLower() == filt)) return o;
+            } else {
+                foreach (HMSItem o in this)
+                    if (o.MenuText.ToLower() == name) return o;
+            }
             return null;
         }
 

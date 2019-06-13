@@ -47,6 +47,7 @@ namespace HMSEditorNS {
             menustrip.Closing += Menustrip_Closing;
             ctl.ContextMenuStrip = menustrip;
             ctl.KeyDown += Ctl_KeyDown;
+            ctl.LostFocus += Ctl_LostFocus;
 
             btnHost = new ToolStripControlHost(btn) {
                 Margin   = Padding.Empty,
@@ -67,6 +68,10 @@ namespace HMSEditorNS {
             BackColor = ctl.BackColor;
             Margin    = Padding.Empty;
             Padding   = new Padding(3, 3, 0, 3);
+        }
+
+        private void Ctl_LostFocus(object sender, EventArgs e) {
+            Close();
         }
 
         private void Btn_Click(object sender, EventArgs e) {

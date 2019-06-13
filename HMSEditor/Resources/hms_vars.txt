@@ -8,11 +8,14 @@ RequestUserAgent: String|User-Agent при запросах
 ResponseBody: String|Тело ответа 
 ResponseHeader: String|Заголовки ответа
 
-*smCreateFolderItems <Скрипт создания подкаст-лент>
+*smCreateFolderItems <Скрипт чтения списка ресурсов>
 FolderItem: THmsScriptMediaItem|Текущая папка медиа-ресурсов
 ***FolderPath: Variant|Путь (ссылка) текущей папки медиа-ресурсов
 
-*smCreatePodcastFeeds <Скрипт чтения списка ресурсов>
+*smWebMediaItems <Скрипт чтения списка ресурсов>
+FolderItem: THmsScriptMediaItem|Текущая папка медиа-ресурсов
+
+*smCreatePodcastFeeds <Скрипт создания подкаст-лент>
 FolderItem: THmsScriptMediaItem|Текущая папка медиа-ресурсов
 
 *smDIDLLiteDescription <Формирование DIDL-Lite описания медиа-ресурсов>

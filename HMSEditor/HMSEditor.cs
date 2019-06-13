@@ -1039,7 +1039,6 @@ namespace HMSEditorNS {
                 else if (e.KeyCode == Keys.Space) {
 
                 }
-                HideAllToolTipsAndHints();
             } else if (e.Control) {
                 if      (e.KeyCode == Keys.D1) TB.GotoBookmarkByName("1");
                 else if (e.KeyCode == Keys.D2) TB.GotoBookmarkByName("2");
@@ -1906,6 +1905,7 @@ namespace HMSEditorNS {
         }
 
         private void SearchAutocompleteItemsInScriptDescrition(Regex reBlock, ref string xml, int imageIndex, string toolTipText, DefKind kind, AutocompleteItems Items) {
+            string filter   = HmsScriptMode.ToString();
             string xmlBlock = reBlock.Match(xml).Value;
             MatchCollection mc = regexCutItem.Matches(xmlBlock);
             foreach (Match matchItem in mc) {
@@ -1917,10 +1917,11 @@ namespace HMSEditorNS {
                 item.ToolTipText = toolTipText;
                 item.Kind        = kind;
                 item.Help        = descr;
+                item.Filter      = filter;
                 item.InXmlDescription = true;
                 if (kind == DefKind.Function) item.Kind = (item.Type.Length > 0) ? DefKind.Function : DefKind.Procedure;
                 if (regexExcludeConst.IsMatch(item.MenuText)) continue;
-                var foundItem = Items.GetItemOrNull(item.MenuText);
+                var foundItem = Items.GetItemOrNull(item.MenuText, filter);
                 if (foundItem!=null) {
                     if (foundItem.Help.Length == 0) foundItem.Help = descr;
                     foundItem.InXmlDescription = true;
@@ -1973,8 +1974,9 @@ namespace HMSEditorNS {
         }
 
         private void DeleteNotInDescriptionItems(AutocompleteItems items) {
+            string filt = HmsScriptMode.ToString();
             for (int i=items.Count-1; i >= 0; i--) {
-                if (!items[i].InXmlDescription) {
+                if (!items[i].InXmlDescription && items[i].Filter==filt) {
                     if (LogAsErrorNotInDatabaseItems)
                         HMS.LogError("Deleted "+ items[i].Text);
                     items.RemoveAt(i);
