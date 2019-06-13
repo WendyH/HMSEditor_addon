@@ -62,6 +62,7 @@ namespace HMSEditorNS {
         public static string CurrentParamType = "";
         public static string UpdateInfo       = "";
         public static Color  BordersColor     = Color.FromArgb(255, 70, 119, 207);
+        public static List<string> Filtered   = new List<string>();
 
         private static string ResourcePath = "HMSEditorNS.Resources.";
         private static string _workingdir  = "";

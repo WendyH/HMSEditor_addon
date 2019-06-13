@@ -24,11 +24,12 @@
         /// </summary>
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormValue));
-            FastColoredTextBoxNS.ServiceColors serviceColors2 = new FastColoredTextBoxNS.ServiceColors();
+            FastColoredTextBoxNS.ServiceColors serviceColors1 = new FastColoredTextBoxNS.ServiceColors();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnClose = new System.Windows.Forms.Button();
             this.cbFormatting = new System.Windows.Forms.CheckBox();
             this.panelTop = new System.Windows.Forms.Panel();
+            this.cbWrap = new System.Windows.Forms.CheckBox();
             this.groupRegex = new System.Windows.Forms.GroupBox();
             this.tbResult = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -45,7 +46,6 @@
             this.tbExpression = new System.Windows.Forms.TextBox();
             this.lblExpression = new System.Windows.Forms.Label();
             this.fastColoredTB = new FastColoredTextBoxNS.FastColoredTextBox();
-            this.cbWrap = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.panelTop.SuspendLayout();
             this.groupRegex.SuspendLayout();
@@ -98,6 +98,17 @@
             this.panelTop.Name = "panelTop";
             this.panelTop.Size = new System.Drawing.Size(916, 151);
             this.panelTop.TabIndex = 2;
+            // 
+            // cbWrap
+            // 
+            this.cbWrap.AutoSize = true;
+            this.cbWrap.Location = new System.Drawing.Point(8, 36);
+            this.cbWrap.Name = "cbWrap";
+            this.cbWrap.Size = new System.Drawing.Size(148, 17);
+            this.cbWrap.TabIndex = 10;
+            this.cbWrap.Text = "Переносить по строкам";
+            this.cbWrap.UseVisualStyleBackColor = true;
+            this.cbWrap.CheckedChanged += new System.EventHandler(this.CbWrap_CheckedChanged);
             // 
             // groupRegex
             // 
@@ -312,13 +323,13 @@
             this.fastColoredTB.RightBracket2 = ')';
             this.fastColoredTB.RoundedCornersRadius = 3;
             this.fastColoredTB.SelectionHighlightingForLineBreaksEnabled = false;
-            serviceColors2.CollapseMarkerBackColor = System.Drawing.Color.White;
-            serviceColors2.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors2.CollapseMarkerForeColor = System.Drawing.Color.Silver;
-            serviceColors2.ExpandMarkerBackColor = System.Drawing.Color.White;
-            serviceColors2.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
-            serviceColors2.ExpandMarkerForeColor = System.Drawing.Color.Red;
-            this.fastColoredTB.ServiceColors = serviceColors2;
+            serviceColors1.CollapseMarkerBackColor = System.Drawing.Color.White;
+            serviceColors1.CollapseMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors1.CollapseMarkerForeColor = System.Drawing.Color.Silver;
+            serviceColors1.ExpandMarkerBackColor = System.Drawing.Color.White;
+            serviceColors1.ExpandMarkerBorderColor = System.Drawing.Color.Silver;
+            serviceColors1.ExpandMarkerForeColor = System.Drawing.Color.Red;
+            this.fastColoredTB.ServiceColors = serviceColors1;
             this.fastColoredTB.ShowChangedLinesOnScrollbar = false;
             this.fastColoredTB.ShowLineNumbers = false;
             this.fastColoredTB.ShowScrollBars = false;
@@ -330,17 +341,6 @@
             this.fastColoredTB.WordWrap = true;
             this.fastColoredTB.WordWrapAutoIndent = false;
             this.fastColoredTB.Zoom = 100;
-            // 
-            // cbWrap
-            // 
-            this.cbWrap.AutoSize = true;
-            this.cbWrap.Location = new System.Drawing.Point(8, 36);
-            this.cbWrap.Name = "cbWrap";
-            this.cbWrap.Size = new System.Drawing.Size(148, 17);
-            this.cbWrap.TabIndex = 10;
-            this.cbWrap.Text = "Переносить по строкам";
-            this.cbWrap.UseVisualStyleBackColor = true;
-            this.cbWrap.CheckedChanged += new System.EventHandler(this.CbWrap_CheckedChanged);
             // 
             // FormValue
             // 

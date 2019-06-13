@@ -586,9 +586,8 @@ namespace HMSEditorNS {
             try { Settings.Load(); } catch (Exception e) { HMS.LogError(e.ToString()); Console.WriteLine(@"Error loading config file '" + Settings.File + @"'", e); return; }
             OldTextHash = (uint)Text.GetHashCode();
 
-            tsMain.Visible = false;
             string section = SettingsSection;
-            tsMain.Visible                   = Settings.Get("ToolStripVisible"    , section, tsMain.Visible);
+            tsMain.Visible                   = Settings.Get("ToolStripVisible"    , section, false);
             btnHighlightCurrentLine .Checked = Settings.Get("HighlightCurrentLine", section, btnHighlightCurrentLine .Checked);
             btnShowLineNumbers      .Checked = Settings.Get("ShowLineNumbers"     , section, btnShowLineNumbers      .Checked);
             btnShowFoldingLines     .Checked = Settings.Get("ShowFoldingLines"    , section, btnShowFoldingLines     .Checked);
@@ -1942,6 +1941,8 @@ namespace HMSEditorNS {
         }
 
         private void CreateAutocompleteItemsByScriptDescrition() {
+            string filter = HmsScriptMode.ToString();
+            if (HMS.Filtered.Contains(filter)) return;
             lock (ScriptAutocompleteItems) {
                 ScriptAutocompleteItems.Clear();
                 string xml = "";
@@ -1970,6 +1971,7 @@ namespace HMSEditorNS {
 #endif
                 //HMS.AllowPrepareFastDraw = true;
                 //HMS.PrepareFastDrawInBackground();
+                HMS.Filtered.Add(filter);
             }
         }
 

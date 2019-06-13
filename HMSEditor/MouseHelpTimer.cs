@@ -89,7 +89,7 @@ namespace HMSEditorNS {
                             value = string.Format("0x{0:x}", ulong.Parse(value));
                     }
 
-                    if (value.Length > MaxValueLength && !activeEditor.ValueForm.Visible) {
+                    if (value.Length > MaxValueLength) {
                         activeEditor.ValueForm.Formatting = false;
                         activeEditor.ValueForm.Show(tb, expression, value, realExpression, activeEditor.HintsInWindow);
                     } else {
