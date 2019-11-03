@@ -1118,20 +1118,22 @@ namespace FastColoredTextBoxNS
 
         public void AddFilteredItems(AutocompleteItems items) {
             lock (obj4LockItems) {
-                AutocompleteItems list = new AutocompleteItems();
                 string filter = Menu.Filter;
                 foreach (var item in items) {
                     if ((filter.Length > 0) && (item.Filter.Length>0) && (filter.IndexOf(item.Filter, StringComparison.Ordinal)<0)) continue;
-                    if (list.ContainsName(item.MenuText)) continue;
-                    list.Add(item);
+                    if (sourceItems.ContainsName(item.MenuText)) continue;
+                    sourceItems.Add(item);
                 }
-                AddAutocompleteItems(list);
             }
         }
 
         public void AddAutocompleteItems(AutocompleteItems items) {
-            lock (obj4LockItems)
-                sourceItems.AddRange(items);
+            lock (obj4LockItems) {
+                foreach (var item in items) {
+                    if (!sourceItems.ContainsName(item.MenuText))
+                        sourceItems.Add(item);
+                }
+            }
         }
 
         public void SetVisibleVariablesItems(AutocompleteItems items) {

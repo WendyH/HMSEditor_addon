@@ -1036,6 +1036,9 @@ namespace HMSEditorNS {
                 else if (e.KeyCode == Keys.Space) {
 
                 }
+                HideToolTip4Function(true);
+                ValueForm?.Hide();
+                ValueHint?.Close();
             } else if (e.Control) {
                 if      (e.KeyCode == Keys.D1) TB.GotoBookmarkByName("1");
                 else if (e.KeyCode == Keys.D2) TB.GotoBookmarkByName("2");
