@@ -17,7 +17,7 @@ namespace HMSEditorNS {
         public string Value {
             get { return fastColoredTB.Text; }
             set {
-                fastColoredTB.Language = fastColoredTB.SyntaxHighlighter.DetectLang(value);
+                fastColoredTB.Language = SyntaxHighlighter.DetectLang(value);
                 fastColoredTB.Text     = value;
             }
         }
@@ -124,7 +124,7 @@ namespace HMSEditorNS {
             label1.ForeColor = CreateRegex() ? Color.Black : Color.Red;
         }
 
-        public MatchCollection MatchesWithTimeout(Regex regex, string input, int duration) {
+        public static MatchCollection MatchesWithTimeout(Regex regex, string input, int duration) {
             var reset = new AutoResetEvent(false);
             MatchCollection r = null;
             

@@ -550,7 +550,7 @@ namespace FastColoredTextBoxNS
             return path4Bord;
         }
 
-        private void NextLinePath(ref GraphicsPath path4Bord, ref GraphicsPath path4Fill, Rectangle rect, 
+        private static void NextLinePath(ref GraphicsPath path4Bord, ref GraphicsPath path4Fill, Rectangle rect, 
                                   Rectangle rectNext, Rectangle arc, int d, int charW) {
             if (rectNext.Width == 0) {
                 arc.X = rect.Right  - d;
@@ -610,7 +610,7 @@ namespace FastColoredTextBoxNS
                 Border = Color.FromArgb(145, b.Color);
         }
 
-        public void DrawBracketMarker(Graphics gr, Point position, Range range) {
+        public static void DrawBracketMarker(Graphics gr, Point position, Range range) {
             Rectangle rect = new Rectangle(position.X, position.Y+ range.tb.CharHeight - 1, (range.End.iChar - range.Start.iChar) * range.tb.CharWidth, 1);
             if (rect.Width == 0) return;
             gr.FillRectangle(new SolidBrush(Color.FromArgb(150, range.tb.ForeColor)), rect);
@@ -651,7 +651,7 @@ namespace FastColoredTextBoxNS
             return result;
         }
 
-        private GraphicsPath GetRoundedRect(Rectangle baseRect, int radius) {
+        private static GraphicsPath GetRoundedRect(Rectangle baseRect, int radius) {
             int diameter = radius * 2;
             RectangleF arc = new Rectangle(baseRect.Location, new Size(diameter, diameter));
             GraphicsPath path = new GraphicsPath();

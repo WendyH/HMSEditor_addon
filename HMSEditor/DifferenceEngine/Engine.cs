@@ -207,7 +207,7 @@ namespace DifferenceEngine {
         }
 
 
-        private bool AddChanges(ArrayList report, int curDest, int nextDest, int curSource, int nextSource) {
+        private static bool AddChanges(ArrayList report, int curDest, int nextDest, int curSource, int nextSource) {
             bool success = false;
             int diffDest   = nextDest   - curDest;
             int diffSource = nextSource - curSource;
@@ -302,7 +302,7 @@ namespace DifferenceEngine {
             }
         }
 
-        public void CleanupMerge(ArrayList diffs) {
+        public static void CleanupMerge(ArrayList diffs) {
             //int pointer = 0;
             //while (pointer < diffs.Count) {
             //    DiffResultSpan diff = (DiffResultSpan)diffs[pointer];
@@ -368,7 +368,7 @@ namespace DifferenceEngine {
                     var equality2 = GetSrcLineByIndex(diff3.SourceIndex);
 
                     // First, shift the edit as far left as possible.
-                    var commonOffset = this.diff_commonSuffix(equality1, edit);
+                    var commonOffset = DiffEngine.diff_commonSuffix(equality1, edit);
                     if (commonOffset > 0) {
                         var commonString = edit.Substring(edit.Length - commonOffset);
                         equality1 = equality1.Substring(0, equality1.Length - commonOffset);
@@ -445,7 +445,7 @@ namespace DifferenceEngine {
             return score;
         }
 
-        public int diff_commonSuffix(string text1, string text2) {
+        public static int diff_commonSuffix(string text1, string text2) {
             // Performance analysis: http://neil.fraser.name/news/2007/10/09/
             int text1_length = text1.Length;
             int text2_length = text2.Length;

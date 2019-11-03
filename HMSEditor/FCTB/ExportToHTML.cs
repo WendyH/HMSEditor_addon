@@ -195,7 +195,7 @@ namespace FastColoredTextBoxNS
             return string.Format("#{0:x2}{1:x2}{2:x2}", color.R, color.G, color.B);
         }
 
-        string GetStyleName(StyleIndex styleIndex)
+        static string GetStyleName(StyleIndex styleIndex)
         {
             return styleIndex.ToString().Replace(" ", "").Replace(",", "");
         }

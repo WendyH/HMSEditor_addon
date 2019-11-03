@@ -225,17 +225,17 @@ namespace Jsbeautifier
             }
         }
 
-        private bool IsSpecialWord(string s)
+        private static bool IsSpecialWord(string s)
         {
             return s == "case" || s == "return" || s == "do" || s == "if" || s == "throw" || s == "else";
         }
 
-        private bool IsArray(string mode)
+        private static bool IsArray(string mode)
         {
             return mode == "[EXPRESSION]" || mode == "[INDENTED-EXPRESSION]";
         }
 
-        private bool IsExpression(string mode)
+        private static bool IsExpression(string mode)
         {
             return mode == "[EXPRESSION]" ||
                 mode == "[INDENTED-EXPRESSION]" ||

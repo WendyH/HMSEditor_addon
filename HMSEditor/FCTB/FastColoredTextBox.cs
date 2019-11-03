@@ -316,7 +316,7 @@ namespace FastColoredTextBoxNS {
         public static int maxCacheSize  = 536870912; // 0.5 GB
         public static int minCacheLines = 300;
         public static int minCacheTextLength = 1000;
-        public void ClearCache() {
+        public static void ClearCache() {
             try {
                 if (!Directory.Exists(CachePath)) return;
                 foreach (string f in Directory.GetFiles(CachePath)) {
@@ -487,7 +487,7 @@ namespace FastColoredTextBoxNS {
             return false;
         }
 
-        private string CalculateKnuthHash(string text) {
+        private static string CalculateKnuthHash(string text) {
             if (text == null) text = string.Empty;
             UInt64 hashedValue = 3074457345618258792ul;
             for (int i = 0; i < text.Length; i++) {
@@ -2679,7 +2679,7 @@ namespace FastColoredTextBoxNS {
             data.SetData(DataFormats.Rtf, new ExportToRTF().GetRtf(Selection.Clone()));
         }
 
-        private void SetClipboard(DataObject data) {
+        private static void SetClipboard(DataObject data) {
             try {
                 /*
                 while (GetOpenClipboardWindow() != IntPtr.Zero)
@@ -5093,7 +5093,7 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        public Color ChangeBrightColor(Color c, int dx) {
+        public static Color ChangeBrightColor(Color c, int dx) {
             if (c.B > 200) dx = -dx;
             int R = Math.Max(0, Math.Min(255, c.R + dx));
             int G = Math.Max(0, Math.Min(255, c.G + dx));
@@ -5313,12 +5313,12 @@ namespace FastColoredTextBoxNS {
             e.Graphics.SmoothingMode = SmoothingMode.None;
             //draw brackets highlighting
             if (BracketsStyle != null && leftBracketPosition != null && rightBracketPosition != null) {
-                BracketsStyle.DrawBracketMarker(e.Graphics, PlaceToPoint(leftBracketPosition .Start), leftBracketPosition );
-                BracketsStyle.DrawBracketMarker(e.Graphics, PlaceToPoint(rightBracketPosition.Start), rightBracketPosition);
+                MarkerStyle.DrawBracketMarker(e.Graphics, PlaceToPoint(leftBracketPosition .Start), leftBracketPosition );
+                MarkerStyle.DrawBracketMarker(e.Graphics, PlaceToPoint(rightBracketPosition.Start), rightBracketPosition);
             }
             if (BracketsStyle2 != null && leftBracketPosition2 != null && rightBracketPosition2 != null) {
-                BracketsStyle2.DrawBracketMarker(e.Graphics, PlaceToPoint(leftBracketPosition2 .Start), leftBracketPosition2 );
-                BracketsStyle2.DrawBracketMarker(e.Graphics, PlaceToPoint(rightBracketPosition2.Start), rightBracketPosition2);
+                MarkerStyle.DrawBracketMarker(e.Graphics, PlaceToPoint(leftBracketPosition2 .Start), leftBracketPosition2 );
+                MarkerStyle.DrawBracketMarker(e.Graphics, PlaceToPoint(rightBracketPosition2.Start), rightBracketPosition2);
             }
             //draw folding indicator
             if (EnableFoldingIndicator) {
@@ -7407,7 +7407,7 @@ namespace FastColoredTextBoxNS {
             wb.Navigate(tempFile);
         }
 
-        private string PrepareHtmlText(string s) {
+        private static string PrepareHtmlText(string s) {
             return s.Replace("<", "&lt;").Replace(">", "&gt;").Replace("&", "&amp;");
         }
 
@@ -8118,7 +8118,7 @@ window.status = ""#print"";
             }
         }
 
-        private void DrawTriangle(Graphics g, Brush brush) {
+        private static void DrawTriangle(Graphics g, Brush brush) {
             const int size = 5;
             var points = new[] { new Point(size, 2 * size), new Point(0, 3 * size), new Point(-size, 2 * size) };
             g.FillPolygon(brush, points);

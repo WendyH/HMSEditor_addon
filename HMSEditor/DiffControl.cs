@@ -316,7 +316,7 @@ namespace HMSEditorNS {
             }
         }
 
-        private string FileDialogFilter() {
+        private static string FileDialogFilter() {
             return "All files (*.*)|*.*|" +
                    "All supported files|*.cfg;*.hdf;*.zip;*.pas;*.cpp;*.js;*.bas;*.vb;*.yml;*.txt;*.m3u;*.m3u8;*.pls;*.f4m|" +
                    "Config files (*.cfg)|*.cfg|" +
@@ -358,7 +358,7 @@ namespace HMSEditorNS {
             return success;
         }
 
-        private string TryGetFirstFileContentFromZip(string filename, string ext) {
+        private static string TryGetFirstFileContentFromZip(string filename, string ext) {
             if (!File.Exists(filename)) return "";
             string text = "";
             string tmpDir = Path.Combine(Path.GetTempPath(), "hmseditordiff");

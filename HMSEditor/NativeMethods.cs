@@ -158,7 +158,7 @@ namespace HMSEditorNS {
         [DllImport("gdi32.dll")]
         public static extern uint GetPixel(IntPtr hdc, int nXPos, int nYPos);
 
-        [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
+        [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
 
         public static IntPtr FindWindowByCaption(string caption)

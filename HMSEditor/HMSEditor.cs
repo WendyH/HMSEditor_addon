@@ -41,7 +41,6 @@ namespace HMSEditorNS {
         }
         #endregion Static
 
-        public IntPtr ParentHwnd;
         // Constructor
         [EnvironmentPermissionAttribute(SecurityAction.LinkDemand, Unrestricted = true)]
         public HMSEditor(IntPtr aScriptFrame, int aScriptMode, IntPtr parentHwnd) {
@@ -49,7 +48,6 @@ namespace HMSEditorNS {
             if (PtrScriptFrame != IntPtr.Zero) {
                 HmsScriptFrame = (IHmsScriptFrame)System.Runtime.Remoting.Services.EnterpriseServicesHelper.WrapIUnknownWithComObject(PtrScriptFrame);
             }
-            this.ParentHwnd = parentHwnd;
             HmsScriptMode = (HmsScriptMode)aScriptMode;
             InitializeComponent();
             labelVersion.Text = Title;
@@ -450,7 +448,7 @@ namespace HMSEditorNS {
                 TB.HotkeysMapping = form.GetHotkeys();
         }
 
-        private string FileDialogFilter() {
+        private static string FileDialogFilter() {
             return "All files (*.*)|*.*|" +
                    "PascalScript files (*.pas)|*.pas|" +
                    "C++Script files (*.cpp)|*.cpp|" +
@@ -723,7 +721,7 @@ namespace HMSEditorNS {
                 item.Click += (o, a) => {
                     ThemeName = (string)item.Tag;
                     Themes.SetTheme(this, ThemeName, btnThemes.DropDownItems);
-                    TB.ClearCache();
+                    FastColoredTextBox.ClearCache();
                 };
                 if (name == ThemeName) {
                     item.Checked = true;
@@ -1986,7 +1984,7 @@ namespace HMSEditorNS {
             }
         }
 
-        public string KindToString(DefKind kind) {
+        public static string KindToString(DefKind kind) {
             switch (kind) {
                 case DefKind.Class    : return "Класс";
                 case DefKind.Constant : return "Константа";

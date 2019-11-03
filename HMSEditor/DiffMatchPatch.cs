@@ -461,7 +461,7 @@ namespace DiffMatchPatch
          *     encoded text2 and the List of unique strings.  The zeroth element
          *     of the List of unique strings is intentionally blank.
          */
-        protected Object[] diff_linesToChars(string text1, string text2)
+        protected static Object[] diff_linesToChars(string text1, string text2)
         {
             List<string> lineArray = new List<string>();
             Dictionary<string, int> lineHash = new Dictionary<string, int>();
@@ -485,7 +485,7 @@ namespace DiffMatchPatch
          * @param lineHash Map of strings to indices.
          * @return Encoded string.
          */
-        private string diff_linesToCharsMunge(string text, List<string> lineArray,
+        private static string diff_linesToCharsMunge(string text, List<string> lineArray,
                                               Dictionary<string, int> lineHash)
         {
             int lineStart = 0;
@@ -525,7 +525,7 @@ namespace DiffMatchPatch
          * @param diffs LinkedList of Diff objects.
          * @param lineArray List of unique strings.
          */
-        protected void diff_charsToLines(ICollection<Diff> diffs,
+        protected static void diff_charsToLines(ICollection<Diff> diffs,
                                         List<string> lineArray)
         {
             StringBuilder text;
@@ -717,7 +717,7 @@ namespace DiffMatchPatch
          * @param text2 New string fragment to be diffed.
          * @return LinkedList of Diff objects.
          */
-        protected List<Diff> diff_path1(List<HashSet<long>> v_map,
+        protected static List<Diff> diff_path1(List<HashSet<long>> v_map,
                                         string text1, string text2)
         {
             LinkedList<Diff> path = new LinkedList<Diff>();
@@ -789,7 +789,7 @@ namespace DiffMatchPatch
          * @param text2 New string fragment to be diffed.
          * @return LinkedList of Diff objects.
          */
-        protected List<Diff> diff_path2(List<HashSet<long>> v_map,
+        protected static List<Diff> diff_path2(List<HashSet<long>> v_map,
                                         string text1, string text2)
         {
             LinkedList<Diff> path = new LinkedList<Diff>();
@@ -862,7 +862,7 @@ namespace DiffMatchPatch
          * @param y Second int.
          * @return A long made up of both ints.
          */
-        protected long diff_footprint(int x, int y)
+        protected static long diff_footprint(int x, int y)
         {
             // The maximum size for a long is 9,223,372,036,854,775,807
             // The maximum size for an int is 2,147,483,647
@@ -879,7 +879,7 @@ namespace DiffMatchPatch
          * @param text2 Second string.
          * @return The number of characters common to the start of each string.
          */
-        public int diff_commonPrefix(string text1, string text2)
+        public static int diff_commonPrefix(string text1, string text2)
         {
             // Performance analysis: http://neil.fraser.name/news/2007/10/09/
             int n = Math.Min(text1.Length, text2.Length);
@@ -899,7 +899,7 @@ namespace DiffMatchPatch
          * @param text2 Second string.
          * @return The number of characters common to the end of each string.
          */
-        public int diff_commonSuffix(string text1, string text2)
+        public static int diff_commonSuffix(string text1, string text2)
         {
             // Performance analysis: http://neil.fraser.name/news/2007/10/09/
             int text1_length = text1.Length;
@@ -925,7 +925,7 @@ namespace DiffMatchPatch
          *     common middle.  Or null if there was no match.
          */
 
-        protected string[] diff_halfMatch(string text1, string text2)
+        protected static string[] diff_halfMatch(string text1, string text2)
         {
             string longtext = text1.Length > text2.Length ? text1 : text2;
             string shorttext = text1.Length > text2.Length ? text2 : text1;
@@ -981,7 +981,7 @@ namespace DiffMatchPatch
          *     suffix of longtext, the prefix of shorttext, the suffix of shorttext
          *     and the common middle.  Or null if there was no match.
          */
-        private string[] diff_halfMatchI(string longtext, string shorttext, int i)
+        private static string[] diff_halfMatchI(string longtext, string shorttext, int i)
         {
             // Start with a 1/4 length Substring at position i as a seed.
             string seed = longtext.Substring(i, longtext.Length / 4);
@@ -1093,7 +1093,7 @@ namespace DiffMatchPatch
                     var equality2 = diffs[pointer + 1].text;
 
                     // First, shift the edit as far left as possible.
-                    var commonOffset = this.diff_commonSuffix(equality1, edit);
+                    var commonOffset = diff_match_patch.diff_commonSuffix(equality1, edit);
                     if (commonOffset > 0)
                     {
                         var commonString = edit.Substring(edit.Length - commonOffset);
@@ -1338,7 +1338,7 @@ namespace DiffMatchPatch
                             if (count_delete != 0 && count_insert != 0)
                             {
                                 // Factor out any common prefixies.
-                                commonlength = this.diff_commonPrefix(text_insert, text_delete);
+                                commonlength = diff_match_patch.diff_commonPrefix(text_insert, text_delete);
                                 if (commonlength != 0)
                                 {
                                     if ((pointer - count_delete - count_insert) > 0 &&
@@ -1358,7 +1358,7 @@ namespace DiffMatchPatch
                                     text_delete = text_delete.Substring(commonlength);
                                 }
                                 // Factor out any common suffixies.
-                                commonlength = this.diff_commonSuffix(text_insert, text_delete);
+                                commonlength = diff_match_patch.diff_commonSuffix(text_insert, text_delete);
                                 if (commonlength != 0)
                                 {
                                     diffs[pointer].text = text_insert.Substring(text_insert.Length -
@@ -1461,7 +1461,7 @@ namespace DiffMatchPatch
          * @param loc Location within text1.
          * @return Location within text2.
          */
-        public int diff_xIndex(List<Diff> diffs, int loc)
+        public static int diff_xIndex(List<Diff> diffs, int loc)
         {
             int chars1 = 0;
             int chars2 = 0;
@@ -1503,7 +1503,7 @@ namespace DiffMatchPatch
          * @param diffs LinkedList of Diff objects.
          * @return HTML representation.
          */
-        public string diff_prettyHtml(List<Diff> diffs)
+        public static string diff_prettyHtml(List<Diff> diffs)
         {
             StringBuilder html = new StringBuilder();
             int i = 0;
@@ -1539,7 +1539,7 @@ namespace DiffMatchPatch
          * @param diffs LinkedList of Diff objects.
          * @return Source text.
          */
-        public string diff_text1(List<Diff> diffs)
+        public static string diff_text1(List<Diff> diffs)
         {
             StringBuilder text = new StringBuilder();
             foreach (Diff aDiff in diffs)
@@ -1557,7 +1557,7 @@ namespace DiffMatchPatch
          * @param diffs LinkedList of Diff objects.
          * @return Destination text.
          */
-        public string diff_text2(List<Diff> diffs)
+        public static string diff_text2(List<Diff> diffs)
         {
             StringBuilder text = new StringBuilder();
             foreach (Diff aDiff in diffs)
@@ -1576,7 +1576,7 @@ namespace DiffMatchPatch
          * @param diffs LinkedList of Diff objects.
          * @return Number of changes.
          */
-        public int diff_levenshtein(List<Diff> diffs)
+        public static int diff_levenshtein(List<Diff> diffs)
         {
             int levenshtein = 0;
             int insertions = 0;
@@ -1611,7 +1611,7 @@ namespace DiffMatchPatch
          * @param diffs Array of diff tuples.
          * @return Delta text.
          */
-        public string diff_toDelta(List<Diff> diffs)
+        public static string diff_toDelta(List<Diff> diffs)
         {
             StringBuilder text = new StringBuilder();
             foreach (Diff aDiff in diffs)
@@ -1649,7 +1649,7 @@ namespace DiffMatchPatch
          * @return Array of diff tuples or null if invalid.
          * @throws ArgumentException If invalid input.
          */
-        public List<Diff> diff_fromDelta(string text1, string delta)
+        public static List<Diff> diff_fromDelta(string text1, string delta)
         {
             List<Diff> diffs = new List<Diff>();
             int pointer = 0;  // Cursor in text1
@@ -1923,7 +1923,7 @@ namespace DiffMatchPatch
          * @param pattern The text to encode.
          * @return Hash of character locations.
          */
-        protected Dictionary<char, int> match_alphabet(string pattern)
+        protected static Dictionary<char, int> match_alphabet(string pattern)
         {
             Dictionary<char, int> s = new Dictionary<char, int>();
             char[] char_pattern = pattern.ToCharArray();
@@ -2144,7 +2144,7 @@ namespace DiffMatchPatch
          * @param patches Array of patch objects.
          * @return Array of patch objects.
          */
-        public List<Patch> patch_deepCopy(List<Patch> patches)
+        public static List<Patch> patch_deepCopy(List<Patch> patches)
         {
             List<Patch> patchesCopy = new List<Patch>();
             foreach (Patch aPatch in patches)
@@ -2256,7 +2256,7 @@ namespace DiffMatchPatch
                         // indices.
                         List<Diff> diffs = diff_main(text1, text2, false);
                         if (text1.Length > this.Match_MaxBits
-                            && this.diff_levenshtein(diffs) / (float) text1.Length
+                            && diff_match_patch.diff_levenshtein(diffs) / (float) text1.Length
                             > this.Patch_DeleteThreshold)
                         {
                             // The end points match, but the content is unacceptably bad.
@@ -2454,9 +2454,8 @@ namespace DiffMatchPatch
                             }
                         }
                         // Compute the head context for the next patch.
-                        precontext = this.diff_text2(patch.diffs);
-                        precontext =
-                            precontext.Substring(Math.Max(0, precontext.Length - this.Patch_Margin));
+                        precontext = diff_match_patch.diff_text2(patch.diffs);
+                        precontext = precontext.Substring(Math.Max(0, precontext.Length - this.Patch_Margin));
 
                         string postcontext = null;
                         // Append the end context for this patch.
@@ -2497,7 +2496,7 @@ namespace DiffMatchPatch
          * @param patches List of Patch objects.
          * @return Text representation of patches.
          */
-        public string patch_toText(List<Patch> patches)
+        public static string patch_toText(List<Patch> patches)
         {
             StringBuilder text = new StringBuilder();
             foreach (Patch aPatch in patches)
@@ -2514,7 +2513,7 @@ namespace DiffMatchPatch
          * @return List of Patch objects.
          * @throws ArgumentException If invalid input.
          */
-        public List<Patch> patch_fromText(string textline)
+        public static List<Patch> patch_fromText(string textline)
         {
             List<Patch> patches = new List<Patch>();
             if (textline.Length == 0)
