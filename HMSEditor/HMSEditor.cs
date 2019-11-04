@@ -1852,8 +1852,6 @@ namespace HMSEditorNS {
                             else if (childItem.ImageIndex == ImagesIndex.Method) {
                                 if (cmd.IndexOf('(') > 0) childItem.Text = name + "(^)";
                             }
-                            if (LogAsErrorNotInDatabaseItems)
-                                newdescription += "\r\n  " + KindToString(childItem.Kind) + " " + childItem.Text + "  Type: " + childItem.Type + "  " + (childItem.Help.Length > 0 ? "  Description: " + childItem.Help : "");
                         }
                     } else {
                         string newdescription = "Новый класс: " + item.Text + " Type: " + item.Type + " Description: " + item.Help;
@@ -1921,7 +1919,7 @@ namespace HMSEditorNS {
                 item.InXmlDescription = true;
                 if (kind == DefKind.Function) item.Kind = (item.Type.Length > 0) ? DefKind.Function : DefKind.Procedure;
                 if (regexExcludeConst.IsMatch(item.MenuText)) continue;
-                var foundItem = Items.GetItemOrNull(item.MenuText, filter);
+                var foundItem = Items.GetItemOrNull(item.MenuText);
                 if (foundItem!=null) {
                     if (foundItem.Help.Length == 0) foundItem.Help = descr;
                     foundItem.InXmlDescription = true;
