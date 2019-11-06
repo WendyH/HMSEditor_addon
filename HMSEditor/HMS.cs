@@ -545,7 +545,8 @@ namespace HMSEditorNS {
                             var m = Regex.Match(line, @"^\*\s*?\[(.*)\]"); if (m.Success) { section = m.Groups[1].Value.Trim(); continue; }
                                 m = Regex.Match(line, @"^\*(sm\w+)"     ); if (m.Success) { filter  = m.Groups[1].Value.Trim(); continue; }
                             if (filter == "smAll") filter = "";
-                            if (line.StartsWith("*") || (line.Trim().Length == 0)) continue; // Skip comments and blank lines
+                            if (line.StartsWith("*")) continue; // Skip comments and blank lines
+                            if (string.IsNullOrWhiteSpace(line)) { filter = ""; continue; }
                             int indent = line.Length - line.TrimStart().Length;
                             HMSItem item;
                             if (indent == 0) {

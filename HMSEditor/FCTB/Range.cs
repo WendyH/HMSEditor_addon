@@ -932,7 +932,7 @@ namespace FastColoredTextBoxNS {
             }
         }
 
-        private int GetLineOfBeginingBracket(Range range) {
+        private static int GetLineOfBeginingBracket(Range range) {
             char LeftBracket = '(', RightBracket = ')';
             int counter = 0, maxIterations = 500;
             while (range.GoLeftThroughFolded(true)) {
@@ -1673,11 +1673,11 @@ namespace FastColoredTextBoxNS {
         }
         // > By WendyH -----------------------------------------------------
 
-        bool IsIdentifierChar(char c) {
+        static bool IsIdentifierChar(char c) {
             return char.IsLetterOrDigit(c) || c == '_';
         }
 
-        bool IsSpaceChar(char c) {
+        static bool IsSpaceChar(char c) {
             return c == ' ' || c == '\t';
         }
 

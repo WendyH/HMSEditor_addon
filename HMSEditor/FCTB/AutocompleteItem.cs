@@ -112,7 +112,7 @@ namespace FastColoredTextBoxNS {
     /// </summary>
     /// <remarks>Snippet can contain special char ^ for caret position.</remarks>
     public class SnippetAutocompleteItem: AutocompleteItem {
-        public new string ToolTipTitle => "Шаблон:";
+        public new static string ToolTipTitle => "Шаблон:";
         public new string ToolTipText  => Text;
 
         public SnippetAutocompleteItem(string snippet) {

@@ -19,7 +19,7 @@ namespace FastColoredTextBoxNS {
     public class MultilineComments: List<MultilineCommentsInfo> {
         public bool Unresponsive = false;
 
-        public int ToIndex(int iLine, int iChar) {
+        public static int ToIndex(int iLine, int iChar) {
             return (iLine << 16) + iChar;
         }
 

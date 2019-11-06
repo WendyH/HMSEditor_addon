@@ -463,7 +463,7 @@ namespace FastColoredTextBoxNS {
         }
 
         // By WendyH
-        private int DetectStartOrEndBlock(string text, string startBlock, string endBlock) {
+        private static int DetectStartOrEndBlock(string text, string startBlock, string endBlock) {
             if (string.IsNullOrEmpty(text)) return 0;
             int result = 0;
             MatchCollection mc = Regex.Matches(text, "(" + startBlock + "|" + endBlock + ")", RegexOptions.IgnoreCase);
@@ -530,7 +530,7 @@ namespace FastColoredTextBoxNS {
             var desc = new SyntaxDescriptor();
             XmlNode brackets = doc.SelectSingleNode("doc/brackets");
             if (brackets != null) {
-                if (brackets.Attributes != null && (brackets.Attributes["left"] == null || brackets.Attributes["right"] == null || brackets.Attributes["left"].Value == "" || brackets.Attributes["right"].Value == "")) {
+                if (brackets.Attributes != null && (brackets.Attributes["left"] == null || brackets.Attributes["right"] == null || string.IsNullOrEmpty(brackets.Attributes["left"].Value) || brackets.Attributes["right"].Value == "")) {
                     desc.leftBracket  = '\x0';
                     desc.rightBracket = '\x0';
                 }
@@ -646,7 +646,7 @@ namespace FastColoredTextBoxNS {
                 return Color.FromName(s);
         }
 
-        public void HighlightSyntax(SyntaxDescriptor desc, Range range) {
+        public static void HighlightSyntax(SyntaxDescriptor desc, Range range) {
             //set style order
             range.tb.ClearStylesBuffer();
             for (int i = 0; i < desc.styles.Count; i++)
@@ -672,14 +672,14 @@ namespace FastColoredTextBoxNS {
             RestoreBrackets(range.tb, oldBrackets);
         }
 
-        private void RestoreBrackets(FastColoredTextBox tb, char[] oldBrackets) {
+        private static void RestoreBrackets(FastColoredTextBox tb, char[] oldBrackets) {
             tb.LeftBracket   = oldBrackets[0];
             tb.RightBracket  = oldBrackets[1];
             tb.LeftBracket2  = oldBrackets[2];
             tb.RightBracket2 = oldBrackets[3];
         }
 
-        private char[] RememberBrackets(FastColoredTextBox tb) {
+        private static char[] RememberBrackets(FastColoredTextBox tb) {
             return new[] {tb.LeftBracket, tb.RightBracket, tb.LeftBracket2, tb.RightBracket2};
         }
 
@@ -1582,7 +1582,7 @@ namespace FastColoredTextBoxNS {
             range.SetStyle(PunctuationSyle, regexPunctuationCPP  );
         }
 
-        public Language DetectLang(string txt) {
+        public static Language DetectLang(string txt) {
             string firstChar = txt.Substring(0, 1);
             if ((firstChar == "{") || (firstChar == "["))
                 return Language.YAML;
@@ -1734,7 +1734,7 @@ namespace FastColoredTextBoxNS {
         public Style DeclFunctionStyle { get; set; }
         public Style PunctuationSyle   { get; set; }
 
-        public string Lang2Str(Language l) {
+        public static string Lang2Str(Language l) {
             if (l == Language.CPPScript) return "C++Script";
             else if (l == Language.JS) return "JavaScript";
             else if (l == Language.VB) return "VisualBasic";
@@ -1743,7 +1743,7 @@ namespace FastColoredTextBoxNS {
             else return l.ToString();
         }
 
-        public Language Str2Lang(string name) {
+        public static Language Str2Lang(string name) {
             Language l;
             switch (name) {
                 case "C#"          : l = Language.CSharp      ; break;

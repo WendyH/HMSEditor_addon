@@ -47,7 +47,7 @@ namespace HMSEditorNS {
 
         #region Методы доступа к атрибутам сборки
 
-        public string AssemblyTitle {
+        public static string AssemblyTitle {
             get {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute), false);
                 if (attributes.Length > 0) {

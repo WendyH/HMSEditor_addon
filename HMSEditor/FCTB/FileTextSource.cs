@@ -140,7 +140,7 @@ namespace FastColoredTextBoxNS
                 OnRecalcWordWrap(new TextChangedEventArgs(0, linesCount - 1));
         }
 
-        private int DefineShift(Encoding enc)
+        private static int DefineShift(Encoding enc)
         {
             if (enc.IsSingleByte)
                 return 0;

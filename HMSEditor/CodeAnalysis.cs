@@ -504,7 +504,8 @@ namespace HMSEditorNS {
                                 item.ImageIndex    = ImagesIndex.Field;
                                 if (item.Type.Length > 0) item.ToolTipText += "\nТип: " + item.Type;
                                 int linelen        = Math.Min(allText.Length - m.Groups[2].Index, maxLineLength);
-                                if (linelen < 1) break;
+                                
+                                if ((linelen < 1) || (allText.Length <= index + indexContext)) break;
                                 string textline = WithoutString(allText.Substring(index + indexContext, linelen));
                                 Match commentMatch = null;
                                 switch (result.Language) {
