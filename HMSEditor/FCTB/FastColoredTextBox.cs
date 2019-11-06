@@ -5907,11 +5907,11 @@ namespace FastColoredTextBoxNS {
             OnVisibleRangeChanged();
         }
 
-        protected override void OnMouseLeave(EventArgs e) {
-            base.OnMouseLeave(e);
-
-            CancelToolTip();
-        }
+        // На Win 10 это событие срабатывает сразу после показа - не канает
+        //protected override void OnMouseLeave(EventArgs e) {
+        //    base.OnMouseLeave(e);
+        //    CancelToolTip(); 
+        //}
 
         private Range draggedRange;
 
