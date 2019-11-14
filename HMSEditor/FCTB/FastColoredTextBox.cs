@@ -7412,8 +7412,7 @@ namespace FastColoredTextBoxNS {
         }
 
         private void wb_StatusTextChanged(object sender, EventArgs e) {
-            var wb = sender as WebBrowser;
-            if (wb == null) return;
+            if (!(sender is WebBrowser wb)) return;
             if (wb.StatusText.Contains("#print")) {
                 var settings = wb.Tag as PrintDialogSettings;
                 try {

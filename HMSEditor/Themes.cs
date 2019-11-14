@@ -74,9 +74,9 @@ namespace HMSEditorNS {
             foreach (YamlObject item in list) {
                 string     name     = item["name" ];
                 string[]   scope    = item["scope"].Split(',');
-                for (int i = 0; i < scope.Length; i++) scope[i] = scope[i].ToLower().Trim();
+                for (int i = 0; i < scope.Length; i++) scope[i] = scope[i].ToLower(System.Globalization.CultureInfo.CurrentCulture).Trim();
                 YamlObject settings = item.GetObject("settings");
-                if ((name=="") && (item["scope"]=="") && (settings.Count > 0)) {
+                if (string.IsNullOrEmpty(name) && string.IsNullOrEmpty(item["scope"]) && (settings.Count > 0)) {
                     t.Background      = ToColor(settings["background"     ]);
                     t.Caret           = ToColor(settings["caret"          ]);
                     t.Foreground      = ToColor(settings["foreground"     ]);
@@ -334,7 +334,7 @@ namespace HMSEditorNS {
             string result = "{";
             result += (bf == null) ? "" : "fore:"+ColorToString(bf.Color)+";";
             result += (bb == null) ? "" : "back:"+ColorToString(bb.Color)+";";
-            result += (font == "") ? "" : "font:"+ font + ";";
+            result += string.IsNullOrEmpty(font) ? "" : "font:"+ font + ";";
             return result+"}";
         }
 
@@ -356,9 +356,9 @@ namespace HMSEditorNS {
             if (underline) fs |= FontStyle.Underline;
             Brush backBrush = null;
             Brush foreBrush = null;
-            if (foreVal!="")
+            if (!string.IsNullOrEmpty(foreVal))
                 foreBrush = new SolidBrush(ToColor(foreVal));
-            if (backVal!="")
+            if (!string.IsNullOrEmpty(backVal))
                 backBrush = new SolidBrush(ToColor(backVal));
             Style s = new TextStyle(foreBrush, backBrush, fs);
             return s;

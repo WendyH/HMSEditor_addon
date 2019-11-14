@@ -30,7 +30,7 @@ namespace HMSEditorNS {
             if (info.MemberItems.ContainsName("Text")) return text + ".Text";
             switch (type) {
                 case "THmsScriptMediaItem":
-                    return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: THmsScriptMediaItem)\"#13+\"mpiTitle=\"+" + text + ".Properties[mpiTitle]+#13+\"mpiFilePath=\"+" + text + ".Properties[mpiFilePath]+#13+\"mpiThumbnail=\"+Str(" + text + ".Properties[mpiThumbnail])+#13+\"mpiTimeLength=\"+Str(" + text + ".Properties[mpiTimeLength])+#13+\"mpiCreateDate=\"+Str(" + text + ".Properties[mpiCreateDate])";
+                    return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: THmsScriptMediaItem)\"#13+\"mpiTitle=\"+" + text + ".Properties[mpiTitle]+#13+\"mpiFilePath=\"+" + text + ".Properties[mpiFilePath]+#13+\"mpiThumbnail=\"+Str(" + text + ".Properties[mpiThumbnail])+#13+\"mpiTimeLength=\"+Str(" + text + ".Properties[mpiTimeLength])+#13+\"mpiCreateDate=\"+Str(" + text + ".Properties[mpiCreateDate])+#13+\"ChildCount=\"+Str(" + text + ".ChildCount)+#13+\"IsFolder=\"+Str(" + text + ".IsFolder)";
                 case "TRegExpr":
                     return "\"" + text + "=\"+Str(" + text + ")+\" (Тип: TRegExpr)\"#13+\"Match(0)=\"+" + text + ".Match(0)+#13+\"Match(1)=\"+" + text + ".Match(1)+#13+\"Match(2)=\"+" + text + ".Match(2)+#13+\"Match(3)=\"+" + text + ".Match(3)";
                 case "TJsonArray":
@@ -47,7 +47,7 @@ namespace HMSEditorNS {
             return text;
         }
 
-        private static string successMethods4Eval = "|Match|ProgramVersion|HmsCryptCipherList|HmsCryptFormatList|HmsCryptHashList|HmsDataDirectory|HmsGetUserSearchText|HmsSubtitlesDirectory|HmsTempDirectory|ProgramPath|HmsClientID|HmsTranscodingInputParams|HmsTranscodingProbeParams|HmsTranscodingTempDirectory|HmsVlcVersion|".ToLower();
+        private static readonly string successMethods4Eval = "|Match|ProgramVersion|HmsCryptCipherList|HmsCryptFormatList|HmsCryptHashList|HmsDataDirectory|HmsGetUserSearchText|HmsSubtitlesDirectory|HmsTempDirectory|ProgramPath|HmsClientID|HmsTranscodingInputParams|HmsTranscodingProbeParams|HmsTranscodingTempDirectory|HmsVlcVersion|".ToLower();
         private static bool OK4Evaluate(HMSItem item) {
             bool success = ((item.Kind == DefKind.Property) || (item.Kind == DefKind.Variable));
             if (!success && (item.Kind == DefKind.Function) || (item.Kind == DefKind.Method)) {
@@ -56,24 +56,12 @@ namespace HMSEditorNS {
             return success;
         }
 
-        private static string SafeEval(HMSEditor activeEditor, string expression) {
-            string value = "";
-            System.Windows.Forms.MethodInvoker action = delegate {
-                value = activeEditor.EvalVariableValue(expression);
-            };
-            if (activeEditor.InvokeRequired)
-                activeEditor.Invoke(action);
-            else
-                action();
-            return value;
-        }
-
         private static bool IsDigitsOnly(string str) {
             foreach (char c in str) if (c < '0' || c > '9') return false;
             return true;
         }
 
-        private static void ShowValue(FastColoredTextBox tb, Point point, string expression, string realExpression, bool isItem=false, string type="") {
+        private static void ShowValue(FastColoredTextBox tb, Point point, string expression, string realExpression, string type="") {
             System.Windows.Forms.MethodInvoker action = delegate {
                 var activeEditor = HMSEditor.ActiveEditor;
                 if (activeEditor != null) {
@@ -97,8 +85,9 @@ namespace HMSEditorNS {
                             try {
                                 var ob = JsonConvert.DeserializeObject(value);
                                 value = JsonConvert.SerializeObject(ob);
-                                Jsbeautifier.BeautifierOptions beautifierOptions = new Jsbeautifier.BeautifierOptions();
-                                beautifierOptions.BraceStyle = Jsbeautifier.BraceStyle.EndExpand;
+                                Jsbeautifier.BeautifierOptions beautifierOptions = new Jsbeautifier.BeautifierOptions {
+                                    BraceStyle = Jsbeautifier.BraceStyle.EndExpand
+                                };
                                 Jsbeautifier.Beautifier beautifier = new Jsbeautifier.Beautifier(beautifierOptions);
                                 value = beautifier.Beautify(value);
                             } catch {; }
@@ -159,16 +148,16 @@ namespace HMSEditorNS {
                         // Проверяем тип объекта класса, может быть удобней представить в виде текста? (TStrings или TJsonObject)
                         string realExpression = expression;
                         if (TB.Language == Language.JScript)
-                            expression = TryGetTypeOfVariabe(ActiveHMSEditor, item, expression);
+                            expression = TryGetTypeOfVariabe(ActiveHMSEditor, expression);
                         else if (item.ImageIndex != ImagesIndex.Enum)
                             expression = CheckTypeForToStringRules(item.Type, expression);
-                        ShowValue(TB, point, expression, realExpression, true, item.Type);
+                        ShowValue(TB, point, expression, realExpression, item.Type);
                         return;
                     }
                     ShowToolTip(TB, point, item.ToolTipTitle, item.ToolTipText, "", item.Help);
                 } else if (debugMode && !HMS.WordIsKeyword(expression)) {
                     if (TB.Language == Language.JScript)
-                        expression = TryGetTypeOfVariabe(ActiveHMSEditor, item, expression);
+                        expression = TryGetTypeOfVariabe(ActiveHMSEditor, expression);
                     ShowValue(TB, point, expression, expression);
                 }
 
@@ -177,7 +166,7 @@ namespace HMSEditorNS {
             }
 
         }
-        public static string TryGetTypeOfVariabe(HMSEditor ActiveHMSEditor, HMSItem item, string expression) {
+        public static string TryGetTypeOfVariabe(HMSEditor ActiveHMSEditor, string expression) {
             System.Windows.Forms.MethodInvoker action = delegate {
                 string classname = ActiveHMSEditor.EvalVariableValue(expression + ".ClassName");
                 if (classname.Length > 0)
@@ -199,6 +188,7 @@ namespace HMSEditorNS {
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
+            if (reader == null) return 0;
             var str = reader.ReadAsString();
             if (str == null || !str.StartsWith("0x"))
                 throw new JsonSerializationException();

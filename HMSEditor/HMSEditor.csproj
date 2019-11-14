@@ -214,6 +214,7 @@
       <DependentUpon>FormValue.cs</DependentUpon>
     </Compile>
     <Compile Include="GitHub.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="HelpPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
