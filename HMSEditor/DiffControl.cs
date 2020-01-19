@@ -386,10 +386,49 @@ namespace HMSEditorNS {
         <ID>500</ID> Скрипт динамической папки (Alt + 5)
         */
 
-        private bool LoadFile(ref string text, string filename, string lang) {
+        private string DetectLangFromExt(string filename) {
+            string lang = "";
+            switch (Path.GetExtension(filename)) {
+                case ".pas": lang = "PascalScript"; break;
+                case ".cpp": lang = "C++Script"   ; break;
+                case ".vb" :
+                case ".vbs":
+                case ".bas": lang = "BasicScript" ; break;
+                case ".js" : lang = "JScript"; break;
+                case ".lua": lang = "LUA"; break;
+                case ".sql": lang = "SQL"; break;
+                case ".cs" : lang = "CSharp"; break;
+                case ".ps1": lang = "PHP"; break;
+                case ".php": lang = "PHP"; break;
+                case ".html":
+                case ".htm": lang = "HTML"; break;
+                case ".css":
+                case ".xml": lang = "XML"; break;
+            }
+            return lang;
+        }
+        public void LoadFile1() {
+            string lang = DetectLangFromExt(File1);
+            if (LoadFile(ref Text1, File1, lang)) {
+                if (Text1.StartsWith("<xml")) Language = Language.XML;
+                SetLabelText(label1, File1);
+            }
+        }
+        public void LoadFile2() {
+            string lang = DetectLangFromExt(File2);
+            if (LoadFile(ref Text2, File2, lang)) {
+                if (Text1.StartsWith("<xml")) Language = Language.XML;
+                SetLabelText(label2, File2);
+            }
+        }
+        long maxFileSize = 500000;
+        public bool LoadFile(ref string text, string filename, string lang) {
             if (!File.Exists(filename)) return false;
             Match m;
-
+            if (new FileInfo(filename).Length > maxFileSize) {
+                MessageBox.Show("Файл "+filename+" слишком большой!", "Comparer");
+                return false;
+            }
             if (Path.GetExtension(filename) == ".zip") {
                 text = TryGetFirstFileContentFromZip(filename, "hdf");
                 if (text.Length == 0)
@@ -414,23 +453,35 @@ namespace HMSEditorNS {
             scriptList.Add(@"<TranscodingMimeTypeScript>(.+?)</TranscodingMimeTypeScript>.*?<TranscodingMimeTypeSyntaxType>(.*?)</TranscodingMimeTypeSyntaxType>", "Скрипт определения MIME-типа");
             scriptList.Add(@"<TranscodingParams>(.+?)</TranscodingParams>.*?<TranscodingParamsSyntaxType>(.*?)</TranscodingParamsSyntaxType>", "Скрипт профиля транскодирования");
             scriptList.Add(@"<Script>(.+?)</Script>.*?<ScriptSyntaxType>(.*?)</ScriptSyntaxType>", "Скрипт обработки");
-            scriptList.Add(@"^((.).*)$", "Как простой текстовый файл");
+            //scriptList.Add(@"^((.).*)$", "Как простой текстовый файл");
             formSelect.SetFile(filename);
-            foreach (var pair in scriptList)
-                if (Regex.IsMatch(text, pair.Key, RegexOptions.Singleline | RegexOptions.Compiled))
+            bool needDialog = false;
+            foreach (var pair in scriptList) {
+                if (Regex.IsMatch(text, pair.Key, RegexOptions.Singleline | RegexOptions.Compiled)) {
                     formSelect.AddValue(pair.Key, pair.Value);
-
-            if (formSelect.ShowDialog() != DialogResult.OK) return false;
-
-            if (formSelect.RE.Length > 0) {
-                m = Regex.Match(text, formSelect.RE, RegexOptions.Singleline);
-                if (m.Success) {
-                    text = HttpUtility.HtmlDecode(m.Groups[1].Value).Replace("&apos;", "'");
-                    lang = m.Groups[2].Value;
-                    FileDescription = formSelect.ScriptName;
+                    needDialog = true;
+                }
+            }
+            if (needDialog) {
+                if (formSelect.ShowDialog() != DialogResult.OK) return false;
+                if (formSelect.RE.Length > 0) {
+                    m = Regex.Match(text, formSelect.RE, RegexOptions.Singleline);
+                    if (m.Success) {
+                        text = HttpUtility.HtmlDecode(m.Groups[1].Value).Replace("&apos;", "'");
+                        lang = m.Groups[2].Value;
+                        FileDescription = formSelect.ScriptName;
+                    }
                 }
             }
             switch (lang) {
+                case "XML"         : Language = Language.XML         ; break;
+                case "VB"          : Language = Language.VB          ; break;
+                case "SQL"         : Language = Language.SQL         ; break;
+                case "PHP"         : Language = Language.PHP         ; break;
+                case "Lua"         : Language = Language.Lua         ; break;
+                case "JS"          : Language = Language.JS          ; break;
+                case "HTML"        : Language = Language.HTML        ; break;
+                case "CSharp"      : Language = Language.CSharp      ; break;
                 case "CPPScript"   : Language = Language.CPPScript   ; break;
                 case "C++Script"   : Language = Language.CPPScript   ; break;
                 case "PascalScript": Language = Language.PascalScript; break;
@@ -612,7 +663,7 @@ namespace HMSEditorNS {
             return r;
         }
 
-        private void SetLabelText(Label label, string text) {
+        public void SetLabelText(Label label, string text) {
             if (label.Width > label.CreateGraphics().MeasureString(text+ ": " + FileDescription, label.Font).Width)
                 label.Text = text;
             else
