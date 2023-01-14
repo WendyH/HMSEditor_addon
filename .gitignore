@@ -234,3 +234,5 @@ $RECYCLE.BIN/
 *.ide
 *.ide-shm
 *.ide-wal
+/.vs/HMSEditor_addon/v17
+/.vs
